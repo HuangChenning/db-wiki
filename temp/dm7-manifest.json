@@ -1,0 +1,907 @@
+{
+  "product": "达梦数据库 DM7",
+  "version": "DM7",
+  "tags": [
+    "dameng",
+    "dm7"
+  ],
+  "out": "/Users/huangcn/github/db-wiki/dameng/dm7",
+  "books": [
+    {
+      "slug": "welcome",
+      "title": "DM7 欢迎使用DM帮助文档",
+      "summary": "说明帮助文档分成技术丛书和技术手册。",
+      "group": "说明",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/欢迎使用DM帮助文档.htm",
+      "chapters": [
+        {
+          "title": "欢迎使用DM帮助文档"
+        }
+      ]
+    },
+    {
+      "slug": "preface",
+      "title": "DM7 前言",
+      "summary": "手册的读者对象、排版约定和相关文档。",
+      "group": "说明",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/前言.htm",
+      "chapters": [
+        {
+          "title": "前言"
+        }
+      ]
+    },
+    {
+      "slug": "support",
+      "title": "DM7 技术支持",
+      "summary": "达梦技术支持的联系方式。",
+      "group": "说明",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/技术支持.htm",
+      "chapters": [
+        {
+          "title": "技术支持"
+        }
+      ]
+    },
+    {
+      "slug": "sql-language",
+      "title": "DM7 SQL语言使用手册",
+      "summary": "SQL 语句、函数和数据类型。",
+      "group": "SQL 与开发",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/DM7_SQLÓïÑÔÊ¹ÓÃÊÖ²á.pdf",
+      "chapters": [
+        {
+          "title": "第1章 结构化查询语言DM_SQL简介",
+          "page": 12
+        },
+        {
+          "title": "第2章 手册中的示例说明",
+          "page": 29
+        },
+        {
+          "title": "第3章 数据定义语句",
+          "page": 61
+        },
+        {
+          "title": "第4章 数据查询语句",
+          "page": 156
+        },
+        {
+          "title": "第5章 数据的插入、删除和修改",
+          "page": 245
+        },
+        {
+          "title": "第6章 视图",
+          "page": 260
+        },
+        {
+          "title": "第7章 物化视图",
+          "page": 268
+        },
+        {
+          "title": "第8章 函数",
+          "page": 277
+        },
+        {
+          "title": "第9章 一致性和并发性",
+          "page": 337
+        },
+        {
+          "title": "第10章 存储模块",
+          "page": 343
+        },
+        {
+          "title": "第11章 包",
+          "page": 405
+        },
+        {
+          "title": "第12章 类类型",
+          "page": 412
+        },
+        {
+          "title": "第13章自定义类型",
+          "page": 423
+        },
+        {
+          "title": "第14章 触发器",
+          "page": 427
+        },
+        {
+          "title": "第15章 DM备份还原",
+          "page": 455
+        },
+        {
+          "title": "第16章 同义词",
+          "page": 462
+        },
+        {
+          "title": "第17章 外部链接",
+          "page": 464
+        },
+        {
+          "title": "第18章 闪回查询",
+          "page": 469
+        },
+        {
+          "title": "第19章 系统包",
+          "page": 474
+        },
+        {
+          "title": "附录1 关键字和保留字",
+          "page": 638
+        },
+        {
+          "title": "附录2 SQL语法描述说明",
+          "page": 642
+        },
+        {
+          "title": "附录3 系统存储过程和函数",
+          "page": 645
+        },
+        {
+          "title": "附录4 DM技术支持",
+          "page": 751
+        }
+      ]
+    },
+    {
+      "slug": "disql",
+      "title": "DM7 DIsql使用手册",
+      "summary": "DIsql 命令行工具。",
+      "group": "SQL 与开发",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/DIsql使用手册.htm",
+      "chapters": [
+        {
+          "title": "1 功能简介"
+        },
+        {
+          "title": "2 DIsql入门"
+        },
+        {
+          "title": "3 DIsql环境变量设置"
+        },
+        {
+          "title": "4 DIsql常用命令"
+        },
+        {
+          "title": "5 如何在DIsql中使用脚本"
+        }
+      ]
+    },
+    {
+      "slug": "proc",
+      "title": "DM7 PROC使用手册",
+      "summary": "嵌入式 SQL 预编译器 PROC。",
+      "group": "SQL 与开发",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/PROC使用手册.htm",
+      "chapters": [
+        {
+          "title": "1 概述"
+        },
+        {
+          "title": "2 预编译概念"
+        },
+        {
+          "title": "3 嵌入式程序的组成"
+        },
+        {
+          "title": "4 Oracle兼容"
+        },
+        {
+          "title": "5 DB2兼容"
+        },
+        {
+          "title": "6 DM嵌入式SQL高级功能"
+        },
+        {
+          "title": "7 PRO*C程序实例"
+        },
+        {
+          "title": "附录 PRO*C错误码汇编"
+        }
+      ]
+    },
+    {
+      "slug": "dmpython",
+      "title": "DM7 dmPython使用手册",
+      "summary": "用 dmPython 连接达梦并执行 SQL。",
+      "group": "SQL 与开发",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/dmPython使用手册.htm",
+      "chapters": [
+        {
+          "title": "1 dmPython简介"
+        },
+        {
+          "title": "2 dmPython安装"
+        },
+        {
+          "title": "3 dmPython接口详解"
+        }
+      ]
+    },
+    {
+      "slug": "programmer",
+      "title": "DM7程序员手册",
+      "summary": "DPI、ODBC、JDBC、.NET、PHP 和 DCI 编程接口。",
+      "group": "SQL 与开发",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/DM7³ÌÐòÔ±ÊÖ²á.pdf",
+      "chapters": [
+        {
+          "title": "第1章 概述",
+          "page": 5
+        },
+        {
+          "title": "第2章 DPI编程指南",
+          "page": 15
+        },
+        {
+          "title": "第3章 DMODBC编程指南",
+          "page": 110
+        },
+        {
+          "title": "第4章 DM JDBC编程指南",
+          "page": 133
+        },
+        {
+          "title": "第5章 .NET Data Provider编程指南",
+          "page": 168
+        },
+        {
+          "title": "第6章 DM PHP编程指南",
+          "page": 183
+        },
+        {
+          "title": "第7章 DM DCI编程指南",
+          "page": 199
+        },
+        {
+          "title": "第8章 DM FLDR编程指南",
+          "page": 249
+        },
+        {
+          "title": "第9章 DM FLDR JNI编程指南",
+          "page": 260
+        },
+        {
+          "title": "第10章 Logmnr接口使用说明",
+          "page": 269
+        },
+        {
+          "title": "附录1 错误码汇编",
+          "page": 284
+        },
+        {
+          "title": "附录2 DM技术支持",
+          "page": 358
+        }
+      ]
+    },
+    {
+      "slug": "administrator",
+      "title": "DM7系统管理员手册",
+      "summary": "实例结构、对象管理、调优、备份和升级。",
+      "group": "管理",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/DM7系统管理员手册.pdf",
+      "chapters": [
+        {
+          "title": "第1章 DM逻辑结构概述",
+          "page": 11
+        },
+        {
+          "title": "第2章 DM物理存储结构",
+          "page": 16
+        },
+        {
+          "title": "第3章 DM内存结构",
+          "page": 53
+        },
+        {
+          "title": "第4章 管理DM线程",
+          "page": 57
+        },
+        {
+          "title": "第5章 DM7的升级",
+          "page": 61
+        },
+        {
+          "title": "第6章 DM系统管理员",
+          "page": 63
+        },
+        {
+          "title": "第7章 创建和配置DM数据库",
+          "page": 66
+        },
+        {
+          "title": "第8章 启动和关闭数据库",
+          "page": 88
+        },
+        {
+          "title": "第9章 管理模式对象的空间",
+          "page": 94
+        },
+        {
+          "title": "第10章 管理表",
+          "page": 99
+        },
+        {
+          "title": "第11章 管理索引",
+          "page": 106
+        },
+        {
+          "title": "第12章 PL/SQL",
+          "page": 113
+        },
+        {
+          "title": "第13章 管理触发器",
+          "page": 144
+        },
+        {
+          "title": "第14章 管理视图、序列和同义词",
+          "page": 152
+        },
+        {
+          "title": "第15章 模式对象的常规管理",
+          "page": 156
+        },
+        {
+          "title": "第16章 数据库布局和存储管理",
+          "page": 161
+        },
+        {
+          "title": "第17章 管理分区表和分区索引",
+          "page": 166
+        },
+        {
+          "title": "第18章 管理列存储表",
+          "page": 178
+        },
+        {
+          "title": "第19章 管理堆表",
+          "page": 184
+        },
+        {
+          "title": "第20章 全文检索",
+          "page": 187
+        },
+        {
+          "title": "第21章 管理事务",
+          "page": 191
+        },
+        {
+          "title": "第22章 问题跟踪和解决",
+          "page": 203
+        },
+        {
+          "title": "第23章 动态管理/性能视图",
+          "page": 207
+        },
+        {
+          "title": "第24章 查询优化",
+          "page": 211
+        },
+        {
+          "title": "第25章 SQL调优",
+          "page": 220
+        },
+        {
+          "title": "第26章 故障恢复",
+          "page": 231
+        },
+        {
+          "title": "第27章 备份与还原",
+          "page": 235
+        },
+        {
+          "title": "第28章 数据复制",
+          "page": 248
+        },
+        {
+          "title": "第29章 大规模并行处理MPP",
+          "page": 257
+        },
+        {
+          "title": "附录1 数据字典",
+          "page": 273
+        },
+        {
+          "title": "附录2 动态性能视图",
+          "page": 283
+        },
+        {
+          "title": "附录3 ORACLE兼容视图",
+          "page": 335
+        },
+        {
+          "title": "附录4 执行计划操作符",
+          "page": 368
+        },
+        {
+          "title": "附录5 数据复制的系统表",
+          "page": 371
+        },
+        {
+          "title": "附录6 DM技术支持",
+          "page": 374
+        }
+      ]
+    },
+    {
+      "slug": "security",
+      "title": "DM7安全管理",
+      "summary": "用户、权限、审计、加密和资源限制。",
+      "group": "管理",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°²È«¹ÜÀí.pdf",
+      "chapters": [
+        {
+          "title": "前言",
+          "page": 2
+        },
+        {
+          "title": "1 概述",
+          "page": 8
+        },
+        {
+          "title": "2 用户标识与鉴别",
+          "page": 11
+        },
+        {
+          "title": "3 自主访问控制",
+          "page": 20
+        },
+        {
+          "title": "4 强制访问控制",
+          "page": 37
+        },
+        {
+          "title": "5 审计",
+          "page": 77
+        },
+        {
+          "title": "6 通信加密",
+          "page": 104
+        },
+        {
+          "title": "7 存储加密",
+          "page": 105
+        },
+        {
+          "title": "8 加密引擎",
+          "page": 123
+        },
+        {
+          "title": "9 资源限制",
+          "page": 167
+        },
+        {
+          "title": "10 客体重用",
+          "page": 170
+        },
+        {
+          "title": "附录1 “三权分立”预设角色权限列表",
+          "page": 171
+        },
+        {
+          "title": "附录2 “四权分立”预设角色权限列表",
+          "page": 176
+        }
+      ]
+    },
+    {
+      "slug": "backup-restore",
+      "title": "DM7 新备份与还原",
+      "summary": "数据库备份与还原。",
+      "group": "管理",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/新备份与还原.htm",
+      "chapters": [
+        {
+          "title": "1 DM7备份与还原简介"
+        },
+        {
+          "title": "2 DM7备份与还原技术原理"
+        },
+        {
+          "title": "3 DM7备份与还原实战"
+        }
+      ]
+    },
+    {
+      "slug": "job-system",
+      "title": "DM7 作业系统使用手册",
+      "summary": "作业的创建、调度和监控。",
+      "group": "管理",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/作业系统使用手册.htm",
+      "chapters": [
+        {
+          "title": "1功能简介"
+        },
+        {
+          "title": "2创建作业环境"
+        },
+        {
+          "title": "3操作员"
+        },
+        {
+          "title": "4作业"
+        },
+        {
+          "title": "5警报"
+        },
+        {
+          "title": "6监控作业"
+        },
+        {
+          "title": "7一个典型示例"
+        }
+      ]
+    },
+    {
+      "slug": "data-watch",
+      "title": "DM7数据守护概念与管理",
+      "summary": "数据守护的概念、搭建和日常管理。",
+      "group": "高可用与集群",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/DM7数据守护概念与管理.htm",
+      "chapters": [
+        {
+          "title": "前言"
+        },
+        {
+          "title": "1 DM7数据守护简介"
+        },
+        {
+          "title": "2 DM7数据守护入门"
+        },
+        {
+          "title": "3 DM7数据守护搭建"
+        },
+        {
+          "title": "4 DM7数据守护使用场景"
+        },
+        {
+          "title": "5 使用图形化客户端工具管理数据守护"
+        }
+      ]
+    },
+    {
+      "slug": "data-watch-v2",
+      "title": "DM7数据守护V2.0",
+      "summary": "数据守护 V2.0 的概念与管理。",
+      "group": "高可用与集群",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7Êý¾ÝÊØ»¤V2.0.pdf",
+      "chapters": [
+        {
+          "title": "前言",
+          "page": 2
+        },
+        {
+          "title": "1 引言",
+          "page": 9
+        },
+        {
+          "title": "2 概述",
+          "page": 11
+        },
+        {
+          "title": "3 守护进程",
+          "page": 48
+        },
+        {
+          "title": "4 监视器",
+          "page": 60
+        },
+        {
+          "title": "5 配置文件说明",
+          "page": 79
+        },
+        {
+          "title": "6 数据守护使用说明",
+          "page": 93
+        },
+        {
+          "title": "7 数据守护搭建",
+          "page": 119
+        },
+        {
+          "title": "8 自动化脚本部署工具",
+          "page": 178
+        },
+        {
+          "title": "9 利用DM部署工具搭建数据守护",
+          "page": 188
+        },
+        {
+          "title": "10 附录",
+          "page": 200
+        }
+      ]
+    },
+    {
+      "slug": "read-write-split",
+      "title": "DM7可靠的读写分离系统操作手册",
+      "summary": "读写分离集群的配置和切换。",
+      "group": "高可用与集群",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7可靠的读写分离系统操作手册.pdf",
+      "chapters": [
+        {
+          "title": "系统概述",
+          "page": 1
+        },
+        {
+          "title": "系统配置",
+          "page": 4
+        },
+        {
+          "title": "环境准备",
+          "page": 9
+        },
+        {
+          "title": "使用监视器",
+          "page": 21
+        },
+        {
+          "title": "故障处理",
+          "page": 27
+        },
+        {
+          "title": "多主库处理",
+          "page": 28
+        },
+        {
+          "title": "客户端连接",
+          "page": 28
+        },
+        {
+          "title": "附录",
+          "page": 30
+        }
+      ]
+    },
+    {
+      "slug": "cluster-agent",
+      "title": "DM7 集群代理使用手册",
+      "summary": "集群代理的配置和使用。",
+      "group": "高可用与集群",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/DM集群代理使用手册.htm",
+      "chapters": [
+        {
+          "title": "1 DM集群代理简介"
+        },
+        {
+          "title": "2 体系架构"
+        },
+        {
+          "title": "3 功能模块管理"
+        },
+        {
+          "title": "4 接口管理"
+        },
+        {
+          "title": "5 动态视图管理"
+        },
+        {
+          "title": "6 典型案例"
+        }
+      ]
+    },
+    {
+      "slug": "dminit",
+      "title": "DM7 dminit使用手册",
+      "summary": "用 dminit 初始化数据库。",
+      "group": "工具",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/dminit使用手册.htm",
+      "chapters": [
+        {
+          "title": "1 功能简介"
+        },
+        {
+          "title": "2 使用dminit"
+        },
+        {
+          "title": "3 查看dminit参数"
+        },
+        {
+          "title": "4 dminit参数详解"
+        },
+        {
+          "title": "5 dminit高级主题"
+        }
+      ]
+    },
+    {
+      "slug": "dmfldr",
+      "title": "DM7 dmfldr使用手册",
+      "summary": "用 dmfldr 快速装载数据。",
+      "group": "工具",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/dmfldr使用手册.htm",
+      "chapters": [
+        {
+          "title": "1 概述"
+        },
+        {
+          "title": "2 dmfldr入门"
+        },
+        {
+          "title": "3 dmfldr实战"
+        }
+      ]
+    },
+    {
+      "slug": "dmdbchk",
+      "title": "DM7 dmdbchk使用手册",
+      "summary": "用 dmdbchk 检查数据文件、索引和对象。",
+      "group": "工具",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/dmdbchk使用手册.htm",
+      "chapters": [
+        {
+          "title": "1 功能简介"
+        },
+        {
+          "title": "2 使用dmdbchk"
+        },
+        {
+          "title": "3 查看dmdbchk参数"
+        },
+        {
+          "title": "4 dmdbchk报告解读"
+        },
+        {
+          "title": "5 应用实例"
+        }
+      ]
+    },
+    {
+      "slug": "dexp-dimp",
+      "title": "DM7 dexp和dimp使用手册",
+      "summary": "用 dexp 逻辑导出，用 dimp 逻辑导入。",
+      "group": "工具",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/dexp和dimp使用手册.htm",
+      "chapters": [
+        {
+          "title": "1 功能简介"
+        },
+        {
+          "title": "2 dexp逻辑导出"
+        },
+        {
+          "title": "3 dimp逻辑导入"
+        },
+        {
+          "title": "4 dexp和dimp应用实例"
+        }
+      ]
+    },
+    {
+      "slug": "dmlcvt",
+      "title": "DM7 dmlcvt使用手册",
+      "summary": "用 dmlcvt 解析联机日志和归档日志。",
+      "group": "工具",
+      "kind": "chm",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7°ïÖúÎÄµµ.chm",
+      "topic": "~htm/dmlcvt使用手册.htm",
+      "chapters": [
+        {
+          "title": "1 功能简介"
+        },
+        {
+          "title": "2 使用dmlcvt"
+        },
+        {
+          "title": "3 查看dmlcvt参数"
+        },
+        {
+          "title": "4 dmlcvt参数详解"
+        },
+        {
+          "title": "5 报告解读"
+        }
+      ]
+    }
+  ],
+  "skipped": [
+    {
+      "title": "DM7数据守护概念与管理",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7数据守护概念与管理.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7新备份与还原",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7新备份与还原.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7 dexp和dimp使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7_dexpºÍdimpÊ¹ÓÃÊÖ²á.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7 Disql使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7_DisqlÊ¹ÓÃÊÖ²á.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7 dmdbchk使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7_dmdbchkÊ¹ÓÃÊÖ²á.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7 dmfldr使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7_dmfldrÊ¹ÓÃÊÖ²á.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7 dminit使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7_dminitÊ¹ÓÃÊÖ²á.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7 dmlcvt使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7_dmlcvtÊ¹ÓÃÊÖ²á.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7 dmPython使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7_dmPythonÊ¹ÓÃÊÖ²á.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7集群代理使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7集群代理使用手册.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7 PROC使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7_PROCÊ¹ÓÃÊÖ²á.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    },
+    {
+      "title": "DM7作业系统使用手册",
+      "kind": "pdf",
+      "source": "/Users/huangcn/github/db-wiki/temp/doc/special/DM7作业系统使用手册.pdf",
+      "reason": "同一本手册在 CHM 里有 Word HTML，优先用 HTML"
+    }
+  ]
+}

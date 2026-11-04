@@ -2,13 +2,13 @@
 
 [中文](README.zh-CN.md) · **English**
 
-A Markdown reading library for Oracle and Dameng database documentation, organized by version and manual for browsing, full-text search, and offline reading.
+A Markdown reading library for Oracle, Dameng, and HighGo database documentation, organized by version and manual for browsing, full-text search, and offline reading.
 
-Start with [Oracle 19c](Oracle/Oracle19c/catalog.md) or [Dameng DM8](dameng/dm8/catalog.md), or choose a manual by task below.
+Start with [Oracle 19c](Oracle/Oracle19c/catalog.md), [Dameng DM8](dameng/dm8/catalog.md), or [HighGo V9](highgo/highgov9/catalog.md), or choose a manual by task below.
 
 ## Overview
 
-For database administrators and developers, this collection covers database concepts, SQL, administration, performance tuning, backup and recovery, and high availability. Chapters retain source metadata for checking the original documentation. Oracle chapters are mainly in English; Dameng chapters are mainly in Chinese.
+For database administrators and developers, this collection covers database concepts, SQL, administration, performance tuning, backup and recovery, and high availability. Chapters retain source metadata for checking the original documentation. Oracle chapters are mainly in English; Dameng and HighGo chapters are mainly in Chinese.
 
 ## Examples and version entry points
 
@@ -20,6 +20,8 @@ For database administrators and developers, this collection covers database conc
 | Oracle 21c | 23 | [Version catalog](Oracle/Oracle21c/catalog.md) · [Database Concepts](Oracle/Oracle21c/concepts/contents.md) |
 | Dameng DM7 | 21 | [Version catalog](dameng/dm7/catalog.md) · [System Administrator's Manual](dameng/dm7/administrator/contents.md) |
 | Dameng DM8 | 56 | [Version catalog](dameng/dm8/catalog.md) · [System Administration](dameng/dm8/administrator/contents.md) |
+| HighGo V4.5 | 23 | [Version catalog](highgo/highgov45/catalog.md) · [Installation Manual](highgo/highgov45/develop-installation-manual/contents.md) |
+| HighGo V9 | 24 | [Version catalog](highgo/highgov9/catalog.md) · [Administrator's Guide](highgo/highgov9/safety-administrator-guide/contents.md) |
 
 For example, open the [Oracle 19c Database Concepts contents](Oracle/Oracle19c/concepts/contents.md), then [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md) to read a full chapter. Its opening `source` field records the official page URL.
 

@@ -1,0 +1,926 @@
+{
+  "product": "瀚高数据库 V4.5",
+  "version": "V4.5",
+  "tags": [
+    "highgo",
+    "highgo-v45"
+  ],
+  "out": "/Users/huangcn/github/db-wiki/highgo/highgov45",
+  "books": [
+    {
+      "slug": "way-installation-deployment",
+      "title": "安装实施类",
+      "summary": "介绍安全版、企业版单机与集群部署，以及流复制搭建。",
+      "group": "最佳实践",
+      "base_url": "https://highgo.com/document/zh-cn/way/",
+      "chapters": [
+        {
+          "href": "safe_alone1.html",
+          "title": "1、安全版单机-通用机部署手册"
+        },
+        {
+          "href": "Enterprise_alone1.html",
+          "title": "2、企业版单机-通用机部署手册"
+        },
+        {
+          "href": "Enterprise_copy1.html",
+          "title": "3、企业版流复制-通用机部署手册"
+        },
+        {
+          "href": "safe_alone.html",
+          "title": "4、瀚高数据库安全版集群(hghac2.0版本+hgproxy)-通用机部署手册"
+        },
+        {
+          "href": "Enterprise_alone.html",
+          "title": "5、瀚高数据库企业版集群(hghac2.0+hgproxy)-通用机部署手册"
+        },
+        {
+          "href": "Enterprise_copy.html",
+          "title": "6、HGDB企业版V6逻辑复制搭建"
+        }
+      ]
+    },
+    {
+      "slug": "way-configuration",
+      "title": "配置类",
+      "summary": "介绍主机、密码算法、驱动连接、SSL、口令策略和扩展插件配置。",
+      "group": "最佳实践",
+      "base_url": "https://highgo.com/document/zh-cn/way/",
+      "chapters": [
+        {
+          "href": "HGDB_ip.html",
+          "title": "1、HGDB单机修改IP地址或主机名(Linux)"
+        },
+        {
+          "href": "SM3_MD5.html",
+          "title": "2、安全版V4.5密码加密算法由SM3改为MD5"
+        },
+        {
+          "href": "connect_string.html",
+          "title": "3、瀚高数据库常用驱动连接字符串"
+        },
+        {
+          "href": "ssl_jdbc.html",
+          "title": "4、使用安全版数据库开启ssl加密后jdbc写法"
+        },
+        {
+          "href": "compand_v6.html",
+          "title": "5、企业版V6口令复杂度配置"
+        },
+        {
+          "href": "HGDB_Extension.html",
+          "title": "6、HGDB Extension"
+        },
+        {
+          "href": "windows_postgis.html",
+          "title": "7、windows平台下安装postgis"
+        },
+        {
+          "href": "windows_client_tools.html",
+          "title": "8、客户端工具函数调试插件安装与配置"
+        }
+      ]
+    },
+    {
+      "slug": "way-daily-use",
+      "title": "日常使用类",
+      "summary": "汇集数据导入导出、对象管理、用户权限、表空间、复制和 SQL 使用实践。",
+      "group": "最佳实践",
+      "base_url": "https://highgo.com/document/zh-cn/way/",
+      "chapters": [
+        {
+          "href": "import_exp.html",
+          "title": "1、数据库数据导入导出使用方法"
+        },
+        {
+          "href": "object_find.html",
+          "title": "2、数据库对象查询常用原命令"
+        },
+        {
+          "href": "low_data.html",
+          "title": "3、数据量很小但是data目录很大的排查思路"
+        },
+        {
+          "href": "linux_ODBC_JDBC.html",
+          "title": "4、Linux 通过ODBC连接HGDB"
+        },
+        {
+          "href": "droptable.html",
+          "title": "5、如何禁止数据库执行drop table的操作"
+        },
+        {
+          "href": "search_path.html",
+          "title": "6、search_path 的使用说明"
+        },
+        {
+          "href": "UUID_use.html",
+          "title": "7、UUID函数的使用"
+        },
+        {
+          "href": "maintenance.html",
+          "title": "8、常用的表空间维护语句"
+        },
+        {
+          "href": "stream_single.html",
+          "title": "9、流复制改单机的注意事项"
+        },
+        {
+          "href": "Lock_Query.html",
+          "title": "10、锁查询及处理"
+        },
+        {
+          "href": "Synchronous_stream.html",
+          "title": "11、同步流复制及异步流复制的优势及风险说明"
+        },
+        {
+          "href": "HAC_username.html",
+          "title": "12、HAC集群修改管理员用户密码"
+        },
+        {
+          "href": "HGDB_readonly.html",
+          "title": "13、HGDB 创建只读用户"
+        },
+        {
+          "href": "HGDB_port.html",
+          "title": "14、HGDB修改端口号指导手册"
+        },
+        {
+          "href": "stream_chg.html",
+          "title": "15、HighGo Database 流复制切换"
+        },
+        {
+          "href": "HGDB_tableq.html",
+          "title": "16、HGDB表空间迁移"
+        },
+        {
+          "href": "HGDB_copy.html",
+          "title": "17、HGDB两表间数据复制语句介绍"
+        },
+        {
+          "href": "HGDB_edit.html",
+          "title": "18、hgdb数据编辑"
+        },
+        {
+          "href": "HGDB_CTE.html",
+          "title": "19、HGDB中CTE（公共表表达式）的用法"
+        },
+        {
+          "href": "HighGo_constraint.html",
+          "title": "20、HighGo Database中的约束条件"
+        },
+        {
+          "href": "MATERIALIZED_VIEW.html",
+          "title": "21、管理物化视图（MATERIALIZED VIEW）"
+        },
+        {
+          "href": "common_user.html",
+          "title": "22、限制普通用户访问其他数据库权限修改"
+        },
+        {
+          "href": "import_csv.html",
+          "title": "23、将瀚高数据库表内数据导出csv格式"
+        },
+        {
+          "href": "six_601_602.html",
+          "title": "24、企业版601和602使用row_number()函数的区别"
+        },
+        {
+          "href": "Fillfactor.html",
+          "title": "25、如何查看并修改表或索引的Fillfactor值"
+        },
+        {
+          "href": "security_policy.html",
+          "title": "26、如何查看当前数据库的安全策略"
+        },
+        {
+          "href": "System_commands.html",
+          "title": "27、通过数据库执行系统命令"
+        },
+        {
+          "href": "sql_plan.html",
+          "title": "28、如何查看SQL的执行计划"
+        },
+        {
+          "href": "local_view.html",
+          "title": "29、搭建本地物化视图"
+        }
+      ]
+    },
+    {
+      "slug": "way-operations-guide",
+      "title": "运维指导类",
+      "summary": "汇集主备判断、性能优化、服务检查、日志、备份恢复和 HAC 集群运维实践。",
+      "group": "最佳实践",
+      "base_url": "https://highgo.com/document/zh-cn/way/",
+      "chapters": [
+        {
+          "href": "judge_standby.html",
+          "title": "1、 判断流复制主备角色的方法"
+        },
+        {
+          "href": "HGDB_speed.html",
+          "title": "2、HGDB如何提升批量导入数据的速度"
+        },
+        {
+          "href": "recover_colum.html",
+          "title": "3、HG数据库恢复表中被删除的列"
+        },
+        {
+          "href": "delete_repeat.html",
+          "title": "4、HighGo Database删除表中的重复数据"
+        },
+        {
+          "href": "running.html",
+          "title": "5、查看正在在运行的瀚高数据库服务的启动方式：是由systemd(systemctl)启动的，还是由pg_ctl启动的"
+        },
+        {
+          "href": "create_time.html",
+          "title": "6、查询瀚高数据库的创建时间"
+        },
+        {
+          "href": "validity.html",
+          "title": "7、瀚高数据库修改用户密码及有效期"
+        },
+        {
+          "href": "eazy_count.html",
+          "title": "8、简单方便的获取所有表的条数"
+        },
+        {
+          "href": "trigger_disabled.html",
+          "title": "9、禁用表的触发器以及外键约束"
+        },
+        {
+          "href": "expand.html",
+          "title": "10、如何处理表或索引的膨胀"
+        },
+        {
+          "href": "big_tablename.html",
+          "title": "11、如何创建大写的表名"
+        },
+        {
+          "href": "alarm.html",
+          "title": "12、如何开关数据库告警日志及修改日志级别"
+        },
+        {
+          "href": "BenchmarkSQL.html",
+          "title": "13、如何使用BenchmarkSQL工具测试HGDB"
+        },
+        {
+          "href": "running_check.html",
+          "title": "14、数据库服务是否运行及运行状态的检查方法"
+        },
+        {
+          "href": "continuous_data.html",
+          "title": "15、在HGDB中生成连续时间数据"
+        },
+        {
+          "href": "slow_sql.html",
+          "title": "16、HGDB如何查询慢SQL"
+        },
+        {
+          "href": "pg_relation.html",
+          "title": "17、pg_relation_size,pg_table_size,pg_indexes_size,pg_total_relation_size之间的关系"
+        },
+        {
+          "href": "pg_resetwal.html",
+          "title": "18、pg_resetwal 使用简介"
+        },
+        {
+          "href": "Postgresql_TOAST.html",
+          "title": "19、Postgresql TOAST简介"
+        },
+        {
+          "href": "Shared_Library.html",
+          "title": "20、Postgresql共享库预加载(Shared Library Preloading)"
+        },
+        {
+          "href": "pg_dumppg_restore.html",
+          "title": "21、逻辑导入导出(pg_dumppg_restore)-导入到不同的schema或tablespace"
+        },
+        {
+          "href": "password_use.html",
+          "title": "22、密码文件的格式和使用"
+        },
+        {
+          "href": "again_mvcc.html",
+          "title": "23、再谈mvcc与vacuum"
+        },
+        {
+          "href": "view_disk.html",
+          "title": "24、查看数据库占用磁盘空间的方法"
+        },
+        {
+          "href": "HAC_alone.html",
+          "title": "25、HAC集群修改为单机"
+        },
+        {
+          "href": "HAC_ip.html",
+          "title": "26、HAC集群更改IP（单节点更改、全部节点更改）"
+        },
+        {
+          "href": "HAC_stop.html",
+          "title": "27、HAC集群启停步骤"
+        },
+        {
+          "href": "HAC_add.html",
+          "title": "28、HAC集群添加新节点"
+        },
+        {
+          "href": "HAC_copy.html",
+          "title": "29、流复制运维实践"
+        }
+      ]
+    },
+    {
+      "slug": "sql-separation-of-duties",
+      "title": "三权分立",
+      "summary": "介绍系统管理员、安全保密管理员和安全审计员的权限分立机制。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "overview.html",
+          "title": "概况"
+        }
+      ]
+    },
+    {
+      "slug": "sql-data-preparation",
+      "title": "数据准备",
+      "summary": "介绍登录、用户切换和 psql 等 SQL 开发准备工作。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "overview_pre.html",
+          "title": "概况"
+        },
+        {
+          "href": "login.html",
+          "title": "登录"
+        },
+        {
+          "href": "user_chg.html",
+          "title": "切换用户"
+        },
+        {
+          "href": "psql.html",
+          "title": "psql"
+        }
+      ]
+    },
+    {
+      "slug": "sql-data-definition",
+      "title": "数据定义",
+      "summary": "介绍 CREATE、DROP、ALTER 和约束等数据定义操作。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "overview_def.html",
+          "title": "概况"
+        },
+        {
+          "href": "CREATE.html",
+          "title": "创建 CREATE"
+        },
+        {
+          "href": "DROP.html",
+          "title": "删除 DROP"
+        },
+        {
+          "href": "ALTER.html",
+          "title": "修改 ALTER"
+        },
+        {
+          "href": "CONSTRAINT.html",
+          "title": "约束 CONSTRAINT"
+        }
+      ]
+    },
+    {
+      "slug": "sql-data-manipulation",
+      "title": "数据操纵",
+      "summary": "介绍 INSERT、UPDATE 和 DELETE 数据操纵语句。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "overview_opt.html",
+          "title": "概况"
+        },
+        {
+          "href": "INSERT.html",
+          "title": "插入 INSERT"
+        },
+        {
+          "href": "UPDATE.html",
+          "title": "更新 UPDATE"
+        },
+        {
+          "href": "DELETE.html",
+          "title": "删除 DELETE"
+        }
+      ]
+    },
+    {
+      "slug": "sql-data-query",
+      "title": "数据查询",
+      "summary": "介绍表达式、连接、分组、排序、组合查询和子查询。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "overview_sel.html",
+          "title": "概况"
+        },
+        {
+          "href": "expression.html",
+          "title": "表达式"
+        },
+        {
+          "href": "conn.html",
+          "title": "连接表"
+        },
+        {
+          "href": "table_col.html",
+          "title": "表和列名"
+        },
+        {
+          "href": "GROUP_BY.html",
+          "title": "GROUP BY"
+        },
+        {
+          "href": "ORDER_BY.html",
+          "title": "ORDER BY"
+        },
+        {
+          "href": "LIMIT_OFFSET.html",
+          "title": "LIMIT和OFFSET"
+        },
+        {
+          "href": "combine.html",
+          "title": "组合查询"
+        },
+        {
+          "href": "VALUES.html",
+          "title": "VALUES列表"
+        },
+        {
+          "href": "son.html",
+          "title": "子查询"
+        }
+      ]
+    },
+    {
+      "slug": "sql-data-control",
+      "title": "数据控制",
+      "summary": "概述 SQL 数据控制相关能力。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "overview_control.html",
+          "title": "概况"
+        }
+      ]
+    },
+    {
+      "slug": "sql-data-types",
+      "title": "数据类型",
+      "summary": "介绍数字、货币、字符、二进制、日期时间、布尔、枚举和数组等类型。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "number.html",
+          "title": "数字类型"
+        },
+        {
+          "href": "money.html",
+          "title": "货币类型"
+        },
+        {
+          "href": "char.html",
+          "title": "字符类型"
+        },
+        {
+          "href": "bytea.html",
+          "title": "二进制数据类型"
+        },
+        {
+          "href": "date.html",
+          "title": "日期时间类型"
+        },
+        {
+          "href": "boolean.html",
+          "title": "布尔类型"
+        },
+        {
+          "href": "enum.html",
+          "title": "枚举类型"
+        },
+        {
+          "href": "array.html",
+          "title": "数组类型"
+        },
+        {
+          "href": "other.html",
+          "title": "其他类型"
+        }
+      ]
+    },
+    {
+      "slug": "sql-built-in-functions",
+      "title": "常用内置函数",
+      "summary": "介绍数学、三角、字符串、格式化和聚集函数。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "math.html",
+          "title": "数学函数"
+        },
+        {
+          "href": "triangle.html",
+          "title": "三角函数"
+        },
+        {
+          "href": "character_string.html",
+          "title": "字符串函数和操作符"
+        },
+        {
+          "href": "type_init.html",
+          "title": "数据类型格式化函数"
+        },
+        {
+          "href": "aggregate.html",
+          "title": "聚集函数"
+        }
+      ]
+    },
+    {
+      "slug": "sql-triggers",
+      "title": "触发器",
+      "summary": "介绍触发器的创建、管理、删除和事件触发器。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "overview_trigger.html",
+          "title": "概况"
+        },
+        {
+          "href": "create_t.html",
+          "title": "创建触发器"
+        },
+        {
+          "href": "control_t.html",
+          "title": "管理触发器"
+        },
+        {
+          "href": "delete_t.html",
+          "title": "删除触发器"
+        },
+        {
+          "href": "event_t.html",
+          "title": "事件触发器"
+        }
+      ]
+    },
+    {
+      "slug": "sql-stored-procedures-functions",
+      "title": "存储过程&函数",
+      "summary": "介绍函数定义、条件控制、循环遍历和打印输出。",
+      "group": "SQL开发指南",
+      "base_url": "https://highgo.com/document/zh-cn/sql/",
+      "chapters": [
+        {
+          "href": "function_def.html",
+          "title": "函数定义"
+        },
+        {
+          "href": "condition.html",
+          "title": "条件控制"
+        },
+        {
+          "href": "round.html",
+          "title": "循环遍历"
+        },
+        {
+          "href": "print.html",
+          "title": "打印输出"
+        }
+      ]
+    },
+    {
+      "slug": "develop-installation-manual",
+      "title": "HGDB-SEE V4.5.8 安装手册",
+      "summary": "介绍 HGDB-SEE V4.5.8 的安装环境、准备和实施过程。",
+      "group": "开发手册",
+      "base_url": "https://highgo.com/document/zh-cn/develop/",
+      "chapters": [
+        {
+          "href": "install.html",
+          "title": "概述"
+        }
+      ]
+    },
+    {
+      "slug": "develop-sql-command-quick-reference",
+      "title": "HGDB SQL命令速查手册",
+      "summary": "提供 HGDB SQL 命令速查资料。",
+      "group": "开发手册",
+      "base_url": "https://highgo.com/document/zh-cn/develop/",
+      "chapters": [
+        {
+          "href": "command.html",
+          "title": "概述"
+        }
+      ]
+    },
+    {
+      "slug": "develop-security-management",
+      "title": "HGDB 安全管理手册",
+      "summary": "介绍身份认证、访问控制、安全审计、数据安全和资源限制。",
+      "group": "开发手册",
+      "base_url": "https://highgo.com/document/zh-cn/develop/",
+      "chapters": [
+        {
+          "href": "overview.html",
+          "title": "1.概述"
+        },
+        {
+          "href": "user_identify.html",
+          "title": "2.用户标识与认证"
+        },
+        {
+          "href": "data_access.html",
+          "title": "3.数据访问控制"
+        },
+        {
+          "href": "security_audit.html",
+          "title": "4.安全审计"
+        },
+        {
+          "href": "data_safty.html",
+          "title": "5.数据安全性"
+        },
+        {
+          "href": "resource.html",
+          "title": "6.资源限制"
+        },
+        {
+          "href": "appendix_1.html",
+          "title": "附录1 安全功能相关的参数说明"
+        },
+        {
+          "href": "appendix_2.html",
+          "title": "附录2保留字"
+        },
+        {
+          "href": "appendix_3.html",
+          "title": "附录3关键字"
+        }
+      ]
+    },
+    {
+      "slug": "develop-sql-language-basics",
+      "title": "HGDB-SEE V4.5 SQL语言基础",
+      "summary": "系统介绍 SQL 语法、数据定义与操作、查询、类型、函数、索引和并发控制。",
+      "group": "开发手册",
+      "base_url": "https://highgo.com/document/zh-cn/develop/",
+      "chapters": [
+        {
+          "href": "preface.html",
+          "title": "前言"
+        },
+        {
+          "href": "sql_first.html",
+          "title": "1.SQL语言初体验"
+        },
+        {
+          "href": "high.html",
+          "title": "2.高级特性"
+        },
+        {
+          "href": "sql_grammar.html",
+          "title": "3.SQL语法"
+        },
+        {
+          "href": "data_def.html",
+          "title": "4.数据定义"
+        },
+        {
+          "href": "data_opt.html",
+          "title": "5.数据操作"
+        },
+        {
+          "href": "data_sel.html",
+          "title": "6.数据查询"
+        },
+        {
+          "href": "data_type.html",
+          "title": "7.数据类型"
+        },
+        {
+          "href": "function.html",
+          "title": "8.函数和操作符"
+        },
+        {
+          "href": "type_chg.html",
+          "title": "9.类型转换"
+        },
+        {
+          "href": "index_a.html",
+          "title": "10.索引"
+        },
+        {
+          "href": "Concurrency.html",
+          "title": "11.并发控制"
+        }
+      ]
+    },
+    {
+      "slug": "faq-application-development",
+      "title": "开发应用类",
+      "summary": "汇集关键字处理和序列权限等应用开发问题。",
+      "group": "常见问题",
+      "base_url": "https://highgo.com/document/zh-cn/question/",
+      "chapters": [
+        {
+          "href": "shield_key.html",
+          "title": "1、屏蔽数据库指定关键字符"
+        },
+        {
+          "href": "error.html",
+          "title": "2、调用序列插入数据时报权限不足-报错:对于序列“seq_xxl_job_xxx”权限不足"
+        }
+      ]
+    },
+    {
+      "slug": "faq-connections",
+      "title": "连接使用类",
+      "summary": "汇集管理工具、ODBC、psql、JDK 和客户端连接问题。",
+      "group": "常见问题",
+      "base_url": "https://highgo.com/document/zh-cn/question/",
+      "chapters": [
+        {
+          "href": "tool_question.html",
+          "title": "1、管理工具连接安全版数据库问题-字段 c.relhasoids 不存在,位置:172"
+        },
+        {
+          "href": "ODBC_connect_error.html",
+          "title": "2、ODBC连接报错-Could not SQLConnect"
+        },
+        {
+          "href": "tool_refused.html",
+          "title": "3、管理工具连接数据库提示被拒绝连接"
+        },
+        {
+          "href": "psql_connect.html",
+          "title": "4、psql连接数据库-could not connect to server No such file or directory"
+        },
+        {
+          "href": "remote_connection.html",
+          "title": "5、psql远程连接-psql could not connect to server Connection refused"
+        },
+        {
+          "href": "hgdbdeveloper.html",
+          "title": "6、hgdbdeveloper无法使用调试功能"
+        },
+        {
+          "href": "hgdbdeveloper_error.html",
+          "title": "7、hgdbdeveloper报错:尝试连接已失败"
+        },
+        {
+          "href": "connection_error.html",
+          "title": "8、客户端连接数据库报错：ERROR XX000 missing chunk number x for toast value x in pg_toast_x"
+        },
+        {
+          "href": "connect_solution.html",
+          "title": "9、数据库无法正常连接的可能性原因及解决方法"
+        },
+        {
+          "href": "not_support.html",
+          "title": "10、旧版 JDK 连接数据库时报 TLS 密码套件不支持"
+        }
+      ]
+    },
+    {
+      "slug": "faq-migration-compatibility",
+      "title": "迁移兼容类",
+      "summary": "汇集 Oracle 等迁移兼容问题。",
+      "group": "常见问题",
+      "base_url": "https://highgo.com/document/zh-cn/question/",
+      "chapters": [
+        {
+          "href": "orcal_compatible.html",
+          "title": "1、Oracle兼容—添加转义操作符"
+        }
+      ]
+    },
+    {
+      "slug": "faq-database-usage",
+      "title": "数据库使用类",
+      "summary": "汇集复制、备份、存储、安装、维护和资源故障问题。",
+      "group": "常见问题",
+      "base_url": "https://highgo.com/document/zh-cn/question/",
+      "chapters": [
+        {
+          "href": "serious_error.html",
+          "title": "1、致命错误:无法创建信号量"
+        },
+        {
+          "href": "default_port.html",
+          "title": "2、默认端口号占用-The port is invalid or alread used"
+        },
+        {
+          "href": "backup_downtime.html",
+          "title": "3、主库上创建表空间时备库宕机"
+        },
+        {
+          "href": "WAL.html",
+          "title": "4、主库上WAL被覆盖导致备库不可用"
+        },
+        {
+          "href": "Reserve_termination.html",
+          "title": "5、 备库查询被中止-ERROR canceling statement due to conflict with recovery"
+        },
+        {
+          "href": "synchronous_error.html",
+          "title": "6、同步流复制报错-psql FATAL  the database system is starting up"
+        },
+        {
+          "href": "postgis.html",
+          "title": "7、添加postgis报cannot open shared object file No such file or directory"
+        },
+        {
+          "href": "hghac_starterror.html",
+          "title": "8、启动hghac服务报错:OSError [Errno 98] Address already in use"
+        },
+        {
+          "href": "HGDB_init_faild.html",
+          "title": "9、关于HGDB安全版初始化失败的常见原因列举(权限、用户)"
+        },
+        {
+          "href": "core.html",
+          "title": "10、数据库data目录下存在大量core文件导致磁盘爆满"
+        },
+        {
+          "href": "command_not.html",
+          "title": "11、数据库命令找不到的可能性原因及解决方法"
+        },
+        {
+          "href": "cannot_execute.html",
+          "title": "12、cannot execute INSERT in a read-only transaction"
+        },
+        {
+          "href": "HGDB_reset.html",
+          "title": "13、HGDB重建控制文件"
+        },
+        {
+          "href": "hghac.html",
+          "title": "14、hghac集群主备数据不一致"
+        },
+        {
+          "href": "hgproxy_black.html",
+          "title": "15、hgproxy配置黑名单，解决主备读取不一致的问题"
+        },
+        {
+          "href": "rpm_solution.html",
+          "title": "16、rpm安装包在银河麒麟上安装失败的解决办法"
+        },
+        {
+          "href": "streams.html",
+          "title": "17、流复制备端错误40001"
+        },
+        {
+          "href": "OOM_killer.html",
+          "title": "18、如何处理HGDB被OOM killer kill的情况"
+        },
+        {
+          "href": "VACUUM.html",
+          "title": "19、手动执行VACUUM，无法清理表中的dead tuple"
+        },
+        {
+          "href": "user_error.html",
+          "title": "20、HGDB 创建用户报错"
+        }
+      ]
+    },
+    {
+      "slug": "extensions-list",
+      "title": "插件列表",
+      "summary": "列出瀚高数据库 V4.5 和 V9.0 的产品插件支持情况。",
+      "group": "产品插件",
+      "base_url": "https://highgo.com/document/zh-cn/extensions/",
+      "chapters": [
+        {
+          "href": "index.html",
+          "title": "列表页"
+        }
+      ]
+    }
+  ]
+}

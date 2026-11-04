@@ -1,0 +1,430 @@
+---
+title: "2.高级特性"
+book: "HGDB-SEE V4.5 SQL语言基础"
+version: "V4.5"
+source: "https://highgo.com/document/zh-cn/develop/high.html"
+tags:
+  - highgo
+  - highgo-v45
+  - develop-sql-language-basics
+---
+
+## 2\. 高级特性
+
+## 2.1. 简介
+
+在之前的章节里我们已经涉及了使用SQL在瀚高数据库中存储和访问数据的基础知识。现在我们讨论SQL中一些更高级的特性，这些特性有助于简化管理和防止数据丢失或损坏。
+
+最后，我们还将介绍一些瀚高数据库扩展。
+
+## 2.2. 视图
+
+回想一下第 1.6 节中的查询。假设天气记录和城市位置的组合列表对我们的应用有用，但我们又不想每次需要使用它时都输入整个查询。我们可以在该查询上创建一个视图，我们可以像使用一个普通表一样来使用它：
+
+CREATE VIEW myview AS
+
+SELECT city, temp\_lo, temp\_hi, prcp, date, location
+
+FROM weather, cities
+
+WHERE city = name;
+
+SELECT \* FROM myview;
+
+对视图的设计和使用是好的SQL数据库设计的关键。视图允许用户通过始终如一的接口封装表的结构细节，这样可以避免表结构随着应用的更新而改变。
+
+视图几乎可以用在任何可以使用表的地方。在其他视图基础上创建视图也很常用。
+
+关于视图的相关介绍，可参考CREATE VIEW、ALTER VIEW。
+
+## 2.3. 外键
+
+回想第1章中的weather和cities表。考虑以下问题：我们希望确保在cities表中有相应项之前任何人都不能在weather表中插入行。这叫做维持数据的引用完整性。在过分简化的数据库系统中，可以通过先检查cities表中是否有匹配的记录存在，然后决定应该接受还是拒绝即将插入weather表的行。但是这种方法有一些问题并且不方便。在瀚高数据库中可通过外键功能来实现上述目的：
+
+新的表定义如下：
+
+CREATE TABLE cities (
+
+city varchar(80) primary key,
+
+location point
+
+);
+
+CREATE TABLE weather (
+
+city varchar(80) references cities(city),
+
+temp\_lo int,
+
+temp\_hi int,
+
+prcp real,
+
+date date
+
+);
+
+现在尝试插入一个非法的记录：
+
+INSERT INTO weather VALUES (‘Berkeley’, 45, 53, 0.0, ‘1994-11-28’);
+
+ERROR: insert or update on table “weather” violates foreign key constraint
+
+“weather\_city\_fkey”
+
+DETAIL: Key (city)=(Berkeley) is not present in table “cities”.
+
+外键的行为可以很好地根据应用来调整。可参考第 4 章中的信息。正确使用外键无疑会提高数据库应用的质量，因此强烈建议用户学会如何使用它们。
+
+## 2.4. 事务
+
+事务是所有数据库系统的基础概念。事务最重要的一点是它将多个步骤捆绑成一个单一的、要么全完成要么全不完成的操作。步骤之间的中间状态对于其他并发事务是不可见的，并且如果有某些错误发生导致事务不能完成，则其中任何一个步骤都不会对数据库造成影响。
+
+例如，考虑一个保存着多个客户账户余额和支行总存款额的银行数据库。假设我们希望记录一笔从Alice的账户到Bob的账户的额度为100.00美元的转账。在最大程度地简化后，涉及到的SQL命令是：
+
+UPDATE accounts SET balance = balance - 100.00
+
+WHERE name = ‘Alice’;
+
+UPDATE branches SET balance = balance - 100.00
+
+WHERE name = (SELECT branch\_name FROM accounts WHERE name = ‘Alice’);
+
+UPDATE accounts SET balance = balance + 100.00
+
+WHERE name = ‘Bob’;
+
+UPDATE branches SET balance = balance + 100.00
+
+WHERE name = (SELECT branch\_name FROM accounts WHERE name = ‘Bob’);
+
+这些命令的细节在这里并不重要，关键点是为了完成这个相当简单的操作涉及到多个独立的UPDATE。我们的银行职员希望确保这些更新要么全部发生，要么全部不发生。当然不能发生因为系统错误导致Bob收到100美元而Alice并未被扣款的情况。Alice当然也不希望自己被扣款而Bob没有收到钱。我们需要一种保障，当操作中途某些错误发生时已经执行的步骤不会生效。将这些更新组织成一个事务就可以达到这个目的。一个事务是原子的：从其他事务的角度来看，它要么整个发生要么完全不发生。
+
+我们同样希望能保证一旦一个事务被数据库系统完成并认可，它就被永久地记录下来且即便其后发生崩溃也不会被丢失。例如，如果我们正在记录Bob的一次现金提款，我们当然不希望他刚走出银行大门，对他账户的扣款就消失。一个事务型数据库保证一个事务在被报告为完成之前它所做的所有更新都被记录在持久存储（即磁盘）。
+
+事务型数据库的另一个重要性质与原子更新的概念紧密相关：当多个事务并发运行时，每一个都不能看到其他事务未完成的修改。例如，如果一个事务正忙着统计所有支行的余额，它不会只包括Alice的支行的扣款而不包括Bob的支行的存款，或者反之。所以事务的全做或全不做并不只体现在它们对数据库的持久影响，也体现在它们发生时的可见性。一个事务所做的更新在它完成之前对于其他事务是不可见的，而之后所有的更新将同时变得可见。
+
+在瀚高数据库中，开启一个事务需要将SQL命令用BEGIN和COMMIT命令包围起来。因此我们的银行事务的SQL如下所示：
+
+BEGIN;
+
+UPDATE accounts SET balance = balance - 100.00
+
+WHERE name = ‘Alice’;
+
+– etc etc
+
+COMMIT;
+
+如果，在事务执行中我们并不想提交（或许是我们注意到Alice的余额不足），我们可以发出ROLLBACK命令而不是COMMIT命令，这样所有目前的更新将被取消。
+
+瀚高数据库实际上将每一个SQL语句都作为一个事务来执行。如果我们没有发出BEGIN命令， 则每个独立的语句都会被加上一个隐式的BEGIN以及（如果成功）COMMIT来包围它。一组被BEGIN和COMMIT包围的语句也被称为一个事务块。
+
+| **注意：** |
+| --- |
+| 某些客户端库会自动发出BEGIN和COMMIT命令，因此我们可能会在不被告知的情况下得到事务块的效果。具体请查看所使用的接口文档。 |
+
+也可以利用保存点以更细的粒度来控制一个事务中的语句。保存点允许我们有选择性地放弃事务的一部分而提交剩下的部分。在使用SAVEPOINT定义一个保存点后，我们可以在必要时利用ROLLBACK TO回滚到该保存点。该事务中位于保存点和回滚点之间的数据库修改都会被放弃，但是早于该保存点的修改则会被保存。
+
+在回滚到保存点之后，它的定义依然存在，因此我们可以多次回滚到它。反过来，如果确定不再需要回滚到特定的保存点，可以释放保存点以便系统释放一些资源。记住不管是释放保存点还是回滚到保存点都会释放定义在该保存点之后的所有其他保存点。
+
+所有这些都发生在一个事务块内，因此这些对于其他数据库会话都不可见。当提交整个事务块时，被提交的动作将作为一个单元变得对其他会话可见，而被回滚的动作则永远不会变得可见。
+
+记住那个银行数据库，假设我们从Alice的账户扣款100美元，然后存款到Bob的账户，结果直到最后才发现我们应该存到Wally的账户。我们可以通过使用保存点来做这件事：
+
+BEGIN;
+
+UPDATE accounts SET balance = balance - 100.00
+
+WHERE name = ‘Alice’;
+
+SAVEPOINT my\_savepoint;
+
+UPDATE accounts SET balance = balance + 100.00
+
+WHERE name = ‘Bob’;
+
+– oops … forget that and use Wally’s account
+
+ROLLBACK TO my\_savepoint;
+
+UPDATE accounts SET balance = balance + 100.00
+
+WHERE name = ‘Wally’;
+
+COMMIT;
+
+当然，这个例子是被过度简化的，但是在一个事务块中使用保存点存在多种控制可能性。
+
+此外，ROLLBACK TO是唯一的途径来重新控制一个由于错误被系统置为中断状态的事务块，而不是完全回滚它并重新启动。
+
+## 2.5. 窗口函数
+
+一个窗口函数在一系列与当前行有某种关联的表行上执行一种计算。这与一个聚集函数所完成的计算有可比之处。但是窗口函数并不会使多行被聚集成一个单独的输出行，而是每行保留它们独立的标识。所以窗口函数可以访问的不仅仅是查询结果的当前行。
+
+下面是一个例子用于展示如何将每一个员工的薪水与他/她所在部门的平均薪水进行比较：
+
+SELECT depname, empno, salary, avg(salary) OVER (PARTITION BY depname) FROM
+
+empsalary;
+
+depname | empno | salary | avg
+
+———–+——-+——–+———————–
+
+develop | 11 | 5200 | 5020.0000000000000000
+
+develop | 6 | 4200 | 5020.0000000000000000
+
+develop | 9 | 4500 | 5020.0000000000000000
+
+develop | 8 | 6000 | 5020.0000000000000000
+
+develop | 10 | 5200 | 5020.0000000000000000
+
+personnel | 5 | 3500 | 3600.0000000000000000
+
+personnel | 2 | 3900 | 3600.0000000000000000
+
+sales | 3 | 4800 | 4866.6666666666666666
+
+sales | 1 | 5000 | 4866.6666666666666666
+
+sales | 4 | 4800 | 4866.6666666666666666
+
+(10 rows)
+
+最开始的三个输出列直接来自于表empsalary，并且表中每一行都有一个输出行。第四列表示对与当前行具有相同depname值的所有表行取得平均值（这实际和非窗口avg聚集函数是相同的函数，但是OVER子句使得它被当做一个窗口函数处理）。
+
+一个窗口函数调用总是包含一个直接跟在窗口函数名及其参数之后的OVER子句。这是窗口函数在句法上和普通函数或非窗口函数的区别。OVER子句决定查询中的哪些行被分离出来由窗口函数处理。OVER子句中的PARTITION BY子句指定了将具有相同PARTITION BY表达式值的行分到组或者分区。对于每一行，窗口函数都会在当前行同一分区的行上进行计算。我们可以通过OVER上的ORDER BY控制窗口函数处理行的顺序（窗口的ORDER BY并不一定要符合行输出的顺序。）。下面是一个例子：
+
+SELECT depname, empno, salary,
+
+rank() OVER (PARTITION BY depname ORDER BY salary DESC) FROM empsalary;
+
+depname | empno | salary | rank
+
+———–+——-+——–+——
+
+develop | 8 | 6000 | 1
+
+develop | 10 | 5200 | 2
+
+develop | 11 | 5200 | 2
+
+develop | 9 | 4500 | 4
+
+develop | 6 | 4200 | 5
+
+personnel | 2 | 3900 | 1
+
+personnel | 5 | 3500 | 2
+
+sales | 1 | 5000 | 1
+
+sales | 4 | 4800 | 2
+
+sales | 3 | 4800 | 2
+
+(10 rows)
+
+如上所示，rank函数在当前行的分区内按照ORDER BY子句的顺序为每一个可区分的ORDER BY值产生了一个数字等级。rank不需要显式的参数，因为它的行为完全决定于OVER子句。
+
+一个窗口函数所考虑的行属于那些通过查询的FROM子句产生并通过WHERE、GROUP BY、HAVING过滤的“虚拟表”。例如，一个由于不满足WHERE条件被删除的行是不会被任何窗口函数所见的。在一个查询中可以包含多个窗口函数，每个窗口函数都可以用不同的OVER子句来按不同方式划分数据，但是它们都作用在由虚拟表定义的同一个行集上。我们已经看到如果行的顺序不重要时ORDER BY可以忽略。PARTITION BY同样也可以被忽略，在这种情况下会产生一个包含所有行的分区。 这里有一个与窗口函数相关的重要概念：对于每一行，在它的分区中的行集被称为它的窗口帧。 一些窗口函数只作用在窗口帧中的行上，而不是整个分区。默认情况下，如果使 用ORDER BY，则帧包括从分区开始到当前行的所有行，以及后续任何与当前行在ORDER BY子句上相等的行。如果ORDER BY被忽略，则默认帧包含整个分区中所有的行。
+
+下面是使用sum的例子：
+
+SELECT salary, sum(salary) OVER () FROM empsalary;
+
+salary | sum
+
+——–+——-
+
+5200 | 46100
+
+5000 | 46100
+
+3500 | 46100
+
+4800 | 46100
+
+3900 | 46100
+
+4200 | 46100
+
+4500 | 46100
+
+4800 | 46100
+
+6000 | 46100
+
+5200 | 46100
+
+(10 rows)
+
+如上所示，由于在OVER子句中没有ORDER BY，窗口帧和分区一样，而如果缺少PARTITION BY则和整个表一样。换句话说，每个sum都会在整个表上进行，这样我们为每一个输出行得到的都是相同的结果。但是如果我们加上一个ORDER BY子句，我们会得到不同的结果：
+
+SELECT salary, sum(salary) OVER (ORDER BY salary) FROM empsalary;
+
+salary | sum
+
+——–+——-
+
+3500 | 3500
+
+3900 | 6400
+
+4200 | 11600
+
+4500 | 16100
+
+4800 | 25600
+
+4800 | 25600
+
+5000 | 30600
+
+5200 | 41100
+
+5200 | 41100
+
+6000 | 46100
+
+(10 rows)
+
+这里的sum是从第一个（最低的）薪水一直到当前行，包括任何与当前行相同的行。
+
+窗口函数只允许出现在查询的SELECT列表和ORDER BY子句中。它们不允许出现在其他地方，例如GROUP BY、HAVING和WHERE子句中。这是因为窗口函数的执行逻辑是在处理完这些子句之后。另外，窗口函数在非窗口聚集函数之后执行。这意味着可以在窗口函数的参数中包括一个聚集函数，但反过来不行。
+
+如果需要在窗口计算执行后进行过滤或者分组，我们可以使用子查询。例如：
+
+SELECT depname, empno, salary, enroll\_date
+
+FROM
+
+(SELECT depname, empno, salary, enroll\_date,
+
+rank() OVER (PARTITION BY depname ORDER BY salary DESC, empno) AS pos
+
+FROM empsalary
+
+) AS ss
+
+WHERE pos < 3;
+
+上述查询仅仅显示了内层查询中rank低于3的结果。
+
+当一个查询涉及到多个窗口函数时，可以将每一个分别写在一个独立的OVER子句中。但如果多个函数要求同一个窗口行为时，这种做法是冗余的而且容易出错。替代方案是，每一个窗口行为可以放在一个命名的WINDOW子句中，然后在OVER中引用它。例如：
+
+SELECT sum(salary) OVER w, avg(salary) OVER w
+
+FROM empsalary
+
+WINDOW w AS (PARTITION BY depname ORDER BY salary DESC);
+
+关于窗口函数的更多细节可以在第 3.2.8 节、第 8.21 节、第 5.2.5 节以及SELECT参考页中找到。
+
+## 2.6. 继承
+
+继承是面向对象数据库中的概念。它展示了数据库设计的新的可能性。
+
+让我们创建两个表：表cities和表capitals。首都也是城市，所以我们需要有某种方式能够在列举所有城市的时候也隐式地包含首都。我们可以设计如下模式：
+
+CREATE TABLE capitals (
+
+name text,
+
+population real,
+
+altitude int, – (in ft)
+
+state char(2)
+
+);
+
+CREATE TABLE non\_capitals (
+
+name text,
+
+population real,
+
+altitude int – (in ft)
+
+);
+
+CREATE VIEW cities AS
+
+SELECT name, population, altitude FROM capitals
+
+UNION
+
+SELECT name, population, altitude FROM non\_capitals;
+
+这个模式对于查询而言工作正常，但是当我们需要更新一些行时它就变得不好用了。
+
+更好的方案是：
+
+CREATE TABLE cities (
+
+name text,
+
+population real,
+
+altitude int – (in ft)
+
+);
+
+CREATE TABLE capitals (
+
+state char(2)
+
+) INHERITS (cities);
+
+在这种情况下，一个capitals的行从它的父亲cities继承了所有列（name、population和altitude）。列name的类型是text，一种用于变长字符串的本地瀚高数据库类型。州首都有一个附加列state用于显示它们的州。在瀚高数据库中，一个表可以从0个或者多个表继承。
+
+例如，如下查询可以寻找所有海拔500尺以上的城市名称，包括州首都：
+
+SELECT name, altitude
+
+FROM cities
+
+WHERE altitude > 500;
+
+它的返回为：
+
+name | altitude
+
+———–+———-
+
+Las Vegas | 2164
+
+Mariposa | 1953
+
+Madison | 845
+
+(3 rows)
+
+在另一方面，下面的查询可以查找所有海拔高于500尺且不是州首都的城市：
+
+SELECT name, altitude
+
+FROM ONLY cities
+
+WHERE altitude > 500;
+
+name | altitude
+
+———–+———-
+
+Las Vegas | 2164
+
+Mariposa | 1953
+
+(2 rows)
+
+| **注意：** |
+| --- |
+| 尽管继承很有用，但是它还未与唯一约束或外键集成，这也限制了它的可用性。更多详情见第 5.10 节 |
+
+其中cities之前的ONLY用于指定查询只在cities表上进行而不会涉及到继承层次中位于cities之下的其他表。很多我们已经讨论过的命令 — SELECT、UPDATE 和DELETE — 都支持使用ONLY。
