@@ -1,0 +1,64 @@
+---
+title: "28.4.23 The INFORMATION_SCHEMA INNODB_TABLES Table"
+book: MySQL 9.7 Reference Manual
+version: "9.7"
+source: "https://dev.mysql.com/doc/refman/9.7/en/information-schema-innodb-tables-table.html"
+tags:
+  - mysql
+  - mysql-9.7
+  - reference-manual
+---
+
+MySQL 9.7 Reference Manual Including MySQL NDB Cluster 9.7
+
+### 28.4.23 The INFORMATION\_SCHEMA INNODB\_TABLES Table
+
+The `INNODB_TABLES` table provides metadata about `InnoDB` tables.
+
+For related usage information and examples, see [Section 17.15.3, “InnoDB INFORMATION\_SCHEMA Schema Object Tables”](innodb-information-schema-system-tables.md).
+
+The `INNODB_TABLES` table has these columns:
+
+- `TABLE_ID`
+	An identifier for the `InnoDB` table. This value is unique across all databases in the instance.
+- `NAME`
+	The name of the table, preceded by the schema (database) name where appropriate (for example, `test/t1`). Names of databases and user tables are in the same case as they were originally defined, possibly influenced by the [`lower_case_table_names`](server-system-variables.md) setting.
+- `FLAG`
+	A numeric value that represents bit-level information about table format and storage characteristics.
+- `N_COLS`
+	The number of columns in the table. The number reported includes three hidden columns that are created by `InnoDB` (`DB_ROW_ID`, `DB_TRX_ID`, and `DB_ROLL_PTR`). The number reported also includes [virtual generated columns](https://docs.oracle.com/cd/E17952_01/mysql-8.4-en/glossary.html#glos_virtual_generated_column), if present.
+- `SPACE`
+	An identifier for the tablespace where the table resides. 0 means the `InnoDB` [system tablespace](https://docs.oracle.com/cd/E17952_01/mysql-8.4-en/glossary.html#glos_system_tablespace). Any other number represents either a [file-per-table](glossary.md) tablespace or a general tablespace. This identifier stays the same after a [`TRUNCATE TABLE`](truncate-table.md) statement. For file-per-table tablespaces, this identifier is unique for tables across all databases in the instance.
+- `ROW_FORMAT`
+	The table's row format (`Compact`, `Redundant`, `Dynamic`, or `Compressed`).
+- `ZIP_PAGE_SIZE`
+	The zip page size. Applies only to tables with a row format of `Compressed`.
+- `SPACE_TYPE`
+	The type of tablespace to which the table belongs. Possible values include `System` for the system tablespace, `General` for general tablespaces, and `Single` for file-per-table tablespaces. Tables assigned to the system tablespace using [`CREATE TABLE`](create-table.md) or [`ALTER TABLE`](alter-table.md) `TABLESPACE=innodb_system` have a `SPACE_TYPE` of `General`. For more information, see [`CREATE           TABLESPACE`](create-tablespace.md).
+- `INSTANT_COLS`
+	The number of columns that existed before the first instant column was added using `ALTER TABLE           ... ADD COLUMN` with `ALGORITHM=INSTANT`. This column is no longer used.
+- `TOTAL_ROW_VERSIONS`
+	The number of row versions for the table. The initial value is 0. The value is incremented by [`ALTER TABLE ...           ALGORITHM=INSTANT`](alter-table.md) operations that add or remove columns. When a table with instantly added or dropped columns is rebuilt due to a table-rebuilding [`ALTER TABLE`](alter-table.md) or [`OPTIMIZE TABLE`](optimize-table.md) operation, the value is reset to 0. For more information, see [Column Operations](innodb-online-ddl-operations.md).
+	The maximum `TOTAL_ROW_VERSIONS` value is 255.
+
+#### Example
+
+```
+mysql> SELECT * FROM INFORMATION_SCHEMA.INNODB_TABLES WHERE TABLE_ID = 214\G
+*************************** 1. row ***************************
+          TABLE_ID: 1064
+              NAME: test/t1
+              FLAG: 33
+            N_COLS: 6
+             SPACE: 3
+        ROW_FORMAT: Dynamic
+     ZIP_PAGE_SIZE: 0
+        SPACE_TYPE: Single
+      INSTANT_COLS: 0
+TOTAL_ROW_VERSIONS: 3
+```
+
+#### Notes
+
+- You must have the [`PROCESS`](privileges-provided.md) privilege to query this table.
+- Use the `INFORMATION_SCHEMA` [`COLUMNS`](information-schema-columns-table.md) table or the [`SHOW COLUMNS`](show-columns.md) statement to view additional information about the columns of this table, including data types and default values.

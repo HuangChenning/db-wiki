@@ -1,0 +1,33 @@
+---
+title: "28.3.45 The INFORMATION_SCHEMA TABLES_EXTENSIONS Table"
+book: MySQL 9.7 Reference Manual
+version: "9.7"
+source: "https://dev.mysql.com/doc/refman/9.7/en/information-schema-tables-extensions-table.html"
+tags:
+  - mysql
+  - mysql-9.7
+  - reference-manual
+---
+
+MySQL 9.7 Reference Manual Including MySQL NDB Cluster 9.7
+
+### 28.3.45 The INFORMATION\_SCHEMA TABLES\_EXTENSIONS Table
+
+The `TABLES_EXTENSIONS` table provides information about table attributes defined for primary and secondary storage engines.
+
+Note
+
+The `TABLES_EXTENSIONS` table is reserved for future use.
+
+The `TABLES_EXTENSIONS` table has these columns:
+
+- `TABLE_CATALOG`
+	The name of the catalog to which the table belongs. This value is always `def`.
+- `TABLE_SCHEMA`
+	The name of the schema (database) to which the table belongs.
+- `TABLE_NAME`
+	The name of the table.
+- `ENGINE_ATTRIBUTE`
+	Table attributes defined for the primary storage engine. Reserved for future use.
+- `SECONDARY_ENGINE_ATTRIBUTE`
+	Table attributes defined for the secondary storage engine. Reserved for future use.

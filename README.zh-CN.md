@@ -19,7 +19,7 @@ Oracle、MySQL、达梦与瀚高数据库文档的 Markdown 阅读库，按版�
 | Oracle 19c | 17 | [版本总目录](Oracle/Oracle19c/catalog.md) · [数据库概念](Oracle/Oracle19c/concepts/contents.md) |
 | Oracle 21c | 23 | [版本总目录](Oracle/Oracle21c/catalog.md) · [数据库概念](Oracle/Oracle21c/concepts/contents.md) |
 | MySQL 8.4 | 1 | [版本总目录](MySQL/MySQL8.4/catalog.md) · [参考手册](MySQL/MySQL8.4/reference-manual/contents.md) |
-| MySQL 9.7 | 1 | [参考手册](MySQL/MySQL9.7/reference-manual/preface.md) |
+| MySQL 9.7 | 1 | [版本总目录](MySQL/MySQL9.7/catalog.md) · [参考手册](MySQL/MySQL9.7/reference-manual/contents.md) |
 | 达梦 DM7 | 21 | [版本总目录](dameng/dm7/catalog.md) · [系统管理员手册](dameng/dm7/administrator/contents.md) |
 | 达梦 DM8 | 56 | [版本总目录](dameng/dm8/catalog.md) · [系统管理](dameng/dm8/administrator/contents.md) |
 | 瀚高 V4.5 | 23 | [版本总目录](highgo/highgov45/catalog.md) · [安装手册](highgo/highgov45/develop-installation-manual/contents.md) |

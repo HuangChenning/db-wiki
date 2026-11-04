@@ -1,0 +1,43 @@
+---
+title: "28.3.49 The INFORMATION_SCHEMA TABLE_PRIVILEGES Table"
+book: MySQL 9.7 Reference Manual
+version: "9.7"
+source: "https://dev.mysql.com/doc/refman/9.7/en/information-schema-table-privileges-table.html"
+tags:
+  - mysql
+  - mysql-9.7
+  - reference-manual
+---
+
+MySQL 9.7 Reference Manual Including MySQL NDB Cluster 9.7
+
+### 28.3.49 The INFORMATION\_SCHEMA TABLE\_PRIVILEGES Table
+
+The `TABLE_PRIVILEGES` table provides information about table privileges. It takes its values from the `mysql.tables_priv` system table.
+
+The `TABLE_PRIVILEGES` table has these columns:
+
+- `GRANTEE`
+	The name of the account to which the privilege is granted, in ``'*`user_name`*'@'*`host_name`*'`` format.
+- `TABLE_CATALOG`
+	The name of the catalog to which the table belongs. This value is always `def`.
+- `TABLE_SCHEMA`
+	The name of the schema (database) to which the table belongs.
+- `TABLE_NAME`
+	The name of the table.
+- `PRIVILEGE_TYPE`
+	The privilege granted. The value can be any privilege that can be granted at the table level; see [Section 15.7.1.6, “GRANT Statement”](grant.md). Each row lists a single privilege, so there is one row per table privilege held by the grantee.
+- `IS_GRANTABLE`
+	`YES` if the user has the [`GRANT OPTION`](privileges-provided.md) privilege, `NO` otherwise. The output does not list [`GRANT OPTION`](privileges-provided.md) as a separate row with `PRIVILEGE_TYPE='GRANT OPTION'`.
+
+#### Notes
+
+- `TABLE_PRIVILEGES` is a nonstandard `INFORMATION_SCHEMA` table.
+
+The following statements are *not* equivalent:
+
+```
+SELECT ... FROM INFORMATION_SCHEMA.TABLE_PRIVILEGES
+
+SHOW GRANTS ...
+```

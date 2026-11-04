@@ -1,0 +1,47 @@
+---
+title: "28.3.19 The INFORMATION SCHEMA JSON_DUALITY_VIEW_COLUMNS Table"
+book: MySQL 9.7 Reference Manual
+version: "9.7"
+source: "https://dev.mysql.com/doc/refman/9.7/en/information-schema-json-duality-view-columns-table.html"
+tags:
+  - mysql
+  - mysql-9.7
+  - reference-manual
+---
+
+MySQL 9.7 Reference Manual Including MySQL NDB Cluster 9.7
+
+### 28.3.19 The INFORMATION SCHEMA JSON\_DUALITY\_VIEW\_COLUMNS Table
+
+The `JSON_DUALITY_VIEW_COLUMNS` table shows information about all columns referenced by any JSON duality view which is accessible by the current user. There is one row per table reference.
+
+The `JSON_DUALITY_VIEW_COLUMNS` table has the following columns:
+
+- `TABLE_CATALOG`
+	View catalog; this is always `def`.
+- `TABLE_SCHEMA`
+	View schema.
+- `TABLE_NAME`
+	View name.
+- `REFERENCED_TABLE_CATALOG`
+	Table catalog; always `def`.
+- `REFERENCED_TABLE_SCHEMA`
+	Table schema.
+- `REFERENCED_TABLE_NAME`
+	Table name.
+- `IS_ROOT_TABLE`
+	`1` if this is the root table, otherwise `0`.
+- `REFERENCED_TABLE_ID`
+	Unique table ID within this view.
+- `REFERENCED_TABLE_COLUMN_NAME`
+	Column name.
+- `JSON_KEY_NAME`
+	JSON key name.
+- `ALLOW_INSERT`
+	`1` if inserts are allowed, otherwise `0`.
+- `ALLOW_UPDATE`
+	`1` if updates are allowed, otherwise `0`.
+- `ALLOW_DELETE`
+	`1` if deletes are allowed, otherwise `0`.
+- `READ_ONLY`
+	`1` if insert, update, or delete are not allowed, otherwise `0`. (In other words, this is `1` only when `ALLOW_INSERT`, `ALLOW_UPDATE`, and `ALLOW_DELETE` are all `0`.)
