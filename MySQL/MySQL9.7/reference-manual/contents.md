@@ -1372,4 +1372,5 @@ tags:
 - [B.3.5 Optimizer-Related Issues](optimizer-issues.md)
 - [B.3.6 Table Definition-Related Issues](table-definition-issues.md)
 - [B.3.7 Known Issues in MySQL](known-issues.md)
+- [C Indexes](indexes.md)
 - [MySQL Glossary](glossary.md)
