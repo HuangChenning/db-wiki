@@ -1,0 +1,36 @@
+---
+title: "17.1.1 Benefits of Using InnoDB Tables"
+book: MySQL 8.4 Reference Manual
+version: "8.4"
+source: "https://dev.mysql.com/doc/refman/8.4/en/innodb-benefits.html"
+tags:
+  - mysql
+  - mysql-8.4
+  - reference-manual
+---
+
+MySQL 8.4 Reference Manual Including MySQL NDB Cluster 8.4
+
+### 17.1.1 Benefits of Using InnoDB Tables
+
+`InnoDB` tables have the following benefits:
+
+- If the server unexpectedly exits because of a hardware or software issue, regardless of what was happening in the database at the time, you don't need to do anything special after restarting the database. `InnoDB` crash recovery automatically finalizes changes that were committed before the time of the crash, and undoes changes that were in process but not committed, permitting you to restart and continue from where you left off. See [Section 17.18.2, “InnoDB Recovery”](innodb-recovery.md).
+- The `InnoDB` storage engine maintains its own buffer pool that caches table and index data in main memory as data is accessed. Frequently used data is processed directly from memory. This cache applies to many types of information and speeds up processing. On dedicated database servers, up to 80% of physical memory is often assigned to the buffer pool. See [Section 17.5.1, “Buffer Pool”](innodb-buffer-pool.md).
+- If you split up related data into different tables, you can set up foreign keys that enforce referential integrity. See [Section 15.1.20.5, “FOREIGN KEY Constraints”](create-table-foreign-keys.md).
+- If data becomes corrupted on disk or in memory, a checksum mechanism alerts you to the bogus data before you use it. The [`innodb_checksum_algorithm`](innodb-parameters.md) variable defines the checksum algorithm used by `InnoDB`.
+- When you design a database with appropriate primary key columns for each table, operations involving those columns are automatically optimized. It is very fast to reference the primary key columns in [`WHERE`](select.md) clauses, [`ORDER           BY`](select.md) clauses, [`GROUP BY`](select.md) clauses, and join operations. See [Section 17.6.2.1, “Clustered and Secondary Indexes”](innodb-index-types.md).
+- Inserts, updates, and deletes are optimized by an automatic mechanism called change buffering. `InnoDB` not only allows concurrent read and write access to the same table, it caches changed data to streamline disk I/O. See [Section 17.5.2, “Change Buffer”](innodb-change-buffer.md).
+- Performance benefits are not limited to large tables with long-running queries. When the same rows are accessed over and over from a table, the Adaptive Hash Index takes over to make these lookups even faster, as if they came out of a hash table. See [Section 17.5.3, “Adaptive Hash Index”](innodb-adaptive-hash.md).
+- You can compress tables and associated indexes. See [Section 17.9, “InnoDB Table and Page Compression”](innodb-compression.md).
+- You can encrypt your data. See [Section 17.13, “InnoDB Data-at-Rest Encryption”](innodb-data-encryption.md).
+- You can create and drop indexes and perform other DDL operations with much less impact on performance and availability. See [Section 17.12.1, “Online DDL Operations”](innodb-online-ddl-operations.md).
+- Truncating a file-per-table tablespace is very fast and can free up disk space for the operating system to reuse rather than only `InnoDB`. See [Section 17.6.3.2, “File-Per-Table Tablespaces”](innodb-file-per-table-tablespaces.md).
+- The storage layout for table data is more efficient for [`BLOB`](blob.md) and long text fields, with the `DYNAMIC` row format. See [Section 17.10, “InnoDB Row Formats”](innodb-row-format.md).
+- You can monitor the internal workings of the storage engine by querying `INFORMATION_SCHEMA` tables. See [Section 17.15, “InnoDB INFORMATION\_SCHEMA Tables”](innodb-information-schema.md).
+- You can monitor the performance details of the storage engine by querying Performance Schema tables. See [Section 17.16, “InnoDB Integration with MySQL Performance Schema”](innodb-performance-schema.md).
+- You can mix `InnoDB` tables with tables from other MySQL storage engines, even within the same statement. For example, you can use a join operation to combine data from `InnoDB` and [`MEMORY`](memory-storage-engine.md) tables in a single query.
+- `InnoDB` has been designed for CPU efficiency and maximum performance when processing large data volumes.
+- `InnoDB` tables can handle large quantities of data, even on operating systems where file size is limited to 2GB.
+
+For `InnoDB` -specific tuning techniques you can apply to your MySQL server and application code, see [Section 10.5, “Optimizing for InnoDB Tables”](optimizing-innodb.md).

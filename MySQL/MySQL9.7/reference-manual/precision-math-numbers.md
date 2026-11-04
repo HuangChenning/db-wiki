@@ -1,0 +1,26 @@
+---
+title: "14.25.1 Types of Numeric Values"
+book: MySQL 9.7 Reference Manual
+version: "9.7"
+source: "https://dev.mysql.com/doc/refman/9.7/en/precision-math-numbers.html"
+tags:
+  - mysql
+  - mysql-9.7
+  - reference-manual
+---
+
+MySQL 9.7 Reference Manual Including MySQL NDB Cluster 9.7
+
+### 14.25.1 Types of Numeric Values
+
+The scope of precision math for exact-value operations includes the exact-value data types (integer and [`DECIMAL`](fixed-point-types.md) types) and exact-value numeric literals. Approximate-value data types and numeric literals are handled as floating-point numbers.
+
+Exact-value numeric literals have an integer part or fractional part, or both. They may be signed. Examples: `1`, `.2`, `3.4`, `-5`, `-6.78`, `+9.10`.
+
+Approximate-value numeric literals are represented in scientific notation with a mantissa and exponent. Either or both parts may be signed. Examples: `1.2E3`, `1.2E-3`, `-1.2E3`, `-1.2E-3`.
+
+Two numbers that look similar may be treated differently. For example, `2.34` is an exact-value (fixed-point) number, whereas `2.34E0` is an approximate-value (floating-point) number.
+
+The [`DECIMAL`](fixed-point-types.md) data type is a fixed-point type and calculations are exact. In MySQL, the [`DECIMAL`](fixed-point-types.md) type has several synonyms: [`NUMERIC`](fixed-point-types.md), [`DEC`](fixed-point-types.md), [`FIXED`](fixed-point-types.md). The integer types also are exact-value types.
+
+The [`FLOAT`](floating-point-types.md) and [`DOUBLE`](floating-point-types.md) data types are floating-point types and calculations are approximate. In MySQL, types that are synonymous with [`FLOAT`](floating-point-types.md) or [`DOUBLE`](floating-point-types.md) are [`DOUBLE PRECISION`](floating-point-types.md) and [`REAL`](floating-point-types.md).

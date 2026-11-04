@@ -2,13 +2,13 @@
 
 **中文** · [English](README.md)
 
-Oracle、达梦与瀚高数据库文档的 Markdown 阅读库，按版本和手册组织，方便查阅、全文检索与离线阅读。
+Oracle、MySQL、达梦与瀚高数据库文档的 Markdown 阅读库，按版本和手册组织，方便查阅、全文检索与离线阅读。
 
-从 [Oracle 19c](Oracle/Oracle19c/catalog.md)、[达梦 DM8](dameng/dm8/catalog.md) 或 [瀚高 V9](highgo/highgov9/catalog.md) 开始，也可以直接按下方任务选择手册。
+从 [Oracle 19c](Oracle/Oracle19c/catalog.md)、[MySQL 8.4](MySQL/MySQL8.4/catalog.md)、[达梦 DM8](dameng/dm8/catalog.md) 或 [瀚高 V9](highgo/highgov9/catalog.md) 开始，也可以直接按下方任务选择手册。
 
 ## 概述
 
-面向数据库管理员与开发者，收录数据库概念、SQL、日常管理、性能调优、备份恢复及高可用等主题。章节保留来源信息，便于回到原文核对；Oracle 正文主要为英文，达梦和瀚高正文主要为中文。
+面向数据库管理员与开发者，收录数据库概念、SQL、日常管理、性能调优、备份恢复及高可用等主题。章节保留来源信息，便于回到原文核对；Oracle 与 MySQL 正文主要为英文，达梦和瀚高正文主要为中文。
 
 ## 收录示例与版本入口
 
@@ -18,6 +18,8 @@ Oracle、达梦与瀚高数据库文档的 Markdown 阅读库，按版本和手�
 | Oracle 12c | 12 | [版本总目录](Oracle/Oracle12c/catalog.md) · [数据库概念](Oracle/Oracle12c/concepts/contents.md) |
 | Oracle 19c | 17 | [版本总目录](Oracle/Oracle19c/catalog.md) · [数据库概念](Oracle/Oracle19c/concepts/contents.md) |
 | Oracle 21c | 23 | [版本总目录](Oracle/Oracle21c/catalog.md) · [数据库概念](Oracle/Oracle21c/concepts/contents.md) |
+| MySQL 8.4 | 1 | [版本总目录](MySQL/MySQL8.4/catalog.md) · [参考手册](MySQL/MySQL8.4/reference-manual/contents.md) |
+| MySQL 9.7 | 1 | [参考手册](MySQL/MySQL9.7/reference-manual/preface.md) |
 | 达梦 DM7 | 21 | [版本总目录](dameng/dm7/catalog.md) · [系统管理员手册](dameng/dm7/administrator/contents.md) |
 | 达梦 DM8 | 56 | [版本总目录](dameng/dm8/catalog.md) · [系统管理](dameng/dm8/administrator/contents.md) |
 | 瀚高 V4.5 | 23 | [版本总目录](highgo/highgov45/catalog.md) · [安装手册](highgo/highgov45/develop-installation-manual/contents.md) |

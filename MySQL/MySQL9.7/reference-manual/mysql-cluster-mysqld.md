@@ -1,0 +1,66 @@
+---
+title: "25.6.10 MySQL Server Usage for NDB Cluster"
+book: MySQL 9.7 Reference Manual
+version: "9.7"
+source: "https://dev.mysql.com/doc/refman/9.7/en/mysql-cluster-mysqld.html"
+tags:
+  - mysql
+  - mysql-9.7
+  - reference-manual
+---
+
+MySQL 9.7 Reference Manual Including MySQL NDB Cluster 9.7
+
+### 25.6.10 MySQL Server Usage for NDB Cluster
+
+[**mysqld**](mysqld.md) is the traditional MySQL server process. To be used with NDB Cluster, [**mysqld**](mysqld.md) needs to be built with support for the [`NDB`](mysql-cluster.md) storage engine, as it is in the precompiled binaries available from [https://dev.mysql.com/downloads/](https://dev.mysql.com/downloads/). If you build MySQL from source, you must invoke **CMake** with the [`-DWITH_NDB=1`](source-configuration-options.md) or (deprecated) [`-DWITH_NDBCLUSTER=1`](source-configuration-options.md) option to include support for `NDB`.
+
+For more information about compiling NDB Cluster from source, see [Section 25.3.1.4, “Building NDB Cluster from Source on Linux”](mysql-cluster-install-linux-source.md), and [Section 25.3.2.2, “Compiling and Installing NDB Cluster from Source on Windows”](mysql-cluster-install-windows-source.md).
+
+(For information about [**mysqld**](mysqld.md) options and variables, in addition to those discussed in this section, which are relevant to NDB Cluster, see [Section 25.4.3.9, “MySQL Server Options and Variables for NDB Cluster”](mysql-cluster-options-variables.md).)
+
+If the [**mysqld**](mysqld.md) binary has been built with Cluster support, the [`NDBCLUSTER`](mysql-cluster.md) storage engine is still disabled by default. You can use either of two possible options to enable this engine:
+
+- Use [`--ndbcluster`](mysql-cluster-options-variables.md) as a startup option on the command line when starting [**mysqld**](mysqld.md).
+- Insert a line containing `ndbcluster` in the `[mysqld]` section of your `my.cnf` file.
+
+An easy way to verify that your server is running with the [`NDBCLUSTER`](mysql-cluster.md) storage engine enabled is to issue the [`SHOW ENGINES`](show-engines.md) statement in the MySQL Monitor ([**mysql**](mysql.md)). You should see the value `YES` as the `Support` value in the row for [`NDBCLUSTER`](mysql-cluster.md). If you see `NO` in this row or if there is no such row displayed in the output, you are not running an [`NDB`](mysql-cluster.md) -enabled version of MySQL. If you see `DISABLED` in this row, you need to enable it in either one of the two ways just described.
+
+To read cluster configuration data, the MySQL server requires at a minimum three pieces of information:
+
+- The MySQL server's own cluster node ID
+- The host name or IP address for the management server
+- The number of the TCP/IP port on which it can connect to the management server
+
+Node IDs can be allocated dynamically, so it is not strictly necessary to specify them explicitly.
+
+The [**mysqld**](mysqld.md) parameter `ndb-connectstring` is used to specify the connection string either on the command line when starting [**mysqld**](mysqld.md) or in `my.cnf`. The connection string contains the host name or IP address where the management server can be found, as well as the TCP/IP port it uses.
+
+In the following example, `ndb_mgmd.mysql.com` is the host where the management server resides, and the management server listens for cluster messages on port 1186:
+
+```
+$> mysqld --ndbcluster --ndb-connectstring=ndb_mgmd.mysql.com:1186
+```
+
+See [Section 25.4.3.3, “NDB Cluster Connection Strings”](mysql-cluster-connection-strings.md), for more information on connection strings.
+
+Given this information, the MySQL server can act as a full participant in the cluster. (We often refer to a [**mysqld**](mysqld.md) process running in this manner as an SQL node.) It is fully aware of all cluster data nodes as well as their status, and establishes connections to all data nodes. In this case, it is able to use any data node as a transaction coordinator and to read and update node data.
+
+You can see in the [**mysql**](mysql.md) client whether a MySQL server is connected to the cluster using [`SHOW       PROCESSLIST`](show-processlist.md). If the MySQL server is connected to the cluster, and you have the [`PROCESS`](privileges-provided.md) privilege, then the first row of the output is as shown here:
+
+```
+mysql> SHOW PROCESSLIST \G
+*************************** 1. row ***************************
+     Id: 1
+   User: system user
+   Host:
+     db:
+Command: Daemon
+   Time: 1
+  State: Waiting for event from ndbcluster
+   Info: NULL
+```
+
+Important
+
+To participate in an NDB Cluster, the [**mysqld**](mysqld.md) process must be started with *both* the options [`--ndbcluster`](mysql-cluster-options-variables.md) and [`--ndb-connectstring`](mysql-cluster-options-variables.md) (or their equivalents in `my.cnf`). If [**mysqld**](mysqld.md) is started with only the [`--ndbcluster`](mysql-cluster-options-variables.md) option, or if it is unable to contact the cluster, it is not possible to work with [`NDB`](mysql-cluster.md) tables, *nor is it possible to create any new tables regardless of storage engine*. The latter restriction is a safety measure intended to prevent the creation of tables having the same names as [`NDB`](mysql-cluster.md) tables while the SQL node is not connected to the cluster. If you wish to create tables using a different storage engine while the [**mysqld**](mysqld.md) process is not participating in an NDB Cluster, you must restart the server *without* the [`--ndbcluster`](mysql-cluster-options-variables.md) option.

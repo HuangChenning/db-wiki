@@ -2,13 +2,13 @@
 
 [中文](README.zh-CN.md) · **English**
 
-A Markdown reading library for Oracle, Dameng, and HighGo database documentation, organized by version and manual for browsing, full-text search, and offline reading.
+A Markdown reading library for Oracle, MySQL, Dameng, and HighGo database documentation, organized by version and manual for browsing, full-text search, and offline reading.
 
-Start with [Oracle 19c](Oracle/Oracle19c/catalog.md), [Dameng DM8](dameng/dm8/catalog.md), or [HighGo V9](highgo/highgov9/catalog.md), or choose a manual by task below.
+Start with [Oracle 19c](Oracle/Oracle19c/catalog.md), [MySQL 8.4](MySQL/MySQL8.4/catalog.md), [Dameng DM8](dameng/dm8/catalog.md), or [HighGo V9](highgo/highgov9/catalog.md), or choose a manual by task below.
 
 ## Overview
 
-For database administrators and developers, this collection covers database concepts, SQL, administration, performance tuning, backup and recovery, and high availability. Chapters retain source metadata for checking the original documentation. Oracle chapters are mainly in English; Dameng and HighGo chapters are mainly in Chinese.
+For database administrators and developers, this collection covers database concepts, SQL, administration, performance tuning, backup and recovery, and high availability. Chapters retain source metadata for checking the original documentation. Oracle and MySQL chapters are mainly in English; Dameng and HighGo chapters are mainly in Chinese.
 
 ## Examples and version entry points
 
@@ -18,6 +18,8 @@ For database administrators and developers, this collection covers database conc
 | Oracle 12c | 12 | [Version catalog](Oracle/Oracle12c/catalog.md) · [Database Concepts](Oracle/Oracle12c/concepts/contents.md) |
 | Oracle 19c | 17 | [Version catalog](Oracle/Oracle19c/catalog.md) · [Database Concepts](Oracle/Oracle19c/concepts/contents.md) |
 | Oracle 21c | 23 | [Version catalog](Oracle/Oracle21c/catalog.md) · [Database Concepts](Oracle/Oracle21c/concepts/contents.md) |
+| MySQL 8.4 | 1 | [Version catalog](MySQL/MySQL8.4/catalog.md) · [Reference Manual](MySQL/MySQL8.4/reference-manual/contents.md) |
+| MySQL 9.7 | 1 | [Reference Manual](MySQL/MySQL9.7/reference-manual/preface.md) |
 | Dameng DM7 | 21 | [Version catalog](dameng/dm7/catalog.md) · [System Administrator's Manual](dameng/dm7/administrator/contents.md) |
 | Dameng DM8 | 56 | [Version catalog](dameng/dm8/catalog.md) · [System Administration](dameng/dm8/administrator/contents.md) |
 | HighGo V4.5 | 23 | [Version catalog](highgo/highgov45/catalog.md) · [Installation Manual](highgo/highgov45/develop-installation-manual/contents.md) |
