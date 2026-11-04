@@ -1,5 +1,11 @@
+# Local-only skills
+/skills/
+
 # Python bytecode
 __pycache__/
 
 # macOS metadata
 .DS_Store
+
+# Local temporary files
+/temp/
