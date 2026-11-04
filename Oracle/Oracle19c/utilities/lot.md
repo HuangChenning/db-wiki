@@ -1,0 +1,78 @@
+---
+title: Utilities
+book: Oracle AI Database Utilities Guide
+doc_id: E96081-35
+version: "19c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/19/sutil/lot.html
+tags:
+  - oracle
+  - 19c
+  - utilities
+---
+
+## List of Tables
+
+- [1-1 Oracle Data Pump Exit Codes](oracle-data-pump-overview.md)
+- [2-1 Supported Activities in Data Pump Export's Interactive-Command Mode](oracle-data-pump-export-utility.md)
+- [3-1 Supported Activities in Oracle Data Pump Import's Interactive-Command Mode](datapump-import-utility.md)
+- [4-1 How Data Pump Export Handles Original Export Parameters](oracle-data-pump-legacy-mode.md)
+- [4-2 How Data Pump Import Handles Original Import Parameters](oracle-data-pump-legacy-mode.md)
+- [6-1 Valid Job States in Which DBMS\_DATAPUMP Procedures Can Be Run](using-oracle_datapump-api.md)
+- [7-1 Case Studies and Their Related Files](oracle-sql-loader-concepts.md)
+- [8-1 Exit Codes for SQL\*Loader](oracle-sql-loader-commands.md)
+- [9-1 Parameters for the INFILE Keyword](oracle-sql-loader-control-file-contents.md)
+- [9-2 Parameters for the CONTINUEIF Clause](oracle-sql-loader-control-file-contents.md)
+- [9-3 Fixed-Length Fields](oracle-sql-loader-control-file-contents.md)
+- [9-4 Nongraphic Fields](oracle-sql-loader-control-file-contents.md)
+- [9-5 Graphic Fields](oracle-sql-loader-control-file-contents.md)
+- [9-6 Variable-Length Fields](oracle-sql-loader-control-file-contents.md)
+- [10-1 Parameters for the Position Specification Clause](oracle-sql-loader-field-list-contents.md)
+- [10-2 Data Type Conversions for Datetime and Interval Data Types](oracle-sql-loader-field-list-contents.md)
+- [10-3 Parameters Used for Specifying Delimiters](oracle-sql-loader-field-list-contents.md)
+- [10-4 Parameters for the Field Condition Clause](oracle-sql-loader-field-list-contents.md)
+- [10-5 Behavior Summary for Trimming Whitespace](oracle-sql-loader-field-list-contents.md)
+- [10-6 Parameters Used for Column Specification](oracle-sql-loader-field-list-contents.md)
+- [17-1 Special Characters in Properties](oracle_bigdata_access_driver.md)
+- [17-2 Common Access Parameters](oracle_bigdata_access_driver.md)
+- [17-3 Avro-Specific Access Parameters](oracle_bigdata_access_driver.md)
+- [17-4 Parquet-Specific Access Parameters](oracle_bigdata_access_driver.md)
+- [17-5 Textfile and CSV-Specific Access Parameters](oracle_bigdata_access_driver.md)
+- [19-1 Example JDBC Connection Strings](premigration-advisor-tool.md)
+- [19-2 Premigration Advisor Tool (CPAT) Check Result Definitions](premigration-advisor-tool.md)
+- [21-1 ADRCI Batch Operation Parameters](oracle-adr-command-interpreter-adrci.md)
+- [21-2 Arguments of IPS ADD command](oracle-adr-command-interpreter-adrci.md)
+- [21-3 Arguments of IPS CREATE PACKAGE command](oracle-adr-command-interpreter-adrci.md)
+- [21-4 Arguments of IPS PACK command](oracle-adr-command-interpreter-adrci.md)
+- [21-5 Arguments of IPS REMOVE command](oracle-adr-command-interpreter-adrci.md)
+- [21-6 IPS Configuration Parameters](oracle-adr-command-interpreter-adrci.md)
+- [21-7 Flags for the PURGE command](oracle-adr-command-interpreter-adrci.md)
+- [21-8 Flags for the SELECT command](oracle-adr-command-interpreter-adrci.md)
+- [21-9 Flags for the SHOW ALERT command](oracle-adr-command-interpreter-adrci.md)
+- [21-10 Alert Fields for SHOW ALERT](oracle-adr-command-interpreter-adrci.md)
+- [21-11 Fields for Health Monitor Runs](oracle-adr-command-interpreter-adrci.md)
+- [21-12 Flags for SHOW INCIDENT command](oracle-adr-command-interpreter-adrci.md)
+- [21-13 Incident Fields for SHOW INCIDENT](oracle-adr-command-interpreter-adrci.md)
+- [21-14 Flags for SHOW LOG command](oracle-adr-command-interpreter-adrci.md)
+- [21-15 Log Fields for SHOW LOG](oracle-adr-command-interpreter-adrci.md)
+- [21-16 Flags for SHOW PROBLEM command](oracle-adr-command-interpreter-adrci.md)
+- [21-17 Problem Fields for SHOW PROBLEM](oracle-adr-command-interpreter-adrci.md)
+- [21-18 Arguments for SHOW TRACE Command](oracle-adr-command-interpreter-adrci.md)
+- [21-19 Flags for SHOW TRACE Command](oracle-adr-command-interpreter-adrci.md)
+- [21-20 Arguments for SHOW TRACEFILE Command](oracle-adr-command-interpreter-adrci.md)
+- [21-21 Flags for SHOW TRACEFILE Command](oracle-adr-command-interpreter-adrci.md)
+- [23-1 Parameters for the DBNEWID Utility](oracle-dbnewid-utility.md)
+- [25-1 DBMS\_METADATA Procedures Used for Retrieving Multiple Objects](using-oracle-dbms_metadata-api.md)
+- [25-2 DBMS\_METADATA Procedures Used for the Browsing Interface](using-oracle-dbms_metadata-api.md)
+- [25-3 DBMS\_METADATA Procedures and Functions for Submitting XML Data](using-oracle-dbms_metadata-api.md)
+- [25-4 DBMS\_METADATA\_DIFF Procedures and Functions](using-oracle-dbms_metadata-api.md)
+- [26-1 Objects Exported in Each Mode](oracle-original-export-utility.md)
+- [26-2 Sequence of Events During Updates by Two Users](oracle-original-export-utility.md)
+- [26-3 Maximum Size for Dump Files](oracle-original-export-utility.md)
+- [26-4 Exit Codes for Export](oracle-original-export-utility.md)
+- [26-5 Using Different Releases of Export and Import](oracle-original-export-utility.md)
+- [27-1 Privileges Required to Import Objects into Your Own Schema](oracle-original-import-utility.md)
+- [27-2 Privileges Required to Import Grants](oracle-original-import-utility.md)
+- [27-3 Objects Imported in Each Mode](oracle-original-import-utility.md)
+- [27-4 Exit Codes for Import](oracle-original-import-utility.md)
+- [27-5 Using Different Releases of Export and Import](oracle-original-import-utility.md)
+- [B-1 Instant Client Files in the Tools Package](instant-client-sql-loader-export-import.md)

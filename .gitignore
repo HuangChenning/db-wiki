@@ -1,0 +1,5 @@
+# Local-only skills
+/skills/
+
+# macOS metadata
+.DS_Store

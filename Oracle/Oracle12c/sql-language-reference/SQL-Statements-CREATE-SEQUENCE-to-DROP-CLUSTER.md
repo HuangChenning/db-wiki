@@ -1,0 +1,31 @@
+---
+title: SQL Language Reference
+book: SQL Language Reference
+doc_id: E83703-08
+version: "12.2"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/12.2/sqlrf/SQL-Statements-CREATE-SEQUENCE-to-DROP-CLUSTER.html
+tags:
+  - oracle
+  - 12c
+  - sql-language-reference
+---
+
+This chapter contains the following SQL statements:
+
+- [CREATE SEQUENCE](CREATE-SEQUENCE.md)
+- [CREATE SPFILE](CREATE-SPFILE.md)
+- [CREATE SYNONYM](CREATE-SYNONYM.md)
+- [CREATE TABLE](CREATE-TABLE.md)
+- [CREATE TABLESPACE](CREATE-TABLESPACE.md)
+- [CREATE TABLESPACE SET](CREATE-TABLESPACE-SET.md)
+- [CREATE TRIGGER](CREATE-TRIGGER.md)
+- [CREATE TYPE](CREATE-TYPE.md)
+- [CREATE TYPE BODY](CREATE-TYPE-BODY.md)
+- [CREATE USER](CREATE-USER.md)
+- [CREATE VIEW](CREATE-VIEW.md)
+- [DELETE](DELETE.md)
+- [DISASSOCIATE STATISTICS](DISASSOCIATE-STATISTICS.md)
+- [DROP ANALYTIC VIEW](DROP-ANALYTIC-VIEW.md)
+- [DROP ATTRIBUTE DIMENSION](DROP-ATTRIBUTE-DIMENSION.md)
+- [DROP AUDIT POLICY (Unified Auditing)](DROP-AUDIT-POLICY-Unified-Auditing.md)
+- [DROP CLUSTER](DROP-CLUSTER.md)

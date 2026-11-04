@@ -1,0 +1,1586 @@
+---
+title: Backup and Recovery Reference
+book: Database Backup and Recovery Reference
+doc_id: F31837-09
+version: "21c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/21/rcmrf/book-index.html
+tags:
+  - oracle
+  - 21c
+  - backup-and-recovery-reference
+---
+
+Symbols A B C D E F G H I J K L M N O P Q R S T U V W X
+
+---
+
+## A
+
+- Advanced Security Option [2.6](BACKUP.md)
+- ADVISE FAILURE command [2.3](ADVISE-FAILURE.md)
+- AL16UTF16 character set, CLOB storage [2.11](CONVERT.md)
+- ALL FOREIGN DATAFILES parameter, foreignFileSpec [4.10](foreignFileSpec.md)
+- ALL FOREIGN DATAFILES parameter, foreignFileSpec subclause [4.10](foreignFileSpec.md)
+- ALLOCATE CHANNEL command [2.4](ALLOCATE-CHANNEL.md)
+	- allocOperandList subclause [4.1](allocOperandList.md)
+- ALLOCATE CHANNEL FOR MAINTENANCE command [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+	- shared server [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+- allocOperandList subclause
+	- parameter descriptions [4.1](allocOperandList.md)
+		- syntax diagram [4.1](allocOperandList.md)
+- ALTER DATABASE BACKUP command (SQL) [2.6](BACKUP.md)
+- analyzing RMAN repositories [3.6](REPORT.md)
+- archived log backups [2.27](LIST.md)
+- archived log copies [2.27](LIST.md)
+- archived log failover [2.6](BACKUP.md)
+- archived logs
+	- in backup sets [2.27](LIST.md)
+		- validation report [3.25](VALIDATE.md)
+- archived redo files, optimization algorithms [2.9](CONFIGURE.md)
+- archived redo logs [4.2](archivelogRecordSpecifier.md)
+	- backing up [2.6](BACKUP.md), [4.15](maintQualifier.md)
+		- in CDBs [2.6](BACKUP.md)
+		- cataloging in RMAN repository [2.7](CATALOG.md)
+		- deleting [2.6](BACKUP.md), [2.9](CONFIGURE.md), [2.19](DROP-DATABASE.md)
+		- deletion policies [2.9](CONFIGURE.md)
+		- excluding from backup [2.6](BACKUP.md)
+		- foreign (LogMiner) [4.11](foreignlogRecordSpecifier.md)
+		- image copies [2.6](BACKUP.md)
+		- limiting number of backups [2.6](BACKUP.md)
+		- missing or inaccessible [3.1](RECOVER.md)
+		- obsolete [3.6](REPORT.md)
+		- recovering [3.1](RECOVER.md)
+		- report output [3.6](REPORT.md)
+		- restoring [3.8](RESTORE.md)
+		- restoring a range [3.8](RESTORE.md)
+		- specifying a range [4.2](archivelogRecordSpecifier.md)
+		- using for recovery (example) [3.1](RECOVER.md)
+		- validating [3.25](VALIDATE.md)
+- ARCHIVELOG BACKUP COPIES parameter
+	- CONFIGURE command [2.9](CONFIGURE.md)
+- ARCHIVELOG mode [2.6](BACKUP.md), [2.20](DUPLICATE.md), [2.23](FLASHBACK-DATABASE.md)
+- ARCHIVELOG parameter
+	- VALIDATE command [3.25](VALIDATE.md)
+- archivelogRecordSpecifier subclause [4.2](archivelogRecordSpecifier.md), [4.11](foreignlogRecordSpecifier.md)
+	- parameter descriptions [4.2](archivelogRecordSpecifier.md)
+		- syntax diagram [4.2](archivelogRecordSpecifier.md)
+- archlogRange subclause
+	- parameter descriptions [4.2](archivelogRecordSpecifier.md)
+		- syntax diagram [4.2](archivelogRecordSpecifier.md), [4.11](foreignlogRecordSpecifier.md)
+- arguments to stored scripts [2.13](CREATE-SCRIPT.md)
+- atClause subclause
+	- parameter descriptions [3.6](REPORT.md)
+		- syntax diagram [3.6](REPORT.md)
+- at sign command (@) [2.1](at-sign.md)
+- autoBackupOptList subclause
+	- parameter descriptions [3.8](RESTORE.md)
+		- syntax diagram [3.8](RESTORE.md)
+- AUTOBACKUP parameter, RESTORE command [3.8](RESTORE.md)
+- autobackups
+	- control files
+		- in CDBs [2.9](CONFIGURE.md)
+- autobackups, control files [2.9](CONFIGURE.md)
+- Automated Diagnostic Repository, logging failures [3.25](VALIDATE.md)
+- automated repair [3.4](REPAIR-FAILURE.md)
+- automatic diagnostic repository [2.3](ADVISE-FAILURE.md)
+	- changing logged failures [2.8](CHANGE.md)
+- Automatic Storage Management (ASM)
+	- channel allocation [2.4](ALLOCATE-CHANNEL.md)
+		- converting formats [2.11](CONVERT.md)
+		- converting format to [2.11](CONVERT.md)
+		- converting format to (example) [2.11](CONVERT.md)
+		- disk groups [3.8](RESTORE.md)
+		- duplicating databases [2.20](DUPLICATE.md)
+		- specifying disk groups [2.9](CONFIGURE.md)
+- AUXILIARY CHANNEL parameter
+	- SHOW command [3.15](SHOW.md)
+- auxiliary databases
+	- connecting to [2.10](CONNECT.md), [4.4](connectStringSpec.md)
+		- initialization files [2.20](DUPLICATE.md)
+- auxiliary instances, specifying channels [2.9](CONFIGURE.md)
+- availability, changing status for backup or copy [2.8](CHANGE.md)
+
+---
+
+## B
+
+- BACKED UP parameter, maintQualifier subclause [4.15](maintQualifier.md)
+- backing up, excluded files [2.6](BACKUP.md)
+- BACKUP\_TAPE\_IO\_SLAVES initialization parameter [2.4](ALLOCATE-CHANNEL.md), [2.9](CONFIGURE.md)
+- backup clause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md)
+- BACKUP command [2.6](BACKUP.md)
+	- backup clause [2.6](BACKUP.md)
+		- backupOperand subclause [2.6](BACKUP.md)
+		- backupSpecOperand subclause [2.6](BACKUP.md)
+		- backupSpec subclause [2.6](BACKUP.md)
+		- backupTypeSpec subclause [2.6](BACKUP.md)
+		- copyOfSpec subclause [2.6](BACKUP.md)
+		- datafileCopySpec subclause [2.6](BACKUP.md)
+		- duration subclause [2.6](BACKUP.md)
+		- fileNameConversionSpec parameter [4.8](fileNameConversionSpec.md)
+		- forRecoveryOfSpec subclause [2.6](BACKUP.md)
+		- limiting processing time [2.6](BACKUP.md)
+		- notBackedUpSpec subclause [2.6](BACKUP.md)
+		- skipSpec subclause [2.6](BACKUP.md)
+- backup commands [3.12](RUN.md)
+- backupCommands subclause, syntax diagram [3.12](RUN.md)
+- backupConf subclause
+	- parameter descriptions [2.9](CONFIGURE.md)
+		- syntax diagram [2.9](CONFIGURE.md)
+- BACKUP COPIES parameter
+	- SET command [3.14](SET.md)
+		- SHOW command [3.15](SHOW.md)
+- backup levels [2.6](BACKUP.md)
+- backup media [2.6](BACKUP.md)
+- backupOperand subclause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md)
+- BACKUP OPTIMIZATION parameter
+	- SHOW command [3.15](SHOW.md)
+- backup pieces
+	- adding to repository [2.7](CATALOG.md)
+		- available information [2.27](LIST.md)
+		- cross-checking or deleting [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+		- definition [2.6](BACKUP.md)
+		- maximum size [4.1](allocOperandList.md)
+		- obsolete [3.6](REPORT.md)
+		- overriding default copies [3.14](SET.md)
+		- restoring [3.8](RESTORE.md)
+- backups
+	- applying incremental [3.1](RECOVER.md)
+		- archivelogs in CDBs [2.6](BACKUP.md)
+		- binary compression [2.6](BACKUP.md)
+		- CDBs [2.6](BACKUP.md)
+		- changing availability [2.8](CHANGE.md)
+		- configuration [2.9](CONFIGURE.md)
+		- corruption tolerance (example) [2.6](BACKUP.md)
+		- creating multiple copies [2.9](CONFIGURE.md)
+		- creating transportable tablespaces [3.22](TRANSPORT-TABLESPACE.md)
+		- criteria for obsolescence [4.17](obsOperandList.md)
+		- cumulative [2.6](BACKUP.md)
+		- data files [2.6](BACKUP.md)
+		- deleting [2.15](DELETE.md)
+		- duplexing example [2.9](CONFIGURE.md)
+		- duplicate copies [2.4](ALLOCATE-CHANNEL.md)
+		- duplicating [2.20](DUPLICATE.md)
+		- for cross-platform transport [2.6](BACKUP.md)
+		- inconsistent [2.6](BACKUP.md)
+		- incremental [2.6](BACKUP.md)
+		- limiting duration [2.6](BACKUP.md)
+		- listing [2.27](LIST.md)
+		- multisection [2.6](BACKUP.md)
+		- obsolete [3.6](REPORT.md)
+		- overwriting [2.6](BACKUP.md)
+		- partial [2.6](BACKUP.md)
+		- PDBs [2.6](BACKUP.md)
+		- redundant [3.6](REPORT.md)
+		- restarting [2.6](BACKUP.md)
+		- retention policies [2.9](CONFIGURE.md)
+		- root [2.6](BACKUP.md)
+		- tablespaces in CDBs [2.6](BACKUP.md)
+		- using incremental (example) [3.1](RECOVER.md)
+		- using incremental updates (example) [3.1](RECOVER.md)
+		- validating in repository [2.14](CROSSCHECK.md)
+- backup sections, sizing [2.6](BACKUP.md)
+- backup set failover [2.6](BACKUP.md)
+- backup sets
+	- about archived logs [2.27](LIST.md)
+		- available information [2.27](LIST.md)
+		- backing up [2.6](BACKUP.md)
+		- backing up encrypted [2.6](BACKUP.md)
+		- backup pieces, available information [2.27](LIST.md)
+		- binary compression [2.6](BACKUP.md)
+		- cataloging in RMAN repository [2.7](CATALOG.md)
+		- date ranges [2.14](CROSSCHECK.md)
+		- deleting [2.6](BACKUP.md), [2.19](DROP-DATABASE.md)
+		- encryption [2.6](BACKUP.md)
+		- information about copies [2.27](LIST.md)
+		- information about data files [2.27](LIST.md)
+		- maximum size [2.6](BACKUP.md)
+		- obsolete
+		- report output [3.6](REPORT.md)
+		- optimization algorithms [2.9](CONFIGURE.md)
+		- status [2.14](CROSSCHECK.md)
+		- summary information [2.27](LIST.md)
+		- tag names [2.6](BACKUP.md)
+		- unused block compression [2.6](BACKUP.md)
+- backupSpecOperand subclause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md)
+- backupSpec subclause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md)
+- backupTypeSpec subclause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md)
+- Backus Naur Form syntax diagrams [1.1](about-rman-commands.md)
+- base recovery catalog [2.12](CREATE-CATALOG.md)
+- batch files [2.1](at-sign.md)
+- BFILE data type, excluded from backup [2.6](BACKUP.md)
+- binary compression [2.6](BACKUP.md)
+- block change tracking files
+	- excluded from backup [2.6](BACKUP.md)
+		- improving performance [2.6](BACKUP.md)
+- block checksums [2.6](BACKUP.md)
+- block corruptions
+	- checking for [3.25](VALIDATE.md)
+		- flashback [2.23](FLASHBACK-DATABASE.md)
+- block media recovery [3.1](RECOVER.md)
+- blockObject subclause
+	- parameter descriptions [3.1](RECOVER.md)
+		- syntax diagram [3.1](RECOVER.md), [3.25](VALIDATE.md)
+- blocks
+	- corrupt [3.25](VALIDATE.md)
+		- creating [3.12](RUN.md)
+- block sizes of backup media [2.6](BACKUP.md)
+- BNF syntax diagrams [1.1](about-rman-commands.md)
+- braces {} [3.12](RUN.md)
+
+---
+
+## C
+
+- CATALOG command [2.7](CATALOG.md)
+- CATALOG privilege [2.12](CREATE-CATALOG.md)
+- catalogs
+	- importing [2.26](IMPORT-CATALOG.md)
+- CDBs
+	- backing up [2.6](BACKUP.md)
+		- as image copies [2.6](BACKUP.md)
+				- tablespaces [2.6](BACKUP.md)
+		- connecting to [2.10](CONNECT.md), [4.4](connectStringSpec.md)
+		- control file autobackups [2.9](CONFIGURE.md)
+		- converting [2.11](CONVERT.md)
+		- deleting archived redo logs [2.15](DELETE.md)
+		- duplicating [2.20](DUPLICATE.md)
+		- recovering [3.1](RECOVER.md)
+		- resetting the incarnation [3.7](RESET-DATABASE.md)
+		- restoring [3.8](RESTORE.md)
+		- transporting tablespaces [2.11](CONVERT.md)
+- CDs as backup media [2.6](BACKUP.md)
+- cfauConf subclause
+	- parameter descriptions [2.9](CONFIGURE.md)
+		- syntax diagram [2.9](CONFIGURE.md)
+- CHANGE command [2.8](CHANGE.md)
+	- changeFailure subclause [2.8](CHANGE.md)
+		- forDbUniqueNameOption subclause [2.8](CHANGE.md)
+		- maintSpec subclause [2.8](CHANGE.md), [4.16](maintSpec.md)
+		- recordSpec subclause [4.18](recordSpec.md)
+		- resetDbUniqueNameOption subclause [2.8](CHANGE.md)
+- changeFailure subclause
+	- parameter descriptions [2.8](CHANGE.md)
+		- syntax diagram [2.8](CHANGE.md)
+- changes, reversing [2.23](FLASHBACK-DATABASE.md)
+- channel names [2.4](ALLOCATE-CHANNEL.md)
+- CHANNEL parameter
+	- SHOW command [3.15](SHOW.md)
+- channels
+	- allocating manually [2.4](ALLOCATE-CHANNEL.md), [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+		- allocating to shared server sessions [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+		- configuring for RAC (example) [2.9](CONFIGURE.md)
+		- identifying database server sessions [3.14](SET.md)
+		- maximum number [2.4](ALLOCATE-CHANNEL.md)
+		- naming conventions [2.9](CONFIGURE.md)
+		- releasing [3.3](RELEASE-CHANNEL.md)
+		- restoring in Data Guard [3.8](RESTORE.md)
+		- setting for restore (example) [3.1](RECOVER.md)
+		- with proxy capabilities [2.6](BACKUP.md)
+- character sets, CLOB storage [2.11](CONVERT.md)
+- CHECK LOGICAL parameter
+	- BACKUP command [2.6](BACKUP.md)
+- checksums [2.6](BACKUP.md)
+- clauses not compatible with [2.6](BACKUP.md)
+- client, opening RMAN [3.11](RMAN.md)
+- client compatibility [D.1](rman-compatibility.md)
+- CLOB data type, transporting [2.11](CONVERT.md)
+- closing RMAN [2.22](EXIT.md), [2.29](QUIT.md)
+- Cloud computing [F.1](oracle-secure-backup-osb-cloud-module.md)
+- cmdLine clause
+	- parameter descriptions [3.11](RMAN.md)
+		- syntax diagram [3.11](RMAN.md)
+- command examples commonly used [B](quick-reference-rman-commands.md)
+- command files [2.1](at-sign.md), [2.2](double-at-sign.md)
+- command format [1.2](about-rman-commands.md)
+- COMMAND ID TO parameter
+	- SET command [3.14](SET.md)
+- command line arguments [3.11](RMAN.md)
+- commands
+	- creating blocks [3.12](RUN.md)
+		- deprecated [C](deprecated-rman-syntax.md)
+		- executing host [2.25](HOST.md)
+		- executing SQL [3.19](SQL-Quoted.md)
+		- RMAN [3.11](RMAN.md)
+		- sending to media managers [3.13](SEND.md)
+- commands(
+	- commonly used [B](quick-reference-rman-commands.md)
+- commands (
+	- examples [B](quick-reference-rman-commands.md)
+		- samples [B](quick-reference-rman-commands.md)
+- command subclause summary [1.5](about-rman-commands.md)
+- command summary [1.4](about-rman-commands.md)
+- command terminator [1.2](about-rman-commands.md)
+- comment character (#) [1.2](about-rman-commands.md)
+- compatibility [D.1](rman-compatibility.md)
+- COMPATIBLE initialization parameter [2.20](DUPLICATE.md)
+- completedTimeSpec subclause [4.3](completedTimeSpec.md)
+- compression [2.6](BACKUP.md)
+- COMPRESSION ALGORITHM parameter
+	- HIGH [2.9](CONFIGURE.md)
+		- LOW [2.9](CONFIGURE.md)
+		- MEDIUM [2.9](CONFIGURE.md)
+- configuration
+	- displaying [2.9](CONFIGURE.md)
+		- displaying settings [3.15](SHOW.md)
+		- overriding [3.12](RUN.md), [3.14](SET.md)
+		- restoring default settings [2.9](CONFIGURE.md)
+		- setting [2.9](CONFIGURE.md)
+- configuration files, excluded from backup [2.6](BACKUP.md)
+- configuration parameters
+	- OSB Cloud Module [F.1.1](oracle-secure-backup-osb-cloud-module.md)
+- CONFIGURE BACKUP OPTIMIZATION setting [2.6](BACKUP.md)
+- configure clause
+	- parameter descriptions [2.9](CONFIGURE.md)
+		- syntax diagram [2.9](CONFIGURE.md)
+- CONFIGURE command [2.9](CONFIGURE.md)
+	- backupConf subclause [2.9](CONFIGURE.md)
+		- cfauConf subclause [2.9](CONFIGURE.md)
+		- configure clause [2.9](CONFIGURE.md)
+		- delalConf subclause [2.9](CONFIGURE.md)
+		- deviceConf subclause [2.9](CONFIGURE.md)
+		- encryption settings [2.6](BACKUP.md)
+		- forDbUniqueNameOption subclause [2.9](CONFIGURE.md)
+- CONFIGURE commands [3.15](SHOW.md)
+- CONFIGURE CONTROLFILE AUTOBACKUP parameter [2.6](BACKUP.md)
+- CONNECT command [2.10](CONNECT.md)
+- connecting
+	- to CDBs [2.10](CONNECT.md), [4.4](connectStringSpec.md)
+		- to PDBs [2.10](CONNECT.md), [4.4](connectStringSpec.md)
+		- to root [4.4](connectStringSpec.md)
+- connections, changing [2.10](CONNECT.md)
+- connectStringSpec subclause [4.4](connectStringSpec.md)
+- consistent shutdowns [2.6](BACKUP.md)
+- CONTROL\_FILES initialization parameter [2.20](DUPLICATE.md)
+- CONTROLFILE AUTOBACKUP FORMAT parameter, SET command [3.14](SET.md)
+- CONTROLFILE AUTOBACKUP parameter
+	- SHOW command [3.15](SHOW.md)
+- control file copies
+	- available information [2.27](LIST.md)
+		- tag names [2.6](BACKUP.md)
+- control files
+	- automatic backups [2.9](CONFIGURE.md)
+		- backing up copies [2.6](BACKUP.md)
+		- copies
+		- cataloging in RMAN repository [2.7](CATALOG.md)
+		- file names for control file autobackup [3.14](SET.md)
+		- restoring [3.8](RESTORE.md)
+		- restoring (example) [3.1](RECOVER.md)
+		- restoring autobackups [3.8](RESTORE.md)
+		- restoring for primary database [3.8](RESTORE.md)
+		- resynchronization [3.9](RESYNC-CATALOG.md)
+		- snapshots [2.6](BACKUP.md), [2.9](CONFIGURE.md)
+		- validation report [3.25](VALIDATE.md)
+- convert clause
+	- parameter descriptions [2.11](CONVERT.md)
+		- syntax diagram [2.11](CONVERT.md)
+- CONVERT command
+	- convert clause [2.11](CONVERT.md)
+		- convertOptionList subclause [2.11](CONVERT.md)
+		- fileNameConversionSpec parameter [4.8](fileNameConversionSpec.md)
+		- formatSpec subclause [2.11](CONVERT.md)
+		- skipSpec subclause [2.11](CONVERT.md)
+		- transportOptionList subclause [2.11](CONVERT.md)
+- converting
+	- CDBs [2.11](CONVERT.md)
+		- PDBs [2.6](BACKUP.md)
+		- root [2.11](CONVERT.md)
+- convertOptionList subclause
+	- parameter descriptions [2.11](CONVERT.md)
+		- syntax diagram [2.11](CONVERT.md)
+- copies
+	- changing availability [2.8](CHANGE.md)
+		- creating multiple backups [2.9](CONFIGURE.md)
+		- deleting [2.15](DELETE.md), [2.19](DROP-DATABASE.md)
+		- of backup sets, available information [2.27](LIST.md)
+		- validating in repository [2.14](CROSSCHECK.md)
+		- viewing status [2.14](CROSSCHECK.md)
+- copying files [2.6](BACKUP.md)
+- copy location [2.6](BACKUP.md)
+- COPY OF parameter
+	- BACKUP command [2.6](BACKUP.md)
+- copyOfSpec subclause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md), [3.25](VALIDATE.md)
+- corrupt blocks
+	- checking for [3.25](VALIDATE.md)
+		- restoring [3.8](RESTORE.md)
+		- tolerance for (example) [2.6](BACKUP.md)
+- CORRUPTION LIST parameter, RECOVER command [3.1](RECOVER.md)
+- CPU\_COUNT initialization parameter [3.1](RECOVER.md)
+- CREATE CATALOG command [2.12](CREATE-CATALOG.md)
+- CREATE SCRIPT command [2.13](CREATE-SCRIPT.md)
+- CREATE TYPE privilege [3.24](UPGRADE-CATALOG.md)
+- CROSSCHECK command [2.14](CROSSCHECK.md)
+	- maintSpec subclause [2.14](CROSSCHECK.md), [4.16](maintSpec.md)
+		- recordSpec subclause [4.18](recordSpec.md)
+- cross-platform backup
+	- export dump file [2.6](BACKUP.md)
+- cross-platform compatibility [2.6](BACKUP.md)
+- cross-platform transport
+	- creating backups [2.6](BACKUP.md)
+- cumulative backups [2.6](BACKUP.md)
+
+---
+
+## D
+
+- database changes, reversing [2.23](FLASHBACK-DATABASE.md)
+- database configuration [3.15](SHOW.md)
+- database duplication [2.4](ALLOCATE-CHANNEL.md)
+- database failure, repairing [3.4](REPAIR-FAILURE.md)
+- database identifiers
+	- changing [2.6](BACKUP.md)
+		- duplicates [3.2](REGISTER-DATABASE.md)
+- database incarnations [2.27](LIST.md)
+- DATABASE parameter, listObjList subclause [4.14](listObjList.md)
+- database point-in-time recovery (DBPITR) [3.1](RECOVER.md)
+- DATABASE ROOT parameter
+	- REPORT command [3.6](REPORT.md)
+		- RESTORE command [3.8](RESTORE.md)
+- DATABASE ROOT parameter, dbObject subclause [4.6](dbObject.md)
+- databases [2.20](DUPLICATE.md)
+	- available information [2.27](LIST.md)
+		- backing up [2.6](BACKUP.md)
+		- changing connections [2.10](CONNECT.md)
+		- connecting to [2.10](CONNECT.md)
+		- copying [2.20](DUPLICATE.md)
+		- deleting [2.19](DROP-DATABASE.md)
+		- platform conversion scripts [2.11](CONVERT.md)
+		- recovering [3.1](RECOVER.md)
+		- recovering with incremental backups (example) [3.1](RECOVER.md)
+		- recovering with incremental updates [3.1](RECOVER.md)
+		- registering [3.2](REGISTER-DATABASE.md)
+		- removing from recovery catalog [3.23](UNREGISTER.md)
+		- resetting incarnation [3.7](RESET-DATABASE.md)
+		- resynchronization [3.9](RESYNC-CATALOG.md)
+		- shutting down target [3.16](SHUTDOWN.md)
+		- specifying in Data Guard environment [4.9](forDbUniqueNameOption.md)
+		- starting target from RMAN [3.20](STARTUP.md)
+		- transparent encryption [2.9](CONFIGURE.md)
+		- transporting re-created files [2.11](CONVERT.md)
+		- updating file names [3.21](SWITCH.md)
+- database schemas
+	- report output [3.6](REPORT.md)
+- database server sessions
+	- identifying channels [3.14](SET.md)
+- data blocks
+	- checking for corrupted [2.6](BACKUP.md)
+		- recovering corrupt [3.1](RECOVER.md)
+		- recovering physically corrupt [3.1](RECOVER.md)
+- data compression [2.6](BACKUP.md)
+- data encryption [2.20](DUPLICATE.md)
+- DATAFILE BACKUP COPIES parameter
+	- CONFIGURE command [2.9](CONFIGURE.md)
+		- SHOW command [3.15](SHOW.md)
+- data file backups
+	- available information [2.27](LIST.md)
+- data file backup sets, available information [2.27](LIST.md)
+- data file copies
+	- available information [2.27](LIST.md)
+		- deleting [2.6](BACKUP.md)
+		- obsolete [3.6](REPORT.md)
+		- report output [3.6](REPORT.md)
+		- PDBs
+		- listing [3.6](REPORT.md)
+		- tag names [2.6](BACKUP.md)
+		- validating [3.25](VALIDATE.md)
+- datafileCopySpec subclause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md)
+- data files
+	- backing up [2.6](BACKUP.md)
+		- backing up copies [2.6](BACKUP.md)
+		- backing up large [2.6](BACKUP.md)
+		- backing up new only [2.6](BACKUP.md)
+		- copies
+		- cataloging in RMAN repository [2.7](CATALOG.md)
+				- incremental backups [2.7](CATALOG.md)
+				- tag names [2.7](CATALOG.md)
+		- excluding from backup [2.6](BACKUP.md)
+		- excluding from conversion [2.11](CONVERT.md)
+		- flashback status changes [2.23](FLASHBACK-DATABASE.md)
+		- image copies [2.6](BACKUP.md)
+		- in backup sets
+		- available information [2.27](LIST.md)
+		- offline [2.6](BACKUP.md)
+		- optimization algorithms [2.9](CONFIGURE.md)
+		- readonly [2.6](BACKUP.md)
+		- recovering [3.1](RECOVER.md)
+		- recovering corrupt data blocks [3.1](RECOVER.md)
+		- renaming [3.14](SET.md)
+		- report output [3.6](REPORT.md)
+		- requiring backup
+		- report output [3.6](REPORT.md)
+		- restored location [3.8](RESTORE.md)
+		- restoring [3.8](RESTORE.md)
+		- to new locations [3.8](RESTORE.md)
+		- restoring over the network [3.8](RESTORE.md)
+		- reversing changes [2.23](FLASHBACK-DATABASE.md)
+		- updating file names [3.21](SWITCH.md)
+		- validation report [3.25](VALIDATE.md)
+- datafileSpec subclause [4.5](datafileSpec.md)
+- Data Guard
+	- changing backup associations [2.8](CHANGE.md)
+		- configuring databases [2.9](CONFIGURE.md)
+		- creating physical standby databases [2.9](CONFIGURE.md)
+		- creating standby databases (example) [2.20](DUPLICATE.md)
+		- deleting backups and copies [2.15](DELETE.md)
+		- restoring backups [3.8](RESTORE.md)
+		- RMAN configuration in recovery catalog [2.9](CONFIGURE.md)
+		- specifying databases [4.9](forDbUniqueNameOption.md)
+		- updating backup status [2.14](CROSSCHECK.md)
+- Data Guard backups
+	- accessibility by databases [2.6](BACKUP.md)
+		- changing associated database [2.8](CHANGE.md)
+		- database association [2.6](BACKUP.md)
+- Data Pump [2.11](CONVERT.md), [2.23](FLASHBACK-DATABASE.md), [3.22](TRANSPORT-TABLESPACE.md), [D.4](rman-compatibility.md)
+- DATAPUMP DIRECTORY parameter, TRANSPORT TABLESPACE command [3.22](TRANSPORT-TABLESPACE.md)
+- Data Recovery Advisor [2.3](ADVISE-FAILURE.md), [3.4](REPAIR-FAILURE.md)
+- data types, endian conversion [2.11](CONVERT.md)
+- date ranges of backup sets [2.14](CROSSCHECK.md)
+- dates in RMAN commands [4.22](untilClause.md)
+- DB\_BLOCK\_CHECKSUM initialization parameter [2.6](BACKUP.md)
+- DB\_CREATE\_FILE\_DEST initialization parameter [4.1](allocOperandList.md)
+- DB\_FILE\_NAME\_CONVERT initialization parameter [2.20](DUPLICATE.md), [3.22](TRANSPORT-TABLESPACE.md), [4.8](fileNameConversionSpec.md)
+- DB\_FLASHBACK\_RETENTION\_TARGET initialization parameter [2.23](FLASHBACK-DATABASE.md)
+- DB\_NAME, changing [2.6](BACKUP.md)
+- DB\_UNIQUE\_NAME initialization parameter [3.8](RESTORE.md)
+- DB\_UNIQUE\_NAME parameter
+	- CONFIGURE command [2.9](CONFIGURE.md)
+		- DELETE command [2.15](DELETE.md)
+- DB\_UNIQUE\_NAME setting [2.7](CATALOG.md), [2.8](CHANGE.md), [2.27](LIST.md)
+- DBIDs
+	- available information [2.27](LIST.md)
+		- changing [2.6](BACKUP.md)
+		- duplicates [3.2](REGISTER-DATABASE.md)
+		- of standby databases [2.20](DUPLICATE.md)
+- DBNEWID utility [3.2](REGISTER-DATABASE.md)
+- dbObject subclause
+	- parameter descriptions [4.6](dbObject.md)
+		- RECOVER command [3.1](RECOVER.md)
+- dbObject subclause diagram
+	- RECOVER command [3.1](RECOVER.md)
+- DEFAULT DEVICE TYPE parameter
+	- SHOW command [3.15](SHOW.md)
+- delalConf subclause
+	- command parameters [2.9](CONFIGURE.md)
+		- syntax diagram [2.9](CONFIGURE.md)
+- delete clause, syntax diagram [2.15](DELETE.md)
+- DELETE command [2.15](DELETE.md)
+	- delete clause [2.15](DELETE.md)
+		- forDbUniqueNameOption subclause [2.15](DELETE.md)
+		- maintSpec subclause [2.15](DELETE.md), [4.16](maintSpec.md)
+		- recordSpec subclause [4.18](recordSpec.md)
+- DELETE SCRIPT command [2.16](DELETE-SCRIPT.md)
+- deleting
+	- archived redo logs
+		- in CDBs [2.15](DELETE.md)
+- deprecated commands [C](deprecated-rman-syntax.md)
+- destinations for restoring data files [3.8](RESTORE.md)
+- deviceConf subclause
+	- parameter descriptions [2.9](CONFIGURE.md)
+		- syntax diagram [2.9](CONFIGURE.md)
+- deviceSpecifier subclause [4.7](deviceSpecifier.md)
+- DEVICE TYPE parameter
+	- maintSpec subclause [4.16](maintSpec.md)
+		- SEND command [3.13](SEND.md)
+		- SHOW command [3.15](SHOW.md)
+- device types, specifying [2.9](CONFIGURE.md)
+- diagnostic repository [2.3](ADVISE-FAILURE.md)
+- diagrams of syntax [1.1](about-rman-commands.md)
+- disk drives, using several for backup [2.4](ALLOCATE-CHANNEL.md)
+- disk files, creating from stored scripts [2.28](PRINT-SCRIPT.md)
+- displaying scripts [2.28](PRINT-SCRIPT.md)
+- double at sign command (@@) [2.2](double-at-sign.md)
+- double quotes [1.1.3](about-rman-commands.md)
+- DROP CATALOG command [2.18](DROP-CATALOG.md)
+- DROP DATABASE command [2.19](DROP-DATABASE.md)
+- dual-mode encryption [2.6](BACKUP.md)
+- DUMP FILE parameter, foreignFileSpec [4.10](foreignFileSpec.md)
+- DUMP FILE parameter, foreignFileSpec subclause [4.10](foreignFileSpec.md)
+- duplexing [2.9](CONFIGURE.md), [3.14](SET.md)
+- duplicate clause
+	- parameter descriptions [2.20](DUPLICATE.md)
+		- syntax diagram [2.20](DUPLICATE.md)
+- DUPLICATE command [2.20](DUPLICATE.md)
+	- duplicate clause [2.20](DUPLICATE.md)
+		- dupOptionList subclause [2.20](DUPLICATE.md)
+		- fileNameConversionSpec parameter [4.8](fileNameConversionSpec.md)
+		- logSpec subclause [2.20](DUPLICATE.md)
+		- setParameter subclause [2.20](DUPLICATE.md)
+- duplicate databases
+	- using CONFIGURE AUXNAME [2.20](DUPLICATE.md)
+- duplicating
+	- CDBs [2.20](DUPLICATE.md)
+- duplicating files [2.6](BACKUP.md)
+- duplication
+	- backup based [2.20](DUPLICATE.md)
+		- configuration [2.9](CONFIGURE.md)
+		- example using auxiliary channels [2.4](ALLOCATE-CHANNEL.md)
+- dupOptionList subclause
+	- parameter descriptions [2.20](DUPLICATE.md)
+		- syntax diagram [2.20](DUPLICATE.md)
+- duration subclause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md)
+- DVDs as backup media [2.6](BACKUP.md)
+- dynamic performance views
+	- summary list [5.1](summary-of-rman-recovery-catalog-views.md)
+		- V$DATABASE\_BLOCK\_CORRUPTION [2.6](BACKUP.md), [3.1](RECOVER.md), [3.25](VALIDATE.md)
+		- V$DATABASE\_FLASHBACK\_ON [2.23](FLASHBACK-DATABASE.md)
+		- V$DATABASE.CURRENT\_SCN [2.23](FLASHBACK-DATABASE.md)
+		- V$FLASHBACK\_DATABASE\_LOG [2.23](FLASHBACK-DATABASE.md)
+		- V$RMAN\_COMPRESSION\_ALGORITHM [2.9](CONFIGURE.md), [3.14](SET.md)
+		- V$RMAN\_ENCRYPTION\_ALGORITHMS [2.6](BACKUP.md), [2.9](CONFIGURE.md), [3.14](SET.md)
+		- V$RMAN\_OUTPUT [2.6](BACKUP.md), [3.11](RMAN.md)
+		- V$RMAN\_STATUS [3.11](RMAN.md)
+		- V$SESSION [3.14](SET.md)
+		- V$TABLESPACE [2.23](FLASHBACK-DATABASE.md)
+		- V$TRANSPORTABLE\_PLATFORM [2.11](CONVERT.md)
+
+---
+
+## E
+
+- encryption
+	- backup sets [2.6](BACKUP.md), [3.8](RESTORE.md)
+		- of duplicate databases [2.20](DUPLICATE.md)
+		- recovering tablespaces [3.1](RECOVER.md)
+- ENCRYPTION ALGORITHM parameter, CONFIGURATION command [2.9](CONFIGURE.md)
+- encryption algorithms [2.6](BACKUP.md)
+- encryption settings
+	- overriding [2.9](CONFIGURE.md)
+		- V$RMAN\_ENCRYPTION\_ALGORITHMS view [2.9](CONFIGURE.md)
+- endian formats
+	- converting [2.11](CONVERT.md)
+		- transportable tablespaces [3.22](TRANSPORT-TABLESPACE.md)
+		- transporting across platforms [2.11](CONVERT.md)
+- end times
+	- for restore [3.14](SET.md)
+- environment variables
+	- in RMAN strings [1.1.2](about-rman-commands.md)
+		- NLS\_DATE\_FORMAT [3.6](REPORT.md)
+		- NLS\_LANG [3.6](REPORT.md)
+- error messages
+	- ORA-1152 [2.20](DUPLICATE.md)
+		- ORA-1578 [3.1](RECOVER.md)
+		- ORA-19504 [2.20](DUPLICATE.md)
+		- ORA-19624 [2.20](DUPLICATE.md)
+		- ORA-19916 [2.6](BACKUP.md)
+		- ORA-27086 [2.20](DUPLICATE.md)
+		- RMAN-0558 [3.11](RMAN.md)
+		- RMAN-06004 [2.21](EXECUTE-SCRIPT.md)
+		- RMAN-06445 [2.10](CONNECT.md)
+		- RMAN-06496 [3.8](RESTORE.md)
+		- RMAN-10031 [2.20](DUPLICATE.md)
+		- RMAN-10035 [2.20](DUPLICATE.md)
+		- RMAN-6758 [3.8](RESTORE.md)
+		- too many open files [4.1](allocOperandList.md)
+- EXECUTE SCRIPT command [2.21](EXECUTE-SCRIPT.md)
+- EXIT command [2.22](EXIT.md)
+- exiting RMAN [2.29](QUIT.md)
+- EXPORT LOG parameter, TRANSPORT TABLESPACE command [3.22](TRANSPORT-TABLESPACE.md)
+- export utilities [2.11](CONVERT.md)
+- external tables, excluded from backup [2.6](BACKUP.md)
+
+---
+
+## F
+
+- failed backups, restarting [2.6](BACKUP.md)
+- failures, available information [2.27](LIST.md)
+- failure summary [2.3](ADVISE-FAILURE.md)
+- fast recovery [2.6](BACKUP.md)
+- fast recovery areas
+	- defining for duplicate databases [2.20](DUPLICATE.md)
+		- location of autobackup [2.9](CONFIGURE.md)
+- file copies [2.6](BACKUP.md)
+- fileNameConversionSpec subclause [4.8](fileNameConversionSpec.md)
+- file name formats [3.14](SET.md)
+- file names
+	- changing during platform conversion [2.11](CONVERT.md)
+		- data file image copies [2.6](BACKUP.md)
+		- generating new [4.8](fileNameConversionSpec.md)
+		- updating [3.21](SWITCH.md)
+- files
+	- backing up new only [2.6](BACKUP.md)
+		- backing up with proxy copy [2.6](BACKUP.md)
+		- changing availability [2.8](CHANGE.md)
+		- creating from stored scripts [2.28](PRINT-SCRIPT.md)
+		- excluded from backup [2.6](BACKUP.md)
+		- listing those needing backup [3.6](REPORT.md)
+		- naming backups [2.6](BACKUP.md)
+		- overwriting backups [2.6](BACKUP.md)
+		- sources for duplication [2.20](DUPLICATE.md)
+		- unavailable [2.8](CHANGE.md)
+		- validating [2.6](BACKUP.md)
+- file sections, sizing [2.6](BACKUP.md)
+- FLASHBACK DATABASE command [2.23](FLASHBACK-DATABASE.md)
+- flashback logs [2.23](FLASHBACK-DATABASE.md), [3.8](RESTORE.md)
+- flashback NOLOGGING operations [2.23](FLASHBACK-DATABASE.md)
+- forDbUniqueNameOption subclause
+	- parameter descriptions [4.9](forDbUniqueNameOption.md)
+		- syntax [4.9](forDbUniqueNameOption.md)
+		- syntax diagram [2.8](CHANGE.md), [2.9](CONFIGURE.md), [2.15](DELETE.md)
+- foreignFileSpec [4.10](foreignFileSpec.md)
+- foreignFileSpec subclause [4.10](foreignFileSpec.md)
+- foreignlogRecordSpecifier subclause
+	- syntax diagram [4.11](foreignlogRecordSpecifier.md)
+- formatSpec subclause, syntax diagram [2.11](CONVERT.md)
+- forRecoveryOfSpec subclause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md)
+- FOR TRANSPORT
+	- clauses not compatible with [2.6](BACKUP.md)
+- FROM AUTOBACKUP parameter, RESTORE command [3.8](RESTORE.md)
+- FTP, moving backups [2.6](BACKUP.md)
+
+---
+
+## G
+
+- global scripts
+	- executing [2.21](EXECUTE-SCRIPT.md)
+		- importing [2.26](IMPORT-CATALOG.md)
+		- printing [2.28](PRINT-SCRIPT.md)
+- GRANT command [2.24](GRANT.md)
+
+---
+
+## H
+
+- hardware error recovery (example) [3.1](RECOVER.md)
+- HOST command [2.25](HOST.md)
+
+---
+
+## I
+
+- image copies
+	- adding to repository [2.7](CATALOG.md)
+		- applying incremental backups [3.1](RECOVER.md)
+		- backing up [2.6](BACKUP.md)
+		- in CDBs [2.6](BACKUP.md)
+		- creating [2.6](BACKUP.md)
+		- deleting [2.19](DROP-DATABASE.md)
+		- restoring [3.8](RESTORE.md)
+- IMPORT CATALOG command [2.26](IMPORT-CATALOG.md)
+- IMPORT SCRIPT parameter, TRANSPORT TABLESPACE command [3.22](TRANSPORT-TABLESPACE.md)
+- import utilities [2.11](CONVERT.md)
+- INCARNATION parameter
+	- DUPLICATE command
+		- orphan [2.20](DUPLICATE.md)
+		- RESET DATABASE TO INCARNATION [3.7](RESET-DATABASE.md)
+		- SET command [3.14](SET.md)
+- incarnations [2.27](LIST.md), [3.7](RESET-DATABASE.md)
+- inconsistent backups [2.6](BACKUP.md)
+- inconsistent shutdowns [2.6](BACKUP.md)
+- incremental backups [2.6](BACKUP.md)
+	- adding data file copies [2.7](CATALOG.md)
+		- bitmap limit [2.6](BACKUP.md)
+		- report output [3.6](REPORT.md)
+		- sample script [2.6](BACKUP.md)
+		- using data file copy [2.7](CATALOG.md)
+- initialization files
+	- for auxiliary databases [2.20](DUPLICATE.md)
+- initialization parameters
+	- BACKUP\_TAPE\_IO\_SLAVES [2.9](CONFIGURE.md)
+		- COMPATIBLE [2.20](DUPLICATE.md)
+		- CONTROL\_FILES [2.20](DUPLICATE.md)
+		- CPU\_COUNT [3.1](RECOVER.md)
+		- DB\_BLOCK\_CHECKSUM [2.6](BACKUP.md)
+		- DB\_CREATE\_FILE\_DEST [4.1](allocOperandList.md)
+		- DB\_FILE\_NAME\_CONVERT [2.20](DUPLICATE.md), [3.22](TRANSPORT-TABLESPACE.md), [4.8](fileNameConversionSpec.md)
+		- DB\_FLASHBACK\_RETENTION\_TARGET [2.23](FLASHBACK-DATABASE.md)
+		- DB\_UNIQUE\_NAME [3.8](RESTORE.md)
+		- LOG\_ARCHIVE\_DEST\_n [3.14](SET.md)
+		- LOG\_FILE\_NAME\_CONVERT [2.20](DUPLICATE.md), [3.22](TRANSPORT-TABLESPACE.md)
+		- RECOVERY\_PARALLELISM [3.1](RECOVER.md)
+- input files, deleting [2.6](BACKUP.md)
+
+---
+
+## J
+
+- job commands [3.12](RUN.md)
+
+---
+
+## L
+
+- LIKE parameter
+	- archivelogRecordSpecifier subclause [4.2](archivelogRecordSpecifier.md)
+- Linux commands [2.25](HOST.md)
+- Linux-to-Windows conversion (example) [2.11](CONVERT.md)
+- listBackupOption subclause
+	- parameter descriptions [2.27](LIST.md)
+		- syntax diagram [2.27](LIST.md)
+- list clause
+	- parameter descriptions [2.27](LIST.md)
+		- syntax diagram [2.27](LIST.md)
+- LIST command [2.27](LIST.md)
+	- listBackupOption subclause [2.27](LIST.md)
+		- list clause [2.27](LIST.md)
+		- listObjectSpec subclause [2.27](LIST.md)
+		- maintQualifier subclause [2.27](LIST.md)
+		- recordSpec subclause [4.18](recordSpec.md)
+		- recoverableClause subclause [2.27](LIST.md)
+- listObjectSpec subclause
+	- parameter descriptions [2.27](LIST.md)
+		- syntax diagram [2.27](LIST.md)
+- listObjList subclause [4.14](listObjList.md)
+	- parameter descriptions [4.14](listObjList.md)
+		- syntax diagram [4.14](listObjList.md)
+- LOB data types, transporting [2.11](CONVERT.md)
+- local scripts
+	- executing [2.21](EXECUTE-SCRIPT.md)
+		- printing [2.28](PRINT-SCRIPT.md)
+- LOG\_ARCHIVE\_DEST\_n initialization parameter [3.1](RECOVER.md), [3.14](SET.md)
+- LOG\_FILE\_NAME\_CONVERT initialization parameter [2.20](DUPLICATE.md), [3.22](TRANSPORT-TABLESPACE.md)
+- log files
+	- directing output to [3.17](SPOOL.md)
+- logging in [4.4](connectStringSpec.md)
+- LogMiner utility [2.8](CHANGE.md), [2.9](CONFIGURE.md), [4.11](foreignlogRecordSpecifier.md)
+- log sequence number [3.14](SET.md)
+- log sequence numbers
+	- point-in-time recovery [2.20](DUPLICATE.md)
+		- undoing changes [2.23](FLASHBACK-DATABASE.md)
+- logSpec subclause
+	- parameter descriptions [2.20](DUPLICATE.md)
+		- syntax diagram [2.20](DUPLICATE.md)
+
+---
+
+## M
+
+- maintenance channels
+	- allocating [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+		- naming conventions [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+		- releasing [3.3](RELEASE-CHANNEL.md)
+- maintenance commands [3.12](RUN.md)
+- maintenanceCommands subclause, syntax diagram [3.12](RUN.md)
+- maintenance job configuration [2.9](CONFIGURE.md)
+- maintQualifier subclause
+	- parameter descriptions [4.15](maintQualifier.md)
+		- syntax diagram [2.27](LIST.md), [4.15](maintQualifier.md)
+- maintSpec subclause [4.16](maintSpec.md)
+	- syntax diagram [2.8](CHANGE.md), [2.14](CROSSCHECK.md), [2.15](DELETE.md)
+- media failure, restoring backups [3.8](RESTORE.md)
+- media libraries for sbt channels [4.1](allocOperandList.md)
+- media managers [2.6](BACKUP.md)
+	- compressing data [2.6](BACKUP.md)
+		- controlling data transfer [2.6](BACKUP.md)
+		- sending commands [3.13](SEND.md)
+		- specifying environment variables [4.1](allocOperandList.md)
+		- status of offsite backups [3.8](RESTORE.md)
+		- validating metadata [2.14](CROSSCHECK.md)
+- media pool, backup storage [2.6](BACKUP.md)
+- metadata
+	- changing catalog schemas [2.26](IMPORT-CATALOG.md)
+		- resynchronization [3.9](RESYNC-CATALOG.md)
+		- validating in repository [2.14](CROSSCHECK.md)
+- miscellaneous commands [3.12](RUN.md)
+- missing files
+	- checking for [3.25](VALIDATE.md)
+- moving backups [2.6](BACKUP.md)
+- multisection backups [2.6](BACKUP.md)
+- multitenant container databases [2.6](BACKUP.md)
+
+---
+
+## N
+
+- needBackupOption subclause
+	- parameter descriptions [3.6](REPORT.md)
+		- syntax diagram [3.6](REPORT.md)
+- nested command files [2.2](double-at-sign.md)
+- net service names [4.4](connectStringSpec.md)
+- new files, backing up only [2.6](BACKUP.md)
+- NEWNAME FOR DATABASE parameter, SET command [3.14](SET.md)
+- NEWNAME FOR DATAFILE parameter, SET command [3.14](SET.md)
+- NEWNAME FOR TABLESPACE parameter, SET command [3.14](SET.md)
+- NEWNAME FOR TEMPFILE parameter, SET command [3.14](SET.md)
+- NLS\_DATE\_FORMAT configuration setting [2.27](LIST.md)
+- NLS\_DATE\_FORMAT environment variable [3.6](REPORT.md)
+- NLS\_LANG environment variable [3.6](REPORT.md)
+- NLS\_LANG environment variables [2.27](LIST.md)
+- NOARCHIVELOG mode [2.6](BACKUP.md), [2.20](DUPLICATE.md)
+- NOFILENAMECHECK parameter, DUPLICATE command [2.20](DUPLICATE.md)
+- nonquoted strings [1.1.2](about-rman-commands.md)
+- NOREDO parameter
+	- DUPLICATE command [2.20](DUPLICATE.md)
+- normal resynchronization [3.9](RESYNC-CATALOG.md)
+- notBackedUpSpec subclause
+	- parameter descriptions [2.6](BACKUP.md)
+		- syntax diagram [2.6](BACKUP.md)
+
+---
+
+## O
+
+- obsOperandList subclause [4.17](obsOperandList.md)
+- offsite backups [3.8](RESTORE.md)
+- OMF format [2.20](DUPLICATE.md)
+- online redo logs
+	- for duplicate database [2.20](DUPLICATE.md)
+		- for RAC [2.20](DUPLICATE.md)
+- operating system commands [2.25](HOST.md)
+- operating systems
+	- compatibility [2.6](BACKUP.md)
+		- duplicating databases across [2.20](DUPLICATE.md)
+- optimization, overriding backup [2.9](CONFIGURE.md)
+- optimization algorithms [2.9](CONFIGURE.md)
+- ORA-1152 error message [2.20](DUPLICATE.md)
+- ORA-1578 error message [3.1](RECOVER.md)
+- ORA-19504 error message [2.20](DUPLICATE.md)
+- ORA-19624 error message [2.20](DUPLICATE.md)
+- ORA-19916 error message [2.6](BACKUP.md)
+- ORA-27086 error message [2.20](DUPLICATE.md)
+- Oracle10g compatibility [D.1](rman-compatibility.md)
+- Oracle8i compatibility [D.1](rman-compatibility.md)
+- Oracle9i compatibility [D.1](rman-compatibility.md)
+- Oracle home, excluded from backup [2.6](BACKUP.md)
+- Oracle keystores [3.8](RESTORE.md), [3.22](TRANSPORT-TABLESPACE.md)
+- Oracle Managed Files (OMF) [2.20](DUPLICATE.md), [4.8](fileNameConversionSpec.md)
+	- duplicating databases (example) [2.20](DUPLICATE.md)
+- Oracle Net connections [3.9](RESYNC-CATALOG.md)
+- Oracle RAC
+	- recovering from failure [3.4](REPAIR-FAILURE.md)
+- Oracle Secure Backup [2.6](BACKUP.md)
+	- creating encrypted backups [2.6](BACKUP.md)
+		- sending commands to (example) [3.13](SEND.md)
+		- undo data [2.9](CONFIGURE.md)
+- Oracle Secure Backup (OSB) Cloud Module
+	- configuring RMAN channel [F.2.8](oracle-secure-backup-osb-cloud-module.md)
+		- creating an AWS account [F.2.3](oracle-secure-backup-osb-cloud-module.md)
+		- getting AWS Identifiers [F.2.4](oracle-secure-backup-osb-cloud-module.md)
+		- prerequisites [F.2.1](oracle-secure-backup-osb-cloud-module.md)
+		- registering for OTN account [F.2.2](oracle-secure-backup-osb-cloud-module.md)
+		- running the S3 Backup installer
+		- first time [F.2.5](oracle-secure-backup-osb-cloud-module.md)
+				- Linux example [F.2.6](oracle-secure-backup-osb-cloud-module.md)
+		- Securing backups [F.3](oracle-secure-backup-osb-cloud-module.md)
+		- storing configuration in RMAN repository [F.2.7](oracle-secure-backup-osb-cloud-module.md)
+		- Troubleshooting [F.5](oracle-secure-backup-osb-cloud-module.md)
+- overwriting backup files [2.6](BACKUP.md)
+
+---
+
+## P
+
+- parallelism
+	- allocating channels [2.4](ALLOCATE-CHANNEL.md)
+		- backup using channels (example) [2.6](BACKUP.md)
+		- channel allocation [2.4](ALLOCATE-CHANNEL.md)
+- parallelism settings [3.15](SHOW.md)
+- PARAMETER\_VALUE\_CONVERT parameter
+	- overriding [2.20](DUPLICATE.md)
+- parameter files [3.8](RESTORE.md)
+	- backing up [2.6](BACKUP.md)
+		- restoring [3.8](RESTORE.md)
+- parameters
+	- deprecated [C](deprecated-rman-syntax.md)
+		- in syntax diagrams [1.1.2](about-rman-commands.md)
+- parameters in stored scripts [2.13](CREATE-SCRIPT.md)
+- partial backups [2.6](BACKUP.md)
+- password-based encryption [2.6](BACKUP.md)
+- password encryption [2.9](CONFIGURE.md)
+- password files
+	- excluded from backup [2.6](BACKUP.md)
+		- for duplicate databases [2.20](DUPLICATE.md)
+- passwords [4.4](connectStringSpec.md)
+	- encrypted [2.9](CONFIGURE.md)
+		- encrypted backup sets [3.8](RESTORE.md)
+		- RAC SYSBACKUP [2.4](ALLOCATE-CHANNEL.md)
+- PDBs
+	- backing up [2.6](BACKUP.md)
+		- connecting to [2.10](CONNECT.md), [4.4](connectStringSpec.md)
+		- converting [2.6](BACKUP.md)
+		- listing backups [3.6](REPORT.md)
+		- recovering [3.1](RECOVER.md)
+		- recovering tables [3.1](RECOVER.md)
+		- restoring [3.8](RESTORE.md)
+- performance
+	- allocating channels [2.4](ALLOCATE-CHANNEL.md)
+		- incremental backups [2.6](BACKUP.md)
+- PL/SQL code, converting formats [2.20](DUPLICATE.md)
+- PL/SQL stored procedures [3.19](SQL-Quoted.md)
+- placeholders in syntax diagrams [1.1.2](about-rman-commands.md)
+- platform compatibility [2.6](BACKUP.md)
+- platforms
+	- duplicating databases across [2.20](DUPLICATE.md)
+- PLUGGABLE DATABASE parameter
+	- REPORT command [3.6](REPORT.md)
+- pluggable databases [2.6](BACKUP.md)
+- PLUS ARCHIVELOG parameter, VALIDATE command [3.25](VALIDATE.md)
+- point-in-time recovery [2.20](DUPLICATE.md), [3.1](RECOVER.md), [3.8](RESTORE.md), [4.2](archivelogRecordSpecifier.md)
+- prerequisites
+	- backups for cross-platform transport [2.6](BACKUP.md)
+		- cross-platform backups [2.6](BACKUP.md)
+- previewing backups [3.8](RESTORE.md)
+- primary databases
+	- backing up [2.6](BACKUP.md)
+		- copying [2.20](DUPLICATE.md)
+- PRINT SCRIPT command [2.28](PRINT-SCRIPT.md)
+- private catalog schema, assigning privileges [2.24](GRANT.md)
+- privileges
+	- assigning [2.24](GRANT.md)
+		- CATALOG [2.12](CREATE-CATALOG.md)
+		- CREATE TYPE [3.24](UPGRADE-CATALOG.md)
+		- REGISTER [2.12](CREATE-CATALOG.md)
+		- revoking [3.10](REVOKE.md)
+		- SYSBACKUP [2.10](CONNECT.md)
+- processing time for backup [2.6](BACKUP.md)
+- proxy backups, restoring [3.1](RECOVER.md)
+- proxy copies
+	- available information [2.27](LIST.md)
+		- cross-checking [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+		- definition [2.6](BACKUP.md)
+		- deleting [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md), [2.19](DROP-DATABASE.md)
+		- obsolete
+		- report output [3.6](REPORT.md)
+		- restoring [3.8](RESTORE.md)
+		- tag names [2.6](BACKUP.md)
+
+---
+
+## R
+
+- RAC
+	- automatic channels (example) [2.9](CONFIGURE.md)
+		- creating online redo logs [2.20](DUPLICATE.md)
+		- crosschecking backups [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+		- cross-checking or deleting [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+		- SYSBACKUP passwords [2.4](ALLOCATE-CHANNEL.md)
+- RC\_ARCHIVED\_LOG view [5.2](RC_ARCHIVED_LOG.md)
+- RC\_BACKUP\_ARCHIVELOG\_DETAILS view [5.3](RC_BACKUP_ARCHIVELOG_DETAILS.md)
+- RC\_BACKUP\_ARCHIVELOG\_SUMMARY view [5.4](RC_BACKUP_ARCHIVELOG_SUMMARY.md)
+- RC\_BACKUP\_CONTROLFILE\_DETAILS view [5.6](RC_BACKUP_CONTROLFILE_DETAILS.md)
+- RC\_BACKUP\_CONTROLFILE\_SUMMARY view [5.7](RC_BACKUP_CONTROLFILE_SUMMARY.md)
+- RC\_BACKUP\_CONTROLFILE view [5.5](RC_BACKUP_CONTROLFILE.md)
+- RC\_BACKUP\_COPY\_DETAILS view [5.8](RC_BACKUP_COPY_DETAILS.md)
+- RC\_BACKUP\_COPY\_SUMMARY view [5.9](RC_BACKUP_COPY_SUMMARY.md)
+- RC\_BACKUP\_CORRUPTION view [5.10](RC_BACKUP_CORRUPTION.md)
+- RC\_BACKUP\_DATAFILE\_DETAILS view [5.12](RC_BACKUP_DATAFILE_DETAILS.md)
+- RC\_BACKUP\_DATAFILE\_SUMMARY view [5.13](RC_BACKUP_DATAFILE_SUMMARY.md)
+- RC\_BACKUP\_DATAFILE view [5.11](RC_BACKUP_DATAFILE.md)
+- RC\_BACKUP\_FILES view [5.14](RC_BACKUP_FILES.md)
+- RC\_BACKUP\_PIECE\_DETAILS [5.16](RC_BACKUP_PIECE_DETAILS.md)
+- RC\_BACKUP\_PIECE view [5.15](RC_BACKUP_PIECE.md)
+- RC\_BACKUP\_REDOLOG view [5.17](RC_BACKUP_REDOLOG.md)
+- RC\_BACKUP\_SET\_DETAILS view [5.19](RC_BACKUP_SET_DETAILS.md)
+- RC\_BACKUP\_SET\_SUMMARY view [5.20](RC_BACKUP_SET_SUMMARY.md)
+- RC\_BACKUP\_SET view [5.18](RC_BACKUP_SET.md)
+- RC\_BACKUP\_SPFILE\_DETAILS view [5.22](RC_BACKUP_SPFILE_DETAILS.md)
+- RC\_BACKUP\_SPFILE\_SUMMARY view [5.23](RC_BACKUP_SPFILE_SUMMARY.md)
+- RC\_BACKUP\_SPFILE view [5.21](RC_BACKUP_SPFILE.md)
+- RC\_CHECKPOINT view [5.24](RC_CHECKPOINT.md)
+- RC\_CONTROLFILE\_COPY view [5.25](RC_CONTROLFILE_COPY.md)
+- RC\_COPY\_CORRUPTION view [5.26](RC_COPY_CORRUPTION.md)
+- RC\_DATABASE\_BLOCK\_CORRUPTION view [5.28](RC_DATABASE_BLOCK_CORRUPTION.md)
+- RC\_DATABASE\_INCARNATION view [5.29](RC_DATABASE_INCARNATION.md)
+- RC\_DATABASE view [5.27](RC_DATABASE.md)
+- RC\_DATAFILE\_COPY view [5.31](RC_DATAFILE_COPY.md)
+- RC\_DATAFILE view [5.30](RC_DATAFILE.md)
+- RC\_DISK\_RESTORE\_RANGE view [5.32](RC_DISK_RESTORE_RANGE.md)
+- RC\_LOG\_HISTORY view [5.33](RC_LOG_HISTORY.md)
+- RC\_OFFLINE\_RANGE view [5.34](RC_OFFLINE_RANGE.md)
+- RC\_PDBS view [5.35](RC_PDBS.md)
+- RC\_PLUGGABLE\_DATABASE\_INC view [5.36](RC_PLUGGABLE_DATABASE_INC.md)
+- RC\_PROXY\_ARCHIVEDLOG view [5.37](RC_PROXY_ARCHIVEDLOG.md)
+- RC\_PROXY\_ARCHIVELOG\_DETAILS view [5.38](RC_PROXY_ARCHIVELOG_DETAILS.md)
+- RC\_PROXY\_CONTROLFILE view [5.40](RC_PROXY_CONTROLFILE.md)
+- RC\_PROXY\_COPY\_DETAILS view [5.41](RC_PROXY_COPY_DETAILS.md)
+- RC\_PROXY\_COPY\_SUMMARY view [5.42](RC_PROXY_COPY_SUMMARY.md)
+- RC\_PROXY\_DATAFILE view [5.43](RC_PROXY_DATAFILE.md)
+- RC\_REDO\_LOG view [5.44](RC_REDO_LOG.md)
+- RC\_REDO\_THREAD view [5.45](RC_REDO_THREAD.md)
+- RC\_RESTORE\_POINT view [5.46](RC_RESTORE_POINT.md)
+- RC\_RESTORE\_RANGE view [5.47](RC_RESTORE_RANGE.md)
+- RC\_RESYNC view [5.48](RC_RESYNC.md)
+- RC\_RMAN\_BACKUP\_JOB\_DETAILS view [5.49](RC_RMAN_BACKUP_JOB_DETAILS.md)
+- RC\_RMAN\_BACKUP\_SUBJOB\_DETAILS view [5.50](RC_RMAN_BACKUP_SUBJOB_DETAILS.md)
+- RC\_RMAN\_BACKUP\_TYPE view [5.51](RC_RMAN_BACKUP_TYPE.md)
+- RC\_RMAN\_CONFIGURATION view [5.52](RC_RMAN_CONFIGURATION.md)
+- RC\_RMAN\_OUTPUT view [5.53](RC_RMAN_OUTPUT.md)
+- RC\_RMAN\_STATUS view [5.54](RC_RMAN_STATUS.md)
+- RC\_SBT\_RESTORE\_RANGE view [5.55](RC_SBT_RESTORE_RANGE.md)
+- RC\_SITE view [5.56](RC_SITE.md)
+- RC\_STORED\_SCRIPT\_LINE view [5.58](RC_STORED_SCRIPT_LINE.md)
+- RC\_STORED\_SCRIPT view [5.57](RC_STORED_SCRIPT.md)
+- RC\_TABLESPACE view [5.59](RC_TABLESPACE.md)
+- RC\_TEMPFILE view [5.60](RC_TEMPFILE.md)
+- RC\_UNUSABLE\_BACKUPFILE\_DETAILS view [5.61](RC_UNUSABLE_BACKUPFILE_DETAILS.md)
+- Real Application Clusters [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+- recordSpec subclause [4.18](recordSpec.md)
+- recoverableClause subclause
+	- parameter descriptions [2.27](LIST.md)
+		- syntax diagram [2.27](LIST.md)
+- recover clause
+	- parameter descriptions [3.1](RECOVER.md)
+		- syntax diagram [3.1](RECOVER.md)
+- RECOVER command [3.1](RECOVER.md)
+	- blockObject subclause [3.1](RECOVER.md)
+		- dbObject subclause [3.1](RECOVER.md)
+		- recover clause [3.1](RECOVER.md)
+		- recoverObject subclause [3.1](RECOVER.md)
+		- recoverOptionList subclause [3.1](RECOVER.md)
+		- recoverSpec subclause [3.1](RECOVER.md)
+- recovering
+	- PDBs [3.1](RECOVER.md)
+		- root [3.1](RECOVER.md)
+- recoverObject subclause
+	- parameter descriptions [3.1](RECOVER.md)
+		- syntax diagram [3.1](RECOVER.md)
+- recoverOptionList subclause
+	- parameter descriptions [3.1](RECOVER.md)
+		- syntax diagram [3.1](RECOVER.md)
+- recoverSpec subclause
+	- parameter descriptions [3.1](RECOVER.md)
+		- syntax diagram [3.1](RECOVER.md)
+- recovery
+	- CDBs [3.1](RECOVER.md)
+		- database in NOARCHIVELOG mode (example) [3.1](RECOVER.md)
+		- PDBs [3.1](RECOVER.md)
+		- point-in-time of duplicate databases [2.20](DUPLICATE.md)
+		- search order for backups [3.1](RECOVER.md)
+		- using storage snapshots [3.1](RECOVER.md)
+- RECOVERY\_CATALOG\_OWNER role [3.24](UPGRADE-CATALOG.md)
+- RECOVERY\_PARALLELISM initialization parameter [3.1](RECOVER.md)
+- recovery catalog
+	- connecting to [4.4](connectStringSpec.md)
+		- registering databases [3.2](REGISTER-DATABASE.md)
+		- removing databases [3.23](UNREGISTER.md)
+		- removing references [2.8](CHANGE.md)
+		- removing repository records [2.15](DELETE.md)
+		- replacing scripts [3.5](REPLACE-SCRIPT.md)
+		- updating DB\_UNIQUE\_NAME [2.8](CHANGE.md)
+		- upgrading versions [3.24](UPGRADE-CATALOG.md)
+- recovery catalog databases, connecting to [2.10](CONNECT.md)
+- recovery catalogs
+	- creating [2.12](CREATE-CATALOG.md)
+		- creating stored scripts [2.13](CREATE-SCRIPT.md)
+		- deleting [2.18](DROP-CATALOG.md)
+		- resynchronization [3.9](RESYNC-CATALOG.md)
+		- revoking privileges [3.10](REVOKE.md)
+		- stored scripts, available information [2.27](LIST.md)
+		- unregistering [2.19](DROP-DATABASE.md)
+- recovery catalogs, moving metadata [2.26](IMPORT-CATALOG.md)
+- recovery catalogs.NOCATALOG mode [2.6](BACKUP.md)
+- recovery catalog views [5](recovery-catalog-views.md)
+	- summary list [5.1](summary-of-rman-recovery-catalog-views.md)
+- recovery files, backing up [2.6](BACKUP.md)
+- Recovery Manager
+	- compatibility [D.1](rman-compatibility.md)
+		- dates in commands [4.22](untilClause.md)
+- Recovery Manager, control file autobackups [2.9](CONFIGURE.md)
+- Recovery Manager client, opening [3.11](RMAN.md)
+- recovery windows
+	- report output [3.6](REPORT.md)
+- recovery windows, report output [3.6](REPORT.md)
+- redo logs
+	- backing up [2.6](BACKUP.md)
+		- for RAC [2.20](DUPLICATE.md)
+- redo threads [4.22](untilClause.md)
+- redundant backups [3.6](REPORT.md)
+- REGISTER DATABASE command [3.2](REGISTER-DATABASE.md)
+- REGISTER privilege [2.12](CREATE-CATALOG.md)
+- RELEASE CHANNEL command [3.3](RELEASE-CHANNEL.md)
+	- release clause [3.3](RELEASE-CHANNEL.md)
+		- releaseForMaint clause [3.3](RELEASE-CHANNEL.md)
+- release clause, syntax diagram [3.3](RELEASE-CHANNEL.md)
+- releaseForMaint clause
+	- syntax diagram [3.3](RELEASE-CHANNEL.md)
+- remote host
+	- restoring data files [3.8](RESTORE.md)
+- repair clause
+	- parameter description [3.4](REPAIR-FAILURE.md)
+		- syntax diagram [3.4](REPAIR-FAILURE.md)
+- REPAIR FAILURE command [3.4](REPAIR-FAILURE.md)
+	- repair clause [3.4](REPAIR-FAILURE.md)
+- repair options [2.3](ADVISE-FAILURE.md)
+- repair status [2.27](LIST.md)
+- repair strategies [2.3](ADVISE-FAILURE.md)
+- replaceScript clause
+	- syntax diagram [3.5](REPLACE-SCRIPT.md)
+- REPLACE SCRIPT command [3.5](REPLACE-SCRIPT.md)
+	- replaceScript clause [3.5](REPLACE-SCRIPT.md)
+- report clause
+	- parameter descriptions [3.6](REPORT.md)
+		- syntax diagram [3.6](REPORT.md)
+- REPORT command [3.6](REPORT.md)
+	- atClause subclause [3.6](REPORT.md)
+		- needBackupOption subclause [3.6](REPORT.md)
+		- report clause [3.6](REPORT.md)
+		- reportObject subclause [3.6](REPORT.md)
+- reportObject subclause
+	- parameter descriptions [3.6](REPORT.md)
+		- syntax diagram [3.6](REPORT.md)
+- repositories
+	- analyzing [3.6](REPORT.md)
+		- listing contents [2.27](LIST.md)
+		- updating [2.15](DELETE.md)
+		- updating availability status [2.8](CHANGE.md)
+		- updating file names [3.21](SWITCH.md)
+		- validating contents [2.14](CROSSCHECK.md)
+- reserved words [1.3](about-rman-commands.md), [A.1](rman-reserved-words.md)
+- reset clause, syntax diagram [3.7](RESET-DATABASE.md)
+- RESET DATABASE command [3.7](RESET-DATABASE.md)
+	- reset clause [3.7](RESET-DATABASE.md)
+- resetDbUniqueNameOption subclause
+	- parameter descriptions [2.8](CHANGE.md)
+		- syntax diagram [2.8](CHANGE.md)
+- resetting incarnations
+	- CDBs [3.7](RESET-DATABASE.md)
+- restoration configuration [2.9](CONFIGURE.md)
+- restore clause
+	- parameter descriptions [3.8](RESTORE.md)
+		- syntax diagram [3.8](RESTORE.md)
+- RESTORE command [3.8](RESTORE.md)
+	- autoBackupOptList subclause [3.8](RESTORE.md)
+		- restore clause [3.8](RESTORE.md)
+		- restoreObject subclause [3.8](RESTORE.md)
+		- restoreSpecOperand subclause [3.8](RESTORE.md)
+- restore commands [3.12](RUN.md)
+- restoreCommands subclause, syntax diagram [3.12](RUN.md)
+- restore failover [3.8](RESTORE.md)
+- restoreObject subclause
+	- parameter descriptions [3.8](RESTORE.md)
+		- syntax diagram [3.8](RESTORE.md)
+- RESTORE POINT parameter
+	- RECOVER command [3.1](RECOVER.md)
+		- SET command [3.14](SET.md)
+		- TRANSPORT TABLESPACE command [3.22](TRANSPORT-TABLESPACE.md)
+- restore points [2.6](BACKUP.md), [2.27](LIST.md)
+- restoreSpecOperand subclause, syntax diagram [3.8](RESTORE.md)
+- restoring
+	- CDBs [3.8](RESTORE.md)
+		- data files over the network [3.8](RESTORE.md)
+		- from remote hosts [3.8](RESTORE.md)
+		- PDBs [3.8](RESTORE.md)
+		- root [3.8](RESTORE.md)
+- RESTRICTED SESSION privilege [3.20](STARTUP.md)
+- RESYNC CATALOG, resync clause [3.9](RESYNC-CATALOG.md)
+- RESYNC CATALOG command [3.9](RESYNC-CATALOG.md)
+- resync clause, syntax diagram [3.9](RESYNC-CATALOG.md)
+- resynchronization [3.9](RESYNC-CATALOG.md)
+- retention policies [4.13](keepOption.md)
+	- exemptions (example) [2.6](BACKUP.md)
+		- overriding [2.6](BACKUP.md), [2.8](CHANGE.md)
+- RETENTION POLICY parameter
+	- SHOW command [3.15](SHOW.md)
+- reverse resynchronization [3.9](RESYNC-CATALOG.md)
+- revoke clause, syntax diagram [3.10](REVOKE.md)
+- REVOKE command [3.10](REVOKE.md)
+	- revoke clause [3.10](REVOKE.md)
+- RMAN-0558 error message [3.11](RMAN.md)
+- RMAN-06004 error message [2.21](EXECUTE-SCRIPT.md)
+- RMAN-06445 error message [2.10](CONNECT.md)
+- RMAN-06496 error message [3.8](RESTORE.md)
+- RMAN-10031 error message [2.20](DUPLICATE.md)
+- RMAN-10035 error message [2.20](DUPLICATE.md)
+- RMAN-6758 error message [3.8](RESTORE.md)
+- RMAN command [3.11](RMAN.md)
+	- cmdLine clause [3.11](RMAN.md)
+- RMAN command (operating system) [3.11](RMAN.md)
+- RMAN reserved words [A.1](rman-reserved-words.md)
+- roles
+	- RECOVERY\_CATALOG\_OWNER [3.24](UPGRADE-CATALOG.md)
+- rollback segments, resynchronization [3.9](RESYNC-CATALOG.md)
+- root
+	- backing up [2.6](BACKUP.md)
+		- connecting to [4.4](connectStringSpec.md)
+		- converting [2.11](CONVERT.md)
+		- listing backups [3.6](REPORT.md)
+		- listing data file copies [3.6](REPORT.md)
+		- recovering [3.1](RECOVER.md)
+		- restoring [3.8](RESTORE.md)
+- run clause, syntax diagram [3.12](RUN.md)
+- RUN command [3.12](RUN.md)
+	- backupCommands subclause [3.12](RUN.md)
+		- maintenanceCommands subclause [3.12](RUN.md)
+		- restoreCommands subclause [3.12](RUN.md)
+		- run clause [3.12](RUN.md)
+
+---
+
+## S
+
+- saving scripts [2.28](PRINT-SCRIPT.md)
+- SCN
+	- for restore [3.14](SET.md)
+		- setting restore point [3.14](SET.md)
+- scopes, creating for scripts [3.12](RUN.md)
+- scripts [2.1](at-sign.md)
+	- available information [2.27](LIST.md)
+		- creating in recovery catalog [2.13](CREATE-SCRIPT.md)
+		- printing [2.28](PRINT-SCRIPT.md)
+		- replacing [3.5](REPLACE-SCRIPT.md)
+		- substitution variables [2.13](CREATE-SCRIPT.md)
+- Secure Backup [2.6](BACKUP.md)
+- SEND command [3.13](SEND.md)
+- SEQUENCE BETWEEN parameter, archlogRange subclause [4.2](archivelogRecordSpecifier.md)
+- server parameter files [3.8](RESTORE.md)
+	- backing up [2.6](BACKUP.md)
+		- for auxiliary databases [2.20](DUPLICATE.md)
+		- restoring [3.8](RESTORE.md)
+		- restoring lost [3.20](STARTUP.md)
+		- validation report [3.25](VALIDATE.md)
+- sessions
+	- ending RMAN [2.22](EXIT.md)
+		- identifying channels [3.14](SET.md)
+- set clause, syntax diagram [3.14](SET.md)
+- SET command [3.14](SET.md)
+	- encryption settings [2.6](BACKUP.md)
+		- set clause [3.14](SET.md)
+		- setRmanOption subclause [3.14](SET.md)
+		- setRmanOrRunOption subclause [3.14](SET.md)
+		- setRunOption subclause [3.14](SET.md)
+- SET MAXCORRUPT command [2.6](BACKUP.md)
+- SET NEWNAME command [3.8](RESTORE.md)
+- setParameter subclause
+	- parameter descriptions [2.20](DUPLICATE.md)
+		- syntax diagram [2.20](DUPLICATE.md)
+- setRmanOption subclause
+	- parameter descriptions [3.14](SET.md)
+		- syntax diagram [3.14](SET.md)
+- setRmanOrRunOption subclause
+	- parameter descriptions [3.14](SET.md)
+		- syntax diagram [3.14](SET.md)
+- setRunOption subclause
+	- parameter descriptions [3.14](SET.md)
+		- syntax diagram [3.14](SET.md)
+- shared servers, allocating channels [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+- shell commands [2.25](HOST.md)
+- show clause, syntax diagram [3.15](SHOW.md)
+- SHOW command [3.15](SHOW.md)
+	- show clause [3.15](SHOW.md)
+- SHUTDOWN command [3.16](SHUTDOWN.md)
+- shutdowns [2.6](BACKUP.md)
+- single quotes [1.1.3](about-rman-commands.md)
+- sizeSpec subclause [4.19](sizeSpec.md)
+	- syntax diagram [4.19](sizeSpec.md)
+- skipSpec subclause
+	- parameter descriptions [2.6](BACKUP.md), [2.11](CONVERT.md), [3.25](VALIDATE.md)
+		- syntax diagram [2.6](BACKUP.md), [2.11](CONVERT.md), [3.25](VALIDATE.md)
+- SNAPSHOT CONTROLFILE parameter, SHOW command [3.15](SHOW.md)
+- snapshots
+	- control file [2.6](BACKUP.md)
+		- storage [3.1](RECOVER.md)
+		- Volume Shadow Copy Service (VSS) [2.6](BACKUP.md)
+- source databases
+	- copying [2.20](DUPLICATE.md)
+		- used for duplication [2.20](DUPLICATE.md)
+- SPFILE SET, overriding [2.20](DUPLICATE.md)
+- SPOOL command [3.17](SPOOL.md)
+- SQL commands
+	- executing [3.19](SQL-Quoted.md)
+- standard output
+	- printing scripts [2.28](PRINT-SCRIPT.md)
+- standby databases
+	- backing up [2.6](BACKUP.md)
+		- copying [2.20](DUPLICATE.md)
+		- fast recovery areas [2.20](DUPLICATE.md)
+		- password files [2.20](DUPLICATE.md)
+		- updating (example) [2.6](BACKUP.md)
+- STARTUP command [3.20](STARTUP.md)
+- stdout, redirecting [3.17](SPOOL.md)
+- stored scripts [2.13](CREATE-SCRIPT.md)
+	- available information [2.27](LIST.md)
+		- deleting [2.16](DELETE-SCRIPT.md)
+		- executing [2.21](EXECUTE-SCRIPT.md)
+		- printing [2.28](PRINT-SCRIPT.md)
+- strings
+	- valid characters in RMAN commands [1.1.2](about-rman-commands.md)
+- striped files, allocating channels [2.4](ALLOCATE-CHANNEL.md)
+- striping backup sets [2.6](BACKUP.md)
+- subclause summary [1.5](about-rman-commands.md)
+- substitution variables [2.9](CONFIGURE.md)
+	- complete list [4.12](formatSpec.md)
+		- example of %D [2.6](BACKUP.md)
+		- example of %F [2.6](BACKUP.md)
+		- example of %U [2.6](BACKUP.md)
+		- in scripts [2.1](at-sign.md), [2.13](CREATE-SCRIPT.md), [3.5](REPLACE-SCRIPT.md)
+		- passing to stored scripts [2.21](EXECUTE-SCRIPT.md)
+- switch clause
+	- parameter descriptions [3.21](SWITCH.md)
+		- syntax diagram [3.21](SWITCH.md)
+- SWITCH command [3.21](SWITCH.md)
+	- effect on RESTORE [3.8](RESTORE.md)
+		- switch clause [3.21](SWITCH.md)
+		- switchFile subclause [3.21](SWITCH.md)
+- switchFile subclause
+	- parameter descriptions [3.21](SWITCH.md)
+		- syntax diagram [3.21](SWITCH.md)
+- syntax, deprecated [C](deprecated-rman-syntax.md)
+- syntax conventions [1.1](about-rman-commands.md)
+- syntax diagrams
+	- keywords [1.1.1](about-rman-commands.md)
+		- parameters [1.1.2](about-rman-commands.md)
+		- placeholders [1.1.2](about-rman-commands.md)
+- SYSAUX tablespaces [3.22](TRANSPORT-TABLESPACE.md)
+- SYSBACKUP passwords
+	- RAC environment [2.4](ALLOCATE-CHANNEL.md)
+- SYSBACKUP privilege [2.10](CONNECT.md), [4.4](connectStringSpec.md)
+	- connectStringSpec [4.4](connectStringSpec.md)
+- SYSDBA passwords
+	- for active duplication [2.20](DUPLICATE.md)
+- SYSDBA privilege [4.4](connectStringSpec.md)
+- system change numbers (SCN) [2.20](DUPLICATE.md), [2.23](FLASHBACK-DATABASE.md)
+
+---
+
+## T
+
+- tables
+	- recovering in PDBs [3.1](RECOVER.md)
+- TABLESPACE DESTINATION parameter, TRANSPORT TABLESPACE command [3.22](TRANSPORT-TABLESPACE.md)
+- tablespace point-in-time recovery (TSPITR) [3.1](RECOVER.md)
+- tablespace recovery (example) [3.1](RECOVER.md)
+- tablespaces
+	- renamed [2.6](BACKUP.md)
+		- transparent encryption [2.9](CONFIGURE.md)
+		- updating file names [3.21](SWITCH.md)
+- tablespaces7
+	- backing up [2.6](BACKUP.md)
+- tape backups, allocating channels [2.4](ALLOCATE-CHANNEL.md)
+- target control files [2.15](DELETE.md)
+- target databases
+	- connecting to [2.10](CONNECT.md), [4.4](connectStringSpec.md)
+		- deleting [2.19](DROP-DATABASE.md)
+		- maintaining single metadata catalog [2.26](IMPORT-CATALOG.md)
+		- registering [3.2](REGISTER-DATABASE.md)
+		- starting from RMAN [3.20](STARTUP.md)
+- target times, undoing changes [2.23](FLASHBACK-DATABASE.md)
+- tee command (Linux) [3.11](RMAN.md)
+- temp files
+	- re-creating [2.20](DUPLICATE.md)
+		- renaming [3.14](SET.md)
+- tempfileSpec subclause [4.20](tempfileSpec.md)
+- temporary tablespaces [2.6](BACKUP.md)
+- time, backup completion [4.3](completedTimeSpec.md)
+- time-based backups [2.6](BACKUP.md)
+- time constraints
+	- partial backups [2.6](BACKUP.md)
+- time limits [4.22](untilClause.md)
+- TO PLATFORM [2.6](BACKUP.md)
+- TO RESTORE POINT parameter
+	- RECOVER command [3.1](RECOVER.md)
+		- SET command [3.14](SET.md)
+		- TRANSPORT TABLESPACE command [3.22](TRANSPORT-TABLESPACE.md)
+- transferring backups [2.6](BACKUP.md)
+- transparent encryption [2.6](BACKUP.md), [2.20](DUPLICATE.md)
+- transportable tablespaces
+	- backing up read-only [2.6](BACKUP.md)
+		- creating from backups [3.22](TRANSPORT-TABLESPACE.md)
+		- duplicating [2.20](DUPLICATE.md)
+- transporting
+	- tablespaces [2.11](CONVERT.md)
+		- in CDBs [2.11](CONVERT.md)
+				- in PDBs [2.11](CONVERT.md)
+- transportOptionList subclause
+	- parameter descriptions [2.11](CONVERT.md)
+		- syntax diagram [2.11](CONVERT.md)
+- TRANSPORT TABLESPACE command [3.22](TRANSPORT-TABLESPACE.md)
+	- transpt\_tbs\_optlist subclause [3.22](TRANSPORT-TABLESPACE.md)
+		- transpt\_tbs clause [3.22](TRANSPORT-TABLESPACE.md)
+- transpt\_tbs\_optlist subclause
+	- parameter descriptions [3.22](TRANSPORT-TABLESPACE.md)
+		- syntax diagram [3.22](TRANSPORT-TABLESPACE.md)
+- transpt\_tbs clause
+	- parameter descriptions [3.22](TRANSPORT-TABLESPACE.md)
+		- syntax diagram [3.22](TRANSPORT-TABLESPACE.md)
+
+---
+
+## U
+
+- undo data [2.9](CONFIGURE.md)
+- undo segments [2.11](CONVERT.md)
+- UNIX commands [2.25](HOST.md)
+- unrecoverable operations
+	- report output [3.6](REPORT.md)
+- UNREGISTER DATABASE command [3.23](UNREGISTER.md)
+- untilClause subclause [4.22](untilClause.md)
+- UNTIL SCN parameter
+	- untilClause subclause [4.22](untilClause.md)
+- UNTIL SEQUENCE parameter
+	- archlogRange subclause [4.2](archivelogRecordSpecifier.md)
+		- untilClause subclause [4.22](untilClause.md)
+- UNTIL TIME parameter
+	- archlogRange subclause [4.2](archivelogRecordSpecifier.md)
+		- untilClause subclause [4.22](untilClause.md)
+- unused block compression [2.6](BACKUP.md)
+- UPGRADE CATALOG command [3.24](UPGRADE-CATALOG.md)
+- user-managed backups [2.7](CATALOG.md)
+- user names [4.4](connectStringSpec.md)
+- user privileges [2.10](CONNECT.md)
+- UTF character set, CLOB storage [2.11](CONVERT.md)
+- utlirp script, converting PL/SQL code [2.20](DUPLICATE.md)
+
+---
+
+## V
+
+- V$BACKUP\_DEVICE view [2.4](ALLOCATE-CHANNEL.md), [2.5](ALLOCATE-CHANNEL-FOR-MAINTENANCE.md)
+- V$DATABASE\_BLOCK\_CORRUPTION view [2.6](BACKUP.md), [3.1](RECOVER.md), [3.25](VALIDATE.md)
+- V$DATABASE.CURRENT\_SCN view [2.23](FLASHBACK-DATABASE.md)
+- V$DATABASE.FLASHBACK\_ON view [2.23](FLASHBACK-DATABASE.md)
+- V$FLASHBACK\_DATABASE\_LOG view [2.23](FLASHBACK-DATABASE.md)
+- V$RMAN\_COMPRESSION\_ALGORITHM view [2.9](CONFIGURE.md), [3.14](SET.md)
+- V$RMAN\_ENCRYPTION\_ALGORITHMS view [2.6](BACKUP.md), [2.9](CONFIGURE.md), [3.14](SET.md)
+- V$RMAN\_OUTPUT view [2.6](BACKUP.md), [3.11](RMAN.md)
+- V$RMAN\_STATUS view [3.11](RMAN.md)
+- V$SESSION view [3.14](SET.md)
+- V$TABLESPACE view [2.23](FLASHBACK-DATABASE.md)
+- V$TRANSPORTABLE\_PLATFORM view [2.11](CONVERT.md)
+- validate clause
+	- parameter descriptions [3.25](VALIDATE.md)
+		- syntax diagram [3.25](VALIDATE.md)
+- VALIDATE command [3.25](VALIDATE.md)
+	- blockObject subclause [3.25](VALIDATE.md)
+		- copyOfSpec subclause [3.25](VALIDATE.md)
+		- skipSpec subclause [3.25](VALIDATE.md)
+		- validate clause [3.25](VALIDATE.md)
+		- validateObject subclause [3.25](VALIDATE.md)
+		- validateOperand subclause [3.25](VALIDATE.md)
+- validateObject subclause
+	- parameter descriptions [3.25](VALIDATE.md)
+		- syntax diagram [3.25](VALIDATE.md)
+- validateOperand subclause
+	- parameter descriptions [3.25](VALIDATE.md)
+		- syntax diagram [3.25](VALIDATE.md)
+- validating backups [3.8](RESTORE.md)
+- variables in command files [2.1](at-sign.md)
+- views, recovery catalog [5](recovery-catalog-views.md)
+- virtual private catalog [2.12](CREATE-CATALOG.md)
+- virtual private catalogs
+	- deleting [2.18](DROP-CATALOG.md)
+- virtual private catalog schema, assigning privileges [2.24](GRANT.md)
+- virtual recovery catalog [2.12](CREATE-CATALOG.md)
+- Volume Shadow Copy Service (VSS) snapshots [2.6](BACKUP.md)
+
+---
+
+## W
+
+- windows [4.22](untilClause.md)
+	- recovery [2.6](BACKUP.md)
+- Windows commands [2.25](HOST.md)
+
+---
+
+## X
+
+- XMLType datatype in transportable tablespaces [3.22](TRANSPORT-TABLESPACE.md)

@@ -1,0 +1,36 @@
+---
+title: "V$CURRENT_BLOCK_SERVER"
+book: Reference
+doc_id: E40402-18
+version: "11.2"
+source: https://docs.oracle.com/cd/E11882_01/server.112/e40402/dynviews_1096.htm
+tags:
+  - oracle
+  - 11g
+  - reference
+---
+
+`V$CURRENT_BLOCK_SERVER` displays statistics on the Global Cache Service processes (lMS) used in cache fusion.
+
+| Column | Datatype | Description |
+| --- | --- | --- |
+| `PIN1` | `NUMBER` | Pins taking less than 1 millisecond |
+| `PIN10` | `NUMBER` | Pins taking 1 to 10 milliseconds |
+| `PIN100` | `NUMBER` | Pins taking 10 to 100 milliseconds |
+| `PIN1000` | `NUMBER` | Pins taking 100 to 1000 milliseconds |
+| `PIN10000` | `NUMBER` | Pins taking 1000 to 10000 milliseconds |
+| `FLUSH1` | `NUMBER` | Flushes taking less than 1 millisecond |
+| `FLUSH10` | `NUMBER` | Flushes taking 1 to 10 milliseconds |
+| `FLUSH100` | `NUMBER` | Flushes taking 10 to 100 milliseconds |
+| `FLUSH1000` | `NUMBER` | Flushes taking 100 to 1000 milliseconds |
+| `FLUSH10000` | `NUMBER` | Flushes taking 1000 to 10000 milliseconds |
+| `WRITE1` | `NUMBER` | Writes taking less than 1 millisecond |
+| `WRITE10` | `NUMBER` | Writes taking 1 to 10 milliseconds |
+| `WRITE100` | `NUMBER` | Writes taking 10 to 100 milliseconds |
+| `WRITE1000` | `NUMBER` | Writes taking 100 to 1000 milliseconds |
+| `WRITE10000` | `NUMBER` | Writes taking 1000 to 10000 milliseconds |
+| `CLEANDC` | `NUMBER` | Reserved for internal use |
+| `RCVDC` | `NUMBER` | Number of lock down-converts to S (shared) caused by instance recovery |
+| `QUEUEDC` | `NUMBER` | Number of queued lock down-converts to NULL |
+| `EVICTDC` | `NUMBER` | Number of lock down-converts to NULL caused by an SGA shrink |
+| `WRITEDC` | `NUMBER` | Number of dirty blocks in read-mostly objects which were written and the X (exclusive) lock down-converted to S (shared) locks |

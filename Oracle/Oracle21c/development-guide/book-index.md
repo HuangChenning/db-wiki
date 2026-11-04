@@ -1,0 +1,1475 @@
+---
+title: Database Development Guide
+book: Database Development Guide
+doc_id: F31304-06
+version: "21c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/21/adfns/book-index.html
+tags:
+  - oracle
+  - 21c
+  - development-guide
+---
+
+Numerics A B C D E F G H I J K L M N O P Q R S T U V W X Y
+
+---
+
+## Numerics
+
+- 32-bit IEEE 754 format [10.3.2](sql-data-types.md)
+- 64-bit IEEE 754 format [10.3.2](sql-data-types.md)
+
+---
+
+## A
+
+- Abstract Data Type (ADT) [14.4.4.3](coding-subprograms-and-packages.md)
+- ACCESSIBLE BY clause
+	- in package specification [14.2](coding-subprograms-and-packages.md)
+		- stored subprogram and [14.1](coding-subprograms-and-packages.md)
+- accessor list
+	- See: ACCESSIBLE BY clause
+- actualization [28.2.3](editions.md)
+- actual object [28.2.3](editions.md)
+- ADDM (Automatic Database Diagnostic Monitor) [4.3.1](performance-and-scalability.md)
+- address of row (rowid) [10.6](sql-data-types.md)
+- administrators, restricting with Oracle Database Vault [6.3](security.md)
+- ADT
+	- See: Abstract Data Type (ADT)
+- AFTER SUSPEND trigger [9.9.2.1](sql-processing-for-application-developers.md)
+- agent [24.3](publish-subscribe-model.md)
+- aggregate function [14](coding-subprograms-and-packages.md)
+- ALL\_ARGUMENTS [15.6](plscope.md)
+- ALL\_DEPENDENCIES [15.6](plscope.md)
+- ALL\_ERRORS [15.6](plscope.md)
+- ALL\_IDENTIFIERS [15.6](plscope.md)
+- ALL\_STATEMENTS [15.6](plscope.md)
+- altering application online
+	- See: edition-based redefinition (EBR)
+- analytic function [2.9.1](design_basics.md)
+- ancestor edition [28.2.2](editions.md)
+- ANSI data type [10.5.7](sql-data-types.md)
+- ANYDATA data type [10.5.6](sql-data-types.md)
+- ANYDATASET data type [10.5.6](sql-data-types.md)
+- AP (application program) [23.1.1](xa.md)
+- application architecture [21.1](application-architecture.md)
+- application domain index [12.3](indexes.md)
+- application program (AP) [23.1.1](xa.md)
+- application SQL [28.5.3.2.3](editions.md)
+- APPLYING\_CROSSEDITION\_TRIGGER function [28.5.4.1.1](editions.md)
+- AQ (Oracle Advanced Queuing) [24.2.2](publish-subscribe-model.md)
+- archive
+	- See Flashback Data Archive [20.9](flashback.md)
+- ARGn data type [10.7.1](sql-data-types.md)
+- arithmetic operation
+	- with datetime data type [10.4.4](sql-data-types.md)
+		- with native floating-point data type [10.3.5](sql-data-types.md)
+- assignment, reported by PL/Scope [15.5.1.2](plscope.md)
+- auditing
+	- available options [6.6](security.md)
+		- unified auditing [6.6](security.md)
+- auditing policy, editioning view and [28.7.1](editions.md)
+- AUTHID clause
+	- in package specification [14.2](coding-subprograms-and-packages.md)
+		- stored subprogram and [14.1](coding-subprograms-and-packages.md)
+- AUTHID property
+	- of invoked subprogram [14.9](coding-subprograms-and-packages.md)
+		- of PL/SQL unit [14.3](coding-subprograms-and-packages.md), [14.10](coding-subprograms-and-packages.md)
+- Automatic Database Diagnostic Monitor (ADDM) [4.3.1](performance-and-scalability.md)
+- Automatic Undo Management system [20.1](flashback.md)
+- Automatic Workload Repository (AWR) [4.5.6](performance-and-scalability.md)
+- autonomous transaction [9.8](sql-processing-for-application-developers.md)
+	- nonblocking DDL statement in [9.8](sql-processing-for-application-developers.md)
+		- trigger as [9.9.2.1](sql-processing-for-application-developers.md)
+- auto-tuning OCI client statement cache [4.7](performance-and-scalability.md)
+
+---
+
+## B
+
+- backward compatibility
+	- LONG and LONG RAW data types for [10.5.2.2](sql-data-types.md)
+		- RESTRICT\_REFERENCES pragma for [14.10.4.3](coding-subprograms-and-packages.md)
+- BATCH commit redo option [9.2.3](sql-processing-for-application-developers.md)
+- benchmark [4.1.3](performance-and-scalability.md)
+- BINARY\_DOUBLE data type [10.3](sql-data-types.md)
+- BINARY\_FLOAT data type [10.3](sql-data-types.md)
+- BINARY\_INTEGER data type
+	- See: PLS\_INTEGER data type
+- binary floating-point number [10.3.2](sql-data-types.md)
+- binary format [10.3.2.1](sql-data-types.md)
+- binary large object (BLOB) data type [10.5.2.1](sql-data-types.md)
+- bind variables [5.1](rwp.md)
+- block, PL/SQL [14.1](coding-subprograms-and-packages.md)
+- blocking DDL statement [9.7](sql-processing-for-application-developers.md)
+- BOOLEAN data type [14.4.4.1.2](coding-subprograms-and-packages.md)
+- branch [23.1.1](xa.md)
+- built-in data type
+	- See: SQL data type
+- built-in function
+	- See: SQL function
+- bulk binding [14.4.8](coding-subprograms-and-packages.md)
+- business rule [13](data-integrity.md)
+
+---
+
+## C
+
+- calling subprogram
+	- See: invoking subprogram
+- call specification
+	- for external subprogram [22.3](external-procedures.md)
+		- in package [14.2](coding-subprograms-and-packages.md)
+		- location of [22.8](external-procedures.md)
+- CALL statement [22.10](external-procedures.md)
+- cascading invalidation [27.4](schema-object-dependency.md)
+- C external subprogram [22.13](external-procedures.md)
+	- See also: external subprogram
+	- callback with [22.13](external-procedures.md)
+		- global variable in [22.13.6](external-procedures.md)
+		- interface between PL/SQL and [22.5.2](external-procedures.md)
+		- invoking [22.10.4](external-procedures.md)
+		- loading [22.4](external-procedures.md)
+		- passing parameter to [22.9](external-procedures.md)
+		- publishing [22.7](external-procedures.md)
+		- running [22.10](external-procedures.md)
+		- service routine and [22.12](external-procedures.md)
+- CHANGE\_DUPKEY\_ERROR\_INDEX hint [28.5.4.1.1](editions.md)
+- character data type class [27.10.2.4](schema-object-dependency.md)
+- character data types [10.2](sql-data-types.md)
+- character large object (CLOB) data type [10.5.2.1](sql-data-types.md)
+- CHAR data type [10.2](sql-data-types.md)
+- CHECK constraint
+	- compared to NOT NULL constraint [13.12.4](data-integrity.md)
+		- designing [13.12.2](data-integrity.md)
+		- multiple [13.12.3](data-integrity.md)
+		- naming [13.13.2](data-integrity.md)
+		- restrictions on [13.12.1](data-integrity.md)
+		- when to use [13.12](data-integrity.md)
+- CLIENT\_RESULT\_CACHE\_LAG server initialization parameter [4.5.5.1.3](performance-and-scalability.md)
+- CLIENT\_RESULT\_CACHE\_SIZE server initialization parameter [4.5.5.1.2](performance-and-scalability.md)
+- client/server architecture [21.1.1](application-architecture.md)
+- client configuration parameter [4.5.5.2](performance-and-scalability.md)
+- client notification [24.2.3](publish-subscribe-model.md)
+- client result cache [4.5](performance-and-scalability.md)
+- client statement cache auto-tuning (OCI client session feature) [4.7](performance-and-scalability.md)
+- CLOB data type [10.2](sql-data-types.md)
+- coarse-grained invalidation [27.4](schema-object-dependency.md)
+- collection [14.4.4.2](coding-subprograms-and-packages.md)
+	- referenced by DML statement [14.4.8.1](coding-subprograms-and-packages.md)
+		- referenced by FOR loop [14.4.8.3](coding-subprograms-and-packages.md)
+		- referenced by SELECT statement [14.4.8.2](coding-subprograms-and-packages.md)
+- column
+	- generated [28.2.1.2.2](editions.md)
+		- multiple foreign key constraints on [13.8.3](data-integrity.md)
+		- virtual [28.2.1.2.2](editions.md)
+		- when to use default value for [13.5](data-integrity.md)
+- commit redo management [9.2.3](sql-processing-for-application-developers.md)
+- COMPATIBLE server initialization parameter [4.5.5.1.1](performance-and-scalability.md)
+- compilation parameter [14.3](coding-subprograms-and-packages.md)
+- composite PL/SQL data type [14.4.4.2](coding-subprograms-and-packages.md)
+- concurrency
+	- serializable transaction for [9.6](sql-processing-for-application-developers.md)
+		- under explicit locking [9.4.5](sql-processing-for-application-developers.md)
+- conditional compilation [8.6](advanced_plsql_features.md)
+- connection class [4.10.7](performance-and-scalability.md)
+- connection pool [21.6.1](application-architecture.md)
+- connection pools
+	- connection storms [3.1.1](connection_strategies.md)
+		- design guidelines for logins [3.2](connection_strategies.md)
+		- design guildelines [3.1](connection_strategies.md)
+		- drained [3.3.1](connection_strategies.md)
+		- guideline for preventing connection storms [3.1.2](connection_strategies.md)
+		- guidelines for preventing programmatic session leaks [3.3](connection_strategies.md)
+		- lock leaks [3.3.3](connection_strategies.md)
+		- logical corruption [3.3.4](connection_strategies.md)
+- constraint [13](data-integrity.md), [13.4](data-integrity.md)
+	- altering [13.15](data-integrity.md)
+		- CHECK
+		- See CHECK constraint [13.12](data-integrity.md)
+		- compared to trigger [13.1](data-integrity.md)
+		- crossedition trigger and
+		- collisions [28.5.4.1.1](editions.md)
+				- dropping [28.5.6](editions.md)
+		- deferring checking of [13.8.4](data-integrity.md)
+		- disabling
+		- effect of [13.14](data-integrity.md)
+				- existing [13.14.5](data-integrity.md)
+				- new [13.14.3](data-integrity.md)
+				- reasons for [13.14.1](data-integrity.md)
+		- dropping [13.17](data-integrity.md)
+		- editioning view and [28.4.6](editions.md)
+		- enabling
+		- effect of [13.14](data-integrity.md)
+				- existing [13.14.4](data-integrity.md)
+				- new [13.14.2](data-integrity.md)
+		- exception to [13.14.7](data-integrity.md)
+		- FOREIGN KEY
+		- See FOREIGN KEY constraint [13.8](data-integrity.md)
+		- minimizing overhead of [13.9](data-integrity.md)
+		- naming [13.13.2](data-integrity.md)
+		- on view [13](data-integrity.md)
+		- PRIMARY KEY
+		- See PRIMARY KEY constraint [13.6](data-integrity.md)
+		- privileges needed for defining [13.13.1](data-integrity.md)
+		- referential integrity
+		- See FOREIGN KEY constraint [13.8](data-integrity.md)
+		- renaming [13.16](data-integrity.md)
+		- UNIQUE
+		- See UNIQUE constraint [13.7](data-integrity.md)
+		- viewing definition of [13.19](data-integrity.md)
+		- violation of [13.14.7](data-integrity.md)
+- Continuous Query Notification (CQN) [4.9](performance-and-scalability.md), [19](cqn.md)
+	- example [19.8.7](cqn.md)
+- converting data types
+	- See: data type conversion
+- copy-on-change strategy [28.2.3](editions.md)
+- coupling [23.1.1](xa.md)
+- CQ\_NOTIFICATION$\_DESCRIPTOR object [19.10.1](cqn.md)
+- CQ\_NOTIFICATION$\_QUERY object [19.10.3](cqn.md)
+- CQ\_NOTIFICATION$\_REG\_INFO object [19.7.6.2](cqn.md)
+- CQ\_NOTIFICATION$\_ROW object [19.10.4](cqn.md)
+- CQ\_NOTIFICATION$\_TABLE object [19.10.2](cqn.md)
+- CQN (Continuous Query Notification) [19](cqn.md)
+- CREATE\_COVERAGE\_TABLES procedure [17.3](basic-block-coverage.md)
+- CREATE OR REPLACE optimization [27.4](schema-object-dependency.md)
+	- actualization and [28.2.3](editions.md)
+- crossedition trigger [28.5](editions.md)
+	- creating [28.5.4](editions.md)
+		- displaying information about [28.6.3](editions.md)
+		- dropping [28.5.6](editions.md)
+		- execution of [28.5.3.4](editions.md)
+		- forward [28.5.1](editions.md)
+		- interaction with editions [28.5.3](editions.md)
+		- read-only editioning view and [28.4.1](editions.md)
+		- read-write editioning view and [28.4.1](editions.md)
+		- reverse [28.5.2](editions.md)
+		- scope of [28.2](editions.md)
+		- sharing child cursor and [28.6.3](editions.md)
+- crossedition trigger SQL
+	- forward [28.5.3.2.1](editions.md)
+		- reverse [28.5.3.2.2](editions.md)
+- cross-session PL/SQL function result cache [14.4.7](coding-subprograms-and-packages.md)
+- current date and time, displaying [10.4.1](sql-data-types.md)
+- current edition [28.2.6](editions.md)
+- cursor [14.4.5](coding-subprograms-and-packages.md)
+	- crossedition trigger and [28.6.3](editions.md)
+		- explicit [14.4.5](coding-subprograms-and-packages.md)
+		- implicit [14.4.5](coding-subprograms-and-packages.md)
+		- Oracle XA application and [23.3.4](xa.md)
+		- schema object dependency and [27.11](schema-object-dependency.md)
+		- session [14.4.5](coding-subprograms-and-packages.md)
+- cursor variable [14.4.4.1.4](coding-subprograms-and-packages.md)
+	- advantages of [14.4.5.1](coding-subprograms-and-packages.md)
+		- disadvantages of [14.4.5.2](coding-subprograms-and-packages.md)
+
+---
+
+## D
+
+- database hardening [20.9](flashback.md)
+- database logins, automated [6.2](security.md)
+- Database Resident Connection Pool (DRCP) [4.10](performance-and-scalability.md)
+- data cartridge [2.3.1](design_basics.md)
+- data definition language statement
+	- See: DDL statement
+- data integrity [13](data-integrity.md)
+	- See also: constraint
+	- data type and [10.1.1](sql-data-types.md)
+- data modeling [4.1.1](performance-and-scalability.md)
+- data type
+	- ANSI [10.5.7](sql-data-types.md)
+		- BOOLEAN [14.4.4.1.2](coding-subprograms-and-packages.md)
+		- DB2 [10.5.7](sql-data-types.md)
+		- dynamic [10.5.6](sql-data-types.md)
+		- external [10](sql-data-types.md)
+		- for character data [10.2](sql-data-types.md)
+		- for datetime data [10.4](sql-data-types.md)
+		- for geographic data [10.5.1](sql-data-types.md)
+		- for large amount of data [10.5.2](sql-data-types.md)
+		- for numeric data [10.3](sql-data-types.md)
+		- for spatial data [10.5.1](sql-data-types.md)
+		- for XML data [10.5.5](sql-data-types.md)
+		- importance of correct [10.1](sql-data-types.md)
+		- PL/SQL [14.4.4](coding-subprograms-and-packages.md)
+		- PLS\_INTEGER [14.4.4.1.3](coding-subprograms-and-packages.md)
+		- REF CURSOR [14.4.4.1.4](coding-subprograms-and-packages.md)
+		- SQL [10](sql-data-types.md)
+		- SQL/DS [10.5.7](sql-data-types.md)
+- data type class [27.10.2.4](schema-object-dependency.md)
+- data type conversion
+	- of ANSI and IBM data types [10.5.7](sql-data-types.md)
+		- of datetime data types [10.4.5](sql-data-types.md)
+		- of native floating-point data types [10.3.6](sql-data-types.md)
+- data type family
+	- PL/SQL [14.4.4.1](coding-subprograms-and-packages.md)
+		- SQL [10.7.3](sql-data-types.md)
+- date [10.4](sql-data-types.md)
+	- See also: datetime data types
+	- default format for [10.4.1](sql-data-types.md)
+		- displaying [10.4.2](sql-data-types.md)
+		- current [10.4.1](sql-data-types.md)
+		- inserting [10.4.2](sql-data-types.md)
+- datetime data type class [27.10.2.4](schema-object-dependency.md)
+- datetime data types [10.4](sql-data-types.md)
+	- arithmetic operations with [10.4.4](sql-data-types.md)
+		- conversion functions for [10.4.5](sql-data-types.md)
+		- importing, exporting, and comparing [10.4.6](sql-data-types.md)
+- day, default value for [10.4.3](sql-data-types.md)
+- DB2 data type [10.5.7](sql-data-types.md)
+- DBA\_STATEMENTS [15.5.2](plscope.md)
+- DBA\_STATEMENTS.SIGNATURE [15.5.2.4](plscope.md)
+- DBA\_STATEMENTS.TYPE Column [15.5.2.1](plscope.md)
+- DBA\_STATEMENTS.USAGE\_CONTEXT\_ID [15.5.2.3](plscope.md)
+- DBA\_STATEMENTS.USAGE\_ID [15.5.2.2](plscope.md)
+- DBMS\_APPLICATION\_INFO package [4.2.1](performance-and-scalability.md)
+- DBMS\_DEBUG\_JDWP [14.11.3](coding-subprograms-and-packages.md)
+- DBMS\_DEBUG\_JDWP package [14.11](coding-subprograms-and-packages.md)
+- DBMS\_FLASHBACK\_ARCHIVE\_MIGRATE [20.9.8](flashback.md)
+- DBMS\_FLASHBACK\_ARCHIVE procedures [20.9](flashback.md)
+- DBMS\_FLASHBACK.TRANSACTION\_BACKOUT procedure [20.8](flashback.md)
+- DBMS\_FLASHBACK package [20.7](flashback.md)
+- DBMS\_HPROF.ANALYZE [16.5.2.6](hierarchical-profiler.md)
+- DBMS\_HPROF package [16.2](hierarchical-profiler.md)
+- DBMS\_LOCK package [9.5](sql-processing-for-application-developers.md)
+- DBMS\_OUTPUT package [14.11](coding-subprograms-and-packages.md)
+- DBMS\_PARALLEL\_EXECUTE package [28.5.5](editions.md)
+- DBMS\_PLSQL\_CODE\_COVERAGE [17.1](basic-block-coverage.md), [17.2](basic-block-coverage.md)
+- DBMS\_SQL.RETURN\_RESULT procedure [14.4.5.3](coding-subprograms-and-packages.md)
+- DBMS\_STATS package [20.12](flashback.md)
+- DBMS\_TYPES package [10.5.6](sql-data-types.md)
+- DBMS\_XA package [23.3.10](xa.md)
+- DDL\_LOCK\_TIMEOUTparameter [9.7](sql-processing-for-application-developers.md)
+- DDL statement
+	- blocking [9.7](sql-processing-for-application-developers.md)
+		- Flashback Archive [20.9.1](flashback.md)
+		- for creating package [14.4.2](coding-subprograms-and-packages.md)
+		- for creating subprogram [14.4.2](coding-subprograms-and-packages.md)
+		- ineffective [27.4](schema-object-dependency.md)
+		- nonblocking [9.7](sql-processing-for-application-developers.md)
+		- in autonomous transaction [9.8](sql-processing-for-application-developers.md)
+		- Oracle XA and [23.5.4.2](xa.md)
+		- processing [9.1.1](sql-processing-for-application-developers.md)
+		- that generates notification [19.3.2](cqn.md)
+- deadlock, undetected [9.5](sql-processing-for-application-developers.md)
+- debugging
+	- compiling PL/SQL unit for [14.11.3.1](coding-subprograms-and-packages.md)
+		- external subprogram [22.13.4](external-procedures.md)
+		- subprogram [14.11](coding-subprograms-and-packages.md)
+		- wrap utility and [14.11.3.1](coding-subprograms-and-packages.md)
+- decimal floating-point number [10.3.2](sql-data-types.md)
+- default column value [13.5](data-integrity.md)
+- deferring constraint checks [13.8.4](data-integrity.md)
+- definer’s rights [6.4.1](security.md)
+- denormal floating-point number [10.3.2.1](sql-data-types.md)
+- dependency mode [27.10](schema-object-dependency.md)
+- dependent object
+	- See: schema object dependency
+- dependent transaction [20.8.1](flashback.md)
+- DEPRECATE PRAGMA [14.6](coding-subprograms-and-packages.md)
+- descendent edition [28.2.2](editions.md)
+- design
+	- physical [4.1.1.2.1](performance-and-scalability.md), [4.1.1.2.2](performance-and-scalability.md)
+- DETERMINISTIC function
+	- function-based index and [12.4.2](indexes.md)
+		- RPC signature and [27.10.2](schema-object-dependency.md)
+- dirty read [9.6.1](sql-processing-for-application-developers.md)
+- disabling constraint
+	- effect of [13.14](data-integrity.md)
+		- existing [13.14.5](data-integrity.md)
+		- new [13.14.3](data-integrity.md)
+		- reasons for [13.14.1](data-integrity.md)
+- distributed database
+	- FOREIGN KEY constraint and [13.11](data-integrity.md)
+		- remote dependency management and [27.9](schema-object-dependency.md)
+- distributed transaction [23.1.1](xa.md)
+	- remote subprogram and [14.9.4.2](coding-subprograms-and-packages.md)
+- DLL (dynamic link library) [22.2](external-procedures.md)
+- DML\_LOCKS initialization parameter [9.4](sql-processing-for-application-developers.md)
+- DML statement
+	- bulk binding for [14.4.8.1](coding-subprograms-and-packages.md)
+		- that references collection [14.4.8.1](coding-subprograms-and-packages.md)
+- domain index [12.3](indexes.md)
+- double-precision IEEE 754 format [10.3.2](sql-data-types.md)
+- drivers, Oracle JDBC [21.4.2.1](application-architecture.md)
+- DTP (X/Open Distributed Transaction architecture) [23.1](xa.md)
+- dynamically typed data [10.5.6](sql-data-types.md)
+- dynamic link library (DLL) [22.2](external-procedures.md)
+- dynamic registration [23.1.1](xa.md)
+- dynamic SQL [14.4.9](coding-subprograms-and-packages.md)
+	- implicit query results and [14.4.5.3](coding-subprograms-and-packages.md)
+		- RESTRICT\_REFERENCES pragma and [14.10.4.3.3](coding-subprograms-and-packages.md)
+
+---
+
+## E
+
+- EBR (edition-based redefinition) [28.1](editions.md)
+- edition [28.2](editions.md)
+	- ancestor [28.2.2](editions.md)
+		- creating [28.2.2](editions.md)
+		- crossedition triggers and [28.5.3](editions.md)
+		- current [28.2.6](editions.md)
+		- descendent [28.2.2](editions.md)
+		- displaying information about [28.6.1](editions.md)
+		- dropping [28.2.8](editions.md)
+		- enabling for user and types [28.2.1.4](editions.md)
+		- evaluation
+		- See evaluation edition [28.2.1.2](editions.md)
+		- leaf [28.2.2](editions.md)
+		- making available
+		- to all users [28.2.5](editions.md)
+				- to some users [28.2.4](editions.md)
+		- ora$base [28.2](editions.md), [28.2.2](editions.md)
+		- retiring [28.2.7](editions.md)
+		- root [28.2.2](editions.md)
+		- scope of [28.2](editions.md)
+		- session [28.2.6](editions.md)
+		- unusable
+		- See unusable edition [28.2.1.2.1](editions.md)
+		- visibility of trigger in [28.5.3.1](editions.md)
+- EDITIONABLE property [28.2.1.5](editions.md)
+- editionable schema object type [28.2.1.3](editions.md)
+- edition-based redefinition (EBR) [28.1](editions.md)
+- editioned object [28.2.1](editions.md)
+	- creating or replacing [28.2.1.5.1](editions.md)
+		- name resolution and [28.2.1.1](editions.md)
+- editioning view [28.4](editions.md)
+	- auditing policy and [28.7.1](editions.md)
+		- changing base table of [28.4.5](editions.md)
+		- changing writability of [28.4.3](editions.md)
+		- covering table with [28.7.1](editions.md)
+		- creating [28.4.1](editions.md)
+		- displaying information about [28.6.2](editions.md)
+		- partition-extended name for [28.4.2](editions.md)
+		- preparing application for [28.7.1](editions.md)
+		- read-only [28.4.1](editions.md)
+		- read-write [28.4.1](editions.md)
+		- replacing [28.4.4](editions.md)
+		- scope of [28.2](editions.md)
+		- SQL optimizer hint and [28.4.7](editions.md)
+- Electronic Product Code (EPC) [26.7.2.1](identity-code.md)
+- embedded PL/SQL gateway [18.2.1.2](web-applications.md)
+	- how to use [18.4](web-applications.md)
+- enabling constraint
+	- effect of [13.14](data-integrity.md)
+		- existing [13.14.4](data-integrity.md)
+		- new [13.14.2](data-integrity.md)
+- enabling editions [28.2.1.4](editions.md)
+- encoding scheme, adding [26.3.4](identity-code.md)
+- environment, programming [21](application-architecture.md)
+- EPC (Electronic Product Code) [26.7.2.1](identity-code.md)
+- evaluation edition [28.2.1.2](editions.md)
+	- dropping edition and [28.2.8](editions.md)
+		- for materialized view [28.2.1.2.1](editions.md)
+		- for virtual column [28.2.1.2.2](editions.md)
+		- retiring edition and [28.2.7](editions.md)
+- exception
+	- IEEE 754 standard
+		- not raised [10.3.3](sql-data-types.md)
+				- raised during conversion [10.3.6](sql-data-types.md)
+		- in multilanguage program [22.11](external-procedures.md)
+		- to constraint [13.14.7](data-integrity.md)
+- exception handling [8.5](advanced_plsql_features.md)
+	- for storage allocation error [9.9](sql-processing-for-application-developers.md)
+- EXCLUSIVE MODE option of LOCK TABLE statement [9.4.2.4](sql-processing-for-application-developers.md)
+- EXECUTE privilege [14.4.1](coding-subprograms-and-packages.md)
+- execution plan [4.2.3](performance-and-scalability.md)
+	- data type and [10.1.3](sql-data-types.md)
+- EXPLAIN PLAN statement [4.2.3](performance-and-scalability.md)
+- explicit cursor [14.4.5](coding-subprograms-and-packages.md)
+- EXPR data type [10.7.2](sql-data-types.md)
+- expression
+	- index built on
+		- See function-based index [12.4](indexes.md)
+		- regular
+		- See regular expression [11](regexp.md)
+- extensibility [2.3](design_basics.md)
+- external data type [10](sql-data-types.md)
+- external large object (BFILE) data type [10.5.2.1](sql-data-types.md)
+- external subprogram [22.2](external-procedures.md)
+	- call specification for [22.3](external-procedures.md)
+		- debugging [22.13.4](external-procedures.md)
+		- loading [22.4](external-procedures.md)
+		- managing for applications [6.5](security.md)
+		- publishing [22.5](external-procedures.md)
+- external transaction manager [23.1.1](xa.md)
+
+---
+
+## F
+
+- family of data types
+	- PL/SQL [14.4.4.1](coding-subprograms-and-packages.md)
+		- SQL [10.7.3](sql-data-types.md)
+- FAN event, load balancing advisory [3.4.3](connection_strategies.md)
+- Fast Application Notification (FAN) [3.4.1](connection_strategies.md)
+- fine-grained access control [6.3](security.md)
+- fine-grained auditing (FGA) policy, editioning view and [28.7.1](editions.md)
+- fine-grained invalidation [27.4](schema-object-dependency.md)
+- firing order of triggers [28.5.3.3](editions.md)
+- FIXED\_DATE initialization parameter [10.4.1](sql-data-types.md)
+- fixed-point data type [10.3](sql-data-types.md)
+- Flashback Archive [20.9](flashback.md)
+- Flashback Data Archive [20.9](flashback.md)
+- Flashback Time Travel [20.9](flashback.md)
+- Flashback Transaction [20.8](flashback.md)
+- FLOAT data type [10.3](sql-data-types.md)
+- floating-point data type [10.3](sql-data-types.md)
+	- See also: native floating-point data type
+	- range and precision of [10.3.2](sql-data-types.md)
+- floating-point number
+	- binary [10.3.2](sql-data-types.md)
+		- components of [10.3.1](sql-data-types.md)
+		- decimal [10.3.2](sql-data-types.md)
+		- denormal [10.3.2.1](sql-data-types.md)
+		- format of [10.3.2](sql-data-types.md)
+		- rounding [10.3.2](sql-data-types.md)
+		- subnormal [10.3.2.1](sql-data-types.md)
+- FORCE option of ALTER USER statement [28.2.1.4.1](editions.md)
+- FOREIGN KEY constraint [13.8](data-integrity.md)
+	- distributed databases and [13.11](data-integrity.md)
+		- dropping [13.17](data-integrity.md)
+		- editioned view and [28.2.1.6](editions.md)
+		- enabling [13.18](data-integrity.md)
+		- Flashback Transaction and [20.8.1](flashback.md)
+		- indexing [13.10](data-integrity.md)
+		- multiple [13.8.3](data-integrity.md)
+		- naming [13.13.2](data-integrity.md)
+		- NOT NULL constraint on [13.8.2](data-integrity.md)
+		- NULL value and [13.8.1](data-integrity.md)
+		- privileges needed to create [13.18.4](data-integrity.md)
+		- referential integrity enforced by [13.18.5](data-integrity.md)
+		- UNIQUE constraint on [13.8.2](data-integrity.md)
+		- without other constraints [13.8.2](data-integrity.md)
+- foreign key dependency [20.8.1](flashback.md)
+- FOR loop
+	- bulk binding for [14.4.8.3](coding-subprograms-and-packages.md)
+		- that references collection [14.4.8.3](coding-subprograms-and-packages.md)
+- forward compatibility [2.3](design_basics.md)
+- forward crossedition trigger [28.5.1](editions.md)
+- forward crossedition trigger SQL [28.5.3.2.1](editions.md)
+- function [14.1](coding-subprograms-and-packages.md)
+	- See also: subprogram
+	- aggregate [14](coding-subprograms-and-packages.md)
+		- analytic [2.9.1](design_basics.md)
+		- built-in
+		- See SQL function [10.7](sql-data-types.md)
+		- DETERMINISTIC
+		- function-based index and [12.4.2](indexes.md)
+				- RPC signature and [27.10.2](schema-object-dependency.md)
+		- invoking from SQL statement [14.10](coding-subprograms-and-packages.md)
+		- MGD\_ID ADT [26.3.3](identity-code.md)
+		- OCI or OCCI [21.7.2](application-architecture.md)
+		- PARALLEL\_ENABLE, RPC signature and [27.10.2](schema-object-dependency.md)
+		- PL/SQL, invoked by SQL statement [14.10](coding-subprograms-and-packages.md)
+		- purity of [14.10.4](coding-subprograms-and-packages.md)
+		- RPC signature and [27.10.2](schema-object-dependency.md)
+		- result-cached [14.4.7](coding-subprograms-and-packages.md)
+		- returning large amount of data from [14.4.6](coding-subprograms-and-packages.md)
+		- SQL
+		- See SQL function [10.4.5](sql-data-types.md)
+		- SQL analytic [2.9.1](design_basics.md)
+- function-based index [12.4](indexes.md)
+	- example for faster case-insensitive searches [12.4.5](indexes.md)
+		- example for object columns [12.4.4](indexes.md)
+		- example for precomputing arithmetic expressions [12.4.3](indexes.md)
+		- optimizer and [12.4](indexes.md), [12.4.1](indexes.md)
+- function result cache [14.4.7](coding-subprograms-and-packages.md)
+
+---
+
+## G
+
+- generated column [28.2.1.2.2](editions.md)
+- Geographic Information System (GIS) data [10.5.1](sql-data-types.md)
+- GET\_LTXID\_OUTCOME procedure [9.2.4.2](sql-processing-for-application-developers.md)
+- global transaction [23.1.1](xa.md)
+- global variable, in C external subprogram [22.13.6](external-procedures.md)
+- greedy operator in regular expression [11.4.1](regexp.md)
+- group commit [9.2.3](sql-processing-for-application-developers.md)
+
+---
+
+## I
+
+- IA-32 and IA-64 instruction set architecture [10.3.5](sql-data-types.md)
+- IBM CICS [23.1.1](xa.md)
+- IBM Transarc Encina [23.1.1](xa.md)
+- Identity Code Package [26](identity-code.md)
+- IEEE 754 standard [10.3](sql-data-types.md)
+	- See also: native floating-point data type
+	- exception
+		- not raised [10.3.3](sql-data-types.md)
+				- raised during conversion [10.3.6](sql-data-types.md)
+		- special values supported by [10.3.3](sql-data-types.md)
+- IGNORE\_ROW\_ON\_DUPKEY\_INDEX hint [28.5.4.1.1](editions.md)
+- IMMEDIATE commit redo option [9.2.3](sql-processing-for-application-developers.md)
+- implementing database application [4.1.1.3](performance-and-scalability.md)
+- implicit cursor [14.4.5](coding-subprograms-and-packages.md)
+- independent transaction
+	- See: autonomous transaction
+- index [12](indexes.md)
+	- domain [12.3](indexes.md)
+		- edition-based redefinition and [28.4.6](editions.md)
+		- function-based
+		- See function-based index [12.4](indexes.md)
+		- on MGD\_ID column [26.3.2](identity-code.md)
+- infinity [10.3.3](sql-data-types.md)
+- in-flight transaction [9.2.4](sql-processing-for-application-developers.md)
+- INHERIT ANY PRIVILEGES system privilege [6.4.2](security.md)
+- inherited object [28.2.3](editions.md)
+- INHERIT PRIVILEGES privilege [6.4.2](security.md)
+- initialization parameter [14.3](coding-subprograms-and-packages.md)
+	- DML\_LOCKS [9.4](sql-processing-for-application-developers.md)
+		- FIXED\_DATE [10.4.1](sql-data-types.md)
+		- NLS\_DATE\_FORMAT [10.4.1](sql-data-types.md)
+- instrumentation [5.2](rwp.md)
+- integer data type class [27.10.2.4](schema-object-dependency.md)
+- integrity constraint
+	- See: constraint
+- integrity of data
+	- See: data integrity
+- interface [21.7](application-architecture.md)
+	- See also: Oracle C++ Call Interface, Oracle Call Interface
+	- between PL/SQL and C [22.5.2](external-procedures.md)
+		- between PL/SQL and Java [22.5.1](external-procedures.md)
+		- program [21.2](application-architecture.md)
+		- TX [23.1.1](xa.md)
+		- user [21.2.1](application-architecture.md)
+		- stateful or stateless [21.2.2](application-architecture.md)
+- invalidation
+	- cascading [27.4](schema-object-dependency.md)
+		- coarse-grained [27.4](schema-object-dependency.md)
+		- fine-grained [27.4](schema-object-dependency.md)
+		- of dependent object [27.4](schema-object-dependency.md)
+		- of package [14.12](coding-subprograms-and-packages.md)
+- invoker’s rights [6.4.1](security.md)
+	- affect on invoker’s privileges [6.4.2](security.md)
+		- Java stored procedures [6.4.3](security.md)
+- invoking subprogram [14.9](coding-subprograms-and-packages.md)
+	- from subprogram [14.9.3](coding-subprograms-and-packages.md)
+		- from trigger [14.9.3](coding-subprograms-and-packages.md)
+		- interactively from Oracle Database tools [14.9.2](coding-subprograms-and-packages.md)
+		- through embedded PL/SQL gateway [18.4.4](web-applications.md)
+- isolation level
+	- See: transaction isolation level
+- iterative data processing
+	- about [5.3.1.1](rwp.md)
+		- arrays [5.3.1.3](rwp.md)
+		- manual parallelism [5.3.1.4](rwp.md)
+		- row by row [5.3.1.2](rwp.md)
+
+---
+
+## J
+
+- Java class method [22.6](external-procedures.md)
+	- See also: external subprogram
+	- calling [22.10.3](external-procedures.md)
+		- interface between PL/SQL and [22.5.1](external-procedures.md)
+		- publishing [22.6](external-procedures.md)
+- Java Database Connectivity
+	- See: Oracle JDBC
+- Java language
+	- compared to PL/SQL [21.5](application-architecture.md)
+		- Oracle Database support for [21.4](application-architecture.md)
+- Java stored procedures [6.4.3](security.md)
+- Java Virtual Machine
+	- See: Oracle JVM
+- JDBC
+	- See: Oracle JDBC
+- JVM
+	- See: Oracle JVM
+
+---
+
+## K
+
+- key
+	- foreign
+		- See FOREIGN KEY constraint [13.8](data-integrity.md)
+		- primary
+		- See PRIMARY KEY constraint [13.6](data-integrity.md)
+		- unique
+		- See UNIQUE constraint [13.7](data-integrity.md)
+
+---
+
+## L
+
+- Large Object (LOB) [10.5.2.1](sql-data-types.md)
+- leaf edition [28.2.2](editions.md)
+- LGWR (log writer process) [9.2.3](sql-processing-for-application-developers.md)
+- lightweight queue [24.3](publish-subscribe-model.md)
+- live operation [28.1](editions.md)
+- load balancing advisory FAN event [3.4.3](connection_strategies.md)
+- LOB
+	- See: Large Object (LOB)
+- locking row explicitly [9.4.4](sql-processing-for-application-developers.md)
+- locking table
+	- explicitly [9.4](sql-processing-for-application-developers.md)
+		- implicitly [9.4.3](sql-processing-for-application-developers.md)
+- LOCK TABLE statement [9.4.2](sql-processing-for-application-developers.md)
+	- SELECT FOR UPDATE statement with [9.4.5](sql-processing-for-application-developers.md)
+- logical design [4.1.1.2.1](performance-and-scalability.md)
+- logical transaction identifier (LTXID) [9.2.4.1](sql-processing-for-application-developers.md)
+- logical value [14.4.4.1.2](coding-subprograms-and-packages.md)
+- log writer process (LGWR) [9.2.3](sql-processing-for-application-developers.md)
+- LONG and LONG RAW data types [10.5.2.2](sql-data-types.md)
+- LONG data type [10.2](sql-data-types.md)
+- loose coupling [23.1.1](xa.md)
+- LTXID (logical transaction identifier) [9.2.4.1](sql-processing-for-application-developers.md)
+
+---
+
+## M
+
+- maintaining database and application [4.1.1.4](performance-and-scalability.md)
+- main transaction [9.8](sql-processing-for-application-developers.md)
+- managing default rights [6.4.3](security.md)
+- materialized view [2.9.2](design_basics.md)
+	- that depends on editioned object [28.2.1.2.1](editions.md)
+- maximum availability of table [28.4.1](editions.md)
+- memory advisor [4.3.4](performance-and-scalability.md)
+- metacharacter in regular expression [11.1](regexp.md)
+- metadata for SQL operator or function [10.7](sql-data-types.md)
+- metrics [4.1.2](performance-and-scalability.md)
+- MGD\_ID ADT [26.1](identity-code.md)
+- MGD\_ID database ADT function [26.3.3](identity-code.md)
+- mod\_plsql module [18.2.1.1](web-applications.md)
+- mode
+	- dependency [27.10](schema-object-dependency.md)
+		- lock [9.4.2](sql-processing-for-application-developers.md)
+		- serialized
+		- See serializable transaction [9.6](sql-processing-for-application-developers.md)
+- MODIFY CONSTRAINT clause of ALTER TABLE statement [13.15](data-integrity.md)
+- modifying
+	- See: altering
+- monitoring database performance [4.3](performance-and-scalability.md)
+- multilanguage program [22.1](external-procedures.md)
+	- error or exception in [22.11](external-procedures.md)
+- multiline mode [11.2](regexp.md)
+- multilingual data [11.4.2](regexp.md)
+
+---
+
+## N
+
+- name resolution [27.7](schema-object-dependency.md)
+	- editions and [28.2.1.1](editions.md)
+- NaN (not a number) [10.3.3](sql-data-types.md)
+- national character large object (NCLOB) data type [10.5.2.1](sql-data-types.md)
+- native execution [14.8](coding-subprograms-and-packages.md)
+- native floating-point data type [10.3](sql-data-types.md)
+	- arithmetic operation with [10.3.5](sql-data-types.md)
+		- binary format for [10.3.2.1](sql-data-types.md)
+		- conversion functions for [10.3.6](sql-data-types.md)
+		- in client interfaces [10.3.7](sql-data-types.md)
+		- special values for [10.3.3](sql-data-types.md)
+- NCHAR data type [10.2](sql-data-types.md)
+- NCLOB data type [10.2](sql-data-types.md)
+- negative infinity [10.3.3](sql-data-types.md)
+- negative zero [10.3.3](sql-data-types.md)
+- nested subprogram [14.1](coding-subprograms-and-packages.md)
+- NLS\_DATE\_FORMAT initialization parameter [10.4.1](sql-data-types.md)
+- NO\_RESULT\_CACHE hint [4.5.3.1](performance-and-scalability.md)
+- nonblocking DDL statement [9.7](sql-processing-for-application-developers.md)
+	- in autonomous transaction [9.8](sql-processing-for-application-developers.md)
+- NONEDITIONABLE property [28.2.1.5](editions.md)
+- noneditionable schema object type [28.2.1.3](editions.md)
+- noneditioned object [28.2.1](editions.md)
+	- creating or replacing [28.2.1.5.1](editions.md)
+		- name resolution and [28.2.1.1](editions.md)
+		- that can depend on editioned object [28.2.1.2](editions.md)
+		- dropping edition and [28.2.8](editions.md)
+				- FORCE and [28.2.1.4.1](editions.md)
+- nongreedy operator in regular expression [11.4.3](regexp.md)
+- nonpersistent queue [24.3](publish-subscribe-model.md)
+- normalized significand [10.3.2.1](sql-data-types.md)
+- NOT NULL
+	- See NOT NULL constraint [13.4](data-integrity.md)
+- NOT NULL constraint
+	- compared to CHECK constraint [13.12.4](data-integrity.md)
+		- naming [13.13.2](data-integrity.md)
+		- on FOREIGN KEY constraint [13.8.2](data-integrity.md)
+		- when to use [13.4](data-integrity.md)
+- NOWAIT commit redo option [9.2.3](sql-processing-for-application-developers.md)
+- NOWAIT option of LOCK TABLE statement [9.4.2](sql-processing-for-application-developers.md)
+- NULL value
+	- FOREIGN KEY constraint and [13.8.1](data-integrity.md)
+		- function-based index and [12.4](indexes.md)
+		- indexing and [13.4](data-integrity.md)
+- NUMBER data type [10.3](sql-data-types.md)
+- number data type class [27.10.2.4](schema-object-dependency.md)
+- numeric data types [10.3](sql-data-types.md)
+- NVARCHAR2 data type [10.2](sql-data-types.md)
+
+---
+
+## O
+
+- object
+	- actual [28.2.3](editions.md)
+		- dependent
+		- See schema object dependency [27.1](schema-object-dependency.md)
+		- editioned
+		- See editioned object [28.2.1](editions.md)
+		- inherited [28.2.3](editions.md)
+		- large
+		- See Large Object (LOB) [10.5.2.1](sql-data-types.md)
+		- noneditioned
+		- See noneditioned object [28.2.1](editions.md)
+		- potentially editioned [28.2.1](editions.md)
+		- with noneditioned dependents [28.2.1.4.1](editions.md)
+		- referenced
+		- See schema object dependency [27.1](schema-object-dependency.md)
+		- size limit for PL/SQL stored [14.4.3](coding-subprograms-and-packages.md)
+- object change notification [19.1](cqn.md)
+- OCCI
+	- See: Oracle C++ Call Interface
+- OCI
+	- See: Oracle Call Interface
+- OCI\_ATTR\_CHDES\_DBNAME [19.8.6.1](cqn.md)
+- OCI\_ATTR\_CHDES\_NFTYPE [19.8.6.1](cqn.md)
+- OCI\_ATTR\_CHDES\_TABLE\_CHANGES [19.8.6.1](cqn.md)
+- OCI\_ATTR\_CHDES\_TABLE\_NAME [19.8.6.1.2](cqn.md)
+- OCI\_ATTR\_CHDES\_TABLE\_OPFLAGS [19.8.6.1.2](cqn.md)
+- OCI\_ATTR\_CHDES\_TABLE\_ROW\_CHANGES [19.8.6.1.2](cqn.md)
+- OCI\_ATTR\_CHDES\_XID [19.8.6.1](cqn.md)
+- OCI\_ATTR\_CHNF\_CHANGELAG [19.8.4](cqn.md)
+- OCI\_ATTR\_CHNF\_ROWIDS [19.8.4](cqn.md)
+- OCI\_ATTR\_CQ\_QUERYID [19.8.5](cqn.md)
+- OCI\_ATTR\_CQDES\_OPERATION [19.8.6.1.1](cqn.md)
+- OCI\_ATTR\_CQDES\_QUERYID [19.8.6.1.1](cqn.md)
+- OCI\_ATTR\_CQDES\_TABLE\_CHANGES [19.8.6.1.1](cqn.md)
+- OCI\_ATTR\_SESSION\_STATE attribute [4.10.18](performance-and-scalability.md)
+- OCI\_ATTR\_SUBSCR\_CALLBACK [19.8.4](cqn.md)
+- OCI\_ATTR\_SUBSCR\_CQ\_CHNF\_QOSFLAGS [19.8.4](cqn.md)
+- OCI\_ATTR\_SUBSCR\_TIMEOUT [19.8.4](cqn.md)
+- OCI\_DTYPE\_CQDES [19.8.6.1.1](cqn.md)
+- OCI\_SECURE\_NOTIFICATION [19.8.3](cqn.md)
+- OCI\_SESSGET\_PURITY\_NEW attribute [4.10.6](performance-and-scalability.md)
+- OCI\_SESSGET\_PURITY\_SELF attribute [4.10.6](performance-and-scalability.md)
+- OCI\_SESSION\_STATELESS attribute [4.10.18](performance-and-scalability.md)
+- OCI\_SUBSCR\_QOS\_PURGE\_ON\_NTFN [19.8.4](cqn.md)
+- OCIAnyData and OCIAnyDataSet interfaces [10.5.6](sql-data-types.md)
+- ODP.NET [21.9](application-architecture.md)
+- online application upgrade
+	- See: edition-based redefinition (EBR)
+- operator
+	- in regular expression [11.4](regexp.md)
+		- greedy [11.4.1](regexp.md)
+				- nongreedy [11.4.3](regexp.md)
+		- metadata for [10.7](sql-data-types.md)
+- optimizer
+	- editioning view and [28.4.7](editions.md)
+		- function-based index and [12.4](indexes.md), [12.4.1](indexes.md)
+		- RPC signature and [27.10.2](schema-object-dependency.md)
+- ORA\_SDTZ system variable
+	- effect of setting [25.4.12](odbc-driver.md)
+- ora$base edition [28.2](editions.md), [28.2.2](editions.md)
+- Oracle Advanced Queuing (AQ) [24.2.2](publish-subscribe-model.md)
+- Oracle C++ Call Interface [21.7](application-architecture.md)
+	- building application with [21.7.4](application-architecture.md)
+		- kinds of functions in [21.7.2](application-architecture.md)
+		- native floating-point data types in [10.3.7](sql-data-types.md)
+		- procedural and nonprocedural elements of [21.7.3](application-architecture.md)
+- Oracle Call Interface [21.7](application-architecture.md)
+	- building application with [21.7.4](application-architecture.md)
+		- commit redo action in [9.2.3](sql-processing-for-application-developers.md)
+		- compared to precompiler [21.8](application-architecture.md)
+		- kinds of functions in [21.7.2](application-architecture.md)
+		- native floating-point data types in [10.3.7](sql-data-types.md)
+		- procedural and nonprocedural elements of [21.7.3](application-architecture.md)
+		- with Oracle XA [23.3.5](xa.md)
+- Oracle Database Tuning Pack [4.3.4](performance-and-scalability.md)
+- Oracle Database Vault [6.3](security.md)
+- Oracle Data Provider for.NET [21.9](application-architecture.md)
+- Oracle Data Redaction [6.3](security.md)
+- Oracle data type
+	- See: SQL data type
+- Oracle Extensibility Architecture, data cartridges and [2.3.1](design_basics.md)
+- Oracle Extensibility Architecture framework, user-defined aggregate functions and [2.3.3](design_basics.md)
+- Oracle Flashback Data Archive
+	- Oracle Virtual Private Database [20.11](flashback.md)
+- Oracle Flashback Query [20.3](flashback.md)
+- Oracle Flashback Technology [20.1](flashback.md)
+	- application development features [20.1.1](flashback.md)
+		- configuring database for [20.2](flashback.md)
+		- database administration features [20.1.2](flashback.md)
+		- performance guidelines for [20.12](flashback.md)
+- Oracle Flashback Transaction Query [20.5](flashback.md)
+- Oracle Flashback Version Query [20.4](flashback.md)
+- Oracle JDBC [21.4.2](application-architecture.md)
+	- compared to Oracle SQLJ [21.4.4](application-architecture.md)
+		- native floating-point data types in [10.3.7](sql-data-types.md)
+		- sample program
+		- 2.0 [21.4.2.2](application-architecture.md)
+				- pre-2.0 [21.4.2.3](application-architecture.md)
+- Oracle JDeveloper, Oracle SQLJ and [21.4.3.1](application-architecture.md)
+- Oracle JVM [21.4.1](application-architecture.md)
+- Oracle Label Security [6.3](security.md)
+- Oracle Lock Management services [9.5](sql-processing-for-application-developers.md)
+- Oracle Real Application Clusters (Oracle RAC)
+	- client result cache and [4.5.5.1.2](performance-and-scalability.md)
+		- DRCP and [4.10.20](performance-and-scalability.md)
+		- load balancing advisory FAN events and [3.4.3](connection_strategies.md)
+		- Oracle XA and [23.5.3](xa.md)
+		- runtime connection load balancing and [3.4.1](connection_strategies.md)
+- Oracle SQLJ [21.4.3](application-architecture.md)
+	- compared to Oracle JDBC [21.4.4](application-architecture.md)
+		- Oracle JDeveloper and [21.4.3.1](application-architecture.md)
+- Oracle Text [10.5.4](sql-data-types.md)
+- Oracle Total Recall [20.9](flashback.md)
+- Oracle Tuxedo [23.1.1](xa.md)
+- Oracle Virtual Private Database
+	- Oracle Flashback Data Archive [20.11](flashback.md)
+- Oracle Virtual Private Database (VPD) [6.3](security.md)
+	- editioning view and [28.7.1](editions.md)
+- Oracle XA
+	- Oracle RAC and [23.5.3](xa.md)
+		- subprograms [23.2](xa.md)
+		- when to use [23](xa.md)
+- out-of-space error [9.9](sql-processing-for-application-developers.md)
+- overloaded subprogram [14.1](coding-subprograms-and-packages.md)
+
+---
+
+## P
+
+- package
+	- creating [14.4.2](coding-subprograms-and-packages.md)
+		- dropping [14.7](coding-subprograms-and-packages.md)
+		- invalidation of [14.12](coding-subprograms-and-packages.md)
+		- session state and [27.4.1](schema-object-dependency.md)
+		- size limit for [14.4.3](coding-subprograms-and-packages.md)
+		- synonym for [14.9.4.1](coding-subprograms-and-packages.md)
+- package body [14.2](coding-subprograms-and-packages.md)
+- package invalidation and [14.12](coding-subprograms-and-packages.md)
+- package specification [14.2](coding-subprograms-and-packages.md)
+- package subprogram [14.1](coding-subprograms-and-packages.md)
+- PARALLEL\_ENABLE function
+	- RPC signature and [27.10.2](schema-object-dependency.md)
+- parallelized SQL statement [14.10.4.2](coding-subprograms-and-packages.md)
+- parameter
+	- compilation
+		- See compilation parameter [14.3](coding-subprograms-and-packages.md)
+		- initialization [14.3](coding-subprograms-and-packages.md)
+- partition-extended editioning view name [28.4.2](editions.md)
+- partitioning [2.9.3](design_basics.md)
+- performance [4](performance-and-scalability.md)
+- performance, data type and [10.1.3](sql-data-types.md)
+- performance goals [4.1.2](performance-and-scalability.md)
+- performance testing [4.4](performance-and-scalability.md)
+- persistent LOB instance [10.5.2.1](sql-data-types.md)
+- persistent queue [24.3](publish-subscribe-model.md)
+- phantom read [9.6.1](sql-processing-for-application-developers.md)
+- physical design [4.1.1.2.2](performance-and-scalability.md)
+- PL/Scope [14.11](coding-subprograms-and-packages.md), [15.1](plscope.md)
+- PL/Scope security model [15.2](plscope.md)
+- PL/Scope tool [15](plscope.md)
+- PL/SQL block [14.1](coding-subprograms-and-packages.md)
+- PL/SQL data type [14.4.4](coding-subprograms-and-packages.md)
+- PL/SQL function result cache [14.4.7](coding-subprograms-and-packages.md)
+- PL/SQL gateway [18.2.1](web-applications.md)
+- PL/SQL hierarchical profiler [16](hierarchical-profiler.md)
+- PL/SQL Hierarchical Profiler [14.11](coding-subprograms-and-packages.md)
+- PL/SQL language [21.3](application-architecture.md)
+	- compared to Java [21.5](application-architecture.md)
+- PL/SQL object
+	- See: PL/SQL unit
+- PL/SQL optimize level [14.3.1](coding-subprograms-and-packages.md)
+- PL/SQL optimizer level [8.3](advanced_plsql_features.md)
+- PL/SQL unit [14.3](coding-subprograms-and-packages.md)
+	- compiling for debugging [14.11.3.1](coding-subprograms-and-packages.md)
+		- CREATE OR REPLACE and [27.4](schema-object-dependency.md)
+- PL/SQL Web Toolkit [18.2.2](web-applications.md)
+- PLS\_INTEGER data type [14.4.4.1.3](coding-subprograms-and-packages.md)
+- plshprof utility [16.5](hierarchical-profiler.md)
+- PLSQL\_CODE\_COVERAGE package [17.3](basic-block-coverage.md)
+- pool, connection [21.6.1](application-architecture.md)
+- positive infinity [10.3.3](sql-data-types.md)
+- positive zero [10.3.3](sql-data-types.md)
+- POSIX standard for regular expressions
+	- operators defined in [11.4.1](regexp.md)
+		- Oracle SQL and [11.3](regexp.md)
+		- Oracle SQL multilingual extensions to [11.4.2](regexp.md)
+		- Oracle SQL PERL-influenced extensions to [11.4.3](regexp.md)
+- potentially editioned object [28.2.1](editions.md)
+	- with noneditioned dependents [28.2.1.4.1](editions.md)
+- precompiler [21.6](application-architecture.md)
+	- compared to Oracle Call Interface [21.8](application-architecture.md)
+		- Oracle XA and [23.3.4](xa.md)
+- PRIMARY KEY constraint [13.6](data-integrity.md)
+	- dropping [13.17](data-integrity.md)
+		- Flashback Transaction and [20.8.1](flashback.md)
+		- naming [13.13.2](data-integrity.md)
+- primary key dependency [20.8.1](flashback.md)
+- privileges [6.1](security.md)
+	- for debugging subprogram [14.11.3.2](coding-subprograms-and-packages.md)
+		- for defining constraint [13.13.1](data-integrity.md)
+		- for Oracle Flashback Technology [20.2.5](flashback.md)
+		- for running subprogram [14.9.1](coding-subprograms-and-packages.md)
+		- granting secure application roles [6.1](security.md)
+		- grouped into roles [6.1](security.md)
+		- INHERIT ANY PRIVILEGES system privilege [6.4.2](security.md)
+		- INHERIT PRIVILEGES privilege [6.4.2](security.md)
+		- revoked, object dependency and [27.4.2](schema-object-dependency.md)
+- Pro\*C/C++ precompiler [21.6.1](application-architecture.md)
+	- native floating-point data types in [10.3.7](sql-data-types.md)
+- Pro\*COBOL precompiler [21.6.2](application-architecture.md)
+- procedure [14.1](coding-subprograms-and-packages.md)
+	- See also: subprogram
+- product code [26.7.2](identity-code.md)
+- profiler [16](hierarchical-profiler.md)
+- program interface [21.2](application-architecture.md)
+- programming environment [21](application-architecture.md)
+- public information, required [23.1.2](xa.md)
+- publish-subscribe model [24](publish-subscribe-model.md)
+- purity of function [14.10.4](coding-subprograms-and-packages.md)
+	- RPC signature and [27.10.2](schema-object-dependency.md)
+
+---
+
+## Q
+
+- quality-of-service flag [19.7.6.2](cqn.md)
+- query
+	- registering for Continuous Query Notification [19.6](cqn.md)
+		- returning results to client [14.4.5](coding-subprograms-and-packages.md)
+		- implicitly [14.4.5.3](coding-subprograms-and-packages.md)
+- Query Result Change Notification (QRCN) [19.2](cqn.md)
+- query rewrite [2.9.2](design_basics.md)
+- queue [24.3](publish-subscribe-model.md)
+
+---
+
+## R
+
+- Radio Frequency Identification (RFID) technology [26.7.1](identity-code.md)
+- RAW data type [10.5.2.2](sql-data-types.md)
+- raw data type class [27.10.2.4](schema-object-dependency.md)
+- READ COMMITTED transaction isolation level
+	- compared to SERIALIZABLE [9.6.4.2](sql-processing-for-application-developers.md)
+		- in Oracle Database [9.6.1](sql-processing-for-application-developers.md)
+		- transaction interactions with [9.6.1](sql-processing-for-application-developers.md)
+- read consistency [9.4](sql-processing-for-application-developers.md)
+	- statement-level [9.3](sql-processing-for-application-developers.md)
+		- transaction-level [9.3](sql-processing-for-application-developers.md)
+		- locking tables explicitly for [9.4](sql-processing-for-application-developers.md)
+				- read-only transaction for [9.3](sql-processing-for-application-developers.md)
+- read lock [9.6.3](sql-processing-for-application-developers.md)
+- read-only editioning view [28.4.1](editions.md)
+- read-only transaction [9.3](sql-processing-for-application-developers.md)
+- READ UNCOMMITTED transaction isolation level
+	- in Oracle Database [9.6.1](sql-processing-for-application-developers.md)
+		- transaction interactions with [9.6.1](sql-processing-for-application-developers.md)
+- read-write editioning view [28.4.1](editions.md)
+- record [14.4.4.2](coding-subprograms-and-packages.md)
+- redefinition, edition-based (EBR) [28.1](editions.md)
+- redo information for transaction [9.2.3](sql-processing-for-application-developers.md)
+- redo management [9.2.3](sql-processing-for-application-developers.md)
+- REF CURSOR data type [14.4.4.1.4](coding-subprograms-and-packages.md)
+- referenced object
+	- See: schema object dependency
+- referential integrity
+	- serializable transactions and [9.6.3](sql-processing-for-application-developers.md)
+		- trigger for enforcing [9.6.3](sql-processing-for-application-developers.md)
+- referential integrity constraint
+	- See: FOREIGN KEY constraint
+- REGEXP\_COUNT function [11.2](regexp.md)
+- REGEXP\_INSTR function [11.2](regexp.md)
+- REGEXP\_LIKE condition [11.2](regexp.md)
+- REGEXP\_REPLACE function [11.2](regexp.md)
+	- back reference operator in [11.4.1](regexp.md)
+- REGEXP\_SUBSTR function [11.2](regexp.md)
+- registration
+	- dynamic [23.1.1](xa.md)
+		- for Continuous Query Notification [19.6](cqn.md)
+		- in publish-subscribe model [24.3](publish-subscribe-model.md)
+		- static [23.1.1](xa.md)
+- regular expression [11](regexp.md)
+	- in Oracle SQL [11.2](regexp.md)
+		- in SQL statement [11.5](regexp.md)
+		- metacharacter in [11.1](regexp.md)
+		- POSIX standard and
+		- See POSIX standard for regular expressions [11.3](regexp.md)
+		- Unicode and [11.3](regexp.md)
+- remote dependency management [27.9](schema-object-dependency.md)
+- remote procedure call dependency management [27.10](schema-object-dependency.md)
+- remote subprogram [14.9.4](coding-subprograms-and-packages.md)
+- repeatable read [9.3](sql-processing-for-application-developers.md)
+	- locking tables explicitly for [9.4](sql-processing-for-application-developers.md)
+		- read-only transaction for [9.3](sql-processing-for-application-developers.md)
+- REPEATABLE READ transaction isolation level
+	- in Oracle Database [9.6.1](sql-processing-for-application-developers.md)
+		- transaction interactions with [9.6.1](sql-processing-for-application-developers.md)
+- required public information [23.1.2](xa.md)
+- resource manager (RM) [23.1.1](xa.md)
+- RESTRICT\_REFERENCES pragma
+	- for backward compatibility [14.10.4.3](coding-subprograms-and-packages.md)
+		- static and dynamic SQL and [14.10.4.3.3](coding-subprograms-and-packages.md)
+- RESULT\_CACHE\_MODE session parameter [4.5.3.3](performance-and-scalability.md)
+- RESULT\_CACHE hint [4.5.3.1](performance-and-scalability.md)
+- result cache [14.4.7](coding-subprograms-and-packages.md)
+- resumable storage allocation [9.9](sql-processing-for-application-developers.md)
+- RETENTION GUARANTEE clause for undo tablespace [20.2.1](flashback.md)
+- RETENTION option of ALTER TABLE statement [20.2.4](flashback.md)
+- RETURN\_RESULT procedure [14.4.5.3](coding-subprograms-and-packages.md)
+- reverse crossedition trigger [28.5.2](editions.md)
+- reverse crossedition trigger SQL [28.5.3.2.2](editions.md)
+- RFID (Radio Frequency Identification) technology [26.7.1](identity-code.md)
+- RM (resource manager) [23.1.1](xa.md)
+- roles [6.1](security.md)
+- root edition [28.2.2](editions.md)
+- rounding floating-point numbers [10.3.2](sql-data-types.md)
+- row
+	- address of (rowid) [10.6](sql-data-types.md)
+		- locking explicitly [9.4.4](sql-processing-for-application-developers.md)
+- ROW EXCLUSIVE MODE option of LOCK TABLE statement [9.4.2.1](sql-processing-for-application-developers.md)
+- rowid [10.6](sql-data-types.md)
+- ROWID data type
+	- ROWID pseudocolumn and [10.6](sql-data-types.md)
+- ROWID pseudocolumn [10.6](sql-data-types.md)
+	- See also: rowid
+	- CQN and [19.7.2.3](cqn.md)
+- ROW SHARE MODE option of LOCK TABLE statement [9.4.2.1](sql-processing-for-application-developers.md)
+- RPC dependency management [27.10](schema-object-dependency.md)
+	- RPC signature and [27.10.2](schema-object-dependency.md)
+- RR datetime format element [10.4.1](sql-data-types.md)
+- rule on queue [24.3](publish-subscribe-model.md)
+- rules engine [24.3](publish-subscribe-model.md)
+- runtime connection load balancing [3.4](connection_strategies.md)
+- runtime error
+	- See: exception
+
+---
+
+## S
+
+- scalability [4](performance-and-scalability.md)
+- scalar PL/SQL data type [14.4.4.1](coding-subprograms-and-packages.md)
+- schema object dependency [27](schema-object-dependency.md)
+	- in distributed database [27.9](schema-object-dependency.md)
+		- invalidation and [27.4](schema-object-dependency.md)
+		- on nonexistence of other objects [27.7](schema-object-dependency.md)
+		- revoked privileges and [27.4.2](schema-object-dependency.md)
+		- shared pool and [27.11](schema-object-dependency.md)
+- schema object type
+	- editionable [28.2.1.3](editions.md)
+		- enabling for editions [28.2.1.4](editions.md)
+		- noneditionable [28.2.1.3](editions.md)
+- searchable text [10.5.4](sql-data-types.md)
+- secure application roles [6.1](security.md)
+- security
+	- auditing [6.6](security.md)
+		- external procedures for applications [6.5](security.md)
+		- invoker’s rights and definer’s rights [6.4.1](security.md)
+		- Java stored procedures default rights [6.4.3](security.md)
+		- logon triggers and [6.2](security.md)
+		- Oracle Database Vault [6.3](security.md)
+		- Oracle Data Redaction [6.3](security.md)
+		- Oracle Label Security [6.3](security.md)
+		- Oracle Virtual Private Database [6.3](security.md)
+		- privileges of invoking user [6.4.2](security.md)
+		- privilege use [6.1](security.md)
+		- role use [6.1](security.md)
+		- secure application roles [6.1](security.md)
+- SELECT FOR UPDATE statement [9.4.4](sql-processing-for-application-developers.md)
+	- LOCK TABLE statement with [9.4.5](sql-processing-for-application-developers.md)
+		- referential integrity and
+		- inside trigger [9.6.3](sql-processing-for-application-developers.md)
+				- outside trigger [9.6.3](sql-processing-for-application-developers.md)
+- SELECT statement
+	- bulk binding for [14.4.8.2](coding-subprograms-and-packages.md)
+		- referencing collection with [14.4.8.2](coding-subprograms-and-packages.md)
+		- with AS OF clause [20.3](flashback.md)
+		- with FOR UPDATE clause
+		- See SELECT FOR UPDATE statement [9.4.4](sql-processing-for-application-developers.md)
+		- with VERSIONS BETWEEN clause [20.4](flashback.md)
+- semi-available table [28.4.1](editions.md)
+- serendipitous change [28.5.5](editions.md)
+	- data transformation collisions and [28.5.4.1.1](editions.md)
+		- identifying [28.5.4.1.1](editions.md)
+- serializable transaction
+	- for concurrency control [9.6](sql-processing-for-application-developers.md)
+		- interaction with [9.6.1](sql-processing-for-application-developers.md)
+		- referential integrity and [9.6.3](sql-processing-for-application-developers.md)
+- SERIALIZABLE transaction isolation level [9.6.1](sql-processing-for-application-developers.md)
+	- See also: serializable transaction
+	- compared to READ COMMITTED [9.6.4.2](sql-processing-for-application-developers.md)
+		- in Oracle Database [9.6.1](sql-processing-for-application-developers.md)
+		- transaction interactions with [9.6.1](sql-processing-for-application-developers.md)
+- server-side programming [21.1.2](application-architecture.md)
+- service routine, C external subprogram and [22.12](external-procedures.md)
+- session cursor [14.4.5](coding-subprograms-and-packages.md)
+- session edition [28.2.6](editions.md)
+- session purity [4.10.6](performance-and-scalability.md)
+- session state [27.4.1](schema-object-dependency.md)
+- session variable [14.9.2](coding-subprograms-and-packages.md)
+- set based processing [5.3.2](rwp.md)
+- SET CONSTRAINTS statement [13.8.4](data-integrity.md)
+- Setting ORA\_SDTZ system variable
+	- effect of [25.4.12](odbc-driver.md)
+- SET TRANSACTION statement with READ ONLY option [9.3](sql-processing-for-application-developers.md)
+- shared SQL area [9.1.2](sql-processing-for-application-developers.md)
+- SHARE MODE option of LOCK TABLE statement [9.4.2.2](sql-processing-for-application-developers.md)
+- SHARE ROW EXCLUSIVE MODE option of LOCK TABLE statement [9.4.2.3](sql-processing-for-application-developers.md)
+- side effects of subprogram [14.10.4](coding-subprograms-and-packages.md)
+- signature checking [27.9.1](schema-object-dependency.md)
+- single-precision IEEE 754 format [10.3.2](sql-data-types.md)
+- spatial data [10.5.1](sql-data-types.md)
+- specification, package
+	- See: package specification
+- SQL, dynamic
+	- See: dynamic SQL
+- SQL/DS data type [10.5.7](sql-data-types.md)
+- SQL Access Advisor [4.3.4](performance-and-scalability.md)
+- SQL advisor [4.3.4](performance-and-scalability.md)
+- SQL analytic function [2.9.1](design_basics.md)
+- SQL area, shared [9.1.2](sql-processing-for-application-developers.md)
+- SQL data type [10](sql-data-types.md)
+- SQL function
+	- analytic [2.9.1](design_basics.md)
+		- display type of [10.7.2](sql-data-types.md)
+		- for data type conversion [10.4.5](sql-data-types.md)
+		- metadata for [10.7](sql-data-types.md)
+- SQLJ
+	- See: Oracle SQLJ
+- SQL optimizer hint and editioning view [28.4.7](editions.md)
+- SQL statement
+	- application [28.5.3.2.3](editions.md)
+		- crossedition trigger
+		- forward [28.5.3.2.1](editions.md)
+				- reverse [28.5.3.2.2](editions.md)
+		- invoking PL/SQL function from [14.10](coding-subprograms-and-packages.md)
+		- parallelized [14.10.4.2](coding-subprograms-and-packages.md)
+		- processing
+		- DDL statement [9.1.1](sql-processing-for-application-developers.md)
+				- stages of [9.1](sql-processing-for-application-developers.md)
+				- system management statement [9.1.1](sql-processing-for-application-developers.md)
+- SQL Trace facility (SQL\_TRACE) [4.2.2](performance-and-scalability.md)
+- SQL Tuning Advisor [4.3.4](performance-and-scalability.md)
+- standalone subprogram [14.1](coding-subprograms-and-packages.md)
+- state
+	- session [27.4.1](schema-object-dependency.md)
+		- user interface and [21.2.2](application-architecture.md)
+		- web application and [18.6.8](web-applications.md)
+- stateful session [4.10.19](performance-and-scalability.md)
+- stateless session [4.10.19](performance-and-scalability.md)
+- statement
+	- See: SQL statement
+- statement caching [4.6](performance-and-scalability.md)
+- statement-level read consistency [9.3](sql-processing-for-application-developers.md), [9.4](sql-processing-for-application-developers.md)
+- static pools
+	- used to prevent connection storms [3.1.2](connection_strategies.md)
+- static registration [23.1.1](xa.md)
+- static SQL, RESTRICT\_REFERENCES pragma and [14.10.4.3.3](coding-subprograms-and-packages.md)
+- static variable, in C external subprogram [22.13.7](external-procedures.md)
+- statistics
+	- for application [16](hierarchical-profiler.md)
+		- for identifier [15](plscope.md)
+- storage allocation error [9.9](sql-processing-for-application-developers.md)
+- storage requirements, decreasing [10.1.2](sql-data-types.md)
+- stored standalone subprogram, dropping [14.7](coding-subprograms-and-packages.md)
+- stored subprogram [14.1](coding-subprograms-and-packages.md)
+- subnormal floating-point number [10.3.2.1](sql-data-types.md)
+- subprogram [14.1](coding-subprograms-and-packages.md)
+	- creating [14.4.2](coding-subprograms-and-packages.md)
+		- external
+		- See external subprogram [22](external-procedures.md)
+		- invoking
+		- See invoking subprogram [14.9](coding-subprograms-and-packages.md)
+		- Oracle XA [23.2](xa.md)
+		- overloaded [14.1](coding-subprograms-and-packages.md)
+		- privileges needed to debug [14.11.3.2](coding-subprograms-and-packages.md)
+		- privileges needed to run [14.9.1](coding-subprograms-and-packages.md)
+		- remote [14.9.4](coding-subprograms-and-packages.md)
+		- size limit for [14.4.3](coding-subprograms-and-packages.md)
+		- synonym for [14.9.4.1](coding-subprograms-and-packages.md)
+- subscriber [24.3](publish-subscribe-model.md)
+- subscription services [24.3](publish-subscribe-model.md)
+- subtype [14.4.4.1](coding-subprograms-and-packages.md)
+	- user-defined [14.4.4.1.5](coding-subprograms-and-packages.md)
+- synonym
+	- CREATE OR REPLACE and [27.4](schema-object-dependency.md)
+		- for package [14.9.4.1](coding-subprograms-and-packages.md)
+		- for subprogram [14.9.4.1](coding-subprograms-and-packages.md)
+- SYSDATE function [10.4.1](sql-data-types.md)
+- system management statement [9.1.1](sql-processing-for-application-developers.md)
+
+---
+
+## T
+
+- table
+	- controlling user access to [6.3](security.md)
+		- locking
+		- choosing strategy for [9.4.2](sql-processing-for-application-developers.md)
+				- explicitly [9.4](sql-processing-for-application-developers.md)
+				- implicitly [9.4.3](sql-processing-for-application-developers.md)
+		- with maximum availability [28.4.1](editions.md)
+		- with semi-availability [28.4.1](editions.md)
+- table annotation [4.5.3.2](performance-and-scalability.md)
+- table result cache mode
+	- annotation [4.5.3.2](performance-and-scalability.md)
+		- effective
+		- determining [4.5.3.4](performance-and-scalability.md)
+				- displaying [4.5.3.5](performance-and-scalability.md)
+- Tag Data Translation Markup Language Schema [26.1](identity-code.md)
+- Temporal Validity Support [2.9.4](design_basics.md)
+- temporary LOB instance [10.5.2.1](sql-data-types.md)
+- thin client configuration [21.1.3](application-architecture.md)
+- thread-safe application [23.3.9](xa.md)
+- three-tier architecture [21.1.3](application-architecture.md)
+- tight coupling [23.1.1](xa.md)
+- time [10.4](sql-data-types.md)
+	- See also: datetime data types
+	- default value for [10.4.3](sql-data-types.md)
+		- displaying [10.4.3](sql-data-types.md)
+		- current [10.4.1](sql-data-types.md)
+		- inserting [10.4.3](sql-data-types.md)
+- time-stamp checking [27.9.1](schema-object-dependency.md)
+- time-stamp dependency mode [27.10.1](schema-object-dependency.md)
+- TIMESTAMP WITH LOCAL TIME ZONE
+	- examples [25.4.11](odbc-driver.md)
+- TIMESTAMP WITH TIME ZONE
+	- examples [25.4.11](odbc-driver.md)
+- TM (transaction manager) [23.1.1](xa.md)
+- TPM (transaction processing monitor) [23.1.1](xa.md)
+- tracing tools [14](coding-subprograms-and-packages.md)
+- transaction
+	- autonomous [9.8](sql-processing-for-application-developers.md)
+		- trigger as [9.9.2.1](sql-processing-for-application-developers.md)
+		- choosing isolation level for [9.6.4.2](sql-processing-for-application-developers.md)
+		- dependent [20.8.1](flashback.md)
+		- determining outcome after outage [9.2.4](sql-processing-for-application-developers.md)
+		- distributed [23.1.1](xa.md)
+		- remote subprogram and [14.9.4.2](coding-subprograms-and-packages.md)
+		- ensuring idempotence of [9.2.4](sql-processing-for-application-developers.md)
+		- global [23.1.1](xa.md)
+		- grouping operations into [9.2.1](sql-processing-for-application-developers.md)
+		- improving performance of [9.2.2](sql-processing-for-application-developers.md)
+		- in-flight [9.2.4](sql-processing-for-application-developers.md)
+		- main [9.8](sql-processing-for-application-developers.md)
+		- read-only [9.3](sql-processing-for-application-developers.md)
+		- redo entry for [9.2.3](sql-processing-for-application-developers.md)
+		- serializable
+		- See serializable transaction [9.6](sql-processing-for-application-developers.md)
+		- that invokes remote subprogram [14.9.4.2](coding-subprograms-and-packages.md)
+- Transaction Guard [9.2.4](sql-processing-for-application-developers.md), [29](transaction-guard.md)
+- transaction history table [29.4.2](transaction-guard.md)
+- transaction interaction
+	- kinds of [9.6.1](sql-processing-for-application-developers.md)
+		- serializable transaction and [9.6.1](sql-processing-for-application-developers.md)
+		- transaction isolation level and [9.6.1](sql-processing-for-application-developers.md)
+- transaction isolation level
+	- choosing [9.6.4.2](sql-processing-for-application-developers.md)
+		- setting [9.6.2](sql-processing-for-application-developers.md)
+		- transaction interaction and [9.6.1](sql-processing-for-application-developers.md)
+- transaction-level read consistency [9.3](sql-processing-for-application-developers.md)
+	- locking tables explicitly for [9.4](sql-processing-for-application-developers.md)
+		- read-only transaction for [9.3](sql-processing-for-application-developers.md)
+- transaction manager (TM) [23.1.1](xa.md)
+- transaction processing monitor (TPM) [23.1.1](xa.md)
+- transaction set consistency [9.6.4.1](sql-processing-for-application-developers.md)
+- transform [28.5.1](editions.md)
+	- applying [28.5.5](editions.md)
+- trigger [14.1](coding-subprograms-and-packages.md)
+	- AFTER SUSPEND [9.9.2.1](sql-processing-for-application-developers.md)
+		- as autonomous transaction [9.9.2.1](sql-processing-for-application-developers.md)
+		- automating database login with [6.2](security.md)
+		- compared to constraint [13.1](data-integrity.md)
+		- crossedition
+		- See crossedition trigger [28.5](editions.md)
+		- enforcing referential integrity with [9.6.3](sql-processing-for-application-developers.md)
+		- in edition
+		- firing order of [28.5.3.3](editions.md)
+				- visibility of [28.5.3.1](editions.md)
+				- what kind can fire [28.5.3.2](editions.md)
+		- invoking subprogram from [14.9.3](coding-subprograms-and-packages.md)
+		- size limit for [14.4.3](coding-subprograms-and-packages.md)
+- TRUST assertion (deprecated) [14.10.4.3.2](coding-subprograms-and-packages.md)
+- TRUST keyword in RESTRICT\_REFERENCES pragma [14.10.4.3.2](coding-subprograms-and-packages.md)
+- two-phase commit protocol [23.1.1](xa.md)
+- two-tier architecture [21.1.3](application-architecture.md)
+- TX interface [23.1.1](xa.md)
+
+---
+
+## U
+
+- undetected deadlock [9.5](sql-processing-for-application-developers.md)
+- UNDO\_RETENTION parameter [9.3](sql-processing-for-application-developers.md)
+- undo data [20.1](flashback.md)
+- Unicode
+	- data types for [10.2](sql-data-types.md)
+		- regular expressions and [11.3](regexp.md)
+- unified auditing [6.6](security.md)
+- UNIQUE constraint
+	- crossedition trigger and [28.5.4.1.1](editions.md)
+		- dropping [13.17](data-integrity.md)
+		- naming [13.13.2](data-integrity.md)
+		- on FOREIGN KEY constraint [13.8.2](data-integrity.md)
+		- when to use [13.7](data-integrity.md)
+- unrepeatable read [9.6.1](sql-processing-for-application-developers.md)
+- unusable edition
+	- dropping edition and [28.2.8](editions.md)
+		- for materialized view [28.2.1.2.1](editions.md)
+		- retiring edition and [28.2.7](editions.md)
+- upgrading applications online
+	- See: edition-based redefinition (EBR)
+- UROWID data type [10.6](sql-data-types.md)
+- user access
+	- See: security
+- user-defined subtype [14.4.4.1.5](coding-subprograms-and-packages.md)
+- user interface [21.2.1](application-architecture.md)
+	- stateful and stateless [21.2.2](application-architecture.md)
+- user lock [9.5](sql-processing-for-application-developers.md)
+- UTLLOCKT.SQL script [9.5.2](sql-processing-for-application-developers.md)
+
+---
+
+## V
+
+- VARCHAR2 data type [10.2](sql-data-types.md)
+- VARCHAR data type [10.2](sql-data-types.md)
+- VARCHAR data type class [27.10.2.4](schema-object-dependency.md)
+- variable
+	- cursor
+		- See cursor variable [14.4.4.1.4](coding-subprograms-and-packages.md), [14.4.5](coding-subprograms-and-packages.md)
+		- in C external subprogram
+		- global [22.13.6](external-procedures.md)
+				- static [22.13.7](external-procedures.md)
+- view
+	- constraint on [13](data-integrity.md)
+		- editioned, FOREIGN KEY constraint and [28.2.1.6](editions.md)
+		- editioning
+		- See editioning view [28.4](editions.md)
+		- materialized [2.9.2](design_basics.md)
+		- that depends on editioned object [28.2.1.2.1](editions.md)
+- virtual column [28.2.1.2.2](editions.md)
+- VPD policy, editioning view and [28.7.1](editions.md)
+
+---
+
+## W
+
+- WAIT commit redo option [9.2.3](sql-processing-for-application-developers.md)
+- WAIT option of LOCK TABLE statement [9.4.2](sql-processing-for-application-developers.md)
+- web application [18.1](web-applications.md)
+	- implementing [18.2](web-applications.md)
+		- state and [18.6.8](web-applications.md)
+- web services [21.4.6](application-architecture.md)
+- web toolkit
+	- See: PL/SQL Web Toolkit
+- wrap utility, debugging and [14.11.3.1](coding-subprograms-and-packages.md)
+- writability of editioning view [28.4.3](editions.md)
+- write-after-write dependency [20.8.1](flashback.md)
+
+---
+
+## Y
+
+- YY datetime format element [10.4.2](sql-data-types.md)

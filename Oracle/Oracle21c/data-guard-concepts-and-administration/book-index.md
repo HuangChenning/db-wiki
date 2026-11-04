@@ -1,0 +1,1202 @@
+---
+title: Concepts and Administration
+book: Data Guard Concepts and Administration
+doc_id: F31838-07
+version: "21c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/21/sbydb/book-index.html
+tags:
+  - oracle
+  - 21c
+  - data-guard-concepts-and-administration
+---
+
+A B C D E F G H I K L M N O P Q R S T U V W
+
+---
+
+## A
+
+- activating
+- Active Data Guard
+- adding
+	- datafiles [10.3.1](managing-oracle-data-guard-physical-standby-databases.md), [A.10.1.1](troubleshooting-oracle-data-guard.md)
+		- indexes on logical standby databases [11.5.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+		- new or existing standby databases [1.3](introduction-to-oracle-data-guard-concepts.md)
+		- online redo log files [10.3.5](managing-oracle-data-guard-physical-standby-databases.md)
+		- tablespaces [10.3.1](managing-oracle-data-guard-physical-standby-databases.md)
+- adjusting
+	- initialization parameter file
+		- for logical standby database [4.3.4.2](creating-oracle-data-guard-logical-standby.md)
+- AFFIRM attribute [17.1](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- ALTER DATABASE statement
+	- ACTIVATE STANDBY DATABASE clause [9.3.2](managing-oracle-data-guard-role-transitions.md), [12.9.3](using-RMAN-in-oracle-data-guard-configurations.md)
+		- ADD STANDBY LOGFILE clause [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- ADD STANDBY LOGFILE MEMBER clause [18.1](sql-statements-used-by-oracle-data-guard.md), [A.1.1](troubleshooting-oracle-data-guard.md)
+		- ADD SUPPLEMENTAL LOG DATA clause [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- COMMIT TO SWITCHOVER clause [9.3.1](managing-oracle-data-guard-role-transitions.md), [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- troubleshooting [G.3.2](performing-oracle-data-guard-role-transitions.md)
+		- CREATE STANDBY CONTROLFILE clause [3.3.2](creating-oracle-data-guard-physical-standby.md)
+		- REUSE clause [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- DROP STANDBY LOGFILE MEMBER clause [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- GUARD clause [11.2](managing-oracle-data-guard-logical-standby-databases.md)
+		- MOUNT STANDBY DATABASE clause [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- OPEN READ ONLY clause [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- PREPARE TO SWITCHOVER clause [9.3.1](managing-oracle-data-guard-role-transitions.md), [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- RECOVER MANAGED STANDBY DATABASE clause [3.3.6](creating-oracle-data-guard-physical-standby.md), [4.3.5](creating-oracle-data-guard-logical-standby.md), [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- canceling [8.3.2](oracle-data-guard-redo-apply-services.md)
+				- failover [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- REGISTER LOGFILE clause [A.4.1](troubleshooting-oracle-data-guard.md), [G.3.1](performing-oracle-data-guard-role-transitions.md)
+		- RENAME FILE clause [A.1.1](troubleshooting-oracle-data-guard.md)
+		- SET STANDBY DATABASE clause
+		- TO MAXIMIZE AVAILABILITY clause [18.1](sql-statements-used-by-oracle-data-guard.md)
+				- TO MAXIMIZE PERFORMANCE clause [9.1.4](managing-oracle-data-guard-role-transitions.md)
+				- TO MAXIMIZE PROTECTION clause [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- START LOGICAL STANDBY APPLY clause [8.4.1](oracle-data-guard-redo-apply-services.md), [13.5](using-sql-apply-to-perform-rolling-upgrade.md), [A.6](troubleshooting-oracle-data-guard.md)
+		- IMMEDIATE keyword [8.4.1](oracle-data-guard-redo-apply-services.md)
+				- starting SQL Apply [4.3.5](creating-oracle-data-guard-logical-standby.md)
+		- STOP LOGICAL STANDBY APPLY clause [8.4.2](oracle-data-guard-redo-apply-services.md), [9.3.2](managing-oracle-data-guard-role-transitions.md)
+- alternate archive destinations
+	- setting up initialization parameters for [A.2](troubleshooting-oracle-data-guard.md)
+- ALTERNATE attribute [17.2](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+	- LOG\_ARCHIVE\_DEST\_n initialization parameter [A.2](troubleshooting-oracle-data-guard.md)
+- ALTER SESSION DISABLE GUARD statement
+	- overriding the database guard [11.5.4](managing-oracle-data-guard-logical-standby-databases.md)
+- ALTER SESSION statement
+	- ENABLE GUARD clause [18.2](sql-statements-used-by-oracle-data-guard.md)
+- ALTER TABLESPACE statement [10.3.4](managing-oracle-data-guard-physical-standby-databases.md), [A.10.1.1](troubleshooting-oracle-data-guard.md)
+- application continuity
+	- support in Oracle Data Guard [1.5.1](introduction-to-oracle-data-guard-concepts.md)
+- applying
+	- redo data immediately [8.2.1](oracle-data-guard-redo-apply-services.md)
+		- redo data on standby database [1.2.2](introduction-to-oracle-data-guard-concepts.md), [8](oracle-data-guard-redo-apply-services.md)
+		- SQL statements to logical standby databases [8.4](oracle-data-guard-redo-apply-services.md)
+- applying state [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+- apply lag
+	- monitoring in a real-time query environment [10.2.1.1](managing-oracle-data-guard-physical-standby-databases.md)
+- apply lag tolerance
+	- configuring in a real-time query environment [10.2.1.2](managing-oracle-data-guard-physical-standby-databases.md)
+- apply services
+	- defined [1.2.2](introduction-to-oracle-data-guard-concepts.md), [8.1](oracle-data-guard-redo-apply-services.md)
+		- delaying application of redo data [8.2.2](oracle-data-guard-redo-apply-services.md), [17.5](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- real-time apply
+		- defined [8.2.1](oracle-data-guard-redo-apply-services.md)
+		- Redo Apply
+		- defined [8.1](oracle-data-guard-redo-apply-services.md), [8.3](oracle-data-guard-redo-apply-services.md)
+				- monitoring [8.3.3](oracle-data-guard-redo-apply-services.md)
+				- starting [8.3.1](oracle-data-guard-redo-apply-services.md)
+				- stopping [8.3.2](oracle-data-guard-redo-apply-services.md)
+		- SQL Apply
+		- defined [1.2.2](introduction-to-oracle-data-guard-concepts.md), [8.1](oracle-data-guard-redo-apply-services.md)
+				- monitoring [8.4.3](oracle-data-guard-redo-apply-services.md)
+				- starting [8.4.1](oracle-data-guard-redo-apply-services.md)
+				- stopping [8.4.2](oracle-data-guard-redo-apply-services.md)
+- archive destinations
+	- alternate [A.2](troubleshooting-oracle-data-guard.md)
+- archived redo log files
+	- accessing information about [10.6.1.4](managing-oracle-data-guard-physical-standby-databases.md)
+		- applying
+		- Redo Apply technology [1.2.2](introduction-to-oracle-data-guard-concepts.md)
+				- SQL Apply technology [1.2.2](introduction-to-oracle-data-guard-concepts.md)
+		- delaying application [17.5](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- on the standby database [8.2.2](oracle-data-guard-redo-apply-services.md)
+		- deleting unneeded [11.4.2](managing-oracle-data-guard-logical-standby-databases.md)
+		- destinations
+		- disabling [7.2.2](oracle-data-guard-redo-transport-services.md)
+				- enabling [7.2.2](oracle-data-guard-redo-transport-services.md)
+		- managing gaps [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- See also gap management [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- redo data transmitted [1.2.2](introduction-to-oracle-data-guard-concepts.md), [8.1](oracle-data-guard-redo-apply-services.md)
+		- registering
+		- during failover [9.3.2](managing-oracle-data-guard-role-transitions.md)
+		- standby databases and [8.3.3](oracle-data-guard-redo-apply-services.md), [8.4.3](oracle-data-guard-redo-apply-services.md), [10.6.1](managing-oracle-data-guard-physical-standby-databases.md)
+		- troubleshooting switchover problems [A.4.1](troubleshooting-oracle-data-guard.md), [G.3.1](performing-oracle-data-guard-role-transitions.md)
+- ARCHIVELOG mode
+	- software requirements [2.3.2](getting-started-with-oracle-data-guard.md)
+- archiving
+	- real-time apply [8.2.1](oracle-data-guard-redo-apply-services.md)
+		- specifying
+		- failure resolution policies for [17.14](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- to failed destinations [17.14](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- ASM
+	- See Automatic Storage Management (ASM) [15.5](examples-of-using-oracle-data-guard.md)
+- ASYNC attribute [17.15](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- attributes
+	- deprecated for the LOG\_ARCHIVE\_DEST\_n initialization parameter [17](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- AUD$ table
+	- replication on logical standbys [C.14.2](data-type-ddl-support-on-logical-standby-databases.md)
+- automatic block repair [10.2.1.5](managing-oracle-data-guard-physical-standby-databases.md)
+- automatic detection of missing log files [1.2.1](introduction-to-oracle-data-guard-concepts.md), [1.8](introduction-to-oracle-data-guard-concepts.md)
+- automatic failover [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+- Automatic Storage Management (ASM)
+	- creating a standby database that uses [15.5](examples-of-using-oracle-data-guard.md)
+- automatic switchover [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+	- See also switchovers [9.1](managing-oracle-data-guard-role-transitions.md)
+
+---
+
+## B
+
+- BACKUP INCREMENTAL FROM SCN command
+	- scenarios using [12.9.1](using-RMAN-in-oracle-data-guard-configurations.md), [12.11](using-RMAN-in-oracle-data-guard-configurations.md)
+- backup operations
+	- after unrecoverable operations [15.4.3](examples-of-using-oracle-data-guard.md)
+		- configuring on a physical standby database [1.1.5](introduction-to-oracle-data-guard-concepts.md)
+		- offloading on the standby database [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- primary databases [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+		- used by the broker [1.3](introduction-to-oracle-data-guard-concepts.md)
+		- using RMAN [12](using-RMAN-in-oracle-data-guard-configurations.md)
+- basic readable standby database See simulating a standby database environment [2.3.2](getting-started-with-oracle-data-guard.md)
+- batch processing
+	- on a logical standby database [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+- benefits
+	- Data Guard [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- logical standby database [2.1.2](getting-started-with-oracle-data-guard.md)
+		- of a rolling upgrade [13.1](using-sql-apply-to-perform-rolling-upgrade.md)
+		- physical standby database [2.1.1](getting-started-with-oracle-data-guard.md)
+- block repair, automatic [10.2.1.5](managing-oracle-data-guard-physical-standby-databases.md)
+- broker
+	- command-line interface [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- defined [1.3](introduction-to-oracle-data-guard-concepts.md)
+		- graphical user interface [1.8](introduction-to-oracle-data-guard-concepts.md)
+
+---
+
+## C
+
+- cascaded redo transport destinations [7.3](oracle-data-guard-redo-transport-services.md)
+- cascading redo
+	- non-real-time [7.3](oracle-data-guard-redo-transport-services.md)
+		- real-time [7.3](oracle-data-guard-redo-transport-services.md)
+- cascading redo data [7.3](oracle-data-guard-redo-transport-services.md)
+	- configuration requirements [7.3](oracle-data-guard-redo-transport-services.md)
+		- restrictions [7.3](oracle-data-guard-redo-transport-services.md)
+- CDBs
+	- creating a logical standby of [4.1](creating-oracle-data-guard-logical-standby.md)
+		- creating a physical standby of [3.1](creating-oracle-data-guard-physical-standby.md)
+- character sets
+	- changing on primary databases [15.9](examples-of-using-oracle-data-guard.md)
+		- configurations with differing [C.18](data-type-ddl-support-on-logical-standby-databases.md)
+- checklist
+	- tasks for creating physical standby databases [3.3](creating-oracle-data-guard-physical-standby.md)
+		- tasks for creating standby databases [4.3](creating-oracle-data-guard-logical-standby.md)
+- checkpoints
+	- V$LOGSTDBY\_PROGRESS view [11.1.1.3](managing-oracle-data-guard-logical-standby-databases.md)
+- chunking
+	- transactions [11.1.1.1](managing-oracle-data-guard-logical-standby-databases.md)
+- command-line interface
+	- broker [1.8](introduction-to-oracle-data-guard-concepts.md)
+- COMMIT TO SWITCHOVER clause
+	- of ALTER DATABASE [9.3.1](managing-oracle-data-guard-role-transitions.md), [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- troubleshooting [G.3.2](performing-oracle-data-guard-role-transitions.md)
+- COMPATIBLE initialization parameter
+	- setting after upgrading Oracle Database software [B.5](upgrading-patching-downgrading-oracle-data-guard-configuration.md)
+		- setting for a rolling upgrade [13.5](using-sql-apply-to-perform-rolling-upgrade.md)
+- complementary technologies [1.6](introduction-to-oracle-data-guard-concepts.md)
+- COMPRESSION attribute [17.3](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- configuration options
+	- creating with Data Guard broker [1.3](introduction-to-oracle-data-guard-concepts.md)
+		- overview [1.1](introduction-to-oracle-data-guard-concepts.md)
+		- physical standby databases
+		- location and directory structure [2.4](getting-started-with-oracle-data-guard.md)
+		- standby databases
+		- delayed standby [8.2.2](oracle-data-guard-redo-apply-services.md)
+- configuring
+	- backups on standby databases [1.1.5](introduction-to-oracle-data-guard-concepts.md)
+		- disaster recovery [1.1.5](introduction-to-oracle-data-guard-concepts.md)
+		- initialization parameters
+		- for alternate archive destinations [A.2](troubleshooting-oracle-data-guard.md)
+		- listener for physical standby databases [5.1.1](creating-oracle-data-guard-far-sync-instance.md)
+		- no data loss [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+		- physical standby databases [2.4](getting-started-with-oracle-data-guard.md)
+		- reporting operations on a logical standby database [1.1.5](introduction-to-oracle-data-guard-concepts.md)
+		- standby databases at remote locations [1.1.5](introduction-to-oracle-data-guard-concepts.md)
+- constraints
+	- handled on a logical standby database [11.6.3](managing-oracle-data-guard-logical-standby-databases.md)
+- control files
+	- copying [3.3.4](creating-oracle-data-guard-physical-standby.md)
+		- creating for standby databases [3.3.2](creating-oracle-data-guard-physical-standby.md)
+- converting
+	- a logical standby database to a physical standby database
+		- terminating [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+		- a physical standby database to a logical standby database [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+- CONVERT TO SNAPSHOT STANDBY clause on the ALTER DATABASE statement [18.1](sql-statements-used-by-oracle-data-guard.md)
+- COORDINATOR process
+	- LSP background process [11.1](managing-oracle-data-guard-logical-standby-databases.md)
+- copying
+	- control files [3.3.4](creating-oracle-data-guard-physical-standby.md)
+- CREATE STANDBY CONTROLFILE clause
+	- of ALTER DATABASE [3.3.2](creating-oracle-data-guard-physical-standby.md), [18.1](sql-statements-used-by-oracle-data-guard.md)
+- CREATE TABLE AS SELECT (CTAS) statements
+	- applied on a logical standby database [11.1.1.5](managing-oracle-data-guard-logical-standby-databases.md)
+- creating
+	- indexes on logical standby databases [11.5.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+
+---
+
+## D
+
+- data availability
+	- balancing against system performance requirements [1.8](introduction-to-oracle-data-guard-concepts.md)
+- database caching modes
+	- force full database caching
+		- status in Data Guard configurations [10.2.1.7](managing-oracle-data-guard-physical-standby-databases.md)
+- database guard [11.5.4](managing-oracle-data-guard-logical-standby-databases.md)
+	- overriding [11.5.4](managing-oracle-data-guard-logical-standby-databases.md)
+- database incarnation
+	- changes with OPEN RESETLOGS [10.4](managing-oracle-data-guard-physical-standby-databases.md)
+- database roles
+	- primary [9.1](managing-oracle-data-guard-role-transitions.md)
+		- standby [1.1.2](introduction-to-oracle-data-guard-concepts.md), [9.1](managing-oracle-data-guard-role-transitions.md)
+		- transitions [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+- databases
+	- failover and [9.1.4](managing-oracle-data-guard-role-transitions.md)
+		- role transition and [9.1](managing-oracle-data-guard-role-transitions.md)
+		- surviving disasters and data corruptions [1](introduction-to-oracle-data-guard-concepts.md)
+		- upgrading software versions [13.1](using-sql-apply-to-perform-rolling-upgrade.md)
+- database schema
+	- physical standby databases [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+- datafiles
+	- adding to primary database [10.3.1](managing-oracle-data-guard-physical-standby-databases.md)
+		- monitoring [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+		- renaming on the primary database [10.3.4](managing-oracle-data-guard-physical-standby-databases.md)
+- Data Guard broker
+	- defined [1.3](introduction-to-oracle-data-guard-concepts.md)
+		- distributed management framework [9](managing-oracle-data-guard-role-transitions.md)
+		- failovers [1.3](introduction-to-oracle-data-guard-concepts.md)
+		- fast-start [9](managing-oracle-data-guard-role-transitions.md)
+				- manual [1.3](introduction-to-oracle-data-guard-concepts.md), [9](managing-oracle-data-guard-role-transitions.md)
+		- fast-start failover [1.3](introduction-to-oracle-data-guard-concepts.md)
+		- switchovers [9](managing-oracle-data-guard-role-transitions.md)
+- Data Guard configurations
+	- archiving to standby destinations using the log writer process [8.2.1](oracle-data-guard-redo-apply-services.md)
+		- defined [1.1](introduction-to-oracle-data-guard-concepts.md)
+		- protection modes [1.4](introduction-to-oracle-data-guard-concepts.md)
+		- upgrading Oracle Database software [B](upgrading-patching-downgrading-oracle-data-guard-configuration.md)
+- data loss
+	- due to failover [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+		- switchover and [9.1](managing-oracle-data-guard-role-transitions.md)
+- data protection
+	- balancing against performance [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- flexibility [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- provided by Data Guard [1](introduction-to-oracle-data-guard-concepts.md)
+- data protection modes
+	- enforced by redo transport services [1.2.1](introduction-to-oracle-data-guard-concepts.md)
+		- overview [1.4](introduction-to-oracle-data-guard-concepts.md)
+- Data Pump utility
+	- using transportable tablespaces with physical standby databases [10.3.3](managing-oracle-data-guard-physical-standby-databases.md)
+- DB\_FILE\_NAME\_CONVERT initialization parameter
+	- setting at standby site after a switchover [A.4.3](troubleshooting-oracle-data-guard.md), [G.3.3](performing-oracle-data-guard-role-transitions.md)
+		- setting on physical standby database [3.3.3](creating-oracle-data-guard-physical-standby.md)
+		- when planning standby location and directory structure [2.4](getting-started-with-oracle-data-guard.md)
+- DB\_ROLE\_CHANGE system event [9.1.5](managing-oracle-data-guard-role-transitions.md)
+- DB\_UNIQUE\_NAME attribute [17.4](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- DB\_UNIQUE\_NAME initialization parameter [A.4.2](troubleshooting-oracle-data-guard.md), [G.3.2](performing-oracle-data-guard-role-transitions.md)
+	- required with LOG\_ARCHIVE\_CONFIG parameter [16](oracle-initialization-parameters-used-by-oracle-data-guard.md)
+		- setting database initialization parameters [3.2.4](creating-oracle-data-guard-physical-standby.md)
+- DBA\_LOGMNR\_PURGED\_LOG view
+	- list archived redo log files that can be deleted [11.4.2](managing-oracle-data-guard-logical-standby-databases.md)
+- DBA\_LOGSTDBY\_EVENTS view [11.3.1](managing-oracle-data-guard-logical-standby-databases.md), [A.6](troubleshooting-oracle-data-guard.md)
+- DBA\_LOGSTDBY\_LOG view [11.3.2](managing-oracle-data-guard-logical-standby-databases.md)
+- DBA\_TABLESPACES view [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+- DBMS\_LOGSTDBY.BUILD procedure
+	- building a dictionary in the redo data [4.3.3.2](creating-oracle-data-guard-logical-standby.md)
+- DBMS\_LOGSTDBY package
+	- INSTANTIATE\_TABLE procedure [11.5.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- SKIP\_ERROR procedure [A.3](troubleshooting-oracle-data-guard.md)
+		- SKIP\_TRANSACTION procedure [A.6](troubleshooting-oracle-data-guard.md)
+		- SKIP procedure [A.6](troubleshooting-oracle-data-guard.md)
+- DBMS\_ROLLING package
+	- used for rolling upgrades [14](using-DBMS_ROLLING-to-perform-rolling-upgrade.md)
+- DDL statements
+	- supported by SQL Apply [C](data-type-ddl-support-on-logical-standby-databases.md)
+- DDL Statements
+	- that use DBLINKS [C.14.1](data-type-ddl-support-on-logical-standby-databases.md)
+- DDL transactions
+	- applied on a logical standby database [11.1.1.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- applying to a logical standby database [11.1.1.5](managing-oracle-data-guard-logical-standby-databases.md)
+- DELAY attribute [17.5](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+	- LOG\_ARCHIVE\_DEST\_n initialization parameter [8.2.2](oracle-data-guard-redo-apply-services.md)
+- delaying
+	- application of archived redo log files [17.5](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- application of redo log files [8.2.2](oracle-data-guard-redo-apply-services.md)
+- deleting
+	- archived redo log files
+		- indicated by the DBA\_LOGMNR\_PURGED\_LOG view [11.4.2](managing-oracle-data-guard-logical-standby-databases.md)
+				- not needed by SQL Apply [11.4.2](managing-oracle-data-guard-logical-standby-databases.md)
+- deprecated attributes
+	- on the LOG\_ARCHIVE\_DEST\_n initialization parameter [17](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- destinations
+	- displaying with V$ARCHIVE\_DEST view [19](oracle-data-guard-in-oracle-database-views.md)
+		- role-based definitions [17.17](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- detecting
+	- missing archived redo log files [1.2.1](introduction-to-oracle-data-guard-concepts.md), [1.8](introduction-to-oracle-data-guard-concepts.md)
+- DGMGRL command-line interface
+	- invoking failovers [1.3](introduction-to-oracle-data-guard-concepts.md), [9](managing-oracle-data-guard-role-transitions.md)
+		- simplifying switchovers [1.3](introduction-to-oracle-data-guard-concepts.md), [9](managing-oracle-data-guard-role-transitions.md)
+- dictionary
+	- building a LogMiner [4.3.3.2](creating-oracle-data-guard-logical-standby.md)
+- directory locations
+	- Optimal Flexible Architecture (OFA) [2.4](getting-started-with-oracle-data-guard.md)
+		- structure on standby databases [2.4](getting-started-with-oracle-data-guard.md)
+- direct path inserts
+	- SQL Apply DML considerations [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+- disabling
+	- a destination for archived redo log files [7.2.2](oracle-data-guard-redo-transport-services.md)
+- disaster recovery
+	- configuring [1.1.5](introduction-to-oracle-data-guard-concepts.md)
+		- provided by Oracle Data Guard [1](introduction-to-oracle-data-guard-concepts.md)
+		- provided by standby databases [1.1.5](introduction-to-oracle-data-guard-concepts.md)
+- disk I/O
+	- controlling with the AFFIRM and NOAFFIRM attributes [17.1](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- distributed transactions [C.15](data-type-ddl-support-on-logical-standby-databases.md)
+- DML
+	- batch updates on a logical standby database [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+- DML operations
+	- on temporary tables [10.2.3.1](managing-oracle-data-guard-physical-standby-databases.md)
+- DML transactions
+	- applying to a logical standby database [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+- downgrading
+	- Oracle Database software [B.7](upgrading-patching-downgrading-oracle-data-guard-configuration.md)
+- dropping
+	- online redo log files [10.3.5](managing-oracle-data-guard-physical-standby-databases.md)
+- DROP STANDBY LOGFILE MEMBER clause
+	- of ALTER DATABASE [18.1](sql-statements-used-by-oracle-data-guard.md)
+
+---
+
+## E
+
+- ENABLE GUARD clause
+	- of ALTER SESSION [18.2](sql-statements-used-by-oracle-data-guard.md)
+- enabling
+	- database guard on logical standby databases [18.2](sql-statements-used-by-oracle-data-guard.md)
+		- destinations for archived redo log files [7.2.2](oracle-data-guard-redo-transport-services.md)
+		- real-time apply
+		- on logical standby databases [8.4.1](oracle-data-guard-redo-apply-services.md)
+
+---
+
+## F
+
+- failovers [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+	- Data Guard broker [1.3](introduction-to-oracle-data-guard-concepts.md), [9](managing-oracle-data-guard-role-transitions.md)
+		- defined [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+		- displaying history with DBA\_LOGSTDBY\_HISTORY [19](oracle-data-guard-in-oracle-database-views.md)
+		- fast-start failover [9](managing-oracle-data-guard-role-transitions.md)
+		- flashing back databases after [9.4](managing-oracle-data-guard-role-transitions.md)
+		- logical standby databases and [9.3.2](managing-oracle-data-guard-role-transitions.md)
+		- manual versus automatic [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+		- physical standby databases and [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- preparing for [9.1.4](managing-oracle-data-guard-role-transitions.md)
+		- simplifying with Data Guard broker [9](managing-oracle-data-guard-role-transitions.md)
+		- transferring redo data before [9.1.4](managing-oracle-data-guard-role-transitions.md)
+		- viewing characteristics for logical standby databases [11.3.3](managing-oracle-data-guard-logical-standby-databases.md)
+		- with maximum performance mode [9.1.4](managing-oracle-data-guard-role-transitions.md)
+		- with maximum protection mode [9.1.4](managing-oracle-data-guard-role-transitions.md)
+- failure resolution policies
+	- specifying for redo transport services [17.14](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- far sync instances [5](creating-oracle-data-guard-far-sync-instance.md)
+	- creating [5.1](creating-oracle-data-guard-far-sync-instance.md)
+		- supported protection modes [5.4](creating-oracle-data-guard-far-sync-instance.md)
+- fast-start failover
+	- automatic failover [1.3](introduction-to-oracle-data-guard-concepts.md), [9](managing-oracle-data-guard-role-transitions.md)
+		- monitoring [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+- FastSync mode [6.1](oracle-data-guard-protection-modes.md)
+- FGA\_LOG$ table
+	- replication on logical standbys [C.14.2](data-type-ddl-support-on-logical-standby-databases.md)
+- file specifications
+	- renaming on the logical standby database [11.5.3](managing-oracle-data-guard-logical-standby-databases.md)
+- Flashback Database
+	- after a role transition [9.4](managing-oracle-data-guard-role-transitions.md)
+		- after OPEN RESETLOGS [15.3](examples-of-using-oracle-data-guard.md)
+		- after role transitions [9.4](managing-oracle-data-guard-role-transitions.md)
+		- characteristics complementary to Data Guard [1.6](introduction-to-oracle-data-guard-concepts.md)
+		- physical standby database [15.2.1](examples-of-using-oracle-data-guard.md)
+- force full database caching mode
+	- status in Data Guard configurations [10.2.1.7](managing-oracle-data-guard-physical-standby-databases.md)
+
+---
+
+## G
+
+- gap management
+	- automatic detection and resolution [1.2.1](introduction-to-oracle-data-guard-concepts.md), [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- detecting missing log files [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- registering archived redo log files
+		- during failover [9.3.2](managing-oracle-data-guard-role-transitions.md)
+- Global Data Services [1.6](introduction-to-oracle-data-guard-concepts.md)
+- global temporary tables
+	- DML operations [10.2.3.1](managing-oracle-data-guard-physical-standby-databases.md)
+		- using with Active Data Guard [10.2.3.1](managing-oracle-data-guard-physical-standby-databases.md)
+
+---
+
+## H
+
+- high availability
+	- Oracle Real Application Clusters
+		- characteristics complementary to Data Guard [1.6](introduction-to-oracle-data-guard-concepts.md)
+		- provided by Oracle Data Guard [1](introduction-to-oracle-data-guard-concepts.md)
+		- provided by Oracle RAC and Data Guard [1.6](introduction-to-oracle-data-guard-concepts.md)
+
+---
+
+## I
+
+- idle state [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+- incarnation of a database
+	- changed [10.4](managing-oracle-data-guard-physical-standby-databases.md)
+- initialization parameters
+	- DB\_UNIQUE\_NAME [3.2.4](creating-oracle-data-guard-physical-standby.md), [A.4.2](troubleshooting-oracle-data-guard.md), [G.3.2](performing-oracle-data-guard-role-transitions.md)
+		- LOG\_ARCHIVE\_MIN\_SUCCEED\_DEST [17.9](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- LOG\_FILE\_NAME\_CONVERT [E.2.2.3.1](creating-data-guard-standby-database-using-RMAN.md)
+		- setting for both the primary and standby roles [17.17](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- INITIALIZING state [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+- INSTANTIATE\_TABLE procedure
+	- of DBMS\_LOGSTDBY [11.5.5](managing-oracle-data-guard-logical-standby-databases.md)
+
+---
+
+## K
+
+- KEEP IDENTITY clause [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+
+---
+
+## L
+
+- latency
+	- on logical standby databases [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md), [11.1.1.5](managing-oracle-data-guard-logical-standby-databases.md)
+- listener.ora file
+	- redo transport services tuning and [A.7](troubleshooting-oracle-data-guard.md)
+		- troubleshooting [A.1.2](troubleshooting-oracle-data-guard.md), [A.7](troubleshooting-oracle-data-guard.md)
+- loading dictionary state [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+- LOCATION attribute [17.8](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+	- setting
+		- LOG\_ARCHIVE\_DEST\_n initialization parameter [A.2](troubleshooting-oracle-data-guard.md)
+- LOG\_ARCHIVE\_CONFIG initialization parameter [3.2.4](creating-oracle-data-guard-physical-standby.md), [3.3.3](creating-oracle-data-guard-physical-standby.md)
+	- example [17.4](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- listing unique database names defined with [19](oracle-data-guard-in-oracle-database-views.md)
+		- relationship to DB\_UNIQUE\_NAME parameter [16](oracle-initialization-parameters-used-by-oracle-data-guard.md)
+- LOG\_ARCHIVE\_DEST\_n initialization parameter
+	- AFFIRM attribute [17.1](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- ALTERNATE attribute [17.2](LOG_ARCHIVE_DEST_n-parameter-attributes.md), [A.2](troubleshooting-oracle-data-guard.md)
+		- ASYNC attribute [17.15](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- COMPRESSION attribute [17.3](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- DB\_UNIQUE\_NAME attribute [17.4](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- DELAY attribute [8.2.2](oracle-data-guard-redo-apply-services.md), [17.5](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- deprecated attributes [17](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- LOCATION attribute [17.8](LOG_ARCHIVE_DEST_n-parameter-attributes.md), [A.2](troubleshooting-oracle-data-guard.md)
+		- MANDATORY attribute [17.9](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- MAX\_FAILURE attribute [17.10](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- NET\_TIMEOUT attribute [17.11](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- NOAFFIRM attribute [17.1](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- NOALTERNATE attribute [A.2](troubleshooting-oracle-data-guard.md)
+		- NODELAY attribute [8.2.2](oracle-data-guard-redo-apply-services.md)
+		- NOREGISTER attribute [17.12](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- REOPEN attribute [17.14](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- SERVICE attribute [17.8](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- SYNC attribute [17.15](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- VALID\_FOR attribute [17.17](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- LOG\_ARCHIVE\_MIN\_SUCCEED\_DEST initialization parameter [17.9](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- LOG\_FILE\_NAME\_CONVERT initialization parameter
+	- setting at standby site after a switchover [A.4.3](troubleshooting-oracle-data-guard.md), [G.3.3](performing-oracle-data-guard-role-transitions.md)
+		- setting on physical standby databases [3.3.3](creating-oracle-data-guard-physical-standby.md)
+		- when planning standby location and directory structure [2.4](getting-started-with-oracle-data-guard.md)
+- log apply services
+	- Redo Apply
+		- monitoring [10.6.1](managing-oracle-data-guard-physical-standby-databases.md)
+				- starting [10.1.1](managing-oracle-data-guard-physical-standby-databases.md)
+				- stopping [10.1.2](managing-oracle-data-guard-physical-standby-databases.md)
+		- tuning for Redo Apply [10.8](managing-oracle-data-guard-physical-standby-databases.md)
+- logical change records (LCR)
+	- exhausted cache memory [11.1.1.2](managing-oracle-data-guard-logical-standby-databases.md)
+		- staged [11.1](managing-oracle-data-guard-logical-standby-databases.md)
+- logical standby databases [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+	- adding
+		- datafiles [A.10.1.1](troubleshooting-oracle-data-guard.md)
+				- indexes [11.5.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+				- tables [11.5.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- background processes [11.1](managing-oracle-data-guard-logical-standby-databases.md)
+		- benefits [2.1.2](getting-started-with-oracle-data-guard.md)
+		- controlling user access to tables [11.2](managing-oracle-data-guard-logical-standby-databases.md)
+		- creating [4](creating-oracle-data-guard-logical-standby.md)
+		- converting from a physical standby database [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+				- with Data Guard broker [1.3](introduction-to-oracle-data-guard-concepts.md)
+		- database guard
+		- overriding [11.5.4](managing-oracle-data-guard-logical-standby-databases.md)
+		- data types
+		- supported [C](data-type-ddl-support-on-logical-standby-databases.md), [C.1.1](data-type-ddl-support-on-logical-standby-databases.md)
+				- unsupported [C.1.2](data-type-ddl-support-on-logical-standby-databases.md)
+		- executing SQL statements on [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+		- failovers [9.3.2](managing-oracle-data-guard-role-transitions.md)
+		- displaying history of [19](oracle-data-guard-in-oracle-database-views.md)
+				- handling failures [A.3](troubleshooting-oracle-data-guard.md)
+				- viewing characteristics with V$LOGSTDBY\_STATS [11.3.3](managing-oracle-data-guard-logical-standby-databases.md)
+		- logical standby process (LSP) and [11.1](managing-oracle-data-guard-logical-standby-databases.md)
+		- materialized views
+		- support for [C.13](data-type-ddl-support-on-logical-standby-databases.md)
+		- monitoring [8.4.3](oracle-data-guard-redo-apply-services.md), [19](oracle-data-guard-in-oracle-database-views.md)
+		- renaming the file specification [11.5.3](managing-oracle-data-guard-logical-standby-databases.md)
+		- setting up a skip handler [11.5.3](managing-oracle-data-guard-logical-standby-databases.md)
+		- SQL Apply [1.2.2](introduction-to-oracle-data-guard-concepts.md)
+		- resynchronizing with primary database branch of redo [11.6.5](managing-oracle-data-guard-logical-standby-databases.md)
+				- skipping DDL statements [C.13](data-type-ddl-support-on-logical-standby-databases.md)
+				- skipping SQL statements [C.13](data-type-ddl-support-on-logical-standby-databases.md)
+				- starting real-time apply [8.4.1](oracle-data-guard-redo-apply-services.md)
+				- stopping [8.4.2](oracle-data-guard-redo-apply-services.md)
+				- technology [8.1](oracle-data-guard-redo-apply-services.md)
+				- transaction size considerations [11.1.1.1](managing-oracle-data-guard-logical-standby-databases.md)
+		- starting
+		- real-time apply [8.4.1](oracle-data-guard-redo-apply-services.md)
+		- states
+		- applying [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+				- idle [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+				- initializing [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+				- loading dictionary [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+		- support for primary databases with Transparent Data Encryption [C.3](data-type-ddl-support-on-logical-standby-databases.md)
+		- switchovers [9.3.1](managing-oracle-data-guard-role-transitions.md)
+		- throughput and latency [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md), [11.1.1.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- upgrading [B.4](upgrading-patching-downgrading-oracle-data-guard-configuration.md)
+		- rolling upgrades [2.3.2](getting-started-with-oracle-data-guard.md)
+- logical standby process (LSP)
+	- COORDINATOR process [11.1](managing-oracle-data-guard-logical-standby-databases.md)
+- LogMiner dictionary
+	- using DBMS\_LOGSTDBY.BUILD procedure to build [4.3.3.2](creating-oracle-data-guard-logical-standby.md)
+		- when creating a logical standby database [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+- log writer process (LGWR)
+	- ASYNC network transmission [17.15](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- NET\_TIMEOUT attribute [17.11](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- SYNC network transmission [17.15](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+
+---
+
+## M
+
+- managed recovery operations
+	- See: Redo Apply
+- MANDATORY attribute [17.9](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- MAX\_FAILURE attribute [17.10](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- maximum availability mode
+	- introduction [1.4](introduction-to-oracle-data-guard-concepts.md)
+- maximum performance mode [9.1.4](managing-oracle-data-guard-role-transitions.md)
+	- introduction [1.4](introduction-to-oracle-data-guard-concepts.md)
+- maximum performance protection mode [6.1](oracle-data-guard-protection-modes.md)
+- maximum protection mode
+	- for Oracle Real Application Clusters [D.2.2](configuring-data-guard-standby-databases-in-oracle-RAC.md)
+		- introduction [1.4](introduction-to-oracle-data-guard-concepts.md)
+		- standby databases and [9.1.4](managing-oracle-data-guard-role-transitions.md)
+- memory
+	- exhausted LCR cache [11.1.1.2](managing-oracle-data-guard-logical-standby-databases.md)
+- missing log sequence
+	- detecting [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- See also gap management [1.8](introduction-to-oracle-data-guard-concepts.md)
+- modifying
+	- a logical standby database [11.5.4](managing-oracle-data-guard-logical-standby-databases.md)
+- monitoring
+	- primary database events [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+		- tablespace status [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+- MOUNT STANDBY DATABASE clause
+	- of ALTER DATABASE [18.1](sql-statements-used-by-oracle-data-guard.md)
+- multitenant container databases
+	- See CDBs [4.1](creating-oracle-data-guard-logical-standby.md)
+
+---
+
+## N
+
+- NET\_TIMEOUT attribute [17.11](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- network I/O operations
+	- network timers
+		- NET\_TIMEOUT attribute [17.11](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- tuning
+		- redo transport services [A.7](troubleshooting-oracle-data-guard.md)
+- network timeouts
+	- acknowledging [17.11](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- NOAFFIRM attribute [17.1](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- NOALTERNATE attribute
+	- LOG\_ARCHIVE\_DEST\_n initialization parameter [A.2](troubleshooting-oracle-data-guard.md)
+- no data loss
+	- data protection modes overview [1.4](introduction-to-oracle-data-guard-concepts.md)
+		- ensuring [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+		- guaranteeing [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+		- provided by maximum availability mode [1.4](introduction-to-oracle-data-guard-concepts.md)
+		- provided by maximum protection mode [1.4](introduction-to-oracle-data-guard-concepts.md)
+- NODELAY attribute
+	- LOG\_ARCHIVE\_DEST\_n initialization parameter [8.2.2](oracle-data-guard-redo-apply-services.md)
+- NOREGISTER attribute [17.12](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+
+---
+
+## O
+
+- OMF
+	- See Oracle Managed Files (OMF) [15.5](examples-of-using-oracle-data-guard.md)
+- on-disk database structures
+	- physical standby databases [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+- online data files
+	- moving the location [2.5](getting-started-with-oracle-data-guard.md)
+- online redo log files
+	- adding [10.3.5](managing-oracle-data-guard-physical-standby-databases.md)
+		- dropping [10.3.5](managing-oracle-data-guard-physical-standby-databases.md)
+- OPEN READ ONLY clause
+	- of ALTER DATABASE [18.1](sql-statements-used-by-oracle-data-guard.md)
+- OPEN RESETLOGS
+	- flashing back after [15.3](examples-of-using-oracle-data-guard.md)
+- OPEN RESETLOGS clause
+	- database incarnation change [10.4](managing-oracle-data-guard-physical-standby-databases.md)
+		- recovery [10.4](managing-oracle-data-guard-physical-standby-databases.md)
+- operational requirements [2.3](getting-started-with-oracle-data-guard.md), [2.3.2](getting-started-with-oracle-data-guard.md)
+- Optimal Flexible Architecture (OFA)
+	- directory structure [2.4](getting-started-with-oracle-data-guard.md)
+- ORA-01102 message
+	- causing switchover failures [A.4.2](troubleshooting-oracle-data-guard.md), [G.3.2](performing-oracle-data-guard-role-transitions.md)
+- Oracle Database software
+	- requirements for upgrading with SQL Apply [13.2](using-sql-apply-to-perform-rolling-upgrade.md)
+		- upgrading [2.3.2](getting-started-with-oracle-data-guard.md), [B.1](upgrading-patching-downgrading-oracle-data-guard-configuration.md)
+		- upgrading with SQL Apply [13.1](using-sql-apply-to-perform-rolling-upgrade.md)
+- Oracle Enterprise Manager
+	- invoking failovers [1.3](introduction-to-oracle-data-guard-concepts.md), [9](managing-oracle-data-guard-role-transitions.md)
+		- invoking switchovers [1.3](introduction-to-oracle-data-guard-concepts.md), [9](managing-oracle-data-guard-role-transitions.md)
+- Oracle Managed Files (OMF)
+	- creating a standby database that uses [15.5](examples-of-using-oracle-data-guard.md)
+- Oracle RAC One Node
+	- supported by Oracle Data Guard [1.6](introduction-to-oracle-data-guard-concepts.md)
+- Oracle Real Application Clusters
+	- primary databases and [1.1.1](introduction-to-oracle-data-guard-concepts.md), [D.1.2](configuring-data-guard-standby-databases-in-oracle-RAC.md)
+		- setting
+		- maximum data protection [D.2.2](configuring-data-guard-standby-databases-in-oracle-RAC.md)
+		- standby databases and [1.1.2](introduction-to-oracle-data-guard-concepts.md), [D.1](configuring-data-guard-standby-databases-in-oracle-RAC.md)
+- Oracle Recovery Manager utility (RMAN)
+	- backing up files on a physical standby database [12](using-RMAN-in-oracle-data-guard-configurations.md)
+- Oracle Sharding
+	- supported by Oracle Active Data Guard [1.7](introduction-to-oracle-data-guard-concepts.md)
+- Oracle Standard Edition
+	- simulating a standby database environment [2.3.2](getting-started-with-oracle-data-guard.md)
+
+---
+
+## P
+
+- pageout considerations [11.1.1.2](managing-oracle-data-guard-logical-standby-databases.md)
+- pageouts
+	- SQL Apply [11.1.1.2](managing-oracle-data-guard-logical-standby-databases.md)
+- parallel DML (PDML) transactions
+	- SQL Apply [11.1.1.3](managing-oracle-data-guard-logical-standby-databases.md), [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+- patch set releases
+	- upgrading [2.3.2](getting-started-with-oracle-data-guard.md)
+- performance
+	- balancing against data availability [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- balancing against data protection [1.8](introduction-to-oracle-data-guard-concepts.md)
+- physical standby databases
+	- and Oracle Active Data Guard [2.1.1](getting-started-with-oracle-data-guard.md)
+		- applying redo data [8.1](oracle-data-guard-redo-apply-services.md), [8.3](oracle-data-guard-redo-apply-services.md)
+		- Redo Apply technology [8.3](oracle-data-guard-redo-apply-services.md)
+		- applying redo log files
+		- starting [8.3.1](oracle-data-guard-redo-apply-services.md)
+		- benefits [2.1.1](getting-started-with-oracle-data-guard.md)
+		- configuration options [2.4](getting-started-with-oracle-data-guard.md)
+		- converting datafile path names [3.3.3](creating-oracle-data-guard-physical-standby.md)
+		- converting log file path names [3.3.3](creating-oracle-data-guard-physical-standby.md)
+		- converting to a logical standby database [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+		- creating
+		- checklist of tasks [3.3](creating-oracle-data-guard-physical-standby.md)
+				- configuring a listener [5.1.1](creating-oracle-data-guard-far-sync-instance.md)
+				- directory structure [2.4](getting-started-with-oracle-data-guard.md)
+				- with Data Guard broker [1.3](introduction-to-oracle-data-guard-concepts.md)
+		- defined [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+		- failover
+		- checking for updates [9.1.4](managing-oracle-data-guard-role-transitions.md)
+		- flashing back after failover [15.2.1](examples-of-using-oracle-data-guard.md)
+		- monitoring [8.3.3](oracle-data-guard-redo-apply-services.md), [10.6.1](managing-oracle-data-guard-physical-standby-databases.md), [19](oracle-data-guard-in-oracle-database-views.md)
+		- opening for read-only or read/write access [10.2](managing-oracle-data-guard-physical-standby-databases.md)
+		- read-only [10.2](managing-oracle-data-guard-physical-standby-databases.md)
+		- recovering through OPEN RESETLOGS [10.4](managing-oracle-data-guard-physical-standby-databases.md)
+		- Redo Apply [1.2.2](introduction-to-oracle-data-guard-concepts.md)
+		- resynchronizing with primary database branch of redo [10.4](managing-oracle-data-guard-physical-standby-databases.md)
+		- role transition and [9.2](managing-oracle-data-guard-role-transitions.md), [G](performing-oracle-data-guard-role-transitions.md)
+		- rolling forward with BACKUP INCREMENTAL FROM SCN command [12.9.1](using-RMAN-in-oracle-data-guard-configurations.md), [12.11](using-RMAN-in-oracle-data-guard-configurations.md)
+		- shutting down [10.1.2](managing-oracle-data-guard-physical-standby-databases.md)
+		- starting
+		- apply services [8.3.1](oracle-data-guard-redo-apply-services.md)
+		- tuning the log apply rate [10.8](managing-oracle-data-guard-physical-standby-databases.md)
+		- upgrading [B.3](upgrading-patching-downgrading-oracle-data-guard-configuration.md)
+		- using transportable tablespaces [10.3.3](managing-oracle-data-guard-physical-standby-databases.md)
+- PL/SQL supplied packages
+	- supported [C.11.1](data-type-ddl-support-on-logical-standby-databases.md)
+		- unsupported [C.11.2](data-type-ddl-support-on-logical-standby-databases.md)
+- PREPARER process
+	- staging LCRs in SGA [11.1](managing-oracle-data-guard-logical-standby-databases.md)
+- PREPARE TO SWITCHOVER clause
+	- of ALTER DATABASE [9.3.1](managing-oracle-data-guard-role-transitions.md), [18.1](sql-statements-used-by-oracle-data-guard.md)
+- primary database
+	- configuring
+		- on Oracle Real Application Clusters [1.1.1](introduction-to-oracle-data-guard-concepts.md)
+				- single-instance [1.1.1](introduction-to-oracle-data-guard-concepts.md)
+		- datafiles
+		- adding [10.3.1](managing-oracle-data-guard-physical-standby-databases.md)
+		- defined [1.1.1](introduction-to-oracle-data-guard-concepts.md)
+		- gap resolution [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- monitoring events on [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+		- network connections
+		- avoiding network hangs [17.11](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+				- handling network timeouts [17.11](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- Oracle Real Application Clusters and
+		- setting up [D.1.2](configuring-data-guard-standby-databases-in-oracle-RAC.md)
+		- preparing for
+		- physical standby database creation [3.2](creating-oracle-data-guard-physical-standby.md)
+		- prerequisite conditions for
+		- logical standby database creation [4.2](creating-oracle-data-guard-logical-standby.md)
+		- redo transport services on [1.2.1](introduction-to-oracle-data-guard-concepts.md)
+		- reducing workload on [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- restore points
+		- replicating to standby [10.7](managing-oracle-data-guard-physical-standby-databases.md)
+		- switchover [9.1.3](managing-oracle-data-guard-role-transitions.md)
+		- tablespaces
+		- adding [10.3.1](managing-oracle-data-guard-physical-standby-databases.md)
+- primary databases
+	- ARCHIVELOG mode [2.3.2](getting-started-with-oracle-data-guard.md)
+		- software requirements [2.3.2](getting-started-with-oracle-data-guard.md)
+- primary key columns
+	- logged with supplemental logging [4.3.3.2](creating-oracle-data-guard-logical-standby.md), [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+- private temporary tables
+	- using with Active Data Guard [10.2.3.2](managing-oracle-data-guard-physical-standby-databases.md)
+- processes
+	- SQL Apply architecture [11.1](managing-oracle-data-guard-logical-standby-databases.md), [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+- protection modes
+	- maximum availability mode [1.4](introduction-to-oracle-data-guard-concepts.md)
+		- maximum performance [6.1](oracle-data-guard-protection-modes.md)
+		- maximum performance mode [1.4](introduction-to-oracle-data-guard-concepts.md)
+		- maximum protection mode [1.4](introduction-to-oracle-data-guard-concepts.md)
+		- monitoring [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+		- setting on a primary database [6.2](oracle-data-guard-protection-modes.md)
+
+---
+
+## Q
+
+- queries
+	- offloading on the standby database [1.8](introduction-to-oracle-data-guard-concepts.md)
+
+---
+
+## R
+
+- read-only operations [1.2.2](introduction-to-oracle-data-guard-concepts.md)
+	- physical standby databases and [10.2](managing-oracle-data-guard-physical-standby-databases.md)
+- real-time apply
+	- defined [8.2.1](oracle-data-guard-redo-apply-services.md)
+		- starting
+		- on logical standby [8.4.1](oracle-data-guard-redo-apply-services.md)
+		- starting on logical standby databases [8.4.1](oracle-data-guard-redo-apply-services.md)
+		- stopping
+		- on logical standby [8.4.2](oracle-data-guard-redo-apply-services.md)
+				- on physical standby databases [10.1.2](managing-oracle-data-guard-physical-standby-databases.md)
+- real-time cascading [7.3](oracle-data-guard-redo-transport-services.md)
+- real-time query feature [10.2](managing-oracle-data-guard-physical-standby-databases.md)
+	- and Oracle Active Data Guard [10.2](managing-oracle-data-guard-physical-standby-databases.md), [10.2.1](managing-oracle-data-guard-physical-standby-databases.md)
+		- configuring apply lag tolerance [10.2.1.2](managing-oracle-data-guard-physical-standby-databases.md)
+		- forcing Redo Apply synchronization [10.2.1.3](managing-oracle-data-guard-physical-standby-databases.md)
+		- monitoring apply lag [10.2.1.1](managing-oracle-data-guard-physical-standby-databases.md)
+		- restrictions [10.2.1.4](managing-oracle-data-guard-physical-standby-databases.md)
+		- using [10.2.1](managing-oracle-data-guard-physical-standby-databases.md)
+- recovering
+	- from errors [A.10.1](troubleshooting-oracle-data-guard.md)
+		- logical standby databases [11.6.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- physical standby databases
+		- after an OPEN RESETLOGS [10.4](managing-oracle-data-guard-physical-standby-databases.md)
+		- through resetlogs [10.4](managing-oracle-data-guard-physical-standby-databases.md), [11.6.5](managing-oracle-data-guard-logical-standby-databases.md)
+- RECOVER MANAGED STANDBY DATABASE CANCEL clause
+	- terminating [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+- RECOVER MANAGED STANDBY DATABASE clause
+	- of ALTER DATABASE [3.3.6](creating-oracle-data-guard-physical-standby.md), [4.3.5](creating-oracle-data-guard-logical-standby.md), [8.3.1](oracle-data-guard-redo-apply-services.md), [18.1](sql-statements-used-by-oracle-data-guard.md)
+- RECOVER TO LOGICAL STANDBY clause
+	- converting a physical standby database to a logical standby database [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+- Recovery Manager
+	- characteristics complementary to Data Guard [1.6](introduction-to-oracle-data-guard-concepts.md)
+		- standby database
+		- creating [E.2.1](creating-data-guard-standby-database-using-RMAN.md)
+				- LOG\_FILE\_NAME\_CONVERT initialization parameter [E.2.2.3.1](creating-data-guard-standby-database-using-RMAN.md)
+				- preparing using RMAN [E.2.2](creating-data-guard-standby-database-using-RMAN.md)
+- re-creating
+	- a table on a logical standby database [11.5.5](managing-oracle-data-guard-logical-standby-databases.md)
+- redirecting DML operations
+	- standby databases [10.2.2.1](managing-oracle-data-guard-physical-standby-databases.md)
+- redirecting PL/SQL
+	- standby databases [10.2.2.2](managing-oracle-data-guard-physical-standby-databases.md)
+- Redo Apply
+	- defined [1.2.2](introduction-to-oracle-data-guard-concepts.md), [8.1](oracle-data-guard-redo-apply-services.md)
+		- flashing back after failover [15.2.1](examples-of-using-oracle-data-guard.md)
+		- starting [3.3.6](creating-oracle-data-guard-physical-standby.md)
+		- stopping [10.1.2](managing-oracle-data-guard-physical-standby-databases.md)
+		- technology [1.2.2](introduction-to-oracle-data-guard-concepts.md)
+		- tuning the log apply rate [10.8](managing-oracle-data-guard-physical-standby-databases.md)
+- redo data
+	- applying
+		- through Redo Apply technology [1.2.2](introduction-to-oracle-data-guard-concepts.md)
+				- through SQL Apply technology [1.2.2](introduction-to-oracle-data-guard-concepts.md)
+				- to standby database [8.1](oracle-data-guard-redo-apply-services.md)
+				- to standby databases [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+		- applying during conversion of a physical standby database to a logical standby database [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+		- archiving on the standby system [1.2.2](introduction-to-oracle-data-guard-concepts.md), [8.1](oracle-data-guard-redo-apply-services.md)
+		- building a dictionary in [4.3.3.2](creating-oracle-data-guard-logical-standby.md)
+		- cascading [7.3](oracle-data-guard-redo-transport-services.md)
+		- transmitting [1.1.2](introduction-to-oracle-data-guard-concepts.md), [1.2.1](introduction-to-oracle-data-guard-concepts.md)
+- redo gaps [7.6.3](oracle-data-guard-redo-transport-services.md)
+	- manual resolution [7.6.3.1](oracle-data-guard-redo-transport-services.md)
+		- reducing resolution time [7.6.3](oracle-data-guard-redo-transport-services.md)
+- redo log files
+	- delaying application [8.2.2](oracle-data-guard-redo-apply-services.md)
+- redo logs
+	- automatic application on physical standby databases [8.3.1](oracle-data-guard-redo-apply-services.md)
+		- update standby database tables [1.8](introduction-to-oracle-data-guard-concepts.md)
+- redo transport services [7](oracle-data-guard-redo-transport-services.md)
+	- archive destinations
+		- alternate [A.2](troubleshooting-oracle-data-guard.md)
+				- re-archiving to failed destinations [17.14](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- authenticating sessions
+		- using SSL [7.2.1.1](oracle-data-guard-redo-transport-services.md)
+		- configuring [7.2](oracle-data-guard-redo-transport-services.md)
+		- configuring security [7.2.1](oracle-data-guard-redo-transport-services.md)
+		- defined [1.2.1](introduction-to-oracle-data-guard-concepts.md)
+		- gap detection [7.6.3](oracle-data-guard-redo-transport-services.md)
+		- handling archive failures [17.14](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- monitoring status [7.6.1](oracle-data-guard-redo-transport-services.md)
+		- network
+		- tuning [A.7](troubleshooting-oracle-data-guard.md)
+		- protection modes
+		- maximum availability mode [1.4](introduction-to-oracle-data-guard-concepts.md)
+				- maximum performance mode [1.4](introduction-to-oracle-data-guard-concepts.md)
+				- maximum protection mode [1.4](introduction-to-oracle-data-guard-concepts.md)
+		- receiving redo data [7.2.3](oracle-data-guard-redo-transport-services.md)
+		- sending redo data [7.2.2](oracle-data-guard-redo-transport-services.md)
+		- synchronous and asynchronous disk I/O [17.1](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- wait events [7.6.4](oracle-data-guard-redo-transport-services.md)
+- registering
+	- archived redo log files
+		- during failover [9.3.2](managing-oracle-data-guard-role-transitions.md)
+- REGISTER LOGFILE clause
+	- of ALTER DATABASE [A.4.1](troubleshooting-oracle-data-guard.md), [G.3.1](performing-oracle-data-guard-role-transitions.md)
+- REGISTER LOGICAL LOGFILE clause
+	- of ALTER DATABASE [9.3.2](managing-oracle-data-guard-role-transitions.md)
+- RELY constraint
+	- creating [4.2.2](creating-oracle-data-guard-logical-standby.md)
+- remote file server process (RFS)
+	- log writer process and [8.2.1](oracle-data-guard-redo-apply-services.md)
+- RENAME FILE clause
+	- of ALTER DATABASE [A.1.1](troubleshooting-oracle-data-guard.md)
+- renaming
+	- datafiles
+		- on the primary database [10.3.4](managing-oracle-data-guard-physical-standby-databases.md)
+				- setting the STANDBY\_FILE\_MANAGEMENT parameter [10.3.4](managing-oracle-data-guard-physical-standby-databases.md)
+- REOPEN attribute [17.14](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- reporting operations
+	- configuring [1.1.5](introduction-to-oracle-data-guard-concepts.md)
+		- offloading on the standby database [1.8](introduction-to-oracle-data-guard-concepts.md)
+- requirements
+	- of a rolling upgrade [13.2](using-sql-apply-to-perform-rolling-upgrade.md)
+- restart considerations
+	- SQL Apply [11.1.1.3](managing-oracle-data-guard-logical-standby-databases.md)
+- restore points
+	- replicating to standby [10.7](managing-oracle-data-guard-physical-standby-databases.md)
+- resynchronizing
+	- logical standby databases with a new branch of redo [11.6.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- physical standby databases with a new branch of redo [10.4](managing-oracle-data-guard-physical-standby-databases.md)
+- retrieving
+	- missing archived redo log files [1.2.1](introduction-to-oracle-data-guard-concepts.md), [1.8](introduction-to-oracle-data-guard-concepts.md)
+- RMAN BACKUP INCREMENTAL FROM SCN command [12.9.1](using-RMAN-in-oracle-data-guard-configurations.md), [12.11](using-RMAN-in-oracle-data-guard-configurations.md)
+- RMAN backups
+	- accessibility in Data Guard environment [12.1.3](using-RMAN-in-oracle-data-guard-configurations.md)
+		- association in Data Guard environment [12.1.2](using-RMAN-in-oracle-data-guard-configurations.md)
+		- interchangeability in Data Guard environment [12.1.1](using-RMAN-in-oracle-data-guard-configurations.md)
+- role-based destinations
+	- setting [17.17](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- role management services
+	- defined [9](managing-oracle-data-guard-role-transitions.md)
+- role transitions [1.2.3](introduction-to-oracle-data-guard-concepts.md), [9.1](managing-oracle-data-guard-role-transitions.md)
+	- choosing a type of [9.1.1](managing-oracle-data-guard-role-transitions.md)
+		- defined [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+		- flashing back the databases after [9.4](managing-oracle-data-guard-role-transitions.md)
+		- logical standby database and [9.3](managing-oracle-data-guard-role-transitions.md)
+		- monitoring [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+		- physical standby databases and [9.2](managing-oracle-data-guard-role-transitions.md), [G](performing-oracle-data-guard-role-transitions.md)
+		- reversals [1.2.3](introduction-to-oracle-data-guard-concepts.md), [9.1](managing-oracle-data-guard-role-transitions.md)
+- role transition triggers [9.1.5](managing-oracle-data-guard-role-transitions.md)
+	- DB\_ROLE\_CHANGE system event [9.1.5](managing-oracle-data-guard-role-transitions.md)
+- rollback
+	- after switchover failures [A.4.4](troubleshooting-oracle-data-guard.md), [G.3.4](performing-oracle-data-guard-role-transitions.md)
+- rolling upgrade
+	- software requirements [2.3.2](getting-started-with-oracle-data-guard.md)
+- rolling upgrades
+	- benefits [13.1](using-sql-apply-to-perform-rolling-upgrade.md)
+		- DBMS\_ROLLING package [14](using-DBMS_ROLLING-to-perform-rolling-upgrade.md)
+		- patch set releases [2.3.2](getting-started-with-oracle-data-guard.md)
+		- requirements [13.2](using-sql-apply-to-perform-rolling-upgrade.md)
+		- setting the COMPATIBLE initialization parameter [13.5](using-sql-apply-to-perform-rolling-upgrade.md)
+		- use of KEEP IDENTITY clause [4.3.4.1](creating-oracle-data-guard-logical-standby.md)
+		- using Active Data Guard [14](using-DBMS_ROLLING-to-perform-rolling-upgrade.md)
+
+---
+
+## S
+
+- schemas
+	- identical to primary database [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+- sequences
+	- unsupported on logical standby databases [C.12](data-type-ddl-support-on-logical-standby-databases.md)
+		- using in Oracle Active Data Guard [10.2.6](managing-oracle-data-guard-physical-standby-databases.md)
+- SERVICE attribute [17.8](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- SET STANDBY DATABASE clause
+	- of ALTER DATA [18.1](sql-statements-used-by-oracle-data-guard.md)
+		- of ALTER DATABASE [9.1.4](managing-oracle-data-guard-role-transitions.md), [18.1](sql-statements-used-by-oracle-data-guard.md)
+- shutting down
+	- physical standby database [10.1.2](managing-oracle-data-guard-physical-standby-databases.md)
+- simulating
+	- standby database environment [2.3.2](getting-started-with-oracle-data-guard.md)
+- SKIP\_ERROR procedure
+	- of the DBMS\_LOGSTDBY package [A.3](troubleshooting-oracle-data-guard.md)
+- SKIP\_TRANSACTION procedure
+	- of DBMS\_LOGSTDBY [A.6](troubleshooting-oracle-data-guard.md)
+- skip handler
+	- setting up on a logical standby database [11.5.3](managing-oracle-data-guard-logical-standby-databases.md)
+- SKIP procedure
+	- of DBMS\_LOGSTDBY [A.6](troubleshooting-oracle-data-guard.md)
+- snapshot standby databases [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+	- managing [10.11](managing-oracle-data-guard-physical-standby-databases.md)
+- software requirements [2.3.2](getting-started-with-oracle-data-guard.md)
+	- rolling upgrades [2.3.2](getting-started-with-oracle-data-guard.md)
+- SQL Apply [8.4.2](oracle-data-guard-redo-apply-services.md), [11.1.1.2](managing-oracle-data-guard-logical-standby-databases.md)
+	- after an OPEN RESETLOGS [11.6.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- applying CREATE TABLE AS SELECT (CTAS) statements [11.1.1.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- applying DDL transactions [11.1.1.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- applying DML transactions [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+		- architecture [11.1](managing-oracle-data-guard-logical-standby-databases.md), [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+		- defined [1.2.2](introduction-to-oracle-data-guard-concepts.md), [8.1](oracle-data-guard-redo-apply-services.md)
+		- deleting archived redo log files [11.4.2](managing-oracle-data-guard-logical-standby-databases.md)
+		- parallel DML (PDML) transactions [11.1.1.3](managing-oracle-data-guard-logical-standby-databases.md), [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+		- performing a rolling upgrade [13.1](using-sql-apply-to-perform-rolling-upgrade.md)
+		- requirements for rolling upgrades [13.2](using-sql-apply-to-perform-rolling-upgrade.md)
+		- restart considerations [11.1.1.3](managing-oracle-data-guard-logical-standby-databases.md)
+		- rolling upgrades [2.3.2](getting-started-with-oracle-data-guard.md)
+		- starting
+		- real-time apply [8.4.1](oracle-data-guard-redo-apply-services.md)
+		- stopping
+		- real-time apply [8.4.2](oracle-data-guard-redo-apply-services.md)
+		- supported data types [C.1.1](data-type-ddl-support-on-logical-standby-databases.md)
+		- support for DDL statements [C](data-type-ddl-support-on-logical-standby-databases.md)
+		- support for PL/SQL supplied packages [C.11.1](data-type-ddl-support-on-logical-standby-databases.md)
+		- transaction size considerations [11.1.1.1](managing-oracle-data-guard-logical-standby-databases.md)
+		- unsupported data types [C.1.2](data-type-ddl-support-on-logical-standby-databases.md)
+		- unsupported PL/SQL supplied packages [C.11.2](data-type-ddl-support-on-logical-standby-databases.md)
+		- what to do if it stops [A.6](troubleshooting-oracle-data-guard.md)
+- SQL statements
+	- executing on logical standby databases [1.1.2](introduction-to-oracle-data-guard-concepts.md), [1.2.2](introduction-to-oracle-data-guard-concepts.md)
+		- skipping on logical standby databases [C.13](data-type-ddl-support-on-logical-standby-databases.md)
+- STANDBY\_FILE\_MANAGEMENT initialization parameter
+	- when renaming datafiles [10.3.4](managing-oracle-data-guard-physical-standby-databases.md)
+- standby database
+	- creating logical [4](creating-oracle-data-guard-logical-standby.md)
+- standby databases
+	- about creating using RMAN [E.2.1](creating-data-guard-standby-database-using-RMAN.md)
+		- applying redo data on [8](oracle-data-guard-redo-apply-services.md)
+		- applying redo log files on [1.2.2](introduction-to-oracle-data-guard-concepts.md), [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- apply services on [8.1](oracle-data-guard-redo-apply-services.md)
+		- configuring [1.1](introduction-to-oracle-data-guard-concepts.md)
+		- maximum number of [2](getting-started-with-oracle-data-guard.md)
+				- on Oracle Real Application Clusters [1.1.2](introduction-to-oracle-data-guard-concepts.md), [D.1](configuring-data-guard-standby-databases-in-oracle-RAC.md)
+				- on remote locations [1.1.5](introduction-to-oracle-data-guard-concepts.md)
+				- single-instance [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+		- creating [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+		- checklist of tasks [4.3](creating-oracle-data-guard-logical-standby.md)
+				- directory structure considerations [2.4](getting-started-with-oracle-data-guard.md)
+				- if primary uses ASM or OMF [15.5](examples-of-using-oracle-data-guard.md)
+				- on remote host with same directory structure [E.3](creating-data-guard-standby-database-using-RMAN.md)
+				- with a time lag [8.2.2](oracle-data-guard-redo-apply-services.md)
+		- defined [2.1](getting-started-with-oracle-data-guard.md)
+		- failover
+		- preparing for [9.1.4](managing-oracle-data-guard-role-transitions.md)
+		- failover to [9.1.4](managing-oracle-data-guard-role-transitions.md)
+		- LOG\_FILE\_NAME\_CONVERT initialization parameter [E.2.2.3.1](creating-data-guard-standby-database-using-RMAN.md)
+		- operational requirements [2.3](getting-started-with-oracle-data-guard.md), [2.3.2](getting-started-with-oracle-data-guard.md)
+		- preparing to use RMAN [E.2.2](creating-data-guard-standby-database-using-RMAN.md)
+		- recovering through OPEN RESETLOGS [10.4](managing-oracle-data-guard-physical-standby-databases.md)
+		- redirecting DML operations [10.2.2.1](managing-oracle-data-guard-physical-standby-databases.md)
+		- redirecting PL/SQL [10.2.2.2](managing-oracle-data-guard-physical-standby-databases.md)
+		- resynchronizing with the primary database [1.8](introduction-to-oracle-data-guard-concepts.md)
+		- software requirements [2.3.2](getting-started-with-oracle-data-guard.md)
+		- starting apply services on physical [8.3.1](oracle-data-guard-redo-apply-services.md)
+- standby redo log files
+	- and real-time apply [8.2.1](oracle-data-guard-redo-apply-services.md)
+- standby redo logs
+	- creating and managing [7.2.3.1](oracle-data-guard-redo-transport-services.md)
+- standby role [1.1.2](introduction-to-oracle-data-guard-concepts.md)
+- starting
+	- logical standby databases [4.3.5](creating-oracle-data-guard-logical-standby.md)
+		- physical standby databases [3.3.6](creating-oracle-data-guard-physical-standby.md)
+		- real-time apply [8.4.1](oracle-data-guard-redo-apply-services.md)
+		- on logical standby databases [8.4.1](oracle-data-guard-redo-apply-services.md)
+		- Redo Apply [10.1.1](managing-oracle-data-guard-physical-standby-databases.md)
+		- SQL Apply [4.3.5](creating-oracle-data-guard-logical-standby.md), [8.4.1](oracle-data-guard-redo-apply-services.md)
+- START LOGICAL STANDBY APPLY clause
+	- IMMEDIATE keyword [8.4.1](oracle-data-guard-redo-apply-services.md)
+		- of ALTER DATABASE [4.3.5](creating-oracle-data-guard-logical-standby.md), [8.4.1](oracle-data-guard-redo-apply-services.md), [13.5](using-sql-apply-to-perform-rolling-upgrade.md), [A.6](troubleshooting-oracle-data-guard.md)
+- STOP LOGICAL STANDBY APPLY clause
+	- of ALTER DATABASE [8.4.2](oracle-data-guard-redo-apply-services.md), [9.3.2](managing-oracle-data-guard-role-transitions.md)
+- stopping
+	- real-time apply
+		- on logical standby databases [8.4.2](oracle-data-guard-redo-apply-services.md)
+		- real-time apply on physical standby databases [8.3.2](oracle-data-guard-redo-apply-services.md)
+		- Redo Apply [8.3.2](oracle-data-guard-redo-apply-services.md)
+		- SQL Apply [8.4.2](oracle-data-guard-redo-apply-services.md)
+- streams capture
+	- running on a logical standby [11.6.6](managing-oracle-data-guard-logical-standby-databases.md)
+- supplemental logging
+	- setting up to log primary key and unique-index columns [4.3.3.2](creating-oracle-data-guard-logical-standby.md), [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+- supported data types
+	- for logical standby databases [C](data-type-ddl-support-on-logical-standby-databases.md), [C.14](data-type-ddl-support-on-logical-standby-databases.md)
+- supported PL/SQL supplied packages [C.11.1](data-type-ddl-support-on-logical-standby-databases.md)
+- SWITCHOVER\_STATUS column
+	- of V$DATABASE view [A.4.1](troubleshooting-oracle-data-guard.md), [G.3.1](performing-oracle-data-guard-role-transitions.md)
+- switchovers [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+	- choosing a target standby database [9.1.2](managing-oracle-data-guard-role-transitions.md)
+		- defined [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+		- displaying history with DBA\_LOGSTDBY\_HISTORY [19](oracle-data-guard-in-oracle-database-views.md)
+		- fails with ORA-01102 [A.4.2](troubleshooting-oracle-data-guard.md), [G.3.2](performing-oracle-data-guard-role-transitions.md)
+		- flashing back databases after [9.4](managing-oracle-data-guard-role-transitions.md)
+		- logical standby databases and [9.3.1](managing-oracle-data-guard-role-transitions.md)
+		- manual versus automatic [1.2.3](introduction-to-oracle-data-guard-concepts.md)
+		- monitoring [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+		- no data loss and [9.1](managing-oracle-data-guard-role-transitions.md)
+		- preparing for [9.1.3](managing-oracle-data-guard-role-transitions.md)
+		- seeing if the last archived redo log file was transmitted [A.4.1](troubleshooting-oracle-data-guard.md), [G.3.1](performing-oracle-data-guard-role-transitions.md)
+		- setting DB\_FILE\_NAME\_CONVERT after [A.4.3](troubleshooting-oracle-data-guard.md), [G.3.3](performing-oracle-data-guard-role-transitions.md)
+		- setting LOG\_FILE\_NAME\_CONVERT after [A.4.3](troubleshooting-oracle-data-guard.md), [G.3.3](performing-oracle-data-guard-role-transitions.md)
+		- simplifying with Data Guard broker [1.3](introduction-to-oracle-data-guard-concepts.md), [9](managing-oracle-data-guard-role-transitions.md)
+		- starting over [A.4.4](troubleshooting-oracle-data-guard.md), [G.3.4](performing-oracle-data-guard-role-transitions.md)
+		- typical use for [9.1.3](managing-oracle-data-guard-role-transitions.md)
+- SYNC attribute [17.15](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- system events
+	- role transitions [9.1.5](managing-oracle-data-guard-role-transitions.md)
+- system global area (SGA)
+	- logical change records staged in [11.1](managing-oracle-data-guard-logical-standby-databases.md)
+- system resources
+	- efficient utilization of [1.8](introduction-to-oracle-data-guard-concepts.md)
+
+---
+
+## T
+
+- tables
+	- logical standby databases
+		- adding on [11.5.5](managing-oracle-data-guard-logical-standby-databases.md)
+				- re-creating tables on [11.5.5](managing-oracle-data-guard-logical-standby-databases.md)
+				- unsupported on [C.12](data-type-ddl-support-on-logical-standby-databases.md)
+- tablespaces
+	- adding
+		- a new datafile [A.10.1.1](troubleshooting-oracle-data-guard.md)
+				- to primary database [10.3.1](managing-oracle-data-guard-physical-standby-databases.md)
+		- monitoring status changes [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+		- moving between databases [10.3.3](managing-oracle-data-guard-physical-standby-databases.md)
+- target standby database
+	- for switchover [9.1.2](managing-oracle-data-guard-role-transitions.md)
+- terminal destinations [7.3](oracle-data-guard-redo-transport-services.md)
+	- configuring [7.3.1](oracle-data-guard-redo-transport-services.md)
+- terminating
+	- network connection [17.11](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- throughput
+	- on logical standby databases [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md), [11.1.1.5](managing-oracle-data-guard-logical-standby-databases.md)
+- TIME\_COMPUTED column [9.1.2](managing-oracle-data-guard-role-transitions.md)
+- TIME\_COMPUTED column of the V$DATAGUARD\_STATS view [9.1.2](managing-oracle-data-guard-role-transitions.md)
+- time lag
+	- delaying application of archived redo log files [8.2.2](oracle-data-guard-redo-apply-services.md), [17.5](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+		- in standby database [8.2.2](oracle-data-guard-redo-apply-services.md)
+- tnsnames.ora file
+	- redo transport services tuning and [A.7](troubleshooting-oracle-data-guard.md)
+		- troubleshooting [A.1.2](troubleshooting-oracle-data-guard.md), [A.4.3](troubleshooting-oracle-data-guard.md), [A.7](troubleshooting-oracle-data-guard.md), [G.3.3](performing-oracle-data-guard-role-transitions.md)
+- transaction size considerations
+	- SQL Apply [11.1.1.1](managing-oracle-data-guard-logical-standby-databases.md)
+- Transparent Data Encryption
+	- support by SQL Apply [C.3](data-type-ddl-support-on-logical-standby-databases.md)
+- transportable tablespaces
+	- using with a physical standby database [10.3.3](managing-oracle-data-guard-physical-standby-databases.md)
+- triggers
+	- handled on a logical standby database [11.6.3](managing-oracle-data-guard-logical-standby-databases.md)
+		- role transitions [9.1.5](managing-oracle-data-guard-role-transitions.md)
+- troubleshooting
+	- if SQL Apply stops [A.6](troubleshooting-oracle-data-guard.md)
+		- last redo data was not transmitted [A.4.1](troubleshooting-oracle-data-guard.md), [G.3.1](performing-oracle-data-guard-role-transitions.md)
+		- listener.ora file [A.1.2](troubleshooting-oracle-data-guard.md), [A.7](troubleshooting-oracle-data-guard.md)
+		- logical standby database failures [A.3](troubleshooting-oracle-data-guard.md)
+		- SQL Apply [A.6](troubleshooting-oracle-data-guard.md)
+		- switchovers [A.4](troubleshooting-oracle-data-guard.md)
+		- ORA-01102 message [A.4.2](troubleshooting-oracle-data-guard.md), [G.3.2](performing-oracle-data-guard-role-transitions.md)
+				- roll back and start over [A.4.4](troubleshooting-oracle-data-guard.md), [G.3.4](performing-oracle-data-guard-role-transitions.md)
+		- tnsnames.ora file [A.1.2](troubleshooting-oracle-data-guard.md), [A.4.3](troubleshooting-oracle-data-guard.md), [A.7](troubleshooting-oracle-data-guard.md), [G.3.3](performing-oracle-data-guard-role-transitions.md)
+- tuning
+	- log apply rate for Redo Apply [10.8](managing-oracle-data-guard-physical-standby-databases.md)
+
+---
+
+## U
+
+- unique-index columns
+	- logged with supplemental logging [4.3.3.2](creating-oracle-data-guard-logical-standby.md), [11.1.1.4](managing-oracle-data-guard-logical-standby-databases.md)
+- unrecoverable operations
+	- backing up after [15.4.3](examples-of-using-oracle-data-guard.md)
+- unsupported PL/SQL supplied packages [C.11.2](data-type-ddl-support-on-logical-standby-databases.md)
+- upgrading
+	- Oracle Database software [2.3.2](getting-started-with-oracle-data-guard.md), [13.1](using-sql-apply-to-perform-rolling-upgrade.md), [B](upgrading-patching-downgrading-oracle-data-guard-configuration.md), [B.1](upgrading-patching-downgrading-oracle-data-guard-configuration.md)
+		- setting the COMPATIBLE initialization parameter [B.5](upgrading-patching-downgrading-oracle-data-guard-configuration.md)
+
+---
+
+## V
+
+- V$ARCHIVE\_DEST view [A.1.2](troubleshooting-oracle-data-guard.md)
+	- displaying information for all destinations [19](oracle-data-guard-in-oracle-database-views.md)
+- V$ARCHIVED\_LOG view [10.6.1.4](managing-oracle-data-guard-physical-standby-databases.md)
+- V$DATABASE view
+	- monitoring fast-start failover [10.6](managing-oracle-data-guard-physical-standby-databases.md)
+		- SWITCHOVER\_STATUS column and [A.4.1](troubleshooting-oracle-data-guard.md), [G.3.1](performing-oracle-data-guard-role-transitions.md)
+- V$DATAFILE view [15.4.3](examples-of-using-oracle-data-guard.md)
+- V$DATAGUARD\_CONFIG view
+	- listing database names defined with LOG\_ARCHIVE\_CONFIG [19](oracle-data-guard-in-oracle-database-views.md)
+- V$DATAGUARD\_STATS view [9.1.2](managing-oracle-data-guard-role-transitions.md)
+- V$DATAGUARD\_STATUS view [10.6.1.6](managing-oracle-data-guard-physical-standby-databases.md)
+- V$LOG\_HISTORY view [10.6.1.5](managing-oracle-data-guard-physical-standby-databases.md)
+- V$LOGSTDBY\_PROCESS view [11.3.4](managing-oracle-data-guard-logical-standby-databases.md), [11.4.1](managing-oracle-data-guard-logical-standby-databases.md), [11.7.3.1](managing-oracle-data-guard-logical-standby-databases.md), [11.7.3.2](managing-oracle-data-guard-logical-standby-databases.md)
+- V$LOGSTDBY\_PROGRESS view [11.3.5](managing-oracle-data-guard-logical-standby-databases.md)
+	- RESTART\_SCN column [11.1.1.3](managing-oracle-data-guard-logical-standby-databases.md)
+- V$LOGSTDBY\_STATE view [9.1.2](managing-oracle-data-guard-role-transitions.md), [11.3.6](managing-oracle-data-guard-logical-standby-databases.md), [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)
+- V$LOGSTDBY\_STATS view [11.3.7](managing-oracle-data-guard-logical-standby-databases.md)
+	- failover characteristics [11.3.3](managing-oracle-data-guard-logical-standby-databases.md)
+- V$MANAGED\_STANDBY view [10.6.1.3](managing-oracle-data-guard-physical-standby-databases.md)
+- V$REDO\_DEST\_RESP\_HISTOGRAM
+	- using to monitor synchronous redo transport response time [7.6.2](oracle-data-guard-redo-transport-services.md)
+- VALID\_FOR attribute [17.17](LOG_ARCHIVE_DEST_n-parameter-attributes.md)
+- verifying
+	- logical standby databases [4.3.6](creating-oracle-data-guard-logical-standby.md)
+		- physical standby databases [3.3.7](creating-oracle-data-guard-physical-standby.md)
+- versions
+	- upgrading Oracle Database software [13.1](using-sql-apply-to-perform-rolling-upgrade.md)
+- views
+	- DBA\_LOGSTDBY\_EVENTS [11.3.1](managing-oracle-data-guard-logical-standby-databases.md), [A.6](troubleshooting-oracle-data-guard.md)
+		- DBA\_LOGSTDBY\_LOG [11.3.2](managing-oracle-data-guard-logical-standby-databases.md)
+		- V$ARCHIVE\_DEST [A.1.2](troubleshooting-oracle-data-guard.md)
+		- V$ARCHIVED\_LOG [10.6.1.4](managing-oracle-data-guard-physical-standby-databases.md)
+		- V$DATAFILE [15.4.3](examples-of-using-oracle-data-guard.md)
+		- V$DATAGUARD\_STATUS [10.6.1.6](managing-oracle-data-guard-physical-standby-databases.md)
+		- V$LOG\_HISTORY [10.6.1.5](managing-oracle-data-guard-physical-standby-databases.md)
+		- V$LOGSTDBY\_PROCESS [11.3.4](managing-oracle-data-guard-logical-standby-databases.md)
+		- V$LOGSTDBY\_PROGRESS [11.3.5](managing-oracle-data-guard-logical-standby-databases.md)
+		- V$LOGSTDBY\_STATE [11.3.6](managing-oracle-data-guard-logical-standby-databases.md)
+		- V$LOGSTDBY\_STATS [11.3.7](managing-oracle-data-guard-logical-standby-databases.md)
+		- V$MANAGED\_STANDBY [10.6.1.3](managing-oracle-data-guard-physical-standby-databases.md)
+
+---
+
+## W
+
+- wait events
+	- for redo transport services [7.6.4](oracle-data-guard-redo-transport-services.md)
+- WAITING FOR DICTIONARY LOGS state [11.4.1](managing-oracle-data-guard-logical-standby-databases.md)

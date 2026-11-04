@@ -1,0 +1,44 @@
+---
+title: forDbUniqueNameOption
+book: Backup and Recovery Reference
+doc_id: E10643-09
+version: "11.2"
+source: https://docs.oracle.com/cd/E11882_01/backup.112/e10643/rcmsubcl008.htm
+tags:
+  - oracle
+  - 11g
+  - backup-and-recovery-reference
+---
+
+Purpose
+
+Use the `forDbUniqueNameOption` subclause to specify either all databases or a specific database in a Data Guard environment.
+
+Usage Notes
+
+The DBID for a primary database is identical to the DBID of its associated physical standby databases. A database is uniquely identified in the recovery catalog by a DBID and the value of its `DB_UNIQUE_NAME` initialization parameter.
+
+When you specify `forDbUniqueNameOption` for any command, RMAN restricts its operations to the objects that are associated exclusively with the database with the specified `DB_UNIQUE_NAME`. For example, if you use this option with the `LIST` command, then RMAN lists only the objects associated exclusively with the database with the specified `DB_UNIQUE_NAME`. Objects that are not associated with any database (`SITE_KEY` column in the recovery catalog view is `null`) are not listed.
+
+Semantics
+
+| Syntax Element | Description |
+| --- | --- |
+| `FOR DB_UNIQUE_NAME ALL` | Specifies all primary and standby databases in the recovery catalog that share the DBID of the target database (or DBID specified by the `SET` `DBID` command). |
+| `FOR DB_UNIQUE_NAME`   `db_unique_name` | Specifies the primary or standby database in the recovery catalog with the specified `db_unique_name`. |
+
+Examples
+
+Example 4-19 Listing Expired Backups Associated with a Standby Database
+
+This example connects to a recovery catalog and sets the DBID for the Data Guard environment. All primary and standby databases in this environment share the same DBID. The `LIST` command lists all expired backups associated with database `standby1`:
+
+```
+RMAN> CONNECT CATALOG rman@catdb;
+
+recovery catalog database Password: password
+connected to recovery catalog database
+
+RMAN> SET DBID 3257174182;
+RMAN> LIST EXPIRED BACKUP FOR DB_UNIQUE_NAME standby1;
+```

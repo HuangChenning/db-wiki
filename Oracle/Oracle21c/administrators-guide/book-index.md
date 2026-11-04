@@ -1,0 +1,3574 @@
+---
+title: "Database Administrator’s Guide"
+book: "Database Administrator's Guide"
+doc_id: F31835-17
+version: "21c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/book-index.html
+tags:
+  - oracle
+  - 21c
+  - administrators-guide
+---
+
+## Index
+
+Symbols A B C D E F G H I J K L M N O P Q R S T U V W X Z
+
+---
+
+## Symbols
+
+- .trm files [7.1.3.4](diagnosing-and-resolving-problems.md)
+
+---
+
+## A
+
+- abort response [33.3.2.2.3](distributed-transactions-concepts.md)
+	- two-phase commit [33.3.2.2.3](distributed-transactions-concepts.md)
+- accounts
+	- creating for materialized views [37.2.4.1](planning-for-read-only-materialized-views.md)
+		- DBA operating system account [1.6.1](getting-started-with-database-administration.md)
+- adaptive query optimization
+	- adaptive plans [7.3.4.2.2](diagnosing-and-resolving-problems.md)
+- adaptive query plans [7.3.4.2.2](diagnosing-and-resolving-problems.md)
+- adding
+	- columns [19.7.6](managing-tables.md)
+		- columns in compressed tables [19.7.6](managing-tables.md)
+- ADD LOGFILE clause
+	- ALTER DATABASE statement [9.3.1](managing-the-redo-log.md)
+- ADD LOGFILE MEMBER clause
+	- ALTER DATABASE statement [9.3.2](managing-the-redo-log.md)
+- ADMIN\_TABLES procedure
+	- DBMS\_REPAIR package [24.2.1](repairing-corrupted-data.md)
+		- example [24.4.1.2](repairing-corrupted-data.md), [24.4.1.3](repairing-corrupted-data.md)
+- ADMINISTER\_RESOURCE\_MANAGER system privilege [26.1.4.1](managing-resources-with-oracle-database-resource-manager.md)
+- administering
+	- the Scheduler [29](administering-oracle-scheduler.md)
+- administration
+	- distributed databases [31](managing-a-distributed-database.md)
+- administrative user accounts [1.6.2.1](getting-started-with-database-administration.md)
+	- SYS [1.6.2](getting-started-with-database-administration.md)
+		- SYSBACKUP [1.6.2](getting-started-with-database-administration.md)
+		- SYSDG [1.6.2](getting-started-with-database-administration.md)
+		- SYSKM [1.6.2](getting-started-with-database-administration.md)
+- administrator passwords, synchronizing password file and data dictionary [1.8.4](getting-started-with-database-administration.md)
+- ADR
+	- See: automatic diagnostic repository
+- ADR base [7.1.4](diagnosing-and-resolving-problems.md)
+- ADRCI utility [7.1.3.9](diagnosing-and-resolving-problems.md)
+- ADR home [7.1.4](diagnosing-and-resolving-problems.md)
+- advanced index compression [20.3.8.2](managing-indexes.md)
+- advanced row compression [19.2.6.1](managing-tables.md)
+- Advisor
+	- Data Repair [7.1.1](diagnosing-and-resolving-problems.md)
+		- Undo [14.4](managing-undo.md)
+- AFTER SUSPEND trigger
+	- example of registering [18.2.6](managing-space-for-schema-objects.md)
+- agent
+	- Heterogeneous Services, definition of [30.1.2.1](distributed-database-concepts.md)
+- aggregate functions
+	- statement transparency in distributed databases [31.7](managing-a-distributed-database.md)
+- alert log [7.1.3.2](diagnosing-and-resolving-problems.md)
+	- about [6.1.1.1](monitoring-the-database.md)
+		- size of [6.1.1.2](monitoring-the-database.md)
+		- using [6.1.1.1](monitoring-the-database.md)
+		- viewing [7.3.3.1](diagnosing-and-resolving-problems.md)
+		- when written [6.1.1.4](monitoring-the-database.md)
+- alerts
+	- server-generated [6.1.2.1](monitoring-the-database.md)
+		- tablespace space usage [18.1.2](managing-space-for-schema-objects.md)
+		- threshold-based [6.1.2.1](monitoring-the-database.md)
+		- viewing [18.1.3](managing-space-for-schema-objects.md)
+- alert thresholds
+	- setting for locally managed tablespaces [18.1.2](managing-space-for-schema-objects.md)
+- ALL\_DB\_LINKS view [31.5.1](managing-a-distributed-database.md)
+- allocation
+	- extents [19.7.4](managing-tables.md)
+- ALTER CLUSTER statement
+	- ALLOCATE EXTENT clause [21.4.1](managing-clusters.md)
+		- using for hash clusters [22.4](managing-hash-clusters.md)
+		- using for index clusters [21.4.1](managing-clusters.md)
+- ALTER DATABASE statement
+	- ADD LOGFILE clause [9.3.1](managing-the-redo-log.md)
+		- ADD LOGFILE MEMBER clause [9.3.2](managing-the-redo-log.md)
+		- ARCHIVELOG clause [10.3.2](managing-archived-redo-log-files.md)
+		- CLEAR LOGFILE clause [9.8](managing-the-redo-log.md)
+		- DATAFILE...OFFLINE DROP clause [12.4.3](managing-data-files-and-temp-files.md)
+		- DROP LOGFILE clause [9.5.1](managing-the-redo-log.md)
+		- DROP LOGFILE MEMBER clause [9.5.2](managing-the-redo-log.md)
+		- NOARCHIVELOG clause [10.3.2](managing-archived-redo-log-files.md)
+		- RENAME FILE clause [12.5.2.2](managing-data-files-and-temp-files.md)
+		- UNRECOVERABLE DATAFILE clause [9.8](managing-the-redo-log.md)
+- ALTER INDEX statement
+	- COALESCE clause [20.2.13](managing-indexes.md)
+		- MONITORING USAGE clause [20.4.7](managing-indexes.md)
+- altering
+	- (Scheduler) windows [28.9.3.4](scheduling-jobs-with-oracle-scheduler.md)
+		- event-based job [28.5.2.3](scheduling-jobs-with-oracle-scheduler.md)
+		- event schedule [28.5.2.5](scheduling-jobs-with-oracle-scheduler.md)
+		- indexes [20.4.1](managing-indexes.md)
+		- job classes [28.9.1.3](scheduling-jobs-with-oracle-scheduler.md)
+		- jobs [28.2.3](scheduling-jobs-with-oracle-scheduler.md)
+		- programs [28.3.3](scheduling-jobs-with-oracle-scheduler.md)
+		- schedules [28.4.3](scheduling-jobs-with-oracle-scheduler.md)
+- ALTER SEQUENCE statement [23.2.3](managing-views-sequences-and-synonyms.md)
+- ALTER SESSION statement
+	- ADVISE clause [34.4.3.3](managing-distributed-transactions.md)
+		- CLOSE DATABASE LINK clause [32.2](developing-applications-for-a-distributed-database-system.md)
+		- Enabling resumable space allocation [18.2.2.3](managing-space-for-schema-objects.md)
+- ALTER SYSTEM FLUSH FLASH\_CACHE [4.6.3](managing-memory.md)
+- ALTER SYSTEM statement
+	- ARCHIVE LOG ALL clause [10.3.3](managing-archived-redo-log-files.md)
+		- DISABLE DISTRIBUTED RECOVERY clause [34.9.2](managing-distributed-transactions.md)
+		- ENABLE DISTRIBUTED RECOVERY clause [34.9.2](managing-distributed-transactions.md)
+		- enabling Database Resource Manager [26.2](managing-resources-with-oracle-database-resource-manager.md)
+		- SET RESOURCE\_MANAGER\_PLAN [26.2](managing-resources-with-oracle-database-resource-manager.md)
+		- SET SHARED\_SERVERS initialization parameter [3.4.3.2](managing-processes.md)
+		- SWITCH LOGFILE clause [9.6](managing-the-redo-log.md)
+- ALTER TABLESPACE statement
+	- adding an Oracle managed data file, example [15.3.4.4](using-oracle-managed-files.md)
+		- adding an Oracle managed temp file, example [15.3.5.3](using-oracle-managed-files.md)
+		- ONLINE clause, example [11.6.2](managing-tablespaces.md)
+		- READ ONLY clause [11.7.2](managing-tablespaces.md)
+		- RENAME DATAFILE clause [12.5.2.1.1](managing-data-files-and-temp-files.md)
+- ALTER TABLE statement
+	- ALLOCATE EXTENT clause [19.7.4](managing-tables.md)
+		- DEALLOCATE UNUSED clause [19.7.4](managing-tables.md)
+		- DISABLE ALL TRIGGERS clause [17.6.3](managing-schema-objects.md)
+		- DISABLE integrity constraint clause [17.7.3.1](managing-schema-objects.md)
+		- DROP COLUMN clause [19.7.8.1](managing-tables.md)
+		- DROP integrity constraint clause [17.7.3.3](managing-schema-objects.md)
+		- DROP UNUSED COLUMNS clause [19.7.8.2](managing-tables.md)
+		- ENABLE ALL TRIGGERS clause [17.6.2](managing-schema-objects.md)
+		- ENABLE integrity constraint clause [17.7.3.1](managing-schema-objects.md)
+		- external tables [19.15.3](managing-tables.md)
+		- modifying index-organized table attributes [19.13.3.1](managing-tables.md)
+		- MOVE clause [19.7.3.1](managing-tables.md), [19.7.3.2](managing-tables.md), [19.7.3.3](managing-tables.md), [19.13.3.2](managing-tables.md)
+		- reasons for use [19.7.1](managing-tables.md)
+		- SET UNUSED clause [19.7.8.2](managing-tables.md)
+- ALTER TRIGGER statement
+	- DISABLE clause [17.6.3](managing-schema-objects.md)
+		- ENABLE clause [17.6.2](managing-schema-objects.md)
+- ANALYZE statement
+	- CASCADE clause [17.4.3](managing-schema-objects.md)
+		- CASCADE clause, FAST option [17.4.3](managing-schema-objects.md)
+		- corruption reporting [24.3.1.4](repairing-corrupted-data.md)
+		- listing chained rows [17.4.5](managing-schema-objects.md)
+		- remote tables [32.4.2.3.2](developing-applications-for-a-distributed-database-system.md)
+		- validating structure [17.4.3](managing-schema-objects.md), [24.3.1.1](repairing-corrupted-data.md)
+- analyzing schema objects [17.4.1](managing-schema-objects.md)
+- analyzing tables
+	- distributed processing [32.4.2.3.2](developing-applications-for-a-distributed-database-system.md)
+- AND condition
+	- for simple subquery materialized views [35.6.3](read-only-materialized-view-concepts.md)
+- APPEND hint [19.2.6.2](managing-tables.md)
+- application development
+	- distributed databases [30.5](distributed-database-concepts.md), [32](developing-applications-for-a-distributed-database-system.md), [32.5](developing-applications-for-a-distributed-database-system.md)
+- application development for distributed databases [32](developing-applications-for-a-distributed-database-system.md)
+	- analyzing execution plan [32.4.4](developing-applications-for-a-distributed-database-system.md)
+		- database links, controlling connections [32.2](developing-applications-for-a-distributed-database-system.md)
+		- handling errors [32.3](developing-applications-for-a-distributed-database-system.md), [32.5](developing-applications-for-a-distributed-database-system.md)
+		- handling remote procedure errors [32.5](developing-applications-for-a-distributed-database-system.md)
+		- managing distribution of data [32.1](developing-applications-for-a-distributed-database-system.md)
+		- managing referential integrity constraints [32.3](developing-applications-for-a-distributed-database-system.md)
+		- terminating remote connections [32.2](developing-applications-for-a-distributed-database-system.md)
+		- tuning distributed queries [32.4](developing-applications-for-a-distributed-database-system.md)
+		- tuning using collocated inline views [32.4.1](developing-applications-for-a-distributed-database-system.md)
+		- using cost-based optimization [32.4.2.2](developing-applications-for-a-distributed-database-system.md)
+		- using hints to tune queries [32.4.3.1](developing-applications-for-a-distributed-database-system.md)
+- archived redo log files
+	- alternate destinations [10.4.4](managing-archived-redo-log-files.md)
+		- archiving modes [10.3.2](managing-archived-redo-log-files.md)
+		- data dictionary views [10.8.1](managing-archived-redo-log-files.md)
+		- destination availability state, controlling [10.4.3](managing-archived-redo-log-files.md)
+		- destinations, groups [10.4.2](managing-archived-redo-log-files.md)
+		- destinations, specifying [10.4](managing-archived-redo-log-files.md)
+		- destination status [10.4.3](managing-archived-redo-log-files.md)
+		- failed destinations and [10.6](managing-archived-redo-log-files.md)
+		- mandatory destinations [10.6.1.1](managing-archived-redo-log-files.md)
+		- multiplexing [10.4.1](managing-archived-redo-log-files.md)
+		- normal transmission of [10.5](managing-archived-redo-log-files.md)
+		- re-archiving to failed destination [10.6.2](managing-archived-redo-log-files.md)
+		- sample destination scenarios [10.6.1.2](managing-archived-redo-log-files.md)
+		- standby transmission of [10.5](managing-archived-redo-log-files.md)
+		- status information [10.8.1](managing-archived-redo-log-files.md)
+		- transmitting [10.5](managing-archived-redo-log-files.md)
+- ARCHIVELOG mode [10.2.2](managing-archived-redo-log-files.md)
+	- advantages [10.2.2](managing-archived-redo-log-files.md)
+		- archiving [10.2](managing-archived-redo-log-files.md)
+		- automatic archiving in [10.2.2](managing-archived-redo-log-files.md)
+		- definition of [10.2.2](managing-archived-redo-log-files.md)
+		- distributed databases [10.2.2](managing-archived-redo-log-files.md)
+		- enabling [10.3.2](managing-archived-redo-log-files.md)
+		- manual archiving in [10.2.2](managing-archived-redo-log-files.md)
+		- running in [10.2.2](managing-archived-redo-log-files.md)
+		- switching to [10.3.2](managing-archived-redo-log-files.md)
+		- taking data files offline and online in [12.4.2](managing-data-files-and-temp-files.md)
+- archiver process (ARCn) [3.6](managing-processes.md)
+	- trace output (controlling) [10.7](managing-archived-redo-log-files.md)
+- archiving
+	- alternate destinations [10.4.4](managing-archived-redo-log-files.md)
+		- changing archiving mode [10.3.2](managing-archived-redo-log-files.md)
+		- controlling number of processes [10.3.4](managing-archived-redo-log-files.md)
+		- destination availability state, controlling [10.4.3](managing-archived-redo-log-files.md)
+		- destination failure [10.6](managing-archived-redo-log-files.md)
+		- destination status [10.4.3](managing-archived-redo-log-files.md)
+		- manual [10.3.3](managing-archived-redo-log-files.md)
+		- NOARCHIVELOG vs. ARCHIVELOG mode [10.2](managing-archived-redo-log-files.md)
+		- setting initial mode [10.3.1](managing-archived-redo-log-files.md)
+		- to failed destinations [10.6.2](managing-archived-redo-log-files.md)
+		- trace output, controlling [10.7](managing-archived-redo-log-files.md)
+		- viewing information on [10.8.1](managing-archived-redo-log-files.md)
+- attribute-clustered tables [19.2.9](managing-tables.md)
+- auditing
+	- database links [30.3.3](distributed-database-concepts.md)
+- authentication
+	- database administrators [1.7.3](getting-started-with-database-administration.md)
+		- database links [30.3.2.1](distributed-database-concepts.md)
+		- operating system [1.7.4.2](getting-started-with-database-administration.md)
+		- password files [1.7.5](getting-started-with-database-administration.md)
+		- selecting a method [1.7.3.1](getting-started-with-database-administration.md)
+		- using password file [1.7.5.1](getting-started-with-database-administration.md)
+- AUTO\_TASK\_CONSUMER\_GROUP
+	- of Resource Manager [25.5](managing-automated-database-maintenance-tasks.md)
+- AUTOEXTEND clause [12.3.1](managing-data-files-and-temp-files.md)
+- auto indexes [20.7.1](managing-indexes.md)
+- automatic big table cache [4.2](managing-memory.md)
+- automatic diagnostic repository [7.1.1](diagnosing-and-resolving-problems.md), [7.1.3.1](diagnosing-and-resolving-problems.md)
+	- in Oracle Client [7.1.4](diagnosing-and-resolving-problems.md)
+		- in Oracle Clusterware [7.1.4](diagnosing-and-resolving-problems.md)
+		- in Oracle Real Application Clusters [7.1.4](diagnosing-and-resolving-problems.md)
+		- structure, contents and location of [7.1.4](diagnosing-and-resolving-problems.md)
+- automatic file extension [12.3.1](managing-data-files-and-temp-files.md)
+- automatic indexes [20.7](managing-indexes.md)
+	- views [20.7.5](managing-indexes.md)
+- automatic indexing
+	- about [20.7.1](managing-indexes.md)
+		- configuring [20.7.3](managing-indexes.md)
+		- generating reports [20.7.4](managing-indexes.md)
+		- how automatic indexing works [20.7.2](managing-indexes.md)
+- automatic maintenance tasks
+	- assigning to maintenance windows [25.3.2](managing-automated-database-maintenance-tasks.md)
+		- definition [25.1](managing-automated-database-maintenance-tasks.md)
+		- enabling and disabling [25.3.1](managing-automated-database-maintenance-tasks.md)
+		- predefined [25.1](managing-automated-database-maintenance-tasks.md)
+		- resource allocation [25.5.1](managing-automated-database-maintenance-tasks.md)
+		- Scheduler job names [25.2](managing-automated-database-maintenance-tasks.md)
+- automatic segment space management [11.2.2.3](managing-tablespaces.md)
+- automatic undo management [14.2](managing-undo.md)
+	- migrating to [14.6](managing-undo.md)
+
+---
+
+## B
+
+- BACKGROUND\_DUMP\_DEST initialization parameter [7.1.3.1](diagnosing-and-resolving-problems.md)
+- background processes [3.6](managing-processes.md)
+	- FMON [12.9.2.1.1](managing-data-files-and-temp-files.md)
+- backups
+	- effects of archiving on [10.2.1](managing-archived-redo-log-files.md)
+- bigfile tablespaces
+	- creating [11.2.3.2](managing-tablespaces.md)
+		- creating temporary [11.2.6.3](managing-tablespaces.md)
+		- description [11.2.3.1](managing-tablespaces.md)
+- big table cache [4.2](managing-memory.md)
+- BLOB data type [19.3.1](managing-tables.md)
+- blockchain tables
+	- about [19.18.1](managing-tables.md)
+		- altering [19.18.4](managing-tables.md)
+		- benefits [19.18.1.1](managing-tables.md)
+		- creating [19.18.3](managing-tables.md)
+		- creating certificates [19.18.5](managing-tables.md)
+		- data dictionary views [19.18.16](managing-tables.md)
+		- deleting rows [19.18.11](managing-tables.md)
+		- dropping [19.18.12](managing-tables.md)
+		- getting bytes for hash [19.18.13](managing-tables.md)
+		- getting bytes for signature [19.18.14](managing-tables.md)
+		- getting byte values [19.18.15](managing-tables.md)
+		- hidden columns [19.18.1.3](managing-tables.md)
+		- restrictions [19.18.2.4](managing-tables.md)
+		- retention period [19.18.2.1](managing-tables.md)
+		- retention period for rows [19.18.2.2](managing-tables.md)
+		- signing rows [19.18.8](managing-tables.md)
+		- validating data [19.18.9](managing-tables.md)
+- block size, redo log files [9.2.4](managing-the-redo-log.md)
+- BLOCKSIZE clause
+	- of CREATE TABLESPACE [11.4](managing-tablespaces.md)
+
+---
+
+## C
+
+- caches
+	- sequence numbers [23.2.4.2.1](managing-views-sequences-and-synonyms.md)
+- calendaring expressions [28.4.5.2](scheduling-jobs-with-oracle-scheduler.md)
+- calls
+	- remote procedure [30.5.2](distributed-database-concepts.md)
+- cancelling SQL statements [3.10.5](managing-processes.md)
+- capacity planning
+	- space management
+		- capacity planning [18.7](managing-space-for-schema-objects.md)
+- CASCADE clause
+	- when dropping unique or primary keys [17.7.3.1](managing-schema-objects.md)
+- CATBLOCK.SQL script [6.2.1](monitoring-the-database.md)
+- CDB resource plans [26.1.3.4.1](managing-resources-with-oracle-database-resource-manager.md)
+	- PDB performance profiles [26.4.1.3](managing-resources-with-oracle-database-resource-manager.md), [26.4.1.6.3](managing-resources-with-oracle-database-resource-manager.md)
+- CDBs
+	- CDB resource plans
+		- viewing information about [26.4.1.8](managing-resources-with-oracle-database-resource-manager.md)
+		- Database Resource Manager [26.4](managing-resources-with-oracle-database-resource-manager.md)
+		- resource management [26.1.1](managing-resources-with-oracle-database-resource-manager.md)
+- centralized user management
+	- distributed systems [30.3.2.4.1](distributed-database-concepts.md)
+- certificates
+	- creating [19.18.5](managing-tables.md)
+- chain condition syntax [28.6.5](scheduling-jobs-with-oracle-scheduler.md)
+- chained rows
+	- eliminating from table, procedure [17.4.5.2](managing-schema-objects.md)
+- chain rules [28.6.5](scheduling-jobs-with-oracle-scheduler.md)
+- chains
+	- creating [28.6.3](scheduling-jobs-with-oracle-scheduler.md)
+		- creating and managing job [28.6](scheduling-jobs-with-oracle-scheduler.md)
+		- creating jobs for [28.6.8](scheduling-jobs-with-oracle-scheduler.md)
+		- disabling [28.6.12](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping [28.6.9](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping rules from [28.6.11](scheduling-jobs-with-oracle-scheduler.md)
+		- enabling [28.6.7](scheduling-jobs-with-oracle-scheduler.md)
+		- handling stalled [28.6.20](scheduling-jobs-with-oracle-scheduler.md)
+		- monitoring running [28.6.19](scheduling-jobs-with-oracle-scheduler.md)
+		- overview [27.2.8](oracle-scheduler-concepts.md)
+		- pausing [28.6.16](scheduling-jobs-with-oracle-scheduler.md)
+		- running [28.6.10](scheduling-jobs-with-oracle-scheduler.md)
+		- setting privileges [29.1.1](administering-oracle-scheduler.md)
+		- steps
+		- pausing [28.6.16](scheduling-jobs-with-oracle-scheduler.md)
+				- skipping [28.6.17](scheduling-jobs-with-oracle-scheduler.md)
+		- stopping [28.6.14](scheduling-jobs-with-oracle-scheduler.md)
+		- stopping individual steps [28.6.15](scheduling-jobs-with-oracle-scheduler.md)
+- chain steps
+	- defining [28.6.4](scheduling-jobs-with-oracle-scheduler.md)
+- change vectors [9.1.2](managing-the-redo-log.md)
+- CHAR data type
+	- increasing column length [19.7.5](managing-tables.md)
+- CHECK\_OBJECT procedure
+	- DBMS\_REPAIR package [24.2.1](repairing-corrupted-data.md)
+		- example [24.4.2](repairing-corrupted-data.md)
+		- finding extent of corruption [24.3.2](repairing-corrupted-data.md)
+- checkpoint process (CKPT) [3.6](managing-processes.md)
+- checksums
+	- for data blocks [12.7](managing-data-files-and-temp-files.md)
+		- redo log blocks [9.7](managing-the-redo-log.md)
+- clearing redo log files [9.8](managing-the-redo-log.md)
+- CLEAR LOGFILE clause
+	- ALTER DATABASE statement [9.8](managing-the-redo-log.md)
+- client/server architectures
+	- distributed databases [30.1.3](distributed-database-concepts.md)
+		- globalization support [30.6.2](distributed-database-concepts.md)
+- cloning
+	- a database [1.3.11](getting-started-with-database-administration.md)
+		- an Oracle home [1.3.11](getting-started-with-database-administration.md)
+- CLOSE DATABASE LINK clause
+	- ALTER SESSION statement [32.2](developing-applications-for-a-distributed-database-system.md)
+- closing database links [31.4.1](managing-a-distributed-database.md)
+- closing windows [28.9.3.6](scheduling-jobs-with-oracle-scheduler.md)
+- clusters
+	- about [21.1](managing-clusters.md)
+		- allocating extents [21.4.1](managing-clusters.md)
+		- altering [21.4.1](managing-clusters.md)
+		- analyzing [17.4.1](managing-schema-objects.md)
+		- clustered tables [21.1](managing-clusters.md), [21.2.1](managing-clusters.md), [21.3.2](managing-clusters.md), [21.4.2](managing-clusters.md), [21.5.2](managing-clusters.md)
+		- cluster indexes [21.5](managing-clusters.md)
+		- cluster keys [21.1](managing-clusters.md), [21.2.2](managing-clusters.md)
+		- columns for cluster key [21.2.2](managing-clusters.md)
+		- creating [21.3.1](managing-clusters.md)
+		- data dictionary views reference [21.6](managing-clusters.md)
+		- deallocating extents [21.4.1](managing-clusters.md)
+		- dropping [21.5](managing-clusters.md)
+		- estimating space [21.2.3](managing-clusters.md), [21.2.5](managing-clusters.md)
+		- guidelines for managing [21.2](managing-clusters.md)
+		- location [21.2.4](managing-clusters.md)
+		- privileges [21.3.1](managing-clusters.md), [21.4.1](managing-clusters.md), [21.5.2](managing-clusters.md)
+		- selecting tables [21.2.1](managing-clusters.md)
+		- single-table hash clusters [22.3.3](managing-hash-clusters.md)
+		- truncating [17.5](managing-schema-objects.md)
+		- validating structure [17.4.3](managing-schema-objects.md)
+- coalescing indexes
+	- costs [20.2.13](managing-indexes.md)
+- cold backup
+	- performing with a detached Oracle Scheduler job [28.2.2.8](scheduling-jobs-with-oracle-scheduler.md)
+- collections
+	- materialized views [35.10.5](read-only-materialized-view-concepts.md)
+		- restrictions [35.10.5.1](read-only-materialized-view-concepts.md)
+		- replication [35.10.5](read-only-materialized-view-concepts.md)
+- collocated inline views
+	- tuning distributed queries [32.4.1](developing-applications-for-a-distributed-database-system.md)
+- column objects
+	- materialized views
+		- column subsetting [35.10.3](read-only-materialized-view-concepts.md)
+		- replication [35.10.1](read-only-materialized-view-concepts.md)
+- columns
+	- adding [19.7.6](managing-tables.md)
+		- adding to compressed table [19.7.6](managing-tables.md)
+		- displaying information about [19.19](managing-tables.md)
+		- dropping [19.7.8](managing-tables.md), [19.7.8.3](managing-tables.md)
+		- dropping in compressed tables [19.7.8.4](managing-tables.md)
+		- encrypted [19.2.13](managing-tables.md)
+		- increasing length [19.7.5](managing-tables.md)
+		- invisible [19.2.12.1](managing-tables.md)
+		- modifying definition [19.7.5](managing-tables.md)
+		- renaming [19.7.7](managing-tables.md)
+		- virtual [19.1](managing-tables.md)
+		- virtual, indexing [20.2.2](managing-indexes.md)
+- column subsetting
+	- materialized views
+		- column objects [35.10.3](read-only-materialized-view-concepts.md)
+- commands
+	- submitting [1.4.1](getting-started-with-database-administration.md)
+- comments
+	- adding to problem activity log [7.2.7](diagnosing-and-resolving-problems.md)
+- COMMENT statement [19.19](managing-tables.md)
+- COMMIT\_POINT\_STRENGTH initialization parameter [33.2.6.3](distributed-transactions-concepts.md)
+- commit phase [33.3.2.1](distributed-transactions-concepts.md), [33.5.5](distributed-transactions-concepts.md)
+	- in two-phase commit [33.3.3](distributed-transactions-concepts.md), [33.3.3.2](distributed-transactions-concepts.md)
+- commit point site [33.2.6.1](distributed-transactions-concepts.md)
+	- commit point strength [33.2.6.3](distributed-transactions-concepts.md), [34.1](managing-distributed-transactions.md)
+		- determining [33.2.6.3](distributed-transactions-concepts.md)
+		- distributed transactions [33.2.6.1](distributed-transactions-concepts.md), [33.2.6.3](distributed-transactions-concepts.md)
+		- how the database determines [33.2.6.3](distributed-transactions-concepts.md)
+- commit point strength
+	- definition [33.2.6.3](distributed-transactions-concepts.md)
+		- specifying [34.1](managing-distributed-transactions.md)
+- COMMIT statement
+	- FORCE clause [34.5](managing-distributed-transactions.md), [34.5.1.2](managing-distributed-transactions.md), [34.5.2](managing-distributed-transactions.md)
+		- forcing [34.4.2](managing-distributed-transactions.md)
+		- two-phase commit and [30.4.6](distributed-database-concepts.md)
+- committing transactions
+	- commit point site for distributed transactions [33.2.6.1](distributed-transactions-concepts.md)
+- complete refresh [35.7](read-only-materialized-view-concepts.md), [36.4.2.1](read-only-materialized-view-architecture.md)
+- complex materialized views [35.4.5.1](read-only-materialized-view-concepts.md), [35.4.5.2](read-only-materialized-view-concepts.md)
+	- value for PCTUSED [36.4.2.1](read-only-materialized-view-architecture.md)
+- components
+	- srvctl component names and abbreviations [2.5](configuring-automatic-restart-of-an-oracle-database.md)
+- compression [37.1.4](planning-for-read-only-materialized-views.md)
+	- indexes [20.3.8](managing-indexes.md)
+		- advanced compression [20.3.8.2](managing-indexes.md)
+				- prefix compression [20.3.8.1](managing-indexes.md)
+		- levels [19.2.6.1](managing-tables.md)
+		- tables [19.2.6.1](managing-tables.md)
+		- adding a column [19.7.6](managing-tables.md)
+				- dropping columns in [19.7.8.4](managing-tables.md)
+		- tablespaces [11.2.4](managing-tablespaces.md)
+- configuring
+	- Oracle Scheduler [29.1](administering-oracle-scheduler.md)
+- CONNECT command, SQL\*Plus [1.4.3.5](getting-started-with-database-administration.md), [1.4.3.5.1](getting-started-with-database-administration.md)
+- connected user database links [31.2.3.2](managing-a-distributed-database.md)
+	- advantages and disadvantages [30.2.8.2](distributed-database-concepts.md)
+		- definition [30.2.8.1](distributed-database-concepts.md)
+		- REMOTE\_OS\_AUTHENT initialization parameter [30.2.8.2](distributed-database-concepts.md)
+- connecting
+	- with SQL\*Plus [1.4.3.1](getting-started-with-database-administration.md)
+- connection qualifiers
+	- database links and [31.2.4](managing-a-distributed-database.md)
+		- diagnosing problems with [39.1](troubleshooting-problems-with-read-only-materialized-views.md)
+- connections
+	- terminating remote [32.2](developing-applications-for-a-distributed-database-system.md)
+- constraints [17.7](managing-schema-objects.md)
+	- See also: integrity constraints
+	- deferrable [36.4.4](read-only-materialized-view-architecture.md)
+		- disabling at table creation [17.7.2.1](managing-schema-objects.md)
+		- distributed system application development issues [32.3](developing-applications-for-a-distributed-database-system.md)
+		- dropping integrity constraints [17.7.3.3](managing-schema-objects.md)
+		- enable novalidate state [17.7.1.4](managing-schema-objects.md)
+		- enabling example [17.7.2.2](managing-schema-objects.md)
+		- enabling when violations exist [17.7.1.4](managing-schema-objects.md)
+		- exceptions [17.7.1.3](managing-schema-objects.md), [17.7.5](managing-schema-objects.md)
+		- exceptions to integrity constraints [17.7.5](managing-schema-objects.md)
+		- integrity constraint states [17.7.1.1](managing-schema-objects.md)
+		- keeping index when disabling [17.7.3](managing-schema-objects.md)
+		- keeping index when dropping [17.7.3](managing-schema-objects.md)
+		- ORA-02055 constraint violation [32.3](developing-applications-for-a-distributed-database-system.md)
+		- renaming [17.7.3.2](managing-schema-objects.md)
+		- setting at table creation [17.7.2](managing-schema-objects.md)
+		- when to disable [17.7.1.2](managing-schema-objects.md)
+- CONTROL\_FILES initialization parameter
+	- specifying file names [8.2.1](managing-control-files.md)
+		- when creating a database [8.3.1](managing-control-files.md)
+- control files
+	- adding [8.3.2](managing-control-files.md)
+		- changing size [8.3.1](managing-control-files.md)
+		- conflicts with data dictionary [8.4.1](managing-control-files.md)
+		- creating [8.1](managing-control-files.md), [8.3](managing-control-files.md), [8.3.3.2](managing-control-files.md)
+		- creating as Oracle Managed Files [15.3.6.1](using-oracle-managed-files.md)
+		- data dictionary views reference [8.8](managing-control-files.md)
+		- default name [8.3.1](managing-control-files.md)
+		- dropping [8.7](managing-control-files.md)
+		- errors during creation [8.4.2](managing-control-files.md)
+		- importance of multiplexed [8.2.2](managing-control-files.md)
+		- initial creation [8.3.1](managing-control-files.md)
+		- location of [8.2.2](managing-control-files.md)
+		- log sequence numbers [9.1.3.2](managing-the-redo-log.md)
+		- mirroring [8.2.2](managing-control-files.md)
+		- moving [8.3.2](managing-control-files.md)
+		- multiplexed [8.2.2](managing-control-files.md)
+		- names [8.2.1](managing-control-files.md)
+		- number of [8.2.2](managing-control-files.md)
+		- relocating [8.3.2](managing-control-files.md)
+		- renaming [8.3.2](managing-control-files.md)
+		- requirement of one [8.1](managing-control-files.md)
+		- size of [8.2.4](managing-control-files.md)
+		- troubleshooting [8.4](managing-control-files.md)
+- copying jobs [28.2.13](scheduling-jobs-with-oracle-scheduler.md)
+- core files [7.1.3.4](diagnosing-and-resolving-problems.md)
+- corruption
+	- repairing data block [24.1](repairing-corrupted-data.md)
+- cost-based optimization [32.4.2.2](developing-applications-for-a-distributed-database-system.md)
+	- distributed databases [30.5.3](distributed-database-concepts.md)
+		- hints [32.4.3.1](developing-applications-for-a-distributed-database-system.md)
+		- using for distributed queries [32.4.2.2](developing-applications-for-a-distributed-database-system.md)
+- CPU\_COUNT initialization parameter [26.1.4.3.1](managing-resources-with-oracle-database-resource-manager.md)
+- CREATE\_CREDENTIAL procedure [3.9.2](managing-processes.md), [28.2.2.3](scheduling-jobs-with-oracle-scheduler.md)
+- CREATE\_SIMPLE\_PLAN procedure
+	- Database Resource Manager [26.4.2.1](managing-resources-with-oracle-database-resource-manager.md), [26.4.3](managing-resources-with-oracle-database-resource-manager.md)
+- CREATE BIGFILE TABLESPACE statement [11.2.3.2](managing-tablespaces.md)
+- CREATE BIGFILE TEMPORARY TABLESPACE statement [11.2.6.3](managing-tablespaces.md)
+- CREATE CLUSTER statement
+	- creating clusters [21.3.1](managing-clusters.md)
+		- example [21.3.1](managing-clusters.md)
+		- for hash clusters [22.3.1](managing-hash-clusters.md)
+		- HASH IS clause [22.3.1](managing-hash-clusters.md), [22.3.4.2](managing-hash-clusters.md)
+		- HASHKEYS clause [22.3.1](managing-hash-clusters.md), [22.3.4.4](managing-hash-clusters.md)
+- CREATE CONTROLFILE statement
+	- about [8.3.3.2](managing-control-files.md)
+		- checking for inconsistencies [8.4.1](managing-control-files.md)
+		- NORESETLOGS clause [8.3.3.3](managing-control-files.md)
+		- Oracle Managed Files, using [15.3.6.1](using-oracle-managed-files.md)
+		- RESETLOGS clause [8.3.3.3](managing-control-files.md)
+- CREATE DATABASE LINK statement [31.2.2.1](managing-a-distributed-database.md)
+- CREATE DATABASE statement
+	- CONTROLFILE REUSE clause [8.3.1](managing-control-files.md)
+		- MAXLOGFILES parameter [9.2.5](managing-the-redo-log.md)
+		- MAXLOGMEMBERS parameter [9.2.5](managing-the-redo-log.md)
+		- used to create an undo tablespace [14.5.1.2](managing-undo.md)
+		- using Oracle Managed Files [15.3.3](using-oracle-managed-files.md)
+		- using Oracle Managed Files, examples [15.5.1](using-oracle-managed-files.md), [15.5.2](using-oracle-managed-files.md)
+- CREATE INDEX statement
+	- NOLOGGING [20.2.10](managing-indexes.md)
+		- ON CLUSTER clause [21.3.3](managing-clusters.md)
+		- with a constraint [20.3.4.2](managing-indexes.md)
+- CREATE SCHEMA statement
+	- multiple tables and views [17.3](managing-schema-objects.md)
+- CREATE SEQUENCE statement [23.2.2](managing-views-sequences-and-synonyms.md)
+	- CACHE option [23.2.4.2.4](managing-views-sequences-and-synonyms.md)
+- CREATE SYNONYM statement [23.3.2](managing-views-sequences-and-synonyms.md)
+- CREATE TABLESPACE statement
+	- BLOCKSIZE CLAUSE, using [11.4](managing-tablespaces.md)
+		- FORCE LOGGING clause, using [11.5](managing-tablespaces.md)
+		- LOST WRITE PROTECTION clause [11.11.2](managing-tablespaces.md)
+		- using Oracle Managed Files [15.3.4.1](using-oracle-managed-files.md)
+		- using Oracle Managed Files, examples [15.3.4.2](using-oracle-managed-files.md)
+- CREATE TABLE statement
+	- CLUSTER clause [21.3.2](managing-clusters.md)
+		- creating a private temporary table [19.3.2.4](managing-tables.md)
+		- creating global temporary table [19.3.2.3](managing-tables.md)
+		- example of [19.3.1](managing-tables.md)
+		- INCLUDING clause [19.13.2.6](managing-tables.md)
+		- MONITORING clause [19.6](managing-tables.md)
+		- NOLOGGING clause [19.2.5](managing-tables.md)
+		- ORGANIZATION EXTERNAL clause [19.15.2](managing-tables.md)
+		- PCTTHRESHOLD clause [19.13.2.5](managing-tables.md)
+- CREATE TEMPORARY TABLESPACE statement [11.2.6.2](managing-tablespaces.md)
+	- using Oracle Managed Files [15.3.5.1](using-oracle-managed-files.md)
+		- using Oracle managed files, example [15.3.5.2](using-oracle-managed-files.md)
+- CREATE UNDO TABLESPACE statement
+	- using Oracle Managed Files [15.3.4.1](using-oracle-managed-files.md)
+		- using Oracle Managed Files, example [15.3.4.3](using-oracle-managed-files.md)
+		- using to create an undo tablespace [14.5.1.3](managing-undo.md)
+- CREATE VIEW statement
+	- about [23.1.2.1](managing-views-sequences-and-synonyms.md)
+		- OR REPLACE clause [23.1.3](managing-views-sequences-and-synonyms.md)
+		- WITH CHECK OPTION [23.1.2.1](managing-views-sequences-and-synonyms.md), [23.1.4](managing-views-sequences-and-synonyms.md)
+- creating
+	- chains [28.6.3](scheduling-jobs-with-oracle-scheduler.md)
+		- control files [8.3](managing-control-files.md)
+		- event-based job [28.5.2.2](scheduling-jobs-with-oracle-scheduler.md)
+		- event schedule [28.5.2.4](scheduling-jobs-with-oracle-scheduler.md)
+		- indexes [20.3](managing-indexes.md)
+		- after inserting table data [20.2.1](managing-indexes.md)
+				- associated with integrity constraints [20.3.4.1](managing-indexes.md)
+				- NOLOGGING [20.2.10](managing-indexes.md)
+				- online [20.3.6](managing-indexes.md)
+				- prerequisites [20.3.1](managing-indexes.md)
+				- USING INDEX clause [20.3.4.2](managing-indexes.md)
+		- job classes [28.9.1.2](scheduling-jobs-with-oracle-scheduler.md)
+		- jobs [28.2.2](scheduling-jobs-with-oracle-scheduler.md)
+		- programs [28.3.2.1](scheduling-jobs-with-oracle-scheduler.md)
+		- Scheduler windows [28.9.3.3](scheduling-jobs-with-oracle-scheduler.md)
+		- schedules [28.4.2](scheduling-jobs-with-oracle-scheduler.md)
+		- sequences [23.2.4.2.4](managing-views-sequences-and-synonyms.md)
+		- window groups [28.9.4.2](scheduling-jobs-with-oracle-scheduler.md)
+- creating database links [31.2](managing-a-distributed-database.md)
+	- connected user [31.2.3.2.1](managing-a-distributed-database.md)
+		- connected user scenarios [31.8.3](managing-a-distributed-database.md)
+		- current user [31.2.3.2.2](managing-a-distributed-database.md)
+		- current user scenario [31.8.5](managing-a-distributed-database.md)
+		- examples [30.2.9](distributed-database-concepts.md)
+		- fixed user [31.2.3.1](managing-a-distributed-database.md)
+		- fixed user scenario [31.8.1](managing-a-distributed-database.md), [31.8.2](managing-a-distributed-database.md)
+		- obtaining necessary privileges [31.2.1](managing-a-distributed-database.md)
+		- private [31.2.2.1](managing-a-distributed-database.md)
+		- public [31.2.2.2](managing-a-distributed-database.md)
+		- service names within link names [31.2.4](managing-a-distributed-database.md)
+		- shared [31.3](managing-a-distributed-database.md)
+		- shared connected user scenario [31.8.4](managing-a-distributed-database.md)
+		- specifying types [31.2.2](managing-a-distributed-database.md)
+- creating databases
+	- using Oracle Managed Files [15.3.3](using-oracle-managed-files.md)
+- creating data files [12.2](managing-data-files-and-temp-files.md)
+- creating sequences [23.2.2](managing-views-sequences-and-synonyms.md)
+- creating synonyms [23.3.2](managing-views-sequences-and-synonyms.md)
+- creating views [23.1.2.1](managing-views-sequences-and-synonyms.md)
+- credentials, Oracle Scheduler
+	- about [27.2.7](oracle-scheduler-concepts.md)
+		- granting privileges on [27.2.7](oracle-scheduler-concepts.md)
+- critical errors
+	- diagnosing [7.1.1](diagnosing-and-resolving-problems.md)
+- CRSCTL utility
+	- Oracle Restart [2.1.4](configuring-automatic-restart-of-an-oracle-database.md)
+- current user database links
+	- advantages and disadvantages [30.2.8.4](distributed-database-concepts.md)
+		- cannot access in shared schema [30.3.2.4.3](distributed-database-concepts.md)
+		- definition [30.2.8.1](distributed-database-concepts.md)
+		- shared schema [30.3.2.4.3](distributed-database-concepts.md)
+- CURRVAL pseudo-column [23.2.4.1](managing-views-sequences-and-synonyms.md)
+	- restrictions [23.2.4.1.3](managing-views-sequences-and-synonyms.md)
+- cursors
+	- and closing database links [32.2](developing-applications-for-a-distributed-database-system.md)
+- customize package page, accessing [7.4.3.2](diagnosing-and-resolving-problems.md)
+- customizing an incident package [7.4.3](diagnosing-and-resolving-problems.md), [7.4.3.2](diagnosing-and-resolving-problems.md)
+
+---
+
+## D
+
+- data
+	- loading using external tables [19.15.2](managing-tables.md)
+- database
+	- cloning [1.3.11](getting-started-with-database-administration.md)
+- database administrators
+	- authentication [1.7.3](getting-started-with-database-administration.md)
+		- DBA role [1.6.2.5](getting-started-with-database-administration.md)
+		- operating system account [1.6.1](getting-started-with-database-administration.md)
+		- password files for [1.7.3.2](getting-started-with-database-administration.md)
+		- responsibilities of [1.2.1](getting-started-with-database-administration.md)
+		- security and privileges of [1.6](getting-started-with-database-administration.md)
+		- security officer versus [5.1](managing-users-and-securing-the-database.md)
+		- task definitions [1.3](getting-started-with-database-administration.md)
+		- utilities for [1.9](getting-started-with-database-administration.md)
+- Database Configuration Assistant
+	- shared server configuration [3.4.4](managing-processes.md)
+- database destinations, Oracle Scheduler
+	- about [27.2.5.1](oracle-scheduler-concepts.md)
+		- creating [28.2.2.4.2](scheduling-jobs-with-oracle-scheduler.md)
+- Database In-Memory
+	- See: Oracle Database In-Memory
+- database jobs, Oracle Scheduler [27.3.1.1.1](oracle-scheduler-concepts.md)
+- database links
+	- advantages [30.2.3](distributed-database-concepts.md)
+		- auditing [30.3.3](distributed-database-concepts.md)
+		- authentication [30.3.2.1](distributed-database-concepts.md)
+		- authentication without passwords [30.3.2.2](distributed-database-concepts.md)
+		- closing [31.4.1](managing-a-distributed-database.md), [32.2](developing-applications-for-a-distributed-database-system.md)
+		- connected user [30.2.8.1](distributed-database-concepts.md), [30.2.8.2](distributed-database-concepts.md), [31.2.3.2](managing-a-distributed-database.md), [31.8.3](managing-a-distributed-database.md)
+		- connections, determining open [31.5.2](managing-a-distributed-database.md)
+		- controlling connections [32.2](developing-applications-for-a-distributed-database-system.md)
+		- creating [31.2](managing-a-distributed-database.md), [31.8.1](managing-a-distributed-database.md), [31.8.3](managing-a-distributed-database.md), [31.8.4](managing-a-distributed-database.md), [31.8.5](managing-a-distributed-database.md)
+		- creating, examples [30.2.9](distributed-database-concepts.md)
+		- creating, scenarios [31.8](managing-a-distributed-database.md)
+		- creating shared [31.3.2](managing-a-distributed-database.md)
+		- current user [30.2.8.1](distributed-database-concepts.md), [30.2.8.4](distributed-database-concepts.md), [31.2.3.2](managing-a-distributed-database.md)
+		- data dictionary USER views [31.5.1](managing-a-distributed-database.md)
+		- definition [30.2.1](distributed-database-concepts.md)
+		- diagnosing problems with [39.1](troubleshooting-problems-with-read-only-materialized-views.md)
+		- distributed queries [30.4.2](distributed-database-concepts.md)
+		- distributed transactions [30.4.5](distributed-database-concepts.md)
+		- dropping [31.4.2](managing-a-distributed-database.md)
+		- enforcing global naming [31.1.2](managing-a-distributed-database.md)
+		- enterprise users and [30.3.2.4.3](distributed-database-concepts.md)
+		- fixed user [30.2.8.1](distributed-database-concepts.md), [30.2.8.3](distributed-database-concepts.md), [31.8.1](managing-a-distributed-database.md)
+		- global [30.2.7](distributed-database-concepts.md)
+		- global names [30.2.4](distributed-database-concepts.md)
+		- loopback [30.2.5](distributed-database-concepts.md)
+		- global object names [30.4.7.1](distributed-database-concepts.md)
+		- handling errors [32.3](developing-applications-for-a-distributed-database-system.md)
+		- host name [31.5.3](managing-a-distributed-database.md)
+		- incoming database links [31.5.4](managing-a-distributed-database.md)
+		- limiting number of connections [31.4.3](managing-a-distributed-database.md)
+		- listing [31.5.1](managing-a-distributed-database.md), [34.3.1](managing-distributed-transactions.md), [34.3.2](managing-distributed-transactions.md)
+		- loopback [30.2.5](distributed-database-concepts.md)
+		- managing [31.4](managing-a-distributed-database.md)
+		- materialized view sites [37.2.4.2](planning-for-read-only-materialized-views.md)
+		- minimizing network connections [31.3](managing-a-distributed-database.md)
+		- name resolution [30.4.7.1](distributed-database-concepts.md)
+		- names for [30.2.6](distributed-database-concepts.md)
+		- private [30.2.7](distributed-database-concepts.md)
+		- public [30.2.7](distributed-database-concepts.md)
+		- referential integrity in [32.3](developing-applications-for-a-distributed-database-system.md)
+		- remote transactions [30.4.1](distributed-database-concepts.md), [30.4.4](distributed-database-concepts.md)
+		- resolution [30.4.7.1](distributed-database-concepts.md)
+		- restrictions [30.2.11](distributed-database-concepts.md)
+		- roles on remote database [30.2.11](distributed-database-concepts.md)
+		- schema objects and [30.2.10](distributed-database-concepts.md)
+		- SCN activity [31.5.5](managing-a-distributed-database.md)
+		- service names used within link names [31.2.4](managing-a-distributed-database.md)
+		- shared [30.2.2](distributed-database-concepts.md), [31.3.1](managing-a-distributed-database.md), [31.3.3](managing-a-distributed-database.md), [31.3.3.1](managing-a-distributed-database.md), [31.3.3.2](managing-a-distributed-database.md)
+		- shared SQL [30.4.3](distributed-database-concepts.md)
+		- synonyms for schema objects [30.2.10.3](distributed-database-concepts.md)
+		- tuning distributed queries [32.4](developing-applications-for-a-distributed-database-system.md)
+		- tuning queries with hints [32.4.3.1](developing-applications-for-a-distributed-database-system.md)
+		- tuning using collocated inline views [32.4.1](developing-applications-for-a-distributed-database-system.md)
+		- types of links [30.2.7](distributed-database-concepts.md)
+		- types of users [30.2.8.1](distributed-database-concepts.md)
+		- users, specifying [31.2.3](managing-a-distributed-database.md)
+		- using cost-based optimization [32.4.2.2](developing-applications-for-a-distributed-database-system.md)
+		- viewing [31.5](managing-a-distributed-database.md), [31.5.1](managing-a-distributed-database.md)
+- database objects
+	- obtaining growth trends for [18.7.3](managing-space-for-schema-objects.md)
+- database program unit, definition [27.1](oracle-scheduler-concepts.md)
+- database resident connection pooling [3.2](managing-processes.md)
+	- advantages [3.2](managing-processes.md)
+		- configuration parameters [3.5.3.1](managing-processes.md)
+		- configuring the connection pool [3.5.3](managing-processes.md)
+		- data dictionary views reference [3.5.4](managing-processes.md)
+		- disabling [3.5.2](managing-processes.md)
+		- enabling [3.5.2](managing-processes.md)
+		- triggers [3.2](managing-processes.md)
+- Database Resource Manager
+	- active session pool with queuing [26.1.3.3.1.6](managing-resources-with-oracle-database-resource-manager.md)
+		- administering system privilege [26.1.4.1](managing-resources-with-oracle-database-resource-manager.md)
+		- and operating system control [26.9](managing-resources-with-oracle-database-resource-manager.md)
+		- automatic consumer group switching [26.1.3.3.1.5.1](managing-resources-with-oracle-database-resource-manager.md)
+		- CDB resource plans [26.1.3.4.1](managing-resources-with-oracle-database-resource-manager.md)
+		- CDBs [26.1.1](managing-resources-with-oracle-database-resource-manager.md), [26.4](managing-resources-with-oracle-database-resource-manager.md)
+		- CREATE\_SIMPLE\_PLAN procedure [26.4.2.1](managing-resources-with-oracle-database-resource-manager.md), [26.4.3](managing-resources-with-oracle-database-resource-manager.md)
+		- data dictionary views reference [26.10.3](managing-resources-with-oracle-database-resource-manager.md)
+		- description [26.1](managing-resources-with-oracle-database-resource-manager.md)
+		- enabling [26.2](managing-resources-with-oracle-database-resource-manager.md)
+		- execution time limit [26.1.3.3.1.5.3](managing-resources-with-oracle-database-resource-manager.md)
+		- monitoring PDBs [26.8.6](managing-resources-with-oracle-database-resource-manager.md)
+		- PDB resource plans [26.1.3.4.2](managing-resources-with-oracle-database-resource-manager.md)
+		- PDBs [26.4](managing-resources-with-oracle-database-resource-manager.md)
+		- resource allocation methods [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+		- resource consumer groups [26.1.3.1](managing-resources-with-oracle-database-resource-manager.md), [26.3](managing-resources-with-oracle-database-resource-manager.md), [26.4.4.3](managing-resources-with-oracle-database-resource-manager.md)
+		- resource plan directives [26.1.3.1](managing-resources-with-oracle-database-resource-manager.md), [26.4.4.6](managing-resources-with-oracle-database-resource-manager.md), [26.4.4.7](managing-resources-with-oracle-database-resource-manager.md)
+		- resource plans [26.1.3.1](managing-resources-with-oracle-database-resource-manager.md), [26.1.3.3.1.1.1](managing-resources-with-oracle-database-resource-manager.md), [26.1.3.5.1](managing-resources-with-oracle-database-resource-manager.md), [26.2](managing-resources-with-oracle-database-resource-manager.md), [26.4.3](managing-resources-with-oracle-database-resource-manager.md), [26.5](managing-resources-with-oracle-database-resource-manager.md), [26.5.5](managing-resources-with-oracle-database-resource-manager.md)
+		- STATISTICS\_LEVEL parameter [26.1.2.1](managing-resources-with-oracle-database-resource-manager.md)
+		- undo pool [26.1.3.3.1.7](managing-resources-with-oracle-database-resource-manager.md)
+		- validating plan schema changes [26.4.4.7](managing-resources-with-oracle-database-resource-manager.md)
+- databases
+	- administering [1](getting-started-with-database-administration.md)
+		- administration of distributed [31](managing-a-distributed-database.md)
+		- planning [1.3.3](getting-started-with-database-administration.md)
+		- renaming [8.3.3.2](managing-control-files.md), [8.3.3.3](managing-control-files.md)
+- Database Smart Flash Cache [4.6](managing-memory.md)
+	- flushing [4.6.3](managing-memory.md)
+		- tuning [4.6.3](managing-memory.md)
+- database writer process
+	- calculating checksums for data blocks [12.7](managing-data-files-and-temp-files.md)
+- database writer process (DBWn) [3.6](managing-processes.md)
+- data block corruption
+	- repairing [24.1](repairing-corrupted-data.md)
+- data blocks
+	- shadow lost write protection [11.11](managing-tablespaces.md)
+		- shared in clusters [21.1](managing-clusters.md)
+		- verifying [12.7](managing-data-files-and-temp-files.md)
+- data dictionary
+	- conflicts with control files [8.4.1](managing-control-files.md)
+		- purging pending rows from [34.6.1](managing-distributed-transactions.md), [34.6.3](managing-distributed-transactions.md)
+- data encryption
+	- distributed systems [30.3.2.5](distributed-database-concepts.md)
+- data file headers
+	- when renaming tablespaces [11.9](managing-tablespaces.md)
+- data files
+	- adding to a tablespace [12.2](managing-data-files-and-temp-files.md)
+		- bringing online and offline [12.4.1](managing-data-files-and-temp-files.md)
+		- checking associated tablespaces [11.15.3](managing-tablespaces.md)
+		- copying using database [12.8.1](managing-data-files-and-temp-files.md)
+		- creating [12.2](managing-data-files-and-temp-files.md)
+		- creating Oracle Managed Files [15.3](using-oracle-managed-files.md), [15.3.7.2](using-oracle-managed-files.md)
+		- database administrators access [1.6.1](getting-started-with-database-administration.md)
+		- data dictionary views reference [12.10](managing-data-files-and-temp-files.md)
+		- default directory [12.2](managing-data-files-and-temp-files.md)
+		- definition [12.1.1](managing-data-files-and-temp-files.md)
+		- deleting [11.10](managing-tablespaces.md)
+		- dropping [12.4.3](managing-data-files-and-temp-files.md), [12.6](managing-data-files-and-temp-files.md)
+		- dropping Oracle managed [15.4.1](using-oracle-managed-files.md)
+		- file numbers [12.1.1](managing-data-files-and-temp-files.md)
+		- fully specifying file names [12.2](managing-data-files-and-temp-files.md)
+		- guidelines for managing [12.1.1](managing-data-files-and-temp-files.md)
+		- headers when renaming tablespaces [11.9](managing-tablespaces.md)
+		- identifying OS file names [12.5.2.1.2](managing-data-files-and-temp-files.md)
+		- location [12.1.4](managing-data-files-and-temp-files.md)
+		- mapping files to physical devices [12.9](managing-data-files-and-temp-files.md)
+		- minimum number of [12.1.2.1](managing-data-files-and-temp-files.md)
+		- MISSING [8.4.1](managing-control-files.md)
+		- offline
+		- relocating [12.5.2](managing-data-files-and-temp-files.md)
+				- renaming [12.5.2](managing-data-files-and-temp-files.md)
+		- online [12.4.3](managing-data-files-and-temp-files.md)
+		- relocating [12.5.1](managing-data-files-and-temp-files.md)
+				- renaming [12.5.1](managing-data-files-and-temp-files.md)
+		- relocating [12.5](managing-data-files-and-temp-files.md)
+		- renaming [12.5](managing-data-files-and-temp-files.md)
+		- reusing [12.2](managing-data-files-and-temp-files.md)
+		- shadow lost write protection [11.11](managing-tablespaces.md)
+		- size of [12.1.3](managing-data-files-and-temp-files.md)
+		- statements to create [12.2](managing-data-files-and-temp-files.md)
+		- storing separately from redo log files [12.1.5](managing-data-files-and-temp-files.md)
+		- verifying data blocks [12.7](managing-data-files-and-temp-files.md)
+- data manipulation language
+	- statements allowed in distributed transactions [30.4.1](distributed-database-concepts.md)
+- Data Recovery Advisor, repairing data corruptions with [7.5.2](diagnosing-and-resolving-problems.md)
+- Data Repair Advisor [7.1.1](diagnosing-and-resolving-problems.md)
+- date expressions [36.4.3.1](read-only-materialized-view-architecture.md)
+- DB\_BLOCK\_CHECKING initialization parameter [24.3.1.1](repairing-corrupted-data.md), [24.3.1.5](repairing-corrupted-data.md)
+- DB\_BLOCK\_CHECKSUM initialization parameter [12.7](managing-data-files-and-temp-files.md)
+	- enabling redo block checking with [9.7](managing-the-redo-log.md)
+- DB\_BLOCK\_SIZE initialization parameter
+	- and nonstandard block sizes [11.4](managing-tablespaces.md)
+- DB\_CACHE\_SIZE initialization parameter
+	- specifying multiple block sizes [11.4](managing-tablespaces.md)
+- DB\_CACHE\_SIZE parameter [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+- DB\_CREATE\_FILE\_DEST initialization parameter
+	- setting [15.2.2](using-oracle-managed-files.md)
+- DB\_CREATE\_ONLINE\_LOG\_DEST\_n initialization parameter
+	- setting [15.2.4](using-oracle-managed-files.md)
+- DB\_FILES initialization parameter
+	- determining value for [12.1.2.2](managing-data-files-and-temp-files.md)
+- DB\_nK\_CACHE\_SIZE initialization parameter
+	- specifying multiple block sizes [11.4](managing-tablespaces.md)
+- DB\_PERFORMANCE\_PROFILE parameter [26.4.1.4](managing-resources-with-oracle-database-resource-manager.md)
+- DB\_RECOVERY\_FILE\_DEST initialization parameter
+	- setting [15.2.3](using-oracle-managed-files.md)
+- DB\_UNRECOVERABLE\_SCN\_TRACKING initialization parameter [19.4.2.4.2](managing-tables.md)
+- DBA
+	- See: database administrators
+- DBA\_2PC\_NEIGHBORS view [34.3.2](managing-distributed-transactions.md)
+	- using to trace session tree [34.3.2](managing-distributed-transactions.md)
+- DBA\_2PC\_PENDING view [34.3.1](managing-distributed-transactions.md), [34.6.1](managing-distributed-transactions.md), [34.7.6](managing-distributed-transactions.md)
+	- using to list in-doubt transactions [34.3.1](managing-distributed-transactions.md)
+- DBA\_DB\_LINK\_SOURCES view [31.5.4](managing-a-distributed-database.md), [31.5.5](managing-a-distributed-database.md)
+- DBA\_DB\_LINKS view [31.5.1](managing-a-distributed-database.md)
+- DBA\_DB\_LINK view [31.5.5](managing-a-distributed-database.md)
+- DBA\_EXTERNAL\_SCN\_ACTIVITY view [31.5.5](managing-a-distributed-database.md)
+- DBA\_REGISTERED\_MVIEWS view [35.11.1](read-only-materialized-view-concepts.md)
+- DBA\_TYPE\_VERSIONS
+	- replication [35.10.2](read-only-materialized-view-concepts.md)
+- DBA role [1.6.2.5](getting-started-with-database-administration.md)
+- DBMS\_CREDENTIAL package [3.9.2](managing-processes.md)
+- DBMS\_FILE\_TRANSFER package
+	- copying data files [12.7](managing-data-files-and-temp-files.md)
+- DBMS\_JOB
+	- about [A.1](support-for-DBMS_JOB.md)
+		- moving jobs to Oracle Scheduler [A.2](support-for-DBMS_JOB.md)
+- DBMS\_METADATA package
+	- GET\_DDL function [17.13.1](managing-schema-objects.md)
+		- using for object definition [17.13.1](managing-schema-objects.md)
+- DBMS\_MVIEW package [35.11.3](read-only-materialized-view-concepts.md)
+	- EXPLAIN\_MVIEW procedure [38.4](creating-and-managing-read-only-materialized-views.md)
+		- REFRESH procedure [38.3](creating-and-managing-read-only-materialized-views.md)
+		- REGISTER\_MVIEW procedure [35.11.3](read-only-materialized-view-concepts.md)
+- DBMS\_PROCESS package [3.7.2](managing-processes.md)
+- DBMS\_REDEFINITION package
+	- performing online redefinition with [19.8.6.1](managing-tables.md)
+- DBMS\_REFRESH package
+	- MAKE procedure [38.2](creating-and-managing-read-only-materialized-views.md)
+		- REFRESH procedure [38.3](creating-and-managing-read-only-materialized-views.md)
+- DBMS\_REPAIR
+	- logical corruptions [24.3.2](repairing-corrupted-data.md)
+- DBMS\_REPAIR package
+	- examples [24.4](repairing-corrupted-data.md)
+		- procedures [24.2.1](repairing-corrupted-data.md)
+		- using [24.3](repairing-corrupted-data.md), [24.4.5](repairing-corrupted-data.md)
+- DBMS\_RESOURCE\_MANAGER\_PRIVS package [26.1.4.1](managing-resources-with-oracle-database-resource-manager.md)
+	- procedures (table of) [26.1.4.1](managing-resources-with-oracle-database-resource-manager.md)
+- DBMS\_RESOURCE\_MANAGER package [26.1.3.1](managing-resources-with-oracle-database-resource-manager.md), [26.1.4.1](managing-resources-with-oracle-database-resource-manager.md), [26.3.4.1.1](managing-resources-with-oracle-database-resource-manager.md)
+	- procedures (table of) [26.1.4.1](managing-resources-with-oracle-database-resource-manager.md)
+- DBMS\_RESUMABLE package [18.2.4.3](managing-space-for-schema-objects.md)
+- DBMS\_SCHEDULER.GET\_FILE, retrieving external job stdout with [28.2.2.10](scheduling-jobs-with-oracle-scheduler.md)
+- DBMS\_SERVER\_ALERT package
+	- setting alert thresholds [18.1.1](managing-space-for-schema-objects.md)
+- DBMS\_SPACE\_ADMIN
+	- DROP\_EMPTY\_SEGMENTS procedure [18.4](managing-space-for-schema-objects.md)
+		- MATERIALIZE\_DEFERRED\_SEGMENTS procedure [19.2.15](managing-tables.md)
+- DBMS\_SPACE package [18.3.4](managing-space-for-schema-objects.md)
+	- example for unused space [18.6.1](managing-space-for-schema-objects.md)
+		- FREE\_BLOCK procedure [18.6.1](managing-space-for-schema-objects.md)
+		- SPACE\_USAGE procedure [18.6.1](managing-space-for-schema-objects.md)
+		- UNUSED\_SPACE procedure [18.6.1](managing-space-for-schema-objects.md)
+- DBMS\_SQLDIAG package [7.3.4.3.2](diagnosing-and-resolving-problems.md)
+- DBMS\_TNS package [31.5.3](managing-a-distributed-database.md)
+- DBMS\_TRANSACTION package
+	- PURGE\_LOST\_DB\_ENTRY procedure [34.6.2](managing-distributed-transactions.md)
+- DBVERIFY utility [24.3.1.1](repairing-corrupted-data.md), [24.3.1.3](repairing-corrupted-data.md)
+- DDL log [7.1.3.5](diagnosing-and-resolving-problems.md)
+- DEALLOCATE UNUSED clause [18.3.4](managing-space-for-schema-objects.md)
+- deallocating unused space [18.3](managing-space-for-schema-objects.md)
+	- DBMS\_SPACE package [18.3.4](managing-space-for-schema-objects.md)
+		- DEALLOCATE UNUSED clause [18.3.4](managing-space-for-schema-objects.md)
+- debug log [7.1.3.6](diagnosing-and-resolving-problems.md)
+- declarative referential integrity constraints [32.3](developing-applications-for-a-distributed-database-system.md)
+- dedicated server processes [3.1.1](managing-processes.md)
+	- trace files for [6.1.1.1](monitoring-the-database.md)
+- DEFAULT\_CONSUMER\_GROUP for Database Resource Manager [26.3.6.1](managing-resources-with-oracle-database-resource-manager.md), [26.7.2](managing-resources-with-oracle-database-resource-manager.md)
+- default temporary tablespace
+	- renaming [11.9](managing-tablespaces.md)
+- deferred segment creation
+	- indexes [20.2.6](managing-indexes.md)
+		- in tables [19.2.14](managing-tables.md)
+- deferred segments
+	- materializing [19.2.15](managing-tables.md)
+- defining
+	- chain steps [28.6.4](scheduling-jobs-with-oracle-scheduler.md)
+- deleting
+	- certificates [19.18.7](managing-tables.md)
+- dependencies
+	- between schema objects [17.9](managing-schema-objects.md)
+		- displaying [17.13.2.2](managing-schema-objects.md)
+- destinations, Oracle Scheduler
+	- about [27.2.5.1](oracle-scheduler-concepts.md)
+		- creating [28.2.2.4.2](scheduling-jobs-with-oracle-scheduler.md)
+- detached jobs [27.3.1.5](oracle-scheduler-concepts.md)
+	- creating [28.2.2.8](scheduling-jobs-with-oracle-scheduler.md)
+- DIAGNOSTIC\_DEST initialization parameter [6.1.1.1](monitoring-the-database.md), [7.1.4](diagnosing-and-resolving-problems.md)
+- dictionary-managed tablespaces
+	- migrating SYSTEM to locally managed [11.14](managing-tablespaces.md)
+- Digital POLYCENTER Manager on NetView [30.3.4.3](distributed-database-concepts.md)
+- directory objects
+	- external procedures [3.9.2](managing-processes.md)
+- direct-path INSERT
+	- benefits [19.4.2.1](managing-tables.md)
+		- how it works [19.4.2.2](managing-tables.md)
+		- index maintenance [19.4.2.5.2](managing-tables.md)
+		- locking considerations [19.4.2.5.4](managing-tables.md)
+		- logging mode [19.4.2.4](managing-tables.md)
+		- parallel INSERT [19.4.2.3.2](managing-tables.md)
+		- parallel load compared with parallel INSERT [19.4.2.1](managing-tables.md)
+		- space considerations [19.4.2.5.3](managing-tables.md)
+- direct path load
+	- fast refresh [36.4.2.2](read-only-materialized-view-architecture.md)
+- disabling
+	- chains [28.6.12](scheduling-jobs-with-oracle-scheduler.md)
+		- jobs [28.2.11](scheduling-jobs-with-oracle-scheduler.md)
+		- programs [28.3.5](scheduling-jobs-with-oracle-scheduler.md)
+		- window groups [28.9.4.7](scheduling-jobs-with-oracle-scheduler.md)
+		- windows [28.9.3.8](scheduling-jobs-with-oracle-scheduler.md)
+- disabling recoverer process [34.9.2](managing-distributed-transactions.md)
+- dispatcher process (Dnnn) [3.6](managing-processes.md)
+- dispatcher processes [3.4.4.3](managing-processes.md), [3.4.6](managing-processes.md)
+- DISPATCHERS initialization parameter
+	- setting initially [3.4.4.3](managing-processes.md)
+- distributed applications
+	- distributing data [32.1](developing-applications-for-a-distributed-database-system.md)
+- distributed databases
+	- administration overview [30.3](distributed-database-concepts.md)
+		- application development [30.5](distributed-database-concepts.md), [32](developing-applications-for-a-distributed-database-system.md), [32.5](developing-applications-for-a-distributed-database-system.md)
+		- client/server architectures [30.1.3](distributed-database-concepts.md)
+		- commit point strength [33.2.6.3](distributed-transactions-concepts.md)
+		- cost-based optimization [30.5.3](distributed-database-concepts.md)
+		- direct and indirect connections [30.1.3](distributed-database-concepts.md)
+		- distributed processing [30.1.1.2](distributed-database-concepts.md)
+		- distributed queries [30.4.2](distributed-database-concepts.md)
+		- distributed updates [30.4.2](distributed-database-concepts.md)
+		- exclusively mapped global users [30.3.2.4.2](distributed-database-concepts.md)
+		- forming global database names [31.1.1](managing-a-distributed-database.md)
+		- globalization support [30.6.1](distributed-database-concepts.md)
+		- global object names [30.2.10.4](distributed-database-concepts.md), [31.1](managing-a-distributed-database.md)
+		- location transparency [30.5.1.1](distributed-database-concepts.md), [31.6](managing-a-distributed-database.md)
+		- management tools [30.3.4](distributed-database-concepts.md)
+		- managing read consistency [34.10](managing-distributed-transactions.md)
+		- nodes of [30.1.3](distributed-database-concepts.md)
+		- overview [30.1.1.1](distributed-database-concepts.md)
+		- remote object security [31.6.1](managing-a-distributed-database.md)
+		- remote queries and updates [30.4.1](distributed-database-concepts.md)
+		- replicated databases and [30.1.1.3](distributed-database-concepts.md)
+		- resumable space allocation [18.2.1.4](managing-space-for-schema-objects.md)
+		- running in ARCHIVELOG mode [10.2.2](managing-archived-redo-log-files.md)
+		- running in NOARCHIVELOG mode [10.2.2](managing-archived-redo-log-files.md)
+		- scenarios [31.8](managing-a-distributed-database.md)
+		- schema object name resolution [30.4.8.1](distributed-database-concepts.md)
+		- security [30.3.2](distributed-database-concepts.md)
+		- shared schema users [30.3.2.4.3](distributed-database-concepts.md)
+		- site autonomy of [30.3.1](distributed-database-concepts.md)
+		- SQL transparency [30.5.1.2](distributed-database-concepts.md)
+		- transaction processing [30.4](distributed-database-concepts.md)
+		- transparency [30.5.1](distributed-database-concepts.md)
+- distributed processing
+	- distributed databases [30.1.1.2](distributed-database-concepts.md)
+- distributed queries [30.4.2](distributed-database-concepts.md)
+	- analyzing tables [32.4.2.3.2](developing-applications-for-a-distributed-database-system.md)
+		- application development issues [32.4](developing-applications-for-a-distributed-database-system.md)
+		- cost-based optimization [32.4.2.2](developing-applications-for-a-distributed-database-system.md)
+		- optimizing [30.5.3](distributed-database-concepts.md)
+- distributed systems
+	- data encryption [30.3.2.5](distributed-database-concepts.md)
+- distributed transactions [30.4.5](distributed-database-concepts.md)
+	- case study [33.5.1](distributed-transactions-concepts.md)
+		- commit point site [33.2.6.1](distributed-transactions-concepts.md)
+		- commit point strength [33.2.6.3](distributed-transactions-concepts.md), [34.1](managing-distributed-transactions.md)
+		- committing [33.2.6.2](distributed-transactions-concepts.md)
+		- database server role [33.2.3](distributed-transactions-concepts.md)
+		- defined [33.1](distributed-transactions-concepts.md)
+		- DML and DDL [33.1.1](distributed-transactions-concepts.md)
+		- failure during [34.8.1](managing-distributed-transactions.md)
+		- global coordinator [33.2.5](distributed-transactions-concepts.md)
+		- locked resources [34.8](managing-distributed-transactions.md)
+		- locks for in-doubt [34.8.2](managing-distributed-transactions.md)
+		- lock timeout interval [34.8](managing-distributed-transactions.md)
+		- manually overriding in-doubt [34.4.2](managing-distributed-transactions.md)
+		- naming [34.2](managing-distributed-transactions.md), [34.4.3.2](managing-distributed-transactions.md)
+		- session trees [33.2.1](distributed-transactions-concepts.md), [33.2.3](distributed-transactions-concepts.md), [33.2.4](distributed-transactions-concepts.md), [33.2.5](distributed-transactions-concepts.md), [33.2.6.1](distributed-transactions-concepts.md), [34.3.2](managing-distributed-transactions.md)
+		- setting advice [34.4.3.3](managing-distributed-transactions.md)
+		- transaction control statements [33.1.2](distributed-transactions-concepts.md)
+		- transaction timeouts [34.8.1](managing-distributed-transactions.md)
+		- two-phase commit [33.5.1](distributed-transactions-concepts.md), [34.4.1](managing-distributed-transactions.md)
+		- viewing database links [34.3.1](managing-distributed-transactions.md)
+- distributed updates [30.4.2](distributed-database-concepts.md)
+- DML
+	- See: data manipulation language
+- DML error logging, inserting data with [19.4.4.1](managing-tables.md)
+- DRCP
+	- initialization parameters [3.5.1](managing-processes.md)
+- DRIVING\_SITE hint [32.4.3.3](developing-applications-for-a-distributed-database-system.md)
+- DROP ALL STORAGE clause [17.5.3](managing-schema-objects.md)
+- DROP CLUSTER statement
+	- CASCADE CONSTRAINTS clause [21.5](managing-clusters.md)
+		- dropping cluster [21.5](managing-clusters.md)
+		- dropping cluster index [21.5](managing-clusters.md)
+		- dropping hash cluster [22.5](managing-hash-clusters.md)
+		- INCLUDING TABLES clause [21.5](managing-clusters.md)
+- DROP LOGFILE clause
+	- ALTER DATABASE statement [9.5.1](managing-the-redo-log.md)
+- DROP LOGFILE MEMBER clause
+	- ALTER DATABASE statement [9.5.2](managing-the-redo-log.md)
+- dropping
+	- chains [28.6.9](scheduling-jobs-with-oracle-scheduler.md)
+		- chain steps [28.6.13](scheduling-jobs-with-oracle-scheduler.md)
+		- columns
+		- marking unused [19.7.8.2](managing-tables.md)
+				- remove unused columns [19.7.8.2](managing-tables.md)
+		- columns in compressed tables [19.7.8.4](managing-tables.md)
+		- database links [31.4.2](managing-a-distributed-database.md)
+		- data files [12.6](managing-data-files-and-temp-files.md)
+		- data files, Oracle managed [15.4.1](using-oracle-managed-files.md)
+		- job classes [28.9.1.4](scheduling-jobs-with-oracle-scheduler.md)
+		- jobs [28.2.8](scheduling-jobs-with-oracle-scheduler.md)
+		- programs [28.3.4](scheduling-jobs-with-oracle-scheduler.md)
+		- rules from chains [28.6.11](scheduling-jobs-with-oracle-scheduler.md)
+		- schedules [28.4.4](scheduling-jobs-with-oracle-scheduler.md)
+		- tables
+		- consequences of [19.11](managing-tables.md)
+		- temp files [12.6](managing-data-files-and-temp-files.md)
+		- Oracle managed [15.4.1](using-oracle-managed-files.md)
+		- window groups [28.9.4.3](scheduling-jobs-with-oracle-scheduler.md)
+		- windows [28.9.3.7](scheduling-jobs-with-oracle-scheduler.md)
+- dropping multiple jobs [28.2.10](scheduling-jobs-with-oracle-scheduler.md)
+- DROP SYNONYM statement [23.3.4](managing-views-sequences-and-synonyms.md)
+- DROP TABLESPACE statement [11.10](managing-tablespaces.md)
+- DROP TABLE statement
+	- about [19.11](managing-tables.md)
+		- CASCADE CONSTRAINTS clause [19.11](managing-tables.md)
+		- for clustered tables [21.5.2](managing-clusters.md)
+- DUMP\_ORPHAN\_KEYS procedure
+	- DBMS\_REPAIR package [24.2.1](repairing-corrupted-data.md)
+		- example [24.4.4](repairing-corrupted-data.md)
+		- recovering data [24.3.4.1](repairing-corrupted-data.md)
+- dumps [7.1.3.4](diagnosing-and-resolving-problems.md)
+- dynamic statistics [7.3.4.2.2](diagnosing-and-resolving-problems.md)
+
+---
+
+## E
+
+- ECID [7.1.2.3](diagnosing-and-resolving-problems.md)
+- editions
+	- in CONNECT command [1.4.3.5](getting-started-with-database-administration.md)
+		- managing [17.12](managing-schema-objects.md)
+- e-mail notifications, Scheduler [28.10.5](scheduling-jobs-with-oracle-scheduler.md)
+- EMPHASIS resource allocation method [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+- empty tables
+	- dropping segments [18.4](managing-space-for-schema-objects.md)
+- enabling
+	- chains [28.6.7](scheduling-jobs-with-oracle-scheduler.md)
+		- jobs [28.2.12](scheduling-jobs-with-oracle-scheduler.md)
+		- programs [28.3.6](scheduling-jobs-with-oracle-scheduler.md)
+		- window groups [28.9.4.6](scheduling-jobs-with-oracle-scheduler.md)
+		- windows [28.9.3.9](scheduling-jobs-with-oracle-scheduler.md)
+- enabling recoverer process
+	- distributed transactions [34.9.2](managing-distributed-transactions.md)
+- encryption
+	- column [19.2.13](managing-tables.md)
+		- tablespace [11.2.5.1](managing-tablespaces.md)
+- enterprise users
+	- definition [30.3.2.4.3](distributed-database-concepts.md)
+- error logging, DML
+	- inserting data with [19.4.4.1](managing-tables.md)
+- errors
+	- alert log and [6.1.1.1](monitoring-the-database.md)
+		- assigning names with PRAGMA\_EXCEPTION\_INIT [32.5](developing-applications-for-a-distributed-database-system.md)
+		- critical [7.1.1](diagnosing-and-resolving-problems.md)
+		- exception handler [32.5](developing-applications-for-a-distributed-database-system.md)
+		- integrity constrain violation [32.3](developing-applications-for-a-distributed-database-system.md)
+		- ORA-00028 [3.10.3](managing-processes.md)
+		- ORA-01173 [8.4.2](managing-control-files.md)
+		- ORA-01176 [8.4.2](managing-control-files.md)
+		- ORA-01177 [8.4.2](managing-control-files.md)
+		- ORA-01215 [8.4.2](managing-control-files.md)
+		- ORA-01216 [8.4.2](managing-control-files.md)
+		- ORA-01591 [34.8.2](managing-distributed-transactions.md)
+		- ORA-02049 [34.8.1](managing-distributed-transactions.md)
+		- ORA-02050 [34.4.1](managing-distributed-transactions.md)
+		- ORA-02051 [34.4.1](managing-distributed-transactions.md)
+		- ORA-02054 [34.4.1](managing-distributed-transactions.md)
+		- RAISE\_APPLICATION\_ERROR() procedure [32.5](developing-applications-for-a-distributed-database-system.md)
+		- remote procedure [32.5](developing-applications-for-a-distributed-database-system.md)
+		- rollback required [32.3](developing-applications-for-a-distributed-database-system.md)
+		- trace files and [6.1.1.1](monitoring-the-database.md)
+		- when creating control file [8.4.2](managing-control-files.md)
+- event-based job
+	- altering [28.5.2.3](scheduling-jobs-with-oracle-scheduler.md)
+		- creating [28.5.2.2](scheduling-jobs-with-oracle-scheduler.md)
+		- passing event messages to [28.5.2.6](scheduling-jobs-with-oracle-scheduler.md)
+- event message
+	- passing to event-based job [28.5.2.6](scheduling-jobs-with-oracle-scheduler.md)
+- events
+	- using to start Scheduler jobs [28.5](scheduling-jobs-with-oracle-scheduler.md)
+- events (Scheduler)
+	- overview [28.5.1](scheduling-jobs-with-oracle-scheduler.md)
+- event schedule
+	- altering [28.5.2.5](scheduling-jobs-with-oracle-scheduler.md)
+		- creating [28.5.2.4](scheduling-jobs-with-oracle-scheduler.md)
+- example
+	- setting maximum utilization limit for plans and subplans [26.5.2](managing-resources-with-oracle-database-resource-manager.md)
+- examples
+	- managing parallel statement execution using Resource Manager [26.5.4](managing-resources-with-oracle-database-resource-manager.md)
+- exception handler [32.5](developing-applications-for-a-distributed-database-system.md)
+- exceptions
+	- assigning names with PRAGMA\_EXCEPTION\_INIT [32.5](developing-applications-for-a-distributed-database-system.md)
+		- integrity constraints [17.7.5](managing-schema-objects.md)
+		- user-defined [32.5](developing-applications-for-a-distributed-database-system.md)
+- executing
+	- remote external jobs [29.1.3](administering-oracle-scheduler.md)
+- execution context identifier [7.1.2.3](diagnosing-and-resolving-problems.md)
+- execution plans
+	- analyzing for distributed queries [32.4.4](developing-applications-for-a-distributed-database-system.md)
+- EXISTS condition
+	- materialized views with subqueries [35.6.3](read-only-materialized-view-concepts.md)
+- EXPLAIN\_MVIEW procedure [38.4](creating-and-managing-read-only-materialized-views.md)
+- expressions, calendaring [28.4.5.2](scheduling-jobs-with-oracle-scheduler.md)
+- extents
+	- allocating cluster extents [21.4.1](managing-clusters.md)
+		- allocating for tables [19.7.4](managing-tables.md)
+		- data dictionary views for [18.6.2](managing-space-for-schema-objects.md)
+		- deallocating cluster extents [21.4.1](managing-clusters.md)
+		- displaying free extents [18.6.2.3](managing-space-for-schema-objects.md)
+- external destinations, Oracle Scheduler
+	- about [27.2.5.1](oracle-scheduler-concepts.md)
+		- creating [28.2.2.4.2](scheduling-jobs-with-oracle-scheduler.md)
+- external jobs
+	- retrieving stdout and stderr [27.3.1.2.2](oracle-scheduler-concepts.md), [27.3.1.2.3](oracle-scheduler-concepts.md), [28.2.2.10](scheduling-jobs-with-oracle-scheduler.md)
+- external jobs, Oracle Scheduler [27.3.1.2.1](oracle-scheduler-concepts.md)
+- external procedures
+	- credentials [3.9.2](managing-processes.md)
+		- directory objects [3.9.2](managing-processes.md)
+		- managing processes for [3.9.1](managing-processes.md)
+- external tables
+	- altering [19.15.3](managing-tables.md)
+		- creating [19.15.2](managing-tables.md)
+		- defined [19.15.1](managing-tables.md)
+		- dropping [19.15.8](managing-tables.md)
+		- Hadoop [19.15.1](managing-tables.md)
+		- inline [19.15.1](managing-tables.md), [19.15.6](managing-tables.md)
+		- partitioned [19.15.7](managing-tables.md)
+		- altering [19.15.7.4](managing-tables.md)
+				- creating [19.15.7.3](managing-tables.md)
+				- restrictions [19.15.7.2](managing-tables.md)
+		- privileges required [19.15.9](managing-tables.md)
+		- querying [19.15.5](managing-tables.md)
+		- uploading data example [19.15.2](managing-tables.md)
+
+---
+
+## F
+
+- fast recovery area
+	- as archive log destination [10.4.1.1](managing-archived-redo-log-files.md)
+		- with Oracle managed files [15.2.1](using-oracle-managed-files.md)
+- fast refresh [35.4.2](read-only-materialized-view-concepts.md), [35.7](read-only-materialized-view-concepts.md), [36.4.2.2](read-only-materialized-view-architecture.md)
+	- avoiding problems [38.5](creating-and-managing-read-only-materialized-views.md)
+		- determining possibility of [38.4](creating-and-managing-read-only-materialized-views.md)
+		- direct path load [36.4.2.2](read-only-materialized-view-architecture.md)
+- fault diagnosability infrastructure [7.1.1](diagnosing-and-resolving-problems.md), [7.1.3](diagnosing-and-resolving-problems.md)
+- file mapping
+	- examples [12.9.4](managing-data-files-and-temp-files.md)
+		- how it works [12.9.2](managing-data-files-and-temp-files.md)
+		- how to use [12.9.3](managing-data-files-and-temp-files.md)
+		- overview [12.9.1](managing-data-files-and-temp-files.md)
+		- structures [12.9.2.2](managing-data-files-and-temp-files.md)
+		- views [12.9.3.3](managing-data-files-and-temp-files.md)
+- file names
+	- Oracle Managed Files [15.3.2](using-oracle-managed-files.md)
+- files
+	- creating Oracle Managed Files [15.3](using-oracle-managed-files.md), [15.3.7.2](using-oracle-managed-files.md)
+- file system
+	- used for Oracle managed files [15.1.4](using-oracle-managed-files.md)
+- file watchers
+	- about [28.5.3.1](scheduling-jobs-with-oracle-scheduler.md)
+		- changing detection interval [28.5.3.5](scheduling-jobs-with-oracle-scheduler.md)
+		- creating [28.5.3.3](scheduling-jobs-with-oracle-scheduler.md)
+		- managing [28.5.3.5](scheduling-jobs-with-oracle-scheduler.md)
+- filter columns [36.1.4.2](read-only-materialized-view-architecture.md)
+- finalizing
+	- an incident package, definition [7.4.1.2](diagnosing-and-resolving-problems.md)
+- FINISH\_REDEF\_TABLE procedure
+	- dml\_lock\_timeout parameter [19.8.6.1](managing-tables.md)
+- FIX\_CORRUPT\_BLOCKS procedure
+	- DBMS\_REPAIR [24.2.1](repairing-corrupted-data.md)
+		- example [24.4.3](repairing-corrupted-data.md)
+		- marking blocks corrupt [24.3.3.1](repairing-corrupted-data.md)
+- fixed user database links
+	- advantages and disadvantages [30.2.8.3](distributed-database-concepts.md)
+		- creating [31.2.3.1](managing-a-distributed-database.md)
+		- definition [30.2.8.1](distributed-database-concepts.md)
+- flashback data archive [37.1.4](planning-for-read-only-materialized-views.md)
+- Flashback Drop
+	- about [19.12](managing-tables.md)
+		- purging recycle bin [19.12.4](managing-tables.md)
+		- querying recycle bin [19.12.3](managing-tables.md)
+		- recycle bin [19.12.1](managing-tables.md)
+		- restoring objects [19.12.5](managing-tables.md)
+- Flashback Table
+	- overview [19.10](managing-tables.md)
+- flood-controlled incidents
+	- defined [7.1.2.2](diagnosing-and-resolving-problems.md)
+		- viewing [7.3.1.1](diagnosing-and-resolving-problems.md)
+- FMON background process [12.9.2.1.1](managing-data-files-and-temp-files.md)
+- FORCE clause
+	- COMMIT statement [34.5](managing-distributed-transactions.md)
+		- ROLLBACK statement [34.5](managing-distributed-transactions.md)
+- force full database caching mode [4.5](managing-memory.md)
+	- disabling [4.5.4](managing-memory.md)
+		- enabling [4.5.3](managing-memory.md)
+		- prerequisites [4.5.2](managing-memory.md)
+- FORCE LOGGING
+	- precedence of settings [9.9](managing-the-redo-log.md)
+- FORCE LOGGING clause
+	- CREATE TABLESPACE [11.5](managing-tablespaces.md)
+- force refresh [35.7](read-only-materialized-view-concepts.md), [36.4.2.3](read-only-materialized-view-architecture.md)
+- forcing
+	- COMMIT or ROLLBACK [34.3.1](managing-distributed-transactions.md), [34.4.2](managing-distributed-transactions.md)
+- forcing a log switch [9.6](managing-the-redo-log.md)
+	- using ARCHIVE\_LAG\_TARGET [9.2.6](managing-the-redo-log.md)
+		- with the ALTER SYSTEM statement [9.6](managing-the-redo-log.md)
+- foreign keys
+	- replicated tables [37.1.2](planning-for-read-only-materialized-views.md)
+- forget phase
+	- in two-phase commit [33.3.4](distributed-transactions-concepts.md)
+- free space
+	- listing free extents [18.6.2.3](managing-space-for-schema-objects.md)
+		- tablespaces and [11.15.4](managing-tablespaces.md)
+- full transportable export/import [13.2](transporting-data.md)
+- function-based indexes [20.3.7](managing-indexes.md)
+
+---
+
+## G
+
+- generic connectivity
+	- definition [30.1.2.4](distributed-database-concepts.md)
+- GLOBAL\_NAMES initialization parameter
+	- database links [30.2.6](distributed-database-concepts.md)
+- GLOBAL\_NAME view
+	- using to determine global database name [31.1.3](managing-a-distributed-database.md)
+- global coordinators [33.2.5](distributed-transactions-concepts.md)
+	- distributed transactions [33.2.5](distributed-transactions-concepts.md)
+- global database consistency
+	- distributed databases and [33.3.3.2](distributed-transactions-concepts.md)
+- global database links [30.2.7](distributed-database-concepts.md)
+	- creating [31.2.2.3](managing-a-distributed-database.md)
+- global database names
+	- changing the domain [31.1.4](managing-a-distributed-database.md)
+		- database links [30.2.4](distributed-database-concepts.md)
+		- loopback [30.2.5](distributed-database-concepts.md)
+		- enforcing for database links [30.2.6](distributed-database-concepts.md)
+		- enforcing global naming [31.1.2](managing-a-distributed-database.md)
+		- forming distributed database names [31.1.1](managing-a-distributed-database.md)
+		- impact of changing [30.4.9.2](distributed-database-concepts.md)
+		- querying [31.1.3](managing-a-distributed-database.md)
+- globalization support
+	- client/server architectures [30.6.2](distributed-database-concepts.md)
+		- distributed databases [30.6.1](distributed-database-concepts.md)
+- global object names
+	- database links [30.4.7.1](distributed-database-concepts.md)
+		- distributed databases [31.1](managing-a-distributed-database.md)
+- global temporary tables
+	- assigning to a tablespace [19.3.2.3.2](managing-tables.md)
+		- creating [19.3.2.3](managing-tables.md)
+- global users [31.8.5](managing-a-distributed-database.md)
+	- exclusively mapped in distributed systems [30.3.2.4.2](distributed-database-concepts.md)
+		- shared schema in distributed systems [30.3.2.4.3](distributed-database-concepts.md)
+- granting privileges and roles
+	- SYSOPER/SYSDBA privileges [1.8.6](getting-started-with-database-administration.md)
+- GRANT statement
+	- SYSOPER/SYSDBA privileges [1.8.6](getting-started-with-database-administration.md)
+- groups, Oracle Scheduler [27.2.11.1](oracle-scheduler-concepts.md)
+- growth trends
+	- of database objects [18.7.3](managing-space-for-schema-objects.md)
+- GV$DBLINK view [31.5.2](managing-a-distributed-database.md)
+
+---
+
+## H
+
+- Hadoop
+	- external tables [19.15.1](managing-tables.md)
+- hash clusters
+	- advantages and disadvantages [22.1](managing-hash-clusters.md)
+		- altering [22.4](managing-hash-clusters.md)
+		- choosing key [22.3.4.1](managing-hash-clusters.md)
+		- contrasted with index clusters [22.1](managing-hash-clusters.md)
+		- controlling space use of [22.3.4](managing-hash-clusters.md)
+		- creating [22.3.1](managing-hash-clusters.md)
+		- data dictionary views reference [22.6](managing-hash-clusters.md)
+		- dropping [22.5](managing-hash-clusters.md)
+		- estimating storage [22.3.5](managing-hash-clusters.md)
+		- examples [22.3.4.5.1](managing-hash-clusters.md)
+		- hash function [22.1](managing-hash-clusters.md), [22.2.2](managing-hash-clusters.md), [22.3.1](managing-hash-clusters.md), [22.3.4.1](managing-hash-clusters.md), [22.3.4.2](managing-hash-clusters.md), [22.3.4.3](managing-hash-clusters.md)
+		- HASH IS clause [22.3.1](managing-hash-clusters.md), [22.3.4.2](managing-hash-clusters.md)
+		- HASHKEYS clause [22.3.1](managing-hash-clusters.md), [22.3.4.4](managing-hash-clusters.md)
+		- single-table [22.3.3](managing-hash-clusters.md)
+		- sorted [22.3.2](managing-hash-clusters.md)
+- hash functions
+	- for hash cluster [22.1](managing-hash-clusters.md)
+- health checks [7.1.1](diagnosing-and-resolving-problems.md)
+- Health Monitor [7.3.2](diagnosing-and-resolving-problems.md)
+	- checks [7.3.2.1.1](diagnosing-and-resolving-problems.md)
+		- generating reports [7.3.2.3](diagnosing-and-resolving-problems.md)
+				- viewing reports [7.3.2.3](diagnosing-and-resolving-problems.md)
+				- viewing reports using ADRCI [7.3.2.3.4](diagnosing-and-resolving-problems.md)
+- heterogeneous distributed systems
+	- definition [30.1.2.1](distributed-database-concepts.md)
+- Heterogeneous Services
+	- overview [30.1.2.1](distributed-database-concepts.md)
+- hints [32.4.3.1](developing-applications-for-a-distributed-database-system.md)
+	- DRIVING\_SITE [32.4.3.3](developing-applications-for-a-distributed-database-system.md)
+		- NO\_MERGE [32.4.3.2](developing-applications-for-a-distributed-database-system.md)
+		- using to tune distributed queries [32.4.3.1](developing-applications-for-a-distributed-database-system.md)
+- horizontal partitioning
+	- See: row subsetting
+- HP OpenView [30.3.4.3](distributed-database-concepts.md)
+- Hybrid Columnar Compression [19.2.6.1](managing-tables.md)
+
+---
+
+## I
+
+- IBM NetView/6000 [30.3.4.3](distributed-database-concepts.md)
+- IM column store
+	- See: In-Memory Column Store
+- immutable table
+	- retention period [19.17.2.1](managing-tables.md)
+- immutable tables
+	- about [19.17.1](managing-tables.md)
+		- altering [19.17.4](managing-tables.md)
+		- creating [19.17.3](managing-tables.md)
+		- deleting rows [19.17.5](managing-tables.md)
+		- dropping [19.17.6](managing-tables.md)
+		- restrictions [19.17.2.3](managing-tables.md)
+		- row retention period [19.17.2.2](managing-tables.md)
+- Import
+	- materialized view logs [36.1.4.3](read-only-materialized-view-architecture.md)
+- import operations
+	- PDBs [13.2.3](transporting-data.md), [13.2.4](transporting-data.md)
+- Incident Manager, accessing [7.3.4.3.1.1](diagnosing-and-resolving-problems.md)
+- incident package
+	- correlated [7.4.1.4](diagnosing-and-resolving-problems.md)
+		- correlated, creating, editing, and uploading [7.4.4](diagnosing-and-resolving-problems.md)
+		- correlated, deleting [7.4.5](diagnosing-and-resolving-problems.md)
+		- customizing [7.4.3](diagnosing-and-resolving-problems.md), [7.4.3.2](diagnosing-and-resolving-problems.md)
+		- defined [7.1.1](diagnosing-and-resolving-problems.md)
+		- viewing [7.4.3.1](diagnosing-and-resolving-problems.md)
+- incident packages [7.4.1](diagnosing-and-resolving-problems.md)
+- incident packaging service [7.1.1](diagnosing-and-resolving-problems.md)
+- incidents
+	- about [7.1.2.1](diagnosing-and-resolving-problems.md)
+		- flood-controlled [7.1.2.2](diagnosing-and-resolving-problems.md)
+		- viewing [7.3.1.1](diagnosing-and-resolving-problems.md)
+- incidents, SQL [7.3.4.2.1](diagnosing-and-resolving-problems.md)
+- incompatibilities
+	- adding job or program [28.7.2](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping [28.7.4](scheduling-jobs-with-oracle-scheduler.md)
+		- job or program [28.7.1](scheduling-jobs-with-oracle-scheduler.md)
+		- removing job or program [28.7.3](scheduling-jobs-with-oracle-scheduler.md)
+		- using [28.7](scheduling-jobs-with-oracle-scheduler.md)
+- index clusters
+	- See: clusters
+- indexes
+	- advanced index compression [20.3.8.2](managing-indexes.md)
+		- altering [20.4.1](managing-indexes.md)
+		- analyzing [17.4.1](managing-schema-objects.md)
+		- automatic indexes [20.7](managing-indexes.md)
+		- choosing columns to index [20.2.2](managing-indexes.md)
+		- cluster indexes [21.3.3](managing-clusters.md), [21.4.2](managing-clusters.md), [21.5](managing-clusters.md)
+		- coalescing [20.2.13](managing-indexes.md), [20.4.3](managing-indexes.md)
+		- column order for performance [20.2.3](managing-indexes.md)
+		- creating [20.3](managing-indexes.md)
+		- prerequisites [20.3.1](managing-indexes.md)
+		- data dictionary views reference [20.8](managing-indexes.md)
+		- deferred segment creation [20.2.6](managing-indexes.md)
+		- determining unusable status of [20.4.4](managing-indexes.md)
+		- disabling and dropping constraints cost [20.2.14](managing-indexes.md)
+		- dropping [20.2.5](managing-indexes.md), [20.6](managing-indexes.md)
+		- estimating size [20.2.7](managing-indexes.md)
+		- estimating space use [18.7.2](managing-space-for-schema-objects.md)
+		- function-based [20.3.7](managing-indexes.md)
+		- guidelines for managing [20.1](managing-indexes.md)
+		- invisible [20.2.11](managing-indexes.md), [20.3.10](managing-indexes.md), [20.4.5](managing-indexes.md)
+		- keeping when disabling constraint [17.7.3](managing-schema-objects.md)
+		- keeping when dropping constraint [17.7.3](managing-schema-objects.md)
+		- limiting for a table [20.2.4](managing-indexes.md)
+		- materialized view sites [36.2.1](read-only-materialized-view-architecture.md)
+		- monitoring space use of [20.5](managing-indexes.md)
+		- monitoring usage [20.4.7](managing-indexes.md)
+		- multiple on a set of columns [20.2.12](managing-indexes.md)
+		- on foreign keys [37.1.2](planning-for-read-only-materialized-views.md)
+		- parallelizing index creation [20.2.9](managing-indexes.md)
+		- rebuilding [20.2.13](managing-indexes.md), [20.4.3](managing-indexes.md)
+		- rebuilt after direct-path INSERT [19.4.2.5.2](managing-tables.md)
+		- renaming [20.4.6](managing-indexes.md)
+		- setting storage parameters for [20.2.7](managing-indexes.md)
+		- shrinking [18.3.3](managing-space-for-schema-objects.md)
+		- space used by [20.5](managing-indexes.md)
+		- tablespace for [20.2.8](managing-indexes.md)
+		- temporary segments and [20.2.1](managing-indexes.md)
+		- unusable [20.2.11](managing-indexes.md), [20.3.9](managing-indexes.md), [20.4.4](managing-indexes.md)
+		- validating structure [17.4.3](managing-schema-objects.md)
+		- when to create [20.2.2](managing-indexes.md)
+- index-organized tables
+	- analyzing [19.13.5](managing-tables.md)
+		- AS subquery [19.13.2.7](managing-tables.md)
+		- converting to heap [19.13.7](managing-tables.md)
+		- creating [19.13.2.1](managing-tables.md)
+		- described [19.13.1](managing-tables.md)
+		- INCLUDING clause [19.13.2.6](managing-tables.md)
+		- maintaining [19.13.3](managing-tables.md)
+		- ORDER BY clause, using [19.13.6](managing-tables.md)
+		- parallel creation [19.13.2.7](managing-tables.md)
+		- prefix compression [19.13.2.8](managing-tables.md)
+		- rebuilding with MOVE clause [19.13.3.2](managing-tables.md)
+		- storing nested tables [19.13.2.4](managing-tables.md)
+		- storing object types [19.13.2.4](managing-tables.md)
+		- threshold value [19.13.2.5](managing-tables.md)
+- in-doubt transactions [33.4.1](distributed-transactions-concepts.md)
+	- after a system failure [34.4.1](managing-distributed-transactions.md)
+		- automatic resolution [33.4.2](distributed-transactions-concepts.md), [33.4.2.1](distributed-transactions-concepts.md)
+		- deciding how to handle [34.4](managing-distributed-transactions.md)
+		- deciding whether to perform manual override [34.4.2](managing-distributed-transactions.md)
+		- defined [33.3.2.3](distributed-transactions-concepts.md)
+		- manually committing [34.5.1.1](managing-distributed-transactions.md)
+		- manually committing, example [34.7](managing-distributed-transactions.md)
+		- manually overriding [34.4.2](managing-distributed-transactions.md), [34.5](managing-distributed-transactions.md)
+		- manually overriding, scenario [34.7](managing-distributed-transactions.md)
+		- manually rolling back [34.5.2](managing-distributed-transactions.md)
+		- manual resolution [33.4.3](distributed-transactions-concepts.md)
+		- overview [33.4.1](distributed-transactions-concepts.md)
+		- pending transactions table [34.7.6](managing-distributed-transactions.md)
+		- purging rows from data dictionary [34.6.1](managing-distributed-transactions.md), [34.6.3](managing-distributed-transactions.md)
+		- recoverer process and [34.9.2](managing-distributed-transactions.md)
+		- rolling back [34.5](managing-distributed-transactions.md), [34.5.1.2](managing-distributed-transactions.md), [34.5.2](managing-distributed-transactions.md)
+		- SCNs and [33.4.4](distributed-transactions-concepts.md)
+		- simulating [34.9](managing-distributed-transactions.md)
+		- tracing session tree [34.3.2](managing-distributed-transactions.md)
+		- viewing database links [34.3.1](managing-distributed-transactions.md)
+- initialization parameters
+	- COMMIT\_POINT\_STRENGTH [33.2.6.3](distributed-transactions-concepts.md)
+		- CONTROL\_FILES [8.2.1](managing-control-files.md), [8.3.1](managing-control-files.md)
+		- DB\_BLOCK\_CHECKING [24.3.1.5](repairing-corrupted-data.md)
+		- DB\_BLOCK\_CHECKSUM [9.7](managing-the-redo-log.md), [12.7](managing-data-files-and-temp-files.md)
+		- DB\_BLOCK\_SIZE [11.4](managing-tablespaces.md)
+		- DB\_CACHE\_SIZE [11.4](managing-tablespaces.md)
+		- DB\_FILES [12.1.2.2](managing-data-files-and-temp-files.md)
+		- DB\_nK\_CACHE\_SIZE [11.4](managing-tablespaces.md)
+		- DISPATCHERS [3.4.4.3](managing-processes.md)
+		- editing [37.2.4.4](planning-for-read-only-materialized-views.md)
+		- GLOBAL\_NAMES [30.2.6](distributed-database-concepts.md)
+		- LOG\_ARCHIVE\_DEST [10.4.1](managing-archived-redo-log-files.md)
+		- LOG\_ARCHIVE\_DEST\_n [10.4.1](managing-archived-redo-log-files.md), [10.6.2](managing-archived-redo-log-files.md)
+		- LOG\_ARCHIVE\_DEST\_STATE\_n [10.4.3](managing-archived-redo-log-files.md)
+		- LOG\_ARCHIVE\_MAX\_PROCESSES [10.3.4](managing-archived-redo-log-files.md)
+		- LOG\_ARCHIVE\_MIN\_SUCCEED\_DEST [10.6.1](managing-archived-redo-log-files.md)
+		- LOG\_ARCHIVE\_TRACE [10.7](managing-archived-redo-log-files.md)
+		- OPEN\_LINKS [31.4.3](managing-a-distributed-database.md)
+		- REMOTE\_LOGIN\_PASSWORDFILE [1.8.3](getting-started-with-database-administration.md)
+		- REMOTE\_OS\_AUTHENT [30.2.8.2](distributed-database-concepts.md)
+		- RESOURCE\_MANAGER\_PLAN [26.2](managing-resources-with-oracle-database-resource-manager.md)
+		- SHARED\_SERVERS [3.4.3.2](managing-processes.md)
+		- shared server and [3.4.1](managing-processes.md)
+		- SORT\_AREA\_SIZE [20.2.1](managing-indexes.md)
+		- SQL\_TRACE [6.1.1.1](monitoring-the-database.md)
+- INITIAL parameter
+	- cannot alter [19.7.2](managing-tables.md)
+- INITRANS parameter
+	- altering [19.7.2](managing-tables.md)
+- inline external tables [19.15.1](managing-tables.md), [19.15.6](managing-tables.md)
+- In-Memory Column Store [4.8](managing-memory.md)
+- in-memory full jobs
+	- example of creating [28.2.2.2.2](scheduling-jobs-with-oracle-scheduler.md)
+- in-memory jobs [27.3.1.7](oracle-scheduler-concepts.md)
+- in-memory runtime, jobs
+	- example of creating [28.2.2.2.2](scheduling-jobs-with-oracle-scheduler.md)
+- INSERT statement
+	- with DML error logging [19.4.4.1](managing-tables.md)
+- installing
+	- Release Update Revisions (Revisions) [1.3.10](getting-started-with-database-administration.md)
+		- Release Updates (Updates) [1.3.10](getting-started-with-database-administration.md)
+- instance caging [26.6.1](managing-resources-with-oracle-database-resource-manager.md)
+	- with maximum utilization limit [26.6.1](managing-resources-with-oracle-database-resource-manager.md)
+- instances
+	- managing CPU for multiple [26.6.1](managing-resources-with-oracle-database-resource-manager.md)
+- integrity constraints [17.7](managing-schema-objects.md)
+	- See also: constraints
+	- cost of disabling [20.2.14](managing-indexes.md)
+		- cost of dropping [20.2.14](managing-indexes.md)
+		- creating indexes associated with [20.3.4.1](managing-indexes.md)
+		- dropping tablespaces and [11.10](managing-tablespaces.md)
+		- ORA-02055 constraint violation [32.3](developing-applications-for-a-distributed-database-system.md)
+- invisible columns [19.2.12.1](managing-tables.md)
+- invisible indexes [20.2.11](managing-indexes.md), [20.4.5](managing-indexes.md)
+	- creating [20.3.10](managing-indexes.md)
+- IOT
+	- See: index-organized tables
+- IPS [7.1.1](diagnosing-and-resolving-problems.md)
+
+---
+
+## J
+
+- JOB\_QUEUE\_PROCESSES initialization parameter [27.4.3.3](oracle-scheduler-concepts.md), [37.2.4.4](planning-for-read-only-materialized-views.md), [A.1.2](support-for-DBMS_JOB.md)
+- job classes
+	- altering [28.9.1.3](scheduling-jobs-with-oracle-scheduler.md)
+		- creating [28.9.1.2](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping [28.9.1.4](scheduling-jobs-with-oracle-scheduler.md)
+		- managing Scheduler job attributes, resources, and priorities with [28.9.1](scheduling-jobs-with-oracle-scheduler.md)
+		- overview [27.2.9](oracle-scheduler-concepts.md)
+		- viewing [27.2.9](oracle-scheduler-concepts.md)
+- job coordinator [27.4.3.1](oracle-scheduler-concepts.md)
+- job credentials [28.2.2.3](scheduling-jobs-with-oracle-scheduler.md)
+- job destination ID, defined [28.2.5](scheduling-jobs-with-oracle-scheduler.md), [28.10.3](scheduling-jobs-with-oracle-scheduler.md)
+- job log, Scheduler
+	- viewing [28.10.2.1](scheduling-jobs-with-oracle-scheduler.md)
+- job recovery (Scheduler) [29.4.1.4](administering-oracle-scheduler.md)
+- job resources
+	- managing [28.8](scheduling-jobs-with-oracle-scheduler.md)
+- jobs [28.2.2.2.2](scheduling-jobs-with-oracle-scheduler.md)
+	- adding to an incompatibility [28.7.2](scheduling-jobs-with-oracle-scheduler.md)
+		- altering [28.2.3](scheduling-jobs-with-oracle-scheduler.md)
+		- copying [28.2.13](scheduling-jobs-with-oracle-scheduler.md)
+		- creating [28.2.2](scheduling-jobs-with-oracle-scheduler.md)
+		- creating and managing Scheduler [28.2](scheduling-jobs-with-oracle-scheduler.md)
+		- creating for chains [28.6.8](scheduling-jobs-with-oracle-scheduler.md)
+		- credentials [27.2.7](oracle-scheduler-concepts.md)
+		- database [27.3.1.1.1](oracle-scheduler-concepts.md)
+		- detached [27.3.1.5](oracle-scheduler-concepts.md)
+		- disabling [28.2.11](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping [28.2.8](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping an incompatibility [28.7.4](scheduling-jobs-with-oracle-scheduler.md)
+		- e-mail notifications [28.10.5](scheduling-jobs-with-oracle-scheduler.md)
+		- enabling [28.2.12](scheduling-jobs-with-oracle-scheduler.md)
+		- event-based [28.5.2.2](scheduling-jobs-with-oracle-scheduler.md)
+		- external [27.3.1.2.1](oracle-scheduler-concepts.md)
+		- incompatibilities [28.7.1](scheduling-jobs-with-oracle-scheduler.md)
+		- in-memory [27.3.1.7](oracle-scheduler-concepts.md)
+		- in-memory full, example of creating [28.2.2.2.2](scheduling-jobs-with-oracle-scheduler.md)
+		- in-memory runtime, example of creating [28.2.2.2.2](scheduling-jobs-with-oracle-scheduler.md)
+		- lightweight [27.3.1.6](oracle-scheduler-concepts.md)
+		- lightweight, example of creating [28.2.2.2.2](scheduling-jobs-with-oracle-scheduler.md)
+		- monitoring [28.10.1](scheduling-jobs-with-oracle-scheduler.md)
+		- monitoring with events raised by the Scheduler [28.10.4](scheduling-jobs-with-oracle-scheduler.md)
+		- multiple-destination [27.3.2](oracle-scheduler-concepts.md)
+		- status of child jobs [29.2.2](administering-oracle-scheduler.md)
+		- overview [27.2.4.1](oracle-scheduler-concepts.md)
+		- priorities [28.9.2](scheduling-jobs-with-oracle-scheduler.md)
+		- remote database [27.3.1.1.1](oracle-scheduler-concepts.md)
+		- remote external
+		- about [27.3.1.2.3](oracle-scheduler-concepts.md)
+		- removing from an incompatibility [28.7.3](scheduling-jobs-with-oracle-scheduler.md)
+		- resources [28.8.1](scheduling-jobs-with-oracle-scheduler.md), [28.8.2](scheduling-jobs-with-oracle-scheduler.md), [28.8.3](scheduling-jobs-with-oracle-scheduler.md)
+		- running [28.2.4](scheduling-jobs-with-oracle-scheduler.md)
+		- script jobs [27.3.1.8](oracle-scheduler-concepts.md)
+		- starting when a file arrives on a system [28.5.3](scheduling-jobs-with-oracle-scheduler.md)
+		- starting with events raised by your application [28.5.2.1](scheduling-jobs-with-oracle-scheduler.md)
+		- status [28.10.1](scheduling-jobs-with-oracle-scheduler.md), [29.6.2](administering-oracle-scheduler.md)
+		- stopping [28.2.5](scheduling-jobs-with-oracle-scheduler.md)
+		- troubleshooting remote [29.4.1.3](administering-oracle-scheduler.md)
+		- viewing information on running [29.2.2](administering-oracle-scheduler.md)
+- job scheduling
+	- dependency [27.1](oracle-scheduler-concepts.md)
+		- event-based [27.1](oracle-scheduler-concepts.md)
+		- time-based [27.1](oracle-scheduler-concepts.md)
+- job slaves
+	- replication [37.2.4.4](planning-for-read-only-materialized-views.md)
+- joins
+	- statement transparency in distributed databases [31.7](managing-a-distributed-database.md)
+- join views
+	- definition [23.1.2.2](managing-views-sequences-and-synonyms.md)
+		- DELETE statements [23.1.5.3.2](managing-views-sequences-and-synonyms.md)
+		- key-preserved tables in [23.1.5.2](managing-views-sequences-and-synonyms.md)
+		- modifying [23.1.5.1](managing-views-sequences-and-synonyms.md)
+		- rules for modifying [23.1.5.3](managing-views-sequences-and-synonyms.md)
+		- updating [23.1.5.1](managing-views-sequences-and-synonyms.md)
+
+---
+
+## K
+
+- key-preserved tables
+	- in join views [23.1.5.2](managing-views-sequences-and-synonyms.md)
+		- in outer joins [23.1.5.4](managing-views-sequences-and-synonyms.md)
+- keys
+	- cluster [21.1](managing-clusters.md)
+- keystore [11.2.5.1](managing-tablespaces.md), [19.2.13](managing-tables.md)
+
+---
+
+## L
+
+- large objects [19.3.1](managing-tables.md)
+- lightweight jobs [27.3.1.6](oracle-scheduler-concepts.md)
+	- example of creating [28.2.2.2.2](scheduling-jobs-with-oracle-scheduler.md)
+- links
+	- See: database links
+- LIST CHAINED ROWS clause
+	- of ANALYZE statement [17.4.5.1](managing-schema-objects.md)
+- listeners
+	- removing with srvctl [2.5.8.4](configuring-automatic-restart-of-an-oracle-database.md)
+- listing database links [31.5.1](managing-a-distributed-database.md), [34.3.1](managing-distributed-transactions.md), [34.3.2](managing-distributed-transactions.md)
+- loading data
+	- using external tables [19.15.2](managing-tables.md)
+- LOBs [19.3.1](managing-tables.md)
+- local coordinators
+	- distributed transactions [33.2.4](distributed-transactions-concepts.md)
+- locally managed tablespaces [11.2.2.1](managing-tablespaces.md)
+	- automatic segment space management in [11.2.2.3](managing-tablespaces.md)
+		- DBMS\_SPACE\_ADMIN package [11.13.1](managing-tablespaces.md)
+		- detecting and repairing defects [11.13.1](managing-tablespaces.md)
+		- migrating SYSTEM from dictionary-managed [11.14](managing-tablespaces.md)
+		- shrinking, temporary [11.8.5](managing-tablespaces.md)
+		- temp files [11.2.6.2](managing-tablespaces.md)
+		- temporary, creating [11.2.6.2](managing-tablespaces.md)
+- local temporary tablespaces [11.2.6.1](managing-tablespaces.md)
+- location transparency in distributed databases
+	- creating using synonyms [31.6.2](managing-a-distributed-database.md)
+		- creating using views [31.6.1](managing-a-distributed-database.md)
+		- restrictions [31.7](managing-a-distributed-database.md)
+		- using procedures [31.6.3.3](managing-a-distributed-database.md)
+- locks
+	- in-doubt distributed transactions [34.8](managing-distributed-transactions.md), [34.8.2](managing-distributed-transactions.md)
+		- monitoring [6.2.1](monitoring-the-database.md)
+- lock timeout interval
+	- distributed transactions [34.8](managing-distributed-transactions.md)
+- log
+	- window (Scheduler) [28.9.3.1](scheduling-jobs-with-oracle-scheduler.md)
+- LOG\_ARCHIVE\_DEST\_n initialization parameter [10.4.1](managing-archived-redo-log-files.md)
+	- GROUP attribute [10.4.2.1](managing-archived-redo-log-files.md), [10.4.2.2](managing-archived-redo-log-files.md)
+		- PRIORITY attribute [10.4.2.1](managing-archived-redo-log-files.md), [10.4.2.2](managing-archived-redo-log-files.md)
+		- REOPEN attribute [10.6.2](managing-archived-redo-log-files.md)
+- LOG\_ARCHIVE\_DEST\_STATE\_n initialization parameter [10.4.3](managing-archived-redo-log-files.md)
+- LOG\_ARCHIVE\_DEST initialization parameter
+	- specifying destinations using [10.4.1](managing-archived-redo-log-files.md)
+- LOG\_ARCHIVE\_DUPLEX\_DEST initialization parameter
+	- specifying destinations using [10.4.1](managing-archived-redo-log-files.md)
+- LOG\_ARCHIVE\_MAX\_PROCESSES initialization parameter [10.3.4](managing-archived-redo-log-files.md)
+- LOG\_ARCHIVE\_MIN\_SUCCEED\_DEST initialization parameter [10.6.1](managing-archived-redo-log-files.md)
+- LOG\_ARCHIVE\_TRACE initialization parameter [10.7](managing-archived-redo-log-files.md)
+- log archive destination groups [10.4.2](managing-archived-redo-log-files.md)
+- LOGGING clause
+	- CREATE TABLESPACE [11.5](managing-tablespaces.md)
+- logging mode
+	- direct-path INSERT [19.4.2.4](managing-tables.md)
+		- NOARCHIVELOG mode and [19.4.2.4.1](managing-tables.md)
+- logical corruptions from DBMS\_REPAIR [24.3.2](repairing-corrupted-data.md)
+- logical standby [27.6](oracle-scheduler-concepts.md)
+- logical volume managers
+	- mapping files to physical devices [12.9](managing-data-files-and-temp-files.md), [12.9.4.3](managing-data-files-and-temp-files.md)
+		- used for Oracle Managed Files [15.1.3](using-oracle-managed-files.md)
+- LOGON trigger
+	- setting resumable mode [18.2.3](managing-space-for-schema-objects.md)
+- logs
+	- job [29.2.3](administering-oracle-scheduler.md)
+		- window (Scheduler) [28.9.3.1](scheduling-jobs-with-oracle-scheduler.md), [29.2.3](administering-oracle-scheduler.md)
+- log sequence number
+	- control files [9.1.3.2](managing-the-redo-log.md)
+- log switches
+	- description [9.1.3.2](managing-the-redo-log.md)
+		- forcing [9.6](managing-the-redo-log.md)
+		- log sequence numbers [9.1.3.2](managing-the-redo-log.md)
+		- multiplexed redo log files and [9.2.1.1](managing-the-redo-log.md)
+		- privileges [9.6](managing-the-redo-log.md)
+		- using ARCHIVE\_LAG\_TARGET [9.2.6](managing-the-redo-log.md)
+		- waiting for archiving to complete [9.2.1.1](managing-the-redo-log.md)
+- log writer process (LGWR) [3.6](managing-processes.md)
+	- multiplexed redo log files and [9.2.1.1](managing-the-redo-log.md)
+		- online redo logs available for use [9.1.3](managing-the-redo-log.md)
+		- trace files and [9.2.1.1](managing-the-redo-log.md)
+		- writing to online redo log files [9.1.3](managing-the-redo-log.md)
+- LONG columns [31.7](managing-a-distributed-database.md)
+- LONG RAW columns [31.7](managing-a-distributed-database.md)
+- lost write protection
+	- shadow lost write protection [11.11](managing-tablespaces.md)
+- LOST WRITE PROTECTION clause [11.11.2](managing-tablespaces.md)
+
+---
+
+## M
+
+- maintenance tasks, automatic
+	- See: automatic maintenance tasks
+- maintenance window
+	- creating [25.4.2](managing-automated-database-maintenance-tasks.md)
+		- definition [25.1](managing-automated-database-maintenance-tasks.md)
+		- MAINTENANCE\_WINDOW\_GROUP [25.2](managing-automated-database-maintenance-tasks.md)
+		- modifying [25.4.1](managing-automated-database-maintenance-tasks.md)
+		- predefined [25.6.1](managing-automated-database-maintenance-tasks.md)
+		- removing [25.4.3](managing-automated-database-maintenance-tasks.md)
+		- Scheduler [25.2](managing-automated-database-maintenance-tasks.md)
+- MAKE procedure [38.2](creating-and-managing-read-only-materialized-views.md)
+- managing
+	- indexes automatically [20.7](managing-indexes.md)
+		- sequences [23.2.1](managing-views-sequences-and-synonyms.md)
+		- space threshold alerts for the undo tablespace [14.5.6](managing-undo.md)
+		- synonyms [23.3.1](managing-views-sequences-and-synonyms.md)
+		- tables [19](managing-tables.md)
+		- views [23.1](managing-views-sequences-and-synonyms.md)
+- manual archiving
+	- in ARCHIVELOG mode [10.3.3](managing-archived-redo-log-files.md)
+- manual overrides
+	- in-doubt transactions [34.5](managing-distributed-transactions.md)
+- many to many subqueries
+	- materialized views [35.6.2.3](read-only-materialized-view-concepts.md)
+- many to one subqueries
+	- materialized views [35.6.2.1](read-only-materialized-view-concepts.md)
+- master materialized views [36.1.2](read-only-materialized-view-architecture.md)
+	- materialized view logs [36.1.4.1](read-only-materialized-view-architecture.md)
+- master materialized view sites [36.1.1](read-only-materialized-view-architecture.md)
+- master sites [35.1](read-only-materialized-view-concepts.md)
+	- advantages of [37.2.2](planning-for-read-only-materialized-views.md)
+		- compared with materialized view sites [37.2](planning-for-read-only-materialized-views.md)
+		- internal triggers [36.1.3](read-only-materialized-view-architecture.md)
+		- materialized view registration [35.11](read-only-materialized-view-concepts.md)
+		- materialized views [36.1.1](read-only-materialized-view-architecture.md)
+- master tables
+	- materialized view logs [36.1.4.1](read-only-materialized-view-architecture.md)
+		- materialized views [36.1.2](read-only-materialized-view-architecture.md)
+		- redefining online [36.1.4.1](read-only-materialized-view-architecture.md)
+		- reorganizing [36.1.4.1](read-only-materialized-view-architecture.md)
+- materialized view logs [35.9](read-only-materialized-view-concepts.md), [36.1.4.1](read-only-materialized-view-architecture.md)
+	- column logging [35.6.3](read-only-materialized-view-concepts.md)
+		- many to many subqueries [35.6.3](read-only-materialized-view-concepts.md)
+				- many to one subqueries [35.6.3](read-only-materialized-view-concepts.md)
+				- one to many subqueries [35.6.3](read-only-materialized-view-concepts.md)
+				- ON PREBUILT TABLE clause [35.6.3](read-only-materialized-view-concepts.md)
+		- combination [36.1.4.1](read-only-materialized-view-architecture.md)
+		- creating [37.2.5](planning-for-read-only-materialized-views.md)
+		- filter columns [36.1.4.2](read-only-materialized-view-architecture.md)
+		- Import [36.1.4.3](read-only-materialized-view-architecture.md)
+		- join columns [36.1.4.2](read-only-materialized-view-architecture.md)
+		- logging columns [36.1.4.2](read-only-materialized-view-architecture.md)
+		- object ID [36.1.4.1](read-only-materialized-view-architecture.md)
+		- object tables [37.2.5](planning-for-read-only-materialized-views.md)
+		- primary key [36.1.4.1](read-only-materialized-view-architecture.md)
+		- privileges required to create [37.2.5](planning-for-read-only-materialized-views.md)
+		- REFs [35.10.6.4](read-only-materialized-view-concepts.md)
+		- ROWID [36.1.4.1](read-only-materialized-view-architecture.md)
+		- trigger [36.1.3](read-only-materialized-view-architecture.md)
+		- troubleshooting [39.3.5](troubleshooting-problems-with-read-only-materialized-views.md)
+		- underlying table for [36.1.4.1](read-only-materialized-view-architecture.md)
+- materialized views
+	- BUILD DEFERRED
+		- troubleshooting [39.4](troubleshooting-problems-with-read-only-materialized-views.md)
+		- capabilities [38.4](creating-and-managing-read-only-materialized-views.md)
+		- collection columns
+		- restrictions [35.10.5.1](read-only-materialized-view-concepts.md)
+		- column objects
+		- column subsetting [35.10.3](read-only-materialized-view-concepts.md)
+		- column subsetting
+		- column objects [35.10.3](read-only-materialized-view-concepts.md)
+		- complex [35.4.5.1](read-only-materialized-view-concepts.md), [35.4.5.2](read-only-materialized-view-concepts.md)
+		- value for PCTUSED [36.4.2.1](read-only-materialized-view-architecture.md)
+		- constraints
+		- deferrable [36.4.4](read-only-materialized-view-architecture.md)
+		- creating schemas for [37.2.4.1](planning-for-read-only-materialized-views.md)
+		- creator [35.5.1](read-only-materialized-view-concepts.md)
+		- data subsetting [35.3.2](read-only-materialized-view-concepts.md), [35.6.1](read-only-materialized-view-concepts.md)
+		- disconnected computing [35.3.3](read-only-materialized-view-concepts.md)
+		- index [36.2.1](read-only-materialized-view-architecture.md)
+		- master materialized views [36.1.2](read-only-materialized-view-architecture.md)
+		- master materialized view sites [36.1.1](read-only-materialized-view-architecture.md)
+		- master sites [36.1.1](read-only-materialized-view-architecture.md)
+		- master tables [36.1.2](read-only-materialized-view-architecture.md)
+		- materialized view logs [35.9](read-only-materialized-view-concepts.md), [36.1.4.1](read-only-materialized-view-architecture.md)
+		- monitoring [38.7](creating-and-managing-read-only-materialized-views.md), [38.7.1](creating-and-managing-read-only-materialized-views.md)
+		- nested tables
+		- restrictions [35.10.5.1](read-only-materialized-view-concepts.md)
+		- network loads [35.3.1](read-only-materialized-view-concepts.md)
+		- object materialized views [38.1](creating-and-managing-read-only-materialized-views.md)
+		- OID preservation [35.10.4.3](read-only-materialized-view-concepts.md)
+		- object tables [35.10.4.1](read-only-materialized-view-concepts.md)
+		- owner [35.5.1](read-only-materialized-view-concepts.md)
+		- Partition Change Tracking (PCT) [36.4.2.2](read-only-materialized-view-architecture.md)
+		- preparing for [37.2.4](planning-for-read-only-materialized-views.md)
+		- primary key [35.4.2](read-only-materialized-view-concepts.md)
+		- privileges [35.5.1](read-only-materialized-view-concepts.md), [37.2.4.3](planning-for-read-only-materialized-views.md)
+		- read-only [VI](managing-read-only-materialized-views.md), [35.2](read-only-materialized-view-concepts.md)
+		- registration [35.11.3](read-only-materialized-view-concepts.md)
+				- unregistering [35.11.3](read-only-materialized-view-concepts.md)
+		- refresher [35.5.1](read-only-materialized-view-concepts.md)
+		- refresh groups [35.8](read-only-materialized-view-concepts.md), [36.3.1](read-only-materialized-view-architecture.md)
+		- size [36.3.2](read-only-materialized-view-architecture.md)
+		- refreshing [35.7](read-only-materialized-view-concepts.md), [36.4.1](read-only-materialized-view-architecture.md)
+		- complete [36.4.2.1](read-only-materialized-view-architecture.md)
+				- failures [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+				- fast [35.4.2](read-only-materialized-view-concepts.md), [36.4.2.2](read-only-materialized-view-architecture.md), [38.4](creating-and-managing-read-only-materialized-views.md)
+				- force [36.4.2.3](read-only-materialized-view-architecture.md)
+				- initiating [36.4.3](read-only-materialized-view-architecture.md)
+				- interval [36.4.3.1](read-only-materialized-view-architecture.md)
+				- on-demand [36.4.3.2](read-only-materialized-view-architecture.md)
+				- retries [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+				- troubleshooting [39.3](troubleshooting-problems-with-read-only-materialized-views.md), [39.3.4](troubleshooting-problems-with-read-only-materialized-views.md)
+		- REFs [35.10.6.1](read-only-materialized-view-concepts.md)
+		- logging [35.10.6.4](read-only-materialized-view-concepts.md)
+				- scoped [35.10.6.2](read-only-materialized-view-concepts.md)
+				- unscoped [35.10.6.3](read-only-materialized-view-concepts.md)
+				- WITH ROWID clause [35.10.6.5](read-only-materialized-view-concepts.md)
+		- registration [35.11](read-only-materialized-view-concepts.md)
+		- reorganizing [36.1.4.1](read-only-materialized-view-architecture.md)
+		- rowid [35.4.4](read-only-materialized-view-concepts.md)
+		- row subsetting [35.6.1](read-only-materialized-view-concepts.md)
+		- simple [35.4.5.2](read-only-materialized-view-concepts.md)
+		- simple subquery
+		- AND condition [35.6.3](read-only-materialized-view-concepts.md)
+		- subqueries [35.6.2](read-only-materialized-view-concepts.md)
+		- column logging [35.6.3](read-only-materialized-view-concepts.md)
+				- EXISTS condition [35.6.3](read-only-materialized-view-concepts.md)
+				- joins [35.6.3](read-only-materialized-view-concepts.md)
+				- many to many [35.6.2.3](read-only-materialized-view-concepts.md)
+				- many to one [35.6.2.1](read-only-materialized-view-concepts.md)
+				- one to many [35.6.2.2](read-only-materialized-view-concepts.md)
+				- OR condition [35.6.3](read-only-materialized-view-concepts.md)
+				- restrictions [35.6.3](read-only-materialized-view-concepts.md)
+		- trace file [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+		- types of [35.4.1](read-only-materialized-view-concepts.md)
+		- unions with subqueries [35.6.2.4](read-only-materialized-view-concepts.md)
+		- restrictions [35.6.4](read-only-materialized-view-concepts.md)
+		- user-define [35.10.1](read-only-materialized-view-concepts.md)
+		- user-defined data types
+		- ON COMMIT REFRESH clause [35.10.1](read-only-materialized-view-concepts.md)
+		- uses for [35.3](read-only-materialized-view-concepts.md)
+		- varrays
+		- r [35.10.5.1](read-only-materialized-view-concepts.md)
+- materialized view sites [35.1](read-only-materialized-view-concepts.md)
+	- adding
+		- avoiding problems [38.5](creating-and-managing-read-only-materialized-views.md)
+		- advantages of [37.2.3](planning-for-read-only-materialized-views.md)
+		- compared with master sites [37.2](planning-for-read-only-materialized-views.md)
+		- database links [37.2.4.2](planning-for-read-only-materialized-views.md)
+- materializing deferred segments [19.2.15](managing-tables.md)
+- MAX\_IOPS parameter [26.1.4.3.4](managing-resources-with-oracle-database-resource-manager.md)
+- MAX\_MBPS parameter [26.1.4.3.4](managing-resources-with-oracle-database-resource-manager.md)
+- MAXDATAFILES parameter
+	- changing [8.3.3.2](managing-control-files.md)
+- MAXINSTANCES [8.3.3.2](managing-control-files.md)
+- MAXLOGFILES parameter
+	- changing [8.3.3.2](managing-control-files.md)
+		- CREATE DATABASE statement [9.2.5](managing-the-redo-log.md)
+- MAXLOGHISTORY parameter
+	- changing [8.3.3.2](managing-control-files.md)
+- MAXLOGMEMBERS parameter
+	- changing [8.3.3.2](managing-control-files.md)
+		- CREATE DATABASE statement [9.2.5](managing-the-redo-log.md)
+- MAXTRANS parameter
+	- altering [19.7.2](managing-tables.md)
+- media recovery
+	- effects of archiving on [10.2.1](managing-archived-redo-log-files.md)
+- MEMOPTIMIZE\_POOL\_SIZE initialization parameter [4.9](managing-memory.md)
+- Memoptimized Rowstore
+	- about [4.9](managing-memory.md)
+		- fast ingest [4.9](managing-memory.md)
+		- fast lookup [4.9](managing-memory.md)
+		- MEMOPTIMIZE\_POOL\_SIZE initialization parameter [4.9](managing-memory.md)
+- memory
+	- automatic shared memory management [4.4.2](managing-memory.md)
+		- Database Smart Flash Cache [4.6](managing-memory.md)
+		- managing [4.1](managing-memory.md)
+		- manual memory management [4.4](managing-memory.md)
+		- manual shared memory management [4.4.3](managing-memory.md)
+- migrated rows
+	- eliminating from table, procedure [17.4.5.2](managing-schema-objects.md)
+- MINEXTENTS parameter
+	- cannot alter [19.7.2](managing-tables.md)
+- mirrored files
+	- control files [8.2.2](managing-control-files.md)
+		- online redo log [9.2.1.1](managing-the-redo-log.md)
+		- online redo log location [9.2.2](managing-the-redo-log.md)
+		- online redo log size [9.2.3](managing-the-redo-log.md)
+- MISSING data files [8.4.1](managing-control-files.md)
+- monitoring
+	- performance [6.2](monitoring-the-database.md)
+		- running chains [28.6.19](scheduling-jobs-with-oracle-scheduler.md)
+- MONITORING clause
+	- CREATE TABLE [19.6](managing-tables.md)
+- MONITORING USAGE clause
+	- of ALTER INDEX statement [20.4.7](managing-indexes.md)
+- moving control files [8.3.2](managing-control-files.md)
+- multiple-destination jobs, Oracle Scheduler [27.3.2](oracle-scheduler-concepts.md)
+	- status of child jobs [29.2.2](administering-oracle-scheduler.md)
+- multiple instances, managing CPU for [26.6.1](managing-resources-with-oracle-database-resource-manager.md)
+- multiple jobs
+	- dropping [28.2.10](scheduling-jobs-with-oracle-scheduler.md)
+- multiple temporary tablespaces [11.2.7.1](managing-tablespaces.md), [11.2.7.4](managing-tablespaces.md)
+- multiplexed control files
+	- importance of [8.2.2](managing-control-files.md)
+- multiplexing
+	- archived redo log files [10.4.1](managing-archived-redo-log-files.md)
+		- control files [8.2.2](managing-control-files.md)
+		- redo log file groups [9.2.1](managing-the-redo-log.md)
+		- redo log files [9.2.1](managing-the-redo-log.md)
+
+---
+
+## N
+
+- name resolution in distributed databases
+	- database links [30.4.7.1](distributed-database-concepts.md)
+		- impact of global name changes [30.4.9.2](distributed-database-concepts.md)
+		- procedures [30.4.9.1](distributed-database-concepts.md)
+		- schema objects [30.2.10.4](distributed-database-concepts.md), [30.4.8.1](distributed-database-concepts.md)
+		- synonyms [30.4.9.1](distributed-database-concepts.md)
+		- views [30.4.9.1](distributed-database-concepts.md)
+		- when global database name is complete [30.4.7.2](distributed-database-concepts.md)
+		- when global database name is partial [30.4.7.3](distributed-database-concepts.md)
+		- when no global database name is specified [30.4.7.4](distributed-database-concepts.md)
+- nested tables
+	- materialized views [35.10.5](read-only-materialized-view-concepts.md)
+		- restrictions [35.10.5.1](read-only-materialized-view-concepts.md)
+		- replication [35.10.5](read-only-materialized-view-concepts.md)
+- networks
+	- connections, minimizing [31.3](managing-a-distributed-database.md)
+		- distributed databases use of [30.1.1.1](distributed-database-concepts.md)
+- NEXTVAL pseudo-column [23.2.4.1](managing-views-sequences-and-synonyms.md), [23.2.4.1.1](managing-views-sequences-and-synonyms.md)
+	- restrictions [23.2.4.1.3](managing-views-sequences-and-synonyms.md)
+- NO\_DATA\_FOUND keyword [32.5](developing-applications-for-a-distributed-database-system.md)
+- NO\_MERGE hint [32.4.3.2](developing-applications-for-a-distributed-database-system.md)
+- NOARCHIVELOG mode
+	- archiving [10.2](managing-archived-redo-log-files.md)
+		- definition [10.2.1](managing-archived-redo-log-files.md)
+		- dropping data files [12.4.3](managing-data-files-and-temp-files.md)
+		- LOGGING mode and [19.4.2.4.1](managing-tables.md)
+		- media failure [10.2.1](managing-archived-redo-log-files.md)
+		- no hot backups [10.2.1](managing-archived-redo-log-files.md)
+		- running in [10.2.1](managing-archived-redo-log-files.md)
+		- switching to [10.3.2](managing-archived-redo-log-files.md)
+		- taking data files offline in [12.4.3](managing-data-files-and-temp-files.md)
+- NOLOGGING clause
+	- CREATE TABLESPACE [11.5](managing-tablespaces.md)
+- NOLOGGING mode
+	- direct-path INSERT [19.4.2.4](managing-tables.md)
+- normal transmission mode
+	- definition [10.5.1](managing-archived-redo-log-files.md)
+- Novell NetWare Management System [30.3.4.3](distributed-database-concepts.md)
+
+---
+
+## O
+
+- object identifiers
+	- agreement for replication [35.10.2](read-only-materialized-view-concepts.md)
+- object materialized views [38.1](creating-and-managing-read-only-materialized-views.md)
+	- OID preservation [35.10.4.3](read-only-materialized-view-concepts.md)
+- object privileges
+	- for external tables [19.15.9](managing-tables.md)
+- object quarantine [6.3](monitoring-the-database.md)
+- object-relational model
+	- replication [35.10.1](read-only-materialized-view-concepts.md)
+- objects
+	- See: schema objects
+- object tables
+	- materialized view logs [37.2.5](planning-for-read-only-materialized-views.md)
+		- materialized views [35.10.4.1](read-only-materialized-view-concepts.md)
+- offline tablespaces
+	- priorities [11.6.1](managing-tablespaces.md)
+		- taking offline [11.6.1](managing-tablespaces.md)
+- OF object\_type clause
+	- object materialized views [38.1](creating-and-managing-read-only-materialized-views.md)
+- ON COMMIT REFRESH clause
+	- of CREATE MATERIALIZED VIEW [35.10.1](read-only-materialized-view-concepts.md)
+- one to many subqueries
+	- materialized views [35.6.2.2](read-only-materialized-view-concepts.md)
+- online redefinition of tables [19.8.1](managing-tables.md), [36.1.4.1](read-only-materialized-view-architecture.md)
+	- examples [19.8.15](managing-tables.md)
+		- features of [19.8.2](managing-tables.md)
+		- intermediate synchronization [19.8.8](managing-tables.md)
+		- monitoring [19.8.10](managing-tables.md)
+		- redefining a single partition
+		- rules for [19.8.14.1](managing-tables.md)
+		- redefining partitions [19.8.14](managing-tables.md)
+		- refreshing dependent materialized views [19.8.9](managing-tables.md)
+		- restarting after failure [19.8.11](managing-tables.md)
+		- restrictions [19.8.4](managing-tables.md)
+		- rolling back [19.8.12.2](managing-tables.md)
+		- terminate and cleanup [19.8.13](managing-tables.md)
+		- Virtual Private Database policies [19.8.6.3](managing-tables.md)
+		- with DBMS\_REDEFINITION [19.8.6.1](managing-tables.md)
+- online redo log files
+	- See: online redo logs
+- online redo logs [9](managing-the-redo-log.md)
+	- See also: redo log files\]
+	- creating groups [9.3](managing-the-redo-log.md)
+		- creating members [9.3.2](managing-the-redo-log.md)
+		- data dictionary views reference [9.10](managing-the-redo-log.md)
+		- dropping groups [9.5](managing-the-redo-log.md)
+		- dropping members [9.5](managing-the-redo-log.md)
+		- forcing a log switch [9.6](managing-the-redo-log.md)
+		- guidelines for configuring [9.2](managing-the-redo-log.md)
+		- INVALID members [9.5.2](managing-the-redo-log.md)
+		- location of [9.2.2](managing-the-redo-log.md)
+		- managing [9](managing-the-redo-log.md)
+		- moving files [9.4](managing-the-redo-log.md)
+		- number of files in the [9.2.5](managing-the-redo-log.md)
+		- optimum configuration for the [9.2.5](managing-the-redo-log.md)
+		- renaming files [9.4](managing-the-redo-log.md)
+		- renaming members [9.4](managing-the-redo-log.md)
+		- specifying ARCHIVE\_LAG\_TARGET [9.2.6](managing-the-redo-log.md)
+		- STALE members [9.5.2](managing-the-redo-log.md)
+- online segment shrink [18.3.3](managing-space-for-schema-objects.md)
+- ON PREBUILT TABLE clause [35.6.3](read-only-materialized-view-concepts.md)
+- OPEN\_LINKS initialization parameter [31.4.3](managing-a-distributed-database.md)
+- opening windows [28.9.3.5](scheduling-jobs-with-oracle-scheduler.md)
+- operating system authentication [1.7.4](getting-started-with-database-administration.md), [1.7.4.2](getting-started-with-database-administration.md)
+- operating systems
+	- database administrators requirements for [1.6.1](getting-started-with-database-administration.md)
+		- renaming and relocating files [12.5.2](managing-data-files-and-temp-files.md)
+- optimizer statistics
+	- dynamic [7.3.4.2.2](diagnosing-and-resolving-problems.md)
+- ORA-02055 error
+	- integrity constraint violation [32.3](developing-applications-for-a-distributed-database-system.md)
+- ORA-02067 error
+	- rollback required [32.3](developing-applications-for-a-distributed-database-system.md)
+- ORA-12838 error, direct path insert [19.4.2.3.2](managing-tables.md)
+- Oracle Call Interface
+	- See: OCI
+- Oracle Database In-Memory [4.8](managing-memory.md)
+- Oracle Database users
+	- types of [1.2](getting-started-with-database-administration.md)
+- Oracle Data Guard
+	- support by the Scheduler [27.6](oracle-scheduler-concepts.md), [29.5.5](administering-oracle-scheduler.md)
+- Oracle home
+	- cloning [1.3.11](getting-started-with-database-administration.md)
+- Oracle managed files
+	- naming [15.3.2](using-oracle-managed-files.md)
+		- scenarios for using [15.5](using-oracle-managed-files.md)
+- Oracle Managed Files
+	- adding to an existing database [15.5.3](using-oracle-managed-files.md)
+		- behavior [15.4](using-oracle-managed-files.md)
+		- benefits [15.1.5](using-oracle-managed-files.md)
+		- CREATE DATABASE statement [15.3.3](using-oracle-managed-files.md)
+		- creating [15.3](using-oracle-managed-files.md)
+		- creating control files [15.3.6.1](using-oracle-managed-files.md)
+		- creating data files [15.3.4.1](using-oracle-managed-files.md)
+		- creating online redo log files [15.3.7](using-oracle-managed-files.md)
+		- creating temp files [15.3.5.1](using-oracle-managed-files.md)
+		- described [15.1.1](using-oracle-managed-files.md)
+		- dropping data file [15.4.1](using-oracle-managed-files.md)
+		- dropping online redo log files [15.4.2](using-oracle-managed-files.md)
+		- dropping temp file [15.4.1](using-oracle-managed-files.md)
+		- initialization parameters [15.2.1](using-oracle-managed-files.md)
+		- renaming [15.4.3](using-oracle-managed-files.md)
+- Oracle Managed Files feature
+	- See: Oracle managed files
+- Oracle release numbers [1.5.1](getting-started-with-database-administration.md)
+- Oracle Restart
+	- about [2.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- configuration
+		- adding components to [2.2.4](configuring-automatic-restart-of-an-oracle-database.md)
+				- modifying [2.2.9](configuring-automatic-restart-of-an-oracle-database.md)
+				- removing components from [2.2.5](configuring-automatic-restart-of-an-oracle-database.md)
+				- viewing for a component [2.2.8](configuring-automatic-restart-of-an-oracle-database.md)
+		- configuring [2.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- CRSCTL utility [2.1.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- disabling and enabling management for a component [2.2.6](configuring-automatic-restart-of-an-oracle-database.md)
+		- environment variables in [2.2.10](configuring-automatic-restart-of-an-oracle-database.md)
+		- patches
+		- installing [2.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- registering a component with [2.2.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- starting [2.1.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- starting and stopping components managed by [2.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- Oracle home [2.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- status of components [2.2.7](configuring-automatic-restart-of-an-oracle-database.md)
+		- stopping [2.1.4](configuring-automatic-restart-of-an-oracle-database.md)
+- Oracle Scheduler
+	- creating credentials [28.2.2.3](scheduling-jobs-with-oracle-scheduler.md)
+- Oracle Scheduler agent
+	- on Windows [29.1.3.3.2](administering-oracle-scheduler.md)
+		- OracleSchedulerExecutionAgent [29.1.3.3.2](administering-oracle-scheduler.md)
+		- tasks [29.1.3.3](administering-oracle-scheduler.md)
+		- Windows Service [29.1.3.3.2](administering-oracle-scheduler.md)
+- Oracle Scheduler Agent [29.1.3](administering-oracle-scheduler.md)
+- Oracle Scheduler agents
+	- registering with databases [29.1.3.3.5](administering-oracle-scheduler.md)
+- OracleSchedulerExecutionAgent [29.1.3.3.2](administering-oracle-scheduler.md)
+- ORAPWD utility [1.8.2](getting-started-with-database-administration.md)
+- OR condition
+	- materialized views with subqueries [35.6.3](read-only-materialized-view-concepts.md)
+- ORGANIZATION EXTERNAL clause
+	- of CREATE TABLE [19.15.2](managing-tables.md)
+- orphan key table
+	- example of building [24.4.1.3](repairing-corrupted-data.md)
+- OSBACKUPDBA group [1.7.4.1](getting-started-with-database-administration.md)
+- OSDBA group [1.7.4.1](getting-started-with-database-administration.md)
+- OSDGDBA group [1.7.4.1](getting-started-with-database-administration.md)
+- OSKMDBA group [1.7.4.1](getting-started-with-database-administration.md)
+- OSOPER group [1.7.4.1](getting-started-with-database-administration.md)
+- OTHER\_GROUPS
+	- for Database Resource Manager [26.1.3.2](managing-resources-with-oracle-database-resource-manager.md)
+- OTHER\_GROUPS for Database Resource Manager [26.4.4.6](managing-resources-with-oracle-database-resource-manager.md), [26.4.4.7](managing-resources-with-oracle-database-resource-manager.md), [26.5.5](managing-resources-with-oracle-database-resource-manager.md)
+- outer joins [23.1.5.4](managing-views-sequences-and-synonyms.md)
+	- key-preserved tables in [23.1.5.4](managing-views-sequences-and-synonyms.md)
+- overlapping windows [27.2.10.2](oracle-scheduler-concepts.md)
+
+---
+
+## P
+
+- packages
+	- DBMS\_FILE\_TRANSFER [12.7](managing-data-files-and-temp-files.md)
+		- DBMS\_METADATA [17.13.1](managing-schema-objects.md)
+		- DBMS\_REPAIR [24.2](repairing-corrupted-data.md)
+		- DBMS\_RESOURCE\_MANAGER [26.1.3.1](managing-resources-with-oracle-database-resource-manager.md), [26.1.4.1](managing-resources-with-oracle-database-resource-manager.md), [26.3.4.1.1](managing-resources-with-oracle-database-resource-manager.md)
+		- DBMS\_RESOURCE\_MANAGER\_PRIVS [26.1.4.1](managing-resources-with-oracle-database-resource-manager.md)
+		- DBMS\_RESUMABLE [18.2.4.3](managing-space-for-schema-objects.md)
+		- DBMS\_SPACE [18.3.4](managing-space-for-schema-objects.md), [18.6.1](managing-space-for-schema-objects.md)
+		- DBMS\_STORAGE\_MAP [12.9.3.2](managing-data-files-and-temp-files.md)
+- packaging and uploading problems [7.4.2](diagnosing-and-resolving-problems.md)
+- parallel execution
+	- managing [3.8](managing-processes.md)
+		- parallel hints [3.8.1](managing-processes.md)
+		- parallelizing index creation [20.2.9](managing-indexes.md)
+		- resumable space allocation [18.2.1.5](managing-space-for-schema-objects.md)
+- parallel hints [3.8.1](managing-processes.md)
+- parallelizing table creation [19.2.4](managing-tables.md), [19.3.3](managing-tables.md)
+- parallel statement execution
+	- directive attributes for managing [26.5.4](managing-resources-with-oracle-database-resource-manager.md)
+		- managing using Resource Manager [26.1.3.3.1.3.3](managing-resources-with-oracle-database-resource-manager.md)
+- partitioned tables
+	- moving a partition online [19.7.3.3](managing-tables.md)
+		- redefining partitions online [19.8.14](managing-tables.md)
+		- rules for [19.8.14.1](managing-tables.md)
+- password file
+	- adding users [1.8.5](getting-started-with-database-administration.md)
+		- creating [1.8.2](getting-started-with-database-administration.md)
+		- ORAPWD utility [1.8.2](getting-started-with-database-administration.md)
+		- removing [1.8.8](getting-started-with-database-administration.md)
+		- setting REMOTE\_LOGIN\_PASSWORD [1.8.3](getting-started-with-database-administration.md)
+		- synchronizing administrator passwords with the data dictionary [1.8.4](getting-started-with-database-administration.md)
+		- viewing members [1.8.7](getting-started-with-database-administration.md)
+- password file authentication [1.7.5](getting-started-with-database-administration.md), [1.7.5.1](getting-started-with-database-administration.md)
+- passwords
+	- case sensitivity of [1.7.3.1](getting-started-with-database-administration.md), [1.7.5.1](getting-started-with-database-administration.md), [1.7.5.2](getting-started-with-database-administration.md)
+		- password file [1.8.5](getting-started-with-database-administration.md)
+		- setting REMOTE\_LOGIN\_PASSWORD parameter [1.8.3](getting-started-with-database-administration.md)
+- patches
+	- installing
+		- Oracle Restart [2.3](configuring-automatic-restart-of-an-oracle-database.md)
+- pausing chains and chain steps [28.6.16](scheduling-jobs-with-oracle-scheduler.md)
+- PCTINCREASE parameter [19.7.2](managing-tables.md)
+- PCTUSED parameter
+	- value for complex materialized views [36.4.2.1](read-only-materialized-view-architecture.md)
+- PDB performance profiles [26.4.1.3](managing-resources-with-oracle-database-resource-manager.md)
+	- managing [26.4.1.6.3](managing-resources-with-oracle-database-resource-manager.md)
+- PDB resource plans [26.1.3.4.2](managing-resources-with-oracle-database-resource-manager.md)
+- PDBs
+	- buffer pool size [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+		- CDB resource plans [26.1.3.4.1](managing-resources-with-oracle-database-resource-manager.md)
+		- creating [26.4.1.1](managing-resources-with-oracle-database-resource-manager.md), [26.4.1.3](managing-resources-with-oracle-database-resource-manager.md)
+				- directives [26.1.3.4.1.3](managing-resources-with-oracle-database-resource-manager.md)
+				- disabling [26.4.1.7](managing-resources-with-oracle-database-resource-manager.md)
+				- enabling [26.4.1.5](managing-resources-with-oracle-database-resource-manager.md)
+				- managing [26.4.1.6](managing-resources-with-oracle-database-resource-manager.md)
+				- shares [26.1.3.4.1.1](managing-resources-with-oracle-database-resource-manager.md)
+				- utilization limits [26.1.3.4.1.2](managing-resources-with-oracle-database-resource-manager.md)
+				- viewing information about [26.4.1.8](managing-resources-with-oracle-database-resource-manager.md)
+		- CPU limits [26.1.4.3.1](managing-resources-with-oracle-database-resource-manager.md)
+		- Database Resource Manager [26.4](managing-resources-with-oracle-database-resource-manager.md)
+		- I/O limits [26.1.4.3.4](managing-resources-with-oracle-database-resource-manager.md)
+		- import operations [13.2.3](transporting-data.md), [13.2.4](transporting-data.md)
+		- PDB resource plans [26.1.3.4.2](managing-resources-with-oracle-database-resource-manager.md)
+		- creating [26.4.2.1](managing-resources-with-oracle-database-resource-manager.md)
+				- disabling [26.4.2.4](managing-resources-with-oracle-database-resource-manager.md)
+				- enabling [26.4.2.2](managing-resources-with-oracle-database-resource-manager.md)
+				- modifying [26.4.2.3](managing-resources-with-oracle-database-resource-manager.md)
+		- PGA size [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+		- resource management [26.1.1](managing-resources-with-oracle-database-resource-manager.md)
+		- SGA size [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+		- shared pool size [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+- pending area for Database Resource Manager plans [26.4.4.9](managing-resources-with-oracle-database-resource-manager.md)
+	- validating plan schema changes [26.4.4.7](managing-resources-with-oracle-database-resource-manager.md)
+- pending transaction tables [34.7.6](managing-distributed-transactions.md)
+- performance
+	- index column order [20.2.3](managing-indexes.md)
+		- location of data files and [12.1.4](managing-data-files-and-temp-files.md)
+		- monitoring [6.2](monitoring-the-database.md)
+- PGA\_AGGREGATE\_LIMIT parameter [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+- PGA\_AGGREGATE\_TARGET parameter [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+- PL/SQL
+	- replaced views and program units [23.1.3](managing-views-sequences-and-synonyms.md)
+- plan schemas for Database Resource Manager [26.1.3.3.1.1.1](managing-resources-with-oracle-database-resource-manager.md), [26.2](managing-resources-with-oracle-database-resource-manager.md), [26.7.4](managing-resources-with-oracle-database-resource-manager.md)
+	- validating plan changes [26.4.4.7](managing-resources-with-oracle-database-resource-manager.md)
+- plans for Database Resource Manager
+	- examples [26.5](managing-resources-with-oracle-database-resource-manager.md)
+- PRAGMA\_EXCEPTION\_INIT procedure
+	- assigning exception names [32.5](developing-applications-for-a-distributed-database-system.md)
+- prefix compression [19.13.2.8](managing-tables.md), [20.3.8.1](managing-indexes.md)
+- prepare/commit phases
+	- effects of failure [34.8.1](managing-distributed-transactions.md)
+		- failures during [34.4.1](managing-distributed-transactions.md)
+		- locked resources [34.8](managing-distributed-transactions.md)
+		- pending transaction table [34.7.6](managing-distributed-transactions.md)
+- prepared response
+	- two-phase commit [33.3.2.2.1](distributed-transactions-concepts.md)
+- prepare phase
+	- abort response [33.3.2.2.3](distributed-transactions-concepts.md)
+		- in two-phase commit [33.3.2.1](distributed-transactions-concepts.md)
+		- prepared response [33.3.2.2.1](distributed-transactions-concepts.md)
+		- read-only response [33.3.2.2.2](distributed-transactions-concepts.md)
+		- recognizing read-only nodes [33.3.2.2.2](distributed-transactions-concepts.md)
+		- steps [33.3.2.3](distributed-transactions-concepts.md)
+- prespawned processes [3.7](managing-processes.md)
+- PRIMARY KEY constraints
+	- associated indexes [20.3.4.2](managing-indexes.md)
+		- dropping associated indexes [20.6](managing-indexes.md)
+		- enabling on creation [20.3.4.1](managing-indexes.md)
+		- foreign key references when dropped [17.7.3.1](managing-schema-objects.md)
+		- indexes associated with [20.3.4.1](managing-indexes.md)
+		- materialized views [35.4.2](read-only-materialized-view-concepts.md)
+		- replicated tables [37.1.1](planning-for-read-only-materialized-views.md)
+- priorities
+	- job [28.9.2](scheduling-jobs-with-oracle-scheduler.md)
+- private database links [30.2.7](distributed-database-concepts.md)
+- private synonyms [23.3.1](managing-views-sequences-and-synonyms.md)
+- private temporary tables
+	- creating [19.3.2.4](managing-tables.md)
+- privileges
+	- adding redo log groups [9.3](managing-the-redo-log.md)
+		- altering index [20.4.1](managing-indexes.md)
+		- altering tables [19.7](managing-tables.md)
+		- closing a database link [32.2](developing-applications-for-a-distributed-database-system.md)
+		- creating database links [31.2.1](managing-a-distributed-database.md)
+		- creating tables [19.3](managing-tables.md)
+		- creating tablespaces [11.2.1](managing-tablespaces.md)
+		- database administrator [1.6](getting-started-with-database-administration.md)
+		- dropping indexes [20.6](managing-indexes.md)
+		- dropping online redo log members [9.5.2](managing-the-redo-log.md)
+		- dropping redo log groups [9.5.1](managing-the-redo-log.md)
+		- drop table [19.11](managing-tables.md)
+		- enabling and disabling triggers [17.6.1](managing-schema-objects.md)
+		- forcing a log switch [9.6](managing-the-redo-log.md)
+		- for external tables [19.15.9](managing-tables.md)
+		- managing with procedures [31.6.3.4](managing-a-distributed-database.md)
+		- managing with synonyms [31.6.2.2](managing-a-distributed-database.md)
+		- managing with views [31.6.1](managing-a-distributed-database.md)
+		- manually archiving [10.3.3](managing-archived-redo-log-files.md)
+		- materialized views [35.5.1](read-only-materialized-view-concepts.md), [37.2.4.3](planning-for-read-only-materialized-views.md)
+		- renaming objects [17.8](managing-schema-objects.md)
+		- renaming redo log members [9.4](managing-the-redo-log.md)
+		- Scheduler [29.6.1](administering-oracle-scheduler.md)
+		- sequences [23.2.2](managing-views-sequences-and-synonyms.md), [23.2.5](managing-views-sequences-and-synonyms.md)
+		- setting chain (Scheduler) [29.1.1](administering-oracle-scheduler.md)
+		- synonyms [23.3.2](managing-views-sequences-and-synonyms.md), [23.3.4](managing-views-sequences-and-synonyms.md)
+		- taking tablespaces offline [11.6.1](managing-tablespaces.md)
+		- truncating [17.5.3](managing-schema-objects.md)
+		- using a view [23.1.4](managing-views-sequences-and-synonyms.md)
+		- using sequences [23.2.4](managing-views-sequences-and-synonyms.md)
+		- views [23.1.2.1](managing-views-sequences-and-synonyms.md), [23.1.3](managing-views-sequences-and-synonyms.md), [23.1.7](managing-views-sequences-and-synonyms.md)
+- problem activity log
+	- adding comments to [7.2.7](diagnosing-and-resolving-problems.md)
+- problems
+	- about [7.1.2.1](diagnosing-and-resolving-problems.md)
+		- adding comments to activity log [7.2.7](diagnosing-and-resolving-problems.md)
+- problems (critical errors)
+	- packaging and uploading [7.4.2](diagnosing-and-resolving-problems.md)
+- procedures
+	- external [3.9.1](managing-processes.md)
+		- location transparency in distributed databases [31.6.3](managing-a-distributed-database.md)
+		- name resolution in distributed databases [30.4.9.1](distributed-database-concepts.md)
+		- remote calls [30.5.2](distributed-database-concepts.md)
+- processes
+	- See: server processes
+	- prespawned [3.7](managing-processes.md)
+- process manager (PMAN) [3.6](managing-processes.md)
+- process monitor (PMON) [3.6](managing-processes.md)
+- PRODUCT\_COMPONENT\_VERSION view [1.5.2](getting-started-with-database-administration.md)
+- programs
+	- altering [28.3.3](scheduling-jobs-with-oracle-scheduler.md)
+		- creating [28.3.2.1](scheduling-jobs-with-oracle-scheduler.md)
+		- creating and managing, to define Scheduler jobs [28.3](scheduling-jobs-with-oracle-scheduler.md)
+		- disabling [28.3.5](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping [28.3.4](scheduling-jobs-with-oracle-scheduler.md)
+		- enabling [28.3.6](scheduling-jobs-with-oracle-scheduler.md)
+		- overview [27.2.2](oracle-scheduler-concepts.md)
+- proxy resident connection pooling [3.3](managing-processes.md)
+- public database links [30.2.7](distributed-database-concepts.md)
+	- connected user [31.8.3](managing-a-distributed-database.md)
+		- fixed user [31.8.1](managing-a-distributed-database.md)
+- public fixed user database links [31.8.1](managing-a-distributed-database.md)
+- public synonyms [23.3.1](managing-views-sequences-and-synonyms.md)
+- PURGE\_LOST\_DB\_ENTRY procedure
+	- DBMS\_TRANSACTION package [34.6.2](managing-distributed-transactions.md)
+
+---
+
+## Q
+
+- quarantine
+	- objects [6.3](monitoring-the-database.md)
+		- SQL statements [7.5.3](diagnosing-and-resolving-problems.md)
+- queries
+	- distributed [30.4.2](distributed-database-concepts.md)
+		- distributed application development issues [32.4](developing-applications-for-a-distributed-database-system.md)
+		- location transparency and [30.5.1.2](distributed-database-concepts.md)
+		- remote [30.4.1](distributed-database-concepts.md)
+- quotas
+	- tablespace [11.1.2](managing-tablespaces.md)
+
+---
+
+## R
+
+- RAISE\_APPLICATION\_ERROR() procedure [32.5](developing-applications-for-a-distributed-database-system.md)
+- read consistency
+	- managing in distributed databases [34.10](managing-distributed-transactions.md)
+- read-o [35.11.3](read-only-materialized-view-concepts.md)
+- read-only materialized views [VI](managing-read-only-materialized-views.md), [35.2](read-only-materialized-view-concepts.md)
+	- registration
+		- manual [35.11.3](read-only-materialized-view-concepts.md)
+- read-only response
+	- two-phase commit [33.3.2.2.2](distributed-transactions-concepts.md)
+- read-only tables [19.7.9](managing-tables.md)
+- read-only tablespaces
+	- data file headers when rename [11.9](managing-tablespaces.md)
+		- delaying opening of data files [11.7.5](managing-tablespaces.md)
+		- making read-only [11.7.2](managing-tablespaces.md)
+		- making writable [11.7.3](managing-tablespaces.md)
+		- WORM devices [11.7.4](managing-tablespaces.md)
+- Real Application Clusters
+	- allocating extents for cluster [21.4.1](managing-clusters.md)
+		- sequence numbers and [23.2.2](managing-views-sequences-and-synonyms.md)
+		- threads of online redo log [9.1.1](managing-the-redo-log.md)
+- rebuilding indexes [20.4.3](managing-indexes.md)
+	- costs [20.2.13](managing-indexes.md)
+		- online [20.4.3](managing-indexes.md)
+- reclaiming unused space [18.3](managing-space-for-schema-objects.md)
+- recoverer process [3.6](managing-processes.md)
+	- disabling [34.9.2](managing-distributed-transactions.md)
+		- distributed transaction recovery [34.9.2](managing-distributed-transactions.md)
+		- enabling [34.9.2](managing-distributed-transactions.md)
+		- pending transaction table [34.9.2](managing-distributed-transactions.md)
+- recovering
+	- Scheduler jobs [29.4.1.4](administering-oracle-scheduler.md)
+- recovery
+	- creating new control files [8.3.3.2](managing-control-files.md)
+- recycle bin
+	- about [19.12.1](managing-tables.md)
+		- purging [19.12.4](managing-tables.md)
+		- renamed objects [19.12.1](managing-tables.md)
+		- restoring objects from [19.12.5](managing-tables.md)
+		- viewing [19.12.3](managing-tables.md)
+- REDEF\_TABLE procedure [19.8.5](managing-tables.md)
+	- example [19.8.15](managing-tables.md)
+- redefining tables
+	- online
+		- replication [36.1.4.1](read-only-materialized-view-architecture.md)
+- redefining tables online
+	- See online redefinition of tables [19.8.1](managing-tables.md)
+- redo log files [9.1](managing-the-redo-log.md)
+	- See also: online redo logs
+	- active (current) [9.1.3.1](managing-the-redo-log.md)
+		- archiving [10.2](managing-archived-redo-log-files.md)
+		- available for use [9.1.3](managing-the-redo-log.md)
+		- block size, setting [9.2.4](managing-the-redo-log.md)
+		- circular use of [9.1.3](managing-the-redo-log.md)
+		- clearing [9.8](managing-the-redo-log.md)
+		- contents of [9.1.2](managing-the-redo-log.md)
+		- creating as Oracle Managed Files [15.3.7](using-oracle-managed-files.md)
+		- creating as Oracle Managed Files, example [15.5.1](using-oracle-managed-files.md)
+		- creating groups [9.3](managing-the-redo-log.md)
+		- creating members [9.3](managing-the-redo-log.md), [9.3.2](managing-the-redo-log.md)
+		- distributed transaction information in [9.1.3](managing-the-redo-log.md)
+		- dropping groups [9.5](managing-the-redo-log.md)
+		- dropping members [9.5](managing-the-redo-log.md)
+		- group members [9.2.1](managing-the-redo-log.md)
+		- groups, defined [9.2.1](managing-the-redo-log.md)
+		- how many in redo log [9.2.5](managing-the-redo-log.md)
+		- inactive [9.1.3.1](managing-the-redo-log.md)
+		- instance recovery use of [9.1](managing-the-redo-log.md)
+		- legal and illegal configurations [9.2.1.2](managing-the-redo-log.md)
+		- LGWR and the [9.1.3](managing-the-redo-log.md)
+		- log switches [9.1.3.2](managing-the-redo-log.md)
+		- maximum number of members [9.2.5](managing-the-redo-log.md)
+		- members [9.2.1](managing-the-redo-log.md)
+		- mirrored, log switches and [9.2.1.1](managing-the-redo-log.md)
+		- multiplexed [9.2.1](managing-the-redo-log.md), [9.2.1.1](managing-the-redo-log.md)
+		- online, defined [9.1](managing-the-redo-log.md)
+		- planning the [9.2](managing-the-redo-log.md)
+		- redo entries [9.1.2](managing-the-redo-log.md)
+		- requirements [9.2.1.2](managing-the-redo-log.md)
+		- specifying at database creation [15.3.3.2](using-oracle-managed-files.md)
+		- storing separately from data files [12.1.5](managing-data-files-and-temp-files.md)
+		- threads [9.1.1](managing-the-redo-log.md)
+		- verifying blocks [9.7](managing-the-redo-log.md)
+- redo logs
+	- See: online redo logredo log files
+- redo records [9.1.2](managing-the-redo-log.md)
+	- LOGGING and NOLOGGING [11.5](managing-tablespaces.md)
+- referential integrity
+	- distributed database application development [32.3](developing-applications-for-a-distributed-database-system.md)
+- refresh
+	- automatic [36.4.3.1](read-only-materialized-view-architecture.md)
+		- complete [36.4.2.1](read-only-materialized-view-architecture.md)
+		- failures [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+		- fast [36.4.2.2](read-only-materialized-view-architecture.md)
+		- determining possibility of [38.4](creating-and-managing-read-only-materialized-views.md)
+		- force [36.4.2.3](read-only-materialized-view-architecture.md)
+		- group [36.4.3.1](read-only-materialized-view-architecture.md)
+		- initiating [36.4.3](read-only-materialized-view-architecture.md)
+		- interval [36.4.3.1](read-only-materialized-view-architecture.md)
+		- manual [36.4.3.2](read-only-materialized-view-architecture.md)
+		- materialized views [35.7](read-only-materialized-view-concepts.md), [36.4.1](read-only-materialized-view-architecture.md)
+		- monitoring [38.7.3](creating-and-managing-read-only-materialized-views.md), [38.7.4](creating-and-managing-read-only-materialized-views.md)
+		- on-demand [36.4.3.2](read-only-materialized-view-architecture.md)
+		- retries [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+		- rollback segments
+		- troubleshooting [39.4](troubleshooting-problems-with-read-only-materialized-views.md)
+		- scheduling [36.4.3.1](read-only-materialized-view-architecture.md)
+		- troubleshooting [39.4](troubleshooting-problems-with-read-only-materialized-views.md)
+		- troubleshooting
+		- ORA-12004 error [39.4](troubleshooting-problems-with-read-only-materialized-views.md)
+				- ORA-942 error [39.4](troubleshooting-problems-with-read-only-materialized-views.md)
+		- truncating materialized views
+		- troubleshooting [39.4](troubleshooting-problems-with-read-only-materialized-views.md)
+- REFRESH\_ALL\_MVIEWS procedure [36.4.3.2](read-only-materialized-view-architecture.md), [38.3](creating-and-managing-read-only-materialized-views.md)
+- REFRESH\_DEPENDENT procedure [36.4.3.2](read-only-materialized-view-architecture.md), [38.3](creating-and-managing-read-only-materialized-views.md)
+- refresh groups [35.1](read-only-materialized-view-concepts.md), [35.8](read-only-materialized-view-concepts.md), [36.3.1](read-only-materialized-view-architecture.md)
+	- monitoring [38.7.2](creating-and-managing-read-only-materialized-views.md)
+		- size considerations [36.3.2](read-only-materialized-view-architecture.md)
+		- troubleshooting [39.3](troubleshooting-problems-with-read-only-materialized-views.md)
+- REFRESH procedure [36.4.3.2](read-only-materialized-view-architecture.md), [38.3](creating-and-managing-read-only-materialized-views.md)
+- REFs
+	- materialized views [35.10.6.1](read-only-materialized-view-concepts.md)
+		- replication [35.10.6.1](read-only-materialized-view-concepts.md)
+- REGISTER\_MVIEW procedure [35.11.3](read-only-materialized-view-concepts.md)
+- release numbers [1.5.1](getting-started-with-database-administration.md)
+- releases [1.5](getting-started-with-database-administration.md)
+	- checking the Oracle Database release number [1.5.2](getting-started-with-database-administration.md)
+		- definition [1.5.1](getting-started-with-database-administration.md)
+- release update (Update) [1.5.1](getting-started-with-database-administration.md)
+- release update revision (Revision) [1.5.1](getting-started-with-database-administration.md)
+- Release Update Revisions (Revisions)
+	- installing [1.3.10](getting-started-with-database-administration.md)
+- Release Updates (Updates)
+	- installing [1.3.10](getting-started-with-database-administration.md)
+- relocating control files [8.3.2](managing-control-files.md)
+- REMOTE\_LOGIN\_PASSWORDFILE initialization parameter [1.8.3](getting-started-with-database-administration.md)
+- REMOTE\_OS\_AUTHENT initialization parameter
+	- connected user database links [30.2.8.2](distributed-database-concepts.md)
+- remote data
+	- querying [31.7](managing-a-distributed-database.md)
+		- updating [31.7](managing-a-distributed-database.md)
+- remote database jobs [27.3.1.1.1](oracle-scheduler-concepts.md)
+	- Scheduler agent setup [29.1.3.2](administering-oracle-scheduler.md)
+- remote external jobs
+	- about [27.3.1.2.3](oracle-scheduler-concepts.md)
+		- executing [29.1.3](administering-oracle-scheduler.md)
+		- Scheduler agent setup [29.1.3.2](administering-oracle-scheduler.md)
+- remote procedure calls [30.5.2](distributed-database-concepts.md)
+	- distributed databases and [30.5.2](distributed-database-concepts.md)
+- remote queries
+	- distributed databases and [30.4.1](distributed-database-concepts.md)
+- remote transactions [30.4.4](distributed-database-concepts.md)
+	- defined [30.4.4](distributed-database-concepts.md)
+- RENAME statement [17.8](managing-schema-objects.md)
+- renaming control files [8.3.2](managing-control-files.md)
+- renaming files
+	- Oracle Managed Files [15.4.3](using-oracle-managed-files.md)
+- renaming indexes [20.4.6](managing-indexes.md)
+- REOPEN attribute
+	- LOG\_ARCHIVE\_DEST\_n initialization parameter [10.6.2](managing-archived-redo-log-files.md)
+- repairing data block corruption
+	- DBMS\_REPAIR [24.1](repairing-corrupted-data.md)
+- repair table
+	- example of building [24.4.1.2](repairing-corrupted-data.md)
+- repeat interval, schedule [28.4.5.1](scheduling-jobs-with-oracle-scheduler.md)
+- replication
+	- filter columns [36.1.4.2](read-only-materialized-view-architecture.md)
+		- job slaves [37.2.4.4](planning-for-read-only-materialized-views.md)
+		- master sites
+		- advantages [37.2.2](planning-for-read-only-materialized-views.md)
+		- materialized view logs [35.9](read-only-materialized-view-concepts.md)
+		- materialized view sites
+		- advantages [37.2.3](planning-for-read-only-materialized-views.md)
+		- monitoring
+		- materialized view environments [38.7](creating-and-managing-read-only-materialized-views.md)
+		- read-only materialized views [35.2](read-only-materialized-view-concepts.md)
+		- refresh [35.7](read-only-materialized-view-concepts.md)
+		- refresh groups [35.1](read-only-materialized-view-concepts.md), [35.8](read-only-materialized-view-concepts.md)
+		- sites [35.1](read-only-materialized-view-concepts.md)
+		- choosing [37.2](planning-for-read-only-materialized-views.md)
+		- tables [37.1](planning-for-read-only-materialized-views.md)
+		- unsupported data types
+		- BFILE [37.1.3](planning-for-read-only-materialized-views.md)
+				- LONG [37.1.3](planning-for-read-only-materialized-views.md)
+		- unsupported table types [37.1.4](planning-for-read-only-materialized-views.md)
+		- user-defined data types [35.10.1](read-only-materialized-view-concepts.md)
+		- virtual private database (VPD) [37.2.4.2](planning-for-read-only-materialized-views.md)
+- replication catalog
+	- DBA\_REGISTERED\_MVIEWS [35.11.1](read-only-materialized-view-concepts.md)
+		- USER\_REFRESH [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+		- USER\_REFRESH\_CHILDREN [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+- replication objects
+	- at materialized view sites
+		- problems creating [39.2](troubleshooting-problems-with-read-only-materialized-views.md)
+		- indexes
+		- on foreign keys [37.1.2](planning-for-read-only-materialized-views.md)
+		- tables [37.1](planning-for-read-only-materialized-views.md)
+		- foreign keys [37.1.2](planning-for-read-only-materialized-views.md)
+				- primary keys [37.1.1](planning-for-read-only-materialized-views.md)
+- reporting problems to Oracle Support [7.4](diagnosing-and-resolving-problems.md)
+- RESOLVE\_TNSNAME function [31.5.3](managing-a-distributed-database.md)
+- RESOURCE\_MANAGER\_PLAN initialization parameter [26.2](managing-resources-with-oracle-database-resource-manager.md)
+- resource allocation methods
+	- ACTIVE\_SESS\_POOL\_MTH [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+		- active session pool [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+		- CPU [26.1.3.3.1.1](managing-resources-with-oracle-database-resource-manager.md)
+		- CPU resource [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+		- EMPHASIS [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+		- limit on degree of parallelism [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+		- MAX\_UTILIZATION\_METHOD [26.1.3.3.1.1.2](managing-resources-with-oracle-database-resource-manager.md)
+		- PARALLEL\_DEGREE\_LIMIT\_MTH [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+		- PARALLEL\_DEGREE\_LIMIT\_P1 [26.1.3.3.1.3.1](managing-resources-with-oracle-database-resource-manager.md)
+		- PARALLEL\_QUEUE\_TIMEOUT [26.1.3.3.1.3.3](managing-resources-with-oracle-database-resource-manager.md)
+		- PARALLEL\_STMT\_CRITICAL [26.1.3.3.1.3.2](managing-resources-with-oracle-database-resource-manager.md)
+		- PGA [26.1.3.3.1.4](managing-resources-with-oracle-database-resource-manager.md)
+		- QUEUEING\_MTH [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+		- queuing resource allocation method [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+- resource consumer groups [26.1.3.1](managing-resources-with-oracle-database-resource-manager.md)
+	- changing [26.3.4.1.1](managing-resources-with-oracle-database-resource-manager.md)
+		- creating [26.4.4.3](managing-resources-with-oracle-database-resource-manager.md)
+		- DEFAULT\_CONSUMER\_GROUP [26.3.6.1](managing-resources-with-oracle-database-resource-manager.md), [26.7.2](managing-resources-with-oracle-database-resource-manager.md)
+		- deleting [26.7.2](managing-resources-with-oracle-database-resource-manager.md)
+		- granting the switch privilege [26.3.6.1](managing-resources-with-oracle-database-resource-manager.md)
+		- managing [26.3](managing-resources-with-oracle-database-resource-manager.md), [26.3.4.2](managing-resources-with-oracle-database-resource-manager.md)
+		- OTHER\_GROUPS [26.1.3.2](managing-resources-with-oracle-database-resource-manager.md), [26.4.4.6](managing-resources-with-oracle-database-resource-manager.md), [26.4.4.7](managing-resources-with-oracle-database-resource-manager.md), [26.5.5](managing-resources-with-oracle-database-resource-manager.md)
+		- parameters [26.4.4.3](managing-resources-with-oracle-database-resource-manager.md)
+		- revoking the switch privilege [26.3.6.3](managing-resources-with-oracle-database-resource-manager.md)
+		- setting initial [26.3.2](managing-resources-with-oracle-database-resource-manager.md)
+		- switching a session [26.3.4.1.2](managing-resources-with-oracle-database-resource-manager.md)
+		- switching sessions for a user [26.3.4.1.3](managing-resources-with-oracle-database-resource-manager.md)
+		- SYS\_GROUP [26.5.5](managing-resources-with-oracle-database-resource-manager.md)
+		- updating [26.7.1](managing-resources-with-oracle-database-resource-manager.md)
+- Resource Manager
+	- AUTO\_TASK\_CONSUMER\_GROUP consumer group [25.5](managing-automated-database-maintenance-tasks.md)
+		- canceling long-running SQL statements [26.1.3.3.1.5.2](managing-resources-with-oracle-database-resource-manager.md)
+		- managing parallel statement execution [26.1.3.3.1.3.3](managing-resources-with-oracle-database-resource-manager.md)
+		- quarantine SQL statements [26.1.3.3.1.5.2](managing-resources-with-oracle-database-resource-manager.md)
+- resource plan directives [26.1.3.1](managing-resources-with-oracle-database-resource-manager.md), [26.4.4.7](managing-resources-with-oracle-database-resource-manager.md)
+	- deleting [26.7.6](managing-resources-with-oracle-database-resource-manager.md)
+		- for managing parallel statement execution [26.5.4](managing-resources-with-oracle-database-resource-manager.md)
+		- specifying [26.4.4.6](managing-resources-with-oracle-database-resource-manager.md)
+		- updating [26.7.5](managing-resources-with-oracle-database-resource-manager.md)
+- resource plans [26.1.3.1](managing-resources-with-oracle-database-resource-manager.md), [26.1.3.5.1](managing-resources-with-oracle-database-resource-manager.md)
+	- CDB [26.1.3.4.1](managing-resources-with-oracle-database-resource-manager.md)
+		- creating [26.4.3](managing-resources-with-oracle-database-resource-manager.md)
+		- DEFAULT\_MAINTENANCE\_PLAN [25.5.1](managing-automated-database-maintenance-tasks.md)
+		- DELETE\_PLAN\_CASCADE [26.7.4](managing-resources-with-oracle-database-resource-manager.md)
+		- deleting [26.7.4](managing-resources-with-oracle-database-resource-manager.md)
+		- examples [26.5](managing-resources-with-oracle-database-resource-manager.md)
+		- parameters [26.4.4.5](managing-resources-with-oracle-database-resource-manager.md)
+		- PDB [26.1.3.4.2](managing-resources-with-oracle-database-resource-manager.md)
+		- plan schemas [26.1.3.3.1.1.1](managing-resources-with-oracle-database-resource-manager.md), [26.2](managing-resources-with-oracle-database-resource-manager.md), [26.7.4](managing-resources-with-oracle-database-resource-manager.md)
+		- SYSTEM\_PLAN [26.5.5](managing-resources-with-oracle-database-resource-manager.md)
+		- top plan [26.2](managing-resources-with-oracle-database-resource-manager.md), [26.4.4.7](managing-resources-with-oracle-database-resource-manager.md)
+		- updating [26.7.3](managing-resources-with-oracle-database-resource-manager.md)
+		- validating [26.4.4.7](managing-resources-with-oracle-database-resource-manager.md)
+- resources (job)
+	- altering [28.8.2](scheduling-jobs-with-oracle-scheduler.md)
+		- creating [28.8.1](scheduling-jobs-with-oracle-scheduler.md)
+		- managing [28.8](scheduling-jobs-with-oracle-scheduler.md)
+		- specifying for jobs [28.8.3](scheduling-jobs-with-oracle-scheduler.md)
+- result sets, SQL [19.3.2.1](managing-tables.md)
+- RESUMABLE\_TIMEOUT initialization parameter
+	- setting [18.2.2.2](managing-space-for-schema-objects.md)
+- resumable space allocation
+	- correctable errors [18.2.1.3](managing-space-for-schema-objects.md)
+		- detecting suspended statements [18.2.4](managing-space-for-schema-objects.md)
+		- disabling [18.2.2.1](managing-space-for-schema-objects.md)
+		- distributed databases [18.2.1.4](managing-space-for-schema-objects.md)
+		- enabling [18.2.2.1](managing-space-for-schema-objects.md)
+		- example [18.2.6](managing-space-for-schema-objects.md)
+		- how resumable statements work [18.2.1.1](managing-space-for-schema-objects.md)
+		- naming statements [18.2.2.3.2](managing-space-for-schema-objects.md)
+		- parallel execution and [18.2.1.5](managing-space-for-schema-objects.md)
+		- resumable operations [18.2.1.2](managing-space-for-schema-objects.md)
+		- setting as default for session [18.2.3](managing-space-for-schema-objects.md)
+		- timeout interval [18.2.2.3.1](managing-space-for-schema-objects.md), [18.2.4.1](managing-space-for-schema-objects.md)
+- retention guarantee (for undo) [14.2.2.3](managing-undo.md)
+- reversing table changes [19.9](managing-tables.md)
+- roles
+	- DBA role [1.6.2.5](getting-started-with-database-administration.md)
+		- obtained through database links [30.2.11](distributed-database-concepts.md)
+- rollbacks
+	- ORA-02 [32.3](developing-applications-for-a-distributed-database-system.md)
+- ROLLBACK statement
+	- FORCE clause [34.5](managing-distributed-transactions.md), [34.5.1.2](managing-distributed-transactions.md), [34.5.2](managing-distributed-transactions.md)
+		- forcing [34.4.2](managing-distributed-transactions.md)
+- rolling upgrade [27.6](oracle-scheduler-concepts.md)
+- rowids
+	- rowid materialized views [35.4.4](read-only-materialized-view-concepts.md)
+- rows
+	- listing chained or migrated [17.4.5](managing-schema-objects.md)
+- row subsetting
+	- materialized views [35.6.1](read-only-materialized-view-concepts.md)
+- rsmgr:io rate limit [26.1.4.3.4](managing-resources-with-oracle-database-resource-manager.md)
+- rules
+	- adding to a chain [28.6.5](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping from chains [28.6.11](scheduling-jobs-with-oracle-scheduler.md)
+- running
+	- chains [28.6.10](scheduling-jobs-with-oracle-scheduler.md)
+		- jobs [28.2.4](scheduling-jobs-with-oracle-scheduler.md)
+
+---
+
+## S
+
+- savepoints
+	- in-doubt transactions [34.5](managing-distributed-transactions.md), [34.5.2](managing-distributed-transactions.md)
+- scalable sequences [23.2.4.3](managing-views-sequences-and-synonyms.md)
+- schagent utility [29.1.3.3.1](administering-oracle-scheduler.md)
+- Scheduler
+	- administering [29](administering-oracle-scheduler.md)
+		- architecture [27.4.1](oracle-scheduler-concepts.md)
+		- closing a PDB [27.5](oracle-scheduler-concepts.md)
+		- configuring [29.1](administering-oracle-scheduler.md)
+		- credentials for jobs [27.2.7](oracle-scheduler-concepts.md)
+		- data dictionary views reference [29.6.2](administering-oracle-scheduler.md)
+		- e-mail notifications [28.10.5](scheduling-jobs-with-oracle-scheduler.md)
+		- examples of using [29.5](administering-oracle-scheduler.md)
+		- import and export [29.3](administering-oracle-scheduler.md)
+		- maintenance window [25.2](managing-automated-database-maintenance-tasks.md)
+		- monitoring and managing [29.2](administering-oracle-scheduler.md)
+		- monitoring jobs [28.10.1](scheduling-jobs-with-oracle-scheduler.md)
+		- objects [27.2](oracle-scheduler-concepts.md)
+		- overview [27.1](oracle-scheduler-concepts.md)
+		- security [29.2.4](administering-oracle-scheduler.md)
+		- support for Oracle Data Guard [27.6](oracle-scheduler-concepts.md), [29.5.5](administering-oracle-scheduler.md)
+		- troubleshooting [29.4](administering-oracle-scheduler.md)
+		- job does not run [29.4.1](administering-oracle-scheduler.md)
+		- using in RAC [27.4.6.1](oracle-scheduler-concepts.md)
+- SCHEDULER\_BATCH\_ERRORS view [28.2.10](scheduling-jobs-with-oracle-scheduler.md)
+- Scheduler agent [29.1.3](administering-oracle-scheduler.md)
+	- configuration [29.1.3.2](administering-oracle-scheduler.md)
+		- installation [29.1.3.2](administering-oracle-scheduler.md)
+		- setup [29.1.3.2](administering-oracle-scheduler.md)
+- Scheduler chain condition syntax [28.6.5](scheduling-jobs-with-oracle-scheduler.md)
+- Scheduler job credentials
+	- specifying [28.2.2.3](scheduling-jobs-with-oracle-scheduler.md)
+- Scheduler objects, naming [28.1](scheduling-jobs-with-oracle-scheduler.md)
+- Scheduler privileges reference [29.6.1](administering-oracle-scheduler.md)
+- schedules
+	- altering [28.4.3](scheduling-jobs-with-oracle-scheduler.md)
+		- creating [28.4.2](scheduling-jobs-with-oracle-scheduler.md)
+		- creating and managing, to define Scheduler jobs [28.4](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping [28.4.4](scheduling-jobs-with-oracle-scheduler.md)
+		- overview [27.2.3](oracle-scheduler-concepts.md)
+- schema objects
+	- analyzing [17.4.1](managing-schema-objects.md)
+		- creating multiple objects [17.3](managing-schema-objects.md)
+		- data dictionary views reference [17.13.2](managing-schema-objects.md)
+		- defining using DBMS\_METADATA package [17.13.1](managing-schema-objects.md)
+		- dependencies between [17.9](managing-schema-objects.md)
+		- distributed database naming conventions for [30.2.10.4](distributed-database-concepts.md)
+		- global names [30.2.10.4](distributed-database-concepts.md)
+		- listing by type [17.13.2.1](managing-schema-objects.md)
+		- name resolution in distributed databases [30.2.10.4](distributed-database-concepts.md), [30.4.8.1](distributed-database-concepts.md)
+		- name resolution in SQL statements [17.10](managing-schema-objects.md)
+		- privileges to rename [17.8](managing-schema-objects.md)
+		- referencing with synonyms [31.6.2.1](managing-a-distributed-database.md)
+		- renaming [17.8](managing-schema-objects.md)
+		- validating structure [17.4.3](managing-schema-objects.md)
+		- viewing information [17.13](managing-schema-objects.md), [18.6](managing-space-for-schema-objects.md)
+- schema objects space usage
+	- data dictionary views reference [18.6.2](managing-space-for-schema-objects.md)
+- schemas
+	- creating for materialized views [37.2.4.1](planning-for-read-only-materialized-views.md)
+- SCN
+	- See: system change number
+- script jobs [27.3.1.8](oracle-scheduler-concepts.md)
+- security
+	- accessing a database [5.1](managing-users-and-securing-the-database.md)
+		- administrator of [5.1](managing-users-and-securing-the-database.md)
+		- centralized user management in distributed databases [30.3.2.4.1](distributed-database-concepts.md)
+		- database security [5.1](managing-users-and-securing-the-database.md)
+		- distributed databases [30.3.2](distributed-database-concepts.md)
+		- establishing policies [5](managing-users-and-securing-the-database.md)
+		- privileges [5.1](managing-users-and-securing-the-database.md)
+		- remote objects [31.6.1](managing-a-distributed-database.md)
+		- Scheduler [29.2.4](administering-oracle-scheduler.md)
+		- using synonyms [31.6.2.2](managing-a-distributed-database.md)
+- SEGMENT\_FIX\_STATUS procedure
+	- DBMS\_REPAIR [24.2.1](repairing-corrupted-data.md)
+- Segment Advisor [18.3.2.1](managing-space-for-schema-objects.md)
+	- configuring Scheduler job [18.3.2.6](managing-space-for-schema-objects.md)
+		- invoking with Oracle Enterprise Manager Cloud Control [18.3.2.4.1](managing-space-for-schema-objects.md)
+		- invoking with PL/SQL [18.3.2.4.2](managing-space-for-schema-objects.md)
+		- running manually [18.3.2.4](managing-space-for-schema-objects.md)
+		- using [18.3.2.2](managing-space-for-schema-objects.md)
+		- viewing results [18.3.2.5](managing-space-for-schema-objects.md)
+		- views [18.3.2.7](managing-space-for-schema-objects.md)
+- segments
+	- available space [18.6.1](managing-space-for-schema-objects.md)
+		- data dictionary views for [18.6.2](managing-space-for-schema-objects.md)
+		- deallocating unused space [18.3](managing-space-for-schema-objects.md)
+		- displaying information on [18.6.2.1](managing-space-for-schema-objects.md)
+		- dropping for empty tables [18.4](managing-space-for-schema-objects.md)
+		- shrinking [18.3.3](managing-space-for-schema-objects.md)
+- SELECT statement
+	- FOR UPDATE clause and location transparency [31.7](managing-a-distributed-database.md)
+- SEQUENCE\_CACHE\_ENTRIES parameter [23.2.4.2.4](managing-views-sequences-and-synonyms.md)
+- sequences
+	- accessing [23.2.4](managing-views-sequences-and-synonyms.md)
+		- altering [23.2.3](managing-views-sequences-and-synonyms.md)
+		- caching sequence numbers [23.2.4.2.1](managing-views-sequences-and-synonyms.md)
+		- creating [23.2.2](managing-views-sequences-and-synonyms.md), [23.2.4.2.4](managing-views-sequences-and-synonyms.md)
+		- CURRVAL [23.2.4.1.2](managing-views-sequences-and-synonyms.md)
+		- data dictionary views reference [23.4](managing-views-sequences-and-synonyms.md)
+		- dropping [23.2.5](managing-views-sequences-and-synonyms.md)
+		- managing [23.2.1](managing-views-sequences-and-synonyms.md)
+		- NEXTVAL [23.2.4.1.1](managing-views-sequences-and-synonyms.md)
+		- Oracle Real Applications Clusters and [23.2.2](managing-views-sequences-and-synonyms.md)
+		- scalable [23.2.4.3](managing-views-sequences-and-synonyms.md)
+- server-generated alerts [6.1.2.1](monitoring-the-database.md)
+- SERVER parameter
+	- net service name [31.3.3.1](managing-a-distributed-database.md)
+- server processes
+	- archiver (ARCn) [3.6](managing-processes.md)
+		- background [3.6](managing-processes.md)
+		- checkpoint (CKPT) [3.6](managing-processes.md)
+		- database writer (DBWn) [3.6](managing-processes.md)
+		- dedicated [3.1.1](managing-processes.md)
+		- dispatcher (Dnnn) [3.6](managing-processes.md)
+		- dispatchers [3.4.4.3](managing-processes.md)
+		- log writer (LGWR) [3.6](managing-processes.md)
+		- monitoring locks [6.2.1](monitoring-the-database.md)
+		- process monitor (PMON) [3.6](managing-processes.md)
+		- recoverer (RECO) [3.6](managing-processes.md)
+		- shared server [3.1.2](managing-processes.md)
+		- system monitor (SMON) [3.6](managing-processes.md)
+		- trace files for [6.1.1.1](monitoring-the-database.md)
+- servers
+	- role in two-phase commit [33.2.3](distributed-transactions-concepts.md)
+- service names
+	- database links and [31.2.4](managing-a-distributed-database.md)
+- services
+	- creating with SRVCTL and Oracle Restart [2.2.11](configuring-automatic-restart-of-an-oracle-database.md)
+- sessions
+	- active [3.10.3](managing-processes.md)
+		- inactive [3.10.4](managing-processes.md)
+		- setting advice for transactions [34.4.3.3](managing-distributed-transactions.md)
+		- terminating [3.10](managing-processes.md)
+- session trees for distributed transactions
+	- clients [33.2.2](distributed-transactions-concepts.md)
+		- commit point site [33.2.6.1](distributed-transactions-concepts.md), [33.2.6.3](distributed-transactions-concepts.md)
+		- database servers [33.2.3](distributed-transactions-concepts.md)
+		- definition [33.2.1](distributed-transactions-concepts.md)
+		- global coordinators [33.2.5](distributed-transactions-concepts.md)
+		- local coordinators [33.2.4](distributed-transactions-concepts.md)
+		- tracing transactions [34.3.2](managing-distributed-transactions.md)
+- SGA
+	- See: system global area
+- SGA\_MIN\_SIZE parameter [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+- SGA\_TARGET parameter [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+- shadow lost write protection [11.11](managing-tablespaces.md)
+	- creating tablespaces for [11.11.2](managing-tablespaces.md)
+		- disabling [11.11.5](managing-tablespaces.md)
+		- dropping a shadow tablespace [11.11.7](managing-tablespaces.md)
+		- enabling for a database [11.11.3](managing-tablespaces.md)
+		- enabling for a data file [11.11.4](managing-tablespaces.md)
+		- enabling for a PDB [11.11.3](managing-tablespaces.md)
+		- enabling for a tablespace [11.11.4](managing-tablespaces.md)
+		- removing [11.11.6](managing-tablespaces.md)
+		- suspending [11.11.6](managing-tablespaces.md)
+- SHARED\_POOL\_SIZE parameter [26.1.4.3.2](managing-resources-with-oracle-database-resource-manager.md)
+- shared database links
+	- configuring [31.3.3](managing-a-distributed-database.md)
+		- creating [31.3.2](managing-a-distributed-database.md)
+		- dedicated servers, creating links to [31.3.3.1](managing-a-distributed-database.md)
+		- determining whether to use [31.3.1](managing-a-distributed-database.md)
+		- example [30.2.9](distributed-database-concepts.md)
+		- shared servers, creating links to [31.3.3.2](managing-a-distributed-database.md)
+- shared server [3.1.2](managing-processes.md)
+	- configuring dispatchers [3.4.4](managing-processes.md)
+		- data dictionary views reference [3.4.6](managing-processes.md)
+		- disabling [3.4.3.2](managing-processes.md), [3.4.5](managing-processes.md)
+		- initialization parameters [3.4.1](managing-processes.md)
+		- interpreting trace output [6.1.1.5](monitoring-the-database.md)
+		- setting minimum number of servers [3.4.3.2](managing-processes.md)
+		- trace files for processes [6.1.1.1](monitoring-the-database.md)
+- shared SQL
+	- for remote and distributed statements [30.4.3](distributed-database-concepts.md)
+- shared temporary tablespaces [11.2.6.1](managing-tablespaces.md)
+- shrinking segments online [18.3.3](managing-space-for-schema-objects.md)
+- simple materialized views [35.4.5.2](read-only-materialized-view-concepts.md)
+- Simple Network Management Protocol (SNMP) support
+	- database management [30.3.4.3](distributed-database-concepts.md)
+- single-file tablespaces
+	- description [11.2.3.1](managing-tablespaces.md)
+- single-table hash clusters [22.3.3](managing-hash-clusters.md)
+- site autonomy
+	- distributed databases [30.3.1](distributed-database-concepts.md)
+- SKIP\_CORRUPT\_BLOCKS procedure [24.3.3.1](repairing-corrupted-data.md)
+	- DBMS\_REPAIR [24.2.1](repairing-corrupted-data.md)
+		- example [24.4.5](repairing-corrupted-data.md)
+- skipping chain steps [28.6.17](scheduling-jobs-with-oracle-scheduler.md)
+- SORT\_AREA\_SIZE initialization parameter
+	- index creation and [20.2.1](managing-indexes.md)
+- space
+	- deallocating unused [18.3.4](managing-space-for-schema-objects.md)
+		- reclaiming unused [18.3](managing-space-for-schema-objects.md)
+- space allocation
+	- resumable [18.2](managing-space-for-schema-objects.md)
+- space management
+	- data types, space requirements [18.5](managing-space-for-schema-objects.md)
+		- deallocating unused space [18.3](managing-space-for-schema-objects.md)
+		- Segment Advisor [18.3](managing-space-for-schema-objects.md)
+		- shrink segment [18.3](managing-space-for-schema-objects.md)
+- space usage alerts for tablespaces [18.1.2](managing-space-for-schema-objects.md)
+- SQL
+	- result sets [19.3.2.1](managing-tables.md)
+		- submitting [1.4.1](getting-started-with-database-administration.md)
+		- test cases [7.3.4](diagnosing-and-resolving-problems.md)
+- SQL\_TRACE initialization parameter
+	- trace files and [6.1.1.1](monitoring-the-database.md)
+- SQL\*Loader
+	- about [1.9](getting-started-with-database-administration.md), [19.4.1](managing-tables.md)
+- SQL\*Plus [1.4.1](getting-started-with-database-administration.md)
+	- about [1.4.2](getting-started-with-database-administration.md)
+		- connecting with [1.4.3.1](getting-started-with-database-administration.md)
+- SQL failure
+	- repairing with SQL Repair Advisor [7.5.1](diagnosing-and-resolving-problems.md)
+- SQL incidents [7.3.4.2.1](diagnosing-and-resolving-problems.md)
+- SQL patch
+	- disabling using Cloud Control [7.5.1.4](diagnosing-and-resolving-problems.md)
+		- disabling using DBMS\_SQLDIAG package subprogram [7.5.1.5](diagnosing-and-resolving-problems.md)
+		- removing using Cloud Control [7.5.1.4](diagnosing-and-resolving-problems.md)
+		- removing using DBMS\_SQLDIAG package subprogram [7.5.1.5](diagnosing-and-resolving-problems.md)
+		- viewing using Cloud Control [7.5.1.4](diagnosing-and-resolving-problems.md)
+- SQL Repair Advisor
+	- about [7.5.1.1](diagnosing-and-resolving-problems.md)
+		- exporting and importing a patch using the DBMS\_SQLDIAG package subprograms [7.5.1.6](diagnosing-and-resolving-problems.md)
+		- repairing SQL failure with [7.5.1](diagnosing-and-resolving-problems.md)
+		- running using Cloud Control [7.5.1.2](diagnosing-and-resolving-problems.md)
+		- running using the DBMS\_SQLDIAG package subprograms [7.5.1.3](diagnosing-and-resolving-problems.md)
+- SQL statements
+	- about quarantine [7.5.3.1](diagnosing-and-resolving-problems.md)
+		- cancelling [3.10.5](managing-processes.md)
+		- distributed databases and [30.4.1](distributed-database-concepts.md)
+		- quarantine [7.5.3](diagnosing-and-resolving-problems.md)
+- SQL test case builder [7.1.1](diagnosing-and-resolving-problems.md)
+- SQL Test Case Builder [7.3.4.1](diagnosing-and-resolving-problems.md)
+	- accessing the Incident Manager [7.3.4.3.1.1](diagnosing-and-resolving-problems.md)
+		- accessing the Support Workbench [7.3.4.3.1.2](diagnosing-and-resolving-problems.md)
+		- command-line interface [7.3.4.3.2](diagnosing-and-resolving-problems.md)
+		- gathering diagnostic data [7.3.4](diagnosing-and-resolving-problems.md)
+		- graphical interface [7.3.4.3.1](diagnosing-and-resolving-problems.md)
+		- key concepts [7.3.4.2](diagnosing-and-resolving-problems.md)
+		- output [7.3.4.2.3](diagnosing-and-resolving-problems.md)
+		- running [7.3.4.4](diagnosing-and-resolving-problems.md)
+		- SQL incidents [7.3.4.2.1](diagnosing-and-resolving-problems.md)
+		- user interfaces [7.3.4.3](diagnosing-and-resolving-problems.md)
+		- what it captures [7.3.4.2.2](diagnosing-and-resolving-problems.md)
+- SRVCTL
+	- add asm command [2.5.1.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- add command, usage description [2.5.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- add database command [2.5.1.2.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- adding a disk group with [2.5.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- add listener command [2.5.1.3.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- add ons command [2.5.1.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- case sensitivity [2.5](configuring-automatic-restart-of-an-oracle-database.md), [2.6](configuring-automatic-restart-of-an-oracle-database.md)
+		- case sensitivity of commands [2.5](configuring-automatic-restart-of-an-oracle-database.md), [2.6](configuring-automatic-restart-of-an-oracle-database.md)
+		- command reference [2.5](configuring-automatic-restart-of-an-oracle-database.md)
+		- commands
+		- downgrade database [2.5.4.1](configuring-automatic-restart-of-an-oracle-database.md)
+				- upgrade database [2.5.14.1](configuring-automatic-restart-of-an-oracle-database.md), [2.5.15.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- commands, case sensitivity [2.5](configuring-automatic-restart-of-an-oracle-database.md), [2.6](configuring-automatic-restart-of-an-oracle-database.md)
+		- component names [2.5](configuring-automatic-restart-of-an-oracle-database.md)
+		- config asm command [2.5.2.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- config command, usage description [2.5.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- config database command [2.5.2.2.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- config listener command [2.5.2.3.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- config ons command [2.5.2.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- config service command [2.5.2.5.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- creating and deleting databases services with [2.2.11](configuring-automatic-restart-of-an-oracle-database.md)
+		- disable asm command [2.5.3.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- disable command, usage description [2.5.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- disable database command [2.5.3.2.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- disable diskgroup command [2.5.3.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- disable listener command [2.5.3.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- disable ons command [2.5.3.5](configuring-automatic-restart-of-an-oracle-database.md)
+		- disable service command [2.5.3.6.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- enable asm command [2.5.5.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- enable command, usage description [2.5.5](configuring-automatic-restart-of-an-oracle-database.md)
+		- enable database command [2.5.5.2.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- enable diskgroup command [2.5.5.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- enable listener command [2.5.5.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- enable ons command [2.5.5.5](configuring-automatic-restart-of-an-oracle-database.md)
+		- enable service command [2.5.5.6.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- getenv asm command [2.5.6.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- getenv command, usage description [2.5.6](configuring-automatic-restart-of-an-oracle-database.md)
+		- getenv database command [2.5.6.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- getenv listener command [2.5.6.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- help for [2.2.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- modify asm command [2.5.7.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- modify command, usage description [2.5.7](configuring-automatic-restart-of-an-oracle-database.md)
+		- modify database command [2.5.7.2.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- modify listener command [2.5.7.3.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- modify ons command [2.5.7.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- modify service command [2.5.7.5](configuring-automatic-restart-of-an-oracle-database.md)
+		- preparing to run [2.2.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- reference [2.5](configuring-automatic-restart-of-an-oracle-database.md)
+		- remove asm command [2.5.8.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- remove command, usage description [2.5.8](configuring-automatic-restart-of-an-oracle-database.md)
+		- remove database command [2.5.8.2.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- remove diskgroup command [2.5.8.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- remove listener command [2.5.8.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- remove ons command [2.5.8.5](configuring-automatic-restart-of-an-oracle-database.md)
+		- remove service command [2.5.8.6.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- setenv asm command [2.5.9.1.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- setenv command, usage description [2.5.9](configuring-automatic-restart-of-an-oracle-database.md)
+		- setenv database command [2.5.9.2.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- setenv listener command [2.5.9.3.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- start asm command [2.5.10.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- start command, usage description [2.5.10](configuring-automatic-restart-of-an-oracle-database.md)
+		- start database command [2.5.10.2.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- start diskgroup command [2.5.10.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- start home command [2.5.10.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- start listener command [2.5.10.5.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- start ons command [2.5.10.6](configuring-automatic-restart-of-an-oracle-database.md)
+		- start service command [2.5.10.7.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- status asm command [2.5.11.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- status command, usage description [2.5.11](configuring-automatic-restart-of-an-oracle-database.md)
+		- status database command [2.5.11.2.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- status diskgroup command [2.5.11.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- status home command [2.5.11.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- status listener command [2.5.11.5](configuring-automatic-restart-of-an-oracle-database.md)
+		- status ons command [2.5.11.6](configuring-automatic-restart-of-an-oracle-database.md)
+		- status service command [2.5.11.7.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- stop asm command [2.5.12.1.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- stop command, usage description [2.5.12](configuring-automatic-restart-of-an-oracle-database.md)
+		- stop database command [2.5.12.2.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- stop diskgroup command [2.5.12.3](configuring-automatic-restart-of-an-oracle-database.md)
+		- stop home command [2.5.12.4](configuring-automatic-restart-of-an-oracle-database.md)
+		- stop listener command [2.5.12.5.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- stop ons command [2.5.12.6](configuring-automatic-restart-of-an-oracle-database.md)
+		- stop service command [2.5.12.7.1](configuring-automatic-restart-of-an-oracle-database.md)
+		- unsetenv asm command [2.5.13.1.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- unsetenv command, usage description [2.5.13](configuring-automatic-restart-of-an-oracle-database.md)
+		- unsetenv database command [2.5.13.2.2](configuring-automatic-restart-of-an-oracle-database.md)
+		- unsetenv listener command [2.5.13.3.2](configuring-automatic-restart-of-an-oracle-database.md)
+- STALE status
+	- of redo log members [9.5.2](managing-the-redo-log.md)
+- stalled chain (Scheduler) [28.6.20](scheduling-jobs-with-oracle-scheduler.md)
+- standby transmission mode
+	- definition of [10.5.2](managing-archived-redo-log-files.md)
+- statement transparency in distributed database
+	- managing [31.7](managing-a-distributed-database.md)
+- statistics
+	- automatically collecting for tables [19.6](managing-tables.md)
+- STATISTICS\_LEVEL initialization parameter
+	- Database Resource Manager [26.1.2.1](managing-resources-with-oracle-database-resource-manager.md)
+- statistics, optimizer
+	- dynamic [7.3.4.2.2](diagnosing-and-resolving-problems.md)
+- stderr
+	- for local external jobs [27.3.1.2.2](oracle-scheduler-concepts.md), [27.3.1.2.3](oracle-scheduler-concepts.md)
+		- retrieving [27.3.1.2.2](oracle-scheduler-concepts.md), [27.3.1.2.3](oracle-scheduler-concepts.md)
+- stdout
+	- for local external jobs [27.3.1.2.2](oracle-scheduler-concepts.md), [27.3.1.2.3](oracle-scheduler-concepts.md)
+		- retrieving [27.3.1.2.2](oracle-scheduler-concepts.md), [27.3.1.2.3](oracle-scheduler-concepts.md), [28.2.2.10](scheduling-jobs-with-oracle-scheduler.md)
+- steps, chain
+	- dropping [28.6.13](scheduling-jobs-with-oracle-scheduler.md)
+- stopping
+	- chains [28.6.14](scheduling-jobs-with-oracle-scheduler.md)
+		- chain steps [28.6.15](scheduling-jobs-with-oracle-scheduler.md)
+		- jobs [28.2.5](scheduling-jobs-with-oracle-scheduler.md)
+- storage parameters
+	- INITIAL [19.7.2](managing-tables.md)
+		- INITRANS, altering [19.7.2](managing-tables.md)
+		- MAXTRANS, altering [19.7.2](managing-tables.md)
+		- MINEXTENTS [19.7.2](managing-tables.md)
+		- PCTINCREASE [19.7.2](managing-tables.md)
+- storage subsystems
+	- mapping files to physical devices [12.9](managing-data-files-and-temp-files.md), [12.9.4.3](managing-data-files-and-temp-files.md)
+- stored procedures
+	- managing privileges [31.6.3.4](managing-a-distributed-database.md)
+		- remote object security [31.6.3.4](managing-a-distributed-database.md)
+- submitting SQL and commands to the database [1.4.1](getting-started-with-database-administration.md)
+- subqueries
+	- in remote updates [30.4.1](distributed-database-concepts.md)
+		- in unions
+		- materialized views [35.6.2.4](read-only-materialized-view-concepts.md)
+		- materialized views [35.6.2](read-only-materialized-view-concepts.md), [35.6.3](read-only-materialized-view-concepts.md)
+		- AND condition [35.6.3](read-only-materialized-view-concepts.md)
+				- column logging [35.6.3](read-only-materialized-view-concepts.md)
+				- EXISTS condition [35.6.3](read-only-materialized-view-concepts.md)
+				- joins [35.6.3](read-only-materialized-view-concepts.md)
+				- many to many [35.6.2.3](read-only-materialized-view-concepts.md)
+				- many to one [35.6.2.1](read-only-materialized-view-concepts.md)
+				- one to many [35.6.2.2](read-only-materialized-view-concepts.md)
+				- restrictions [35.6.3](read-only-materialized-view-concepts.md)
+		- statement transparency in distributed databases [31.7](managing-a-distributed-database.md)
+- subsetting
+	- materialized views [35.6.1](read-only-materialized-view-concepts.md)
+		- column objects [35.10.3](read-only-materialized-view-concepts.md)
+- SunSoft SunNet Manager [30.3.4.3](distributed-database-concepts.md)
+- Support Workbench [7.1.3.8](diagnosing-and-resolving-problems.md)
+	- for Oracle ASM instance [7.3.1.1](diagnosing-and-resolving-problems.md)
+		- viewing problems with [7.3.1.1](diagnosing-and-resolving-problems.md)
+- Support Workbench, accessing [7.3.4.3.1.2](diagnosing-and-resolving-problems.md)
+- SWITCH LOGFILE clause
+	- ALTER SYSTEM statement [9.6](managing-the-redo-log.md)
+- synonyms
+	- creating [23.3.2](managing-views-sequences-and-synonyms.md), [31.6.2.1](managing-a-distributed-database.md)
+		- data dictionary views reference [23.4](managing-views-sequences-and-synonyms.md)
+		- definition and creation [31.6.2.1](managing-a-distributed-database.md)
+		- displaying dependencies of [17.13.2.2](managing-schema-objects.md)
+		- dropping [23.3.4](managing-views-sequences-and-synonyms.md)
+		- examples [31.6.2.1](managing-a-distributed-database.md)
+		- location transparency in distributed databases [31.6.2](managing-a-distributed-database.md)
+		- managing [23.3.1](managing-views-sequences-and-synonyms.md), [23.3.4](managing-views-sequences-and-synonyms.md)
+		- managing privileges in remote database [31.6.2.2](managing-a-distributed-database.md)
+		- name resolution in distributed databases [30.4.9.1](distributed-database-concepts.md)
+		- private [23.3.1](managing-views-sequences-and-synonyms.md)
+		- public [23.3.1](managing-views-sequences-and-synonyms.md)
+		- remote object security [31.6.2.2](managing-a-distributed-database.md)
+- SYS\_GROUP for Database Resource Manager [26.5.5](managing-resources-with-oracle-database-resource-manager.md)
+- SYS account [1.6.2](getting-started-with-database-administration.md)
+	- objects owned [1.6.2.2](getting-started-with-database-administration.md)
+- SYSAUX tablespace [11.2.1](managing-tablespaces.md)
+	- cannot rename [11.9](managing-tablespaces.md)
+		- monitoring occupants [11.12.1](managing-tablespaces.md)
+		- moving occupants [11.12.2](managing-tablespaces.md)
+- SYSBACKUP account [1.6.2](getting-started-with-database-administration.md), [1.6.2.4](getting-started-with-database-administration.md)
+	- connecting as [1.7.1](getting-started-with-database-administration.md)
+- SYSDBA account
+	- connecting as [1.7.1](getting-started-with-database-administration.md)
+- SYSDBA administrative privilege
+	- adding users to the password file [1.8.5](getting-started-with-database-administration.md)
+		- determining who has privileges [1.8.7](getting-started-with-database-administration.md)
+		- granting and revoking [1.8.6](getting-started-with-database-administration.md)
+- SYSDG account [1.6.2](getting-started-with-database-administration.md), [1.6.2.4](getting-started-with-database-administration.md)
+	- connecting as [1.7.1](getting-started-with-database-administration.md)
+- SYSKM account [1.6.2](getting-started-with-database-administration.md), [1.6.2.4](getting-started-with-database-administration.md)
+	- connecting as [1.7.1](getting-started-with-database-administration.md)
+- SYSOPER account
+	- connecting as [1.7.1](getting-started-with-database-administration.md)
+- SYSOPER administrative privilege
+	- adding users to the password file [1.8.5](getting-started-with-database-administration.md)
+		- determining who has privileges [1.8.7](getting-started-with-database-administration.md)
+		- granting and revoking [1.8.6](getting-started-with-database-administration.md)
+- SYSRAC account [1.6.2.4](getting-started-with-database-administration.md)
+	- connecting as [1.7.1](getting-started-with-database-administration.md)
+- SYSTEM\_PLAN for Database Resource Manager [26.5.5](managing-resources-with-oracle-database-resource-manager.md)
+- SYSTEM account [1.6.2](getting-started-with-database-administration.md)
+	- objects owned [1.6.2.3](getting-started-with-database-administration.md)
+- system change numbers
+	- coordination in a distributed database system [33.3.3.2](distributed-transactions-concepts.md)
+		- in-doubt transactions [34.5.1.3](managing-distributed-transactions.md)
+		- using V$DATAFILE to view information about [12.10](managing-data-files-and-temp-files.md)
+		- when assigned [9.1.2](managing-the-redo-log.md)
+- system global area
+	- holds sequence number cache [23.2.4.2.1](managing-views-sequences-and-synonyms.md)
+- system monitor process (SMON) [3.6](managing-processes.md)
+- system privileges
+	- ADMINISTER\_RESOURCE\_MANAGER [26.1.4.1](managing-resources-with-oracle-database-resource-manager.md)
+		- for external tables [19.15.9](managing-tables.md)
+- SYSTEM tablespace
+	- cannot rename [11.9](managing-tablespaces.md)
+		- restrictions on taking offline [12.4.1](managing-data-files-and-temp-files.md)
+		- when created [11.2.1](managing-tablespaces.md)
+
+---
+
+## T
+
+- table compression [37.1.4](planning-for-read-only-materialized-views.md)
+- tables
+	- about [19.1](managing-tables.md)
+		- adding columns [19.7.6](managing-tables.md)
+		- allocating extents [19.7.4](managing-tables.md)
+		- altering [19.7.1](managing-tables.md)
+		- altering physical attributes [19.7.2](managing-tables.md)
+		- analyzing [17.4.1](managing-schema-objects.md)
+		- attribute-clustered [19.2.9](managing-tables.md)
+		- bulk updates [19.5](managing-tables.md)
+		- compressed [19.2.6.1](managing-tables.md)
+		- creating [19.3](managing-tables.md)
+		- data dictionary views reference [19.19](managing-tables.md)
+		- deferred segment creation [19.2.14](managing-tables.md)
+		- designing before creating [19.2.1](managing-tables.md)
+		- dropping [19.11](managing-tables.md)
+		- dropping columns [19.7.8](managing-tables.md)
+		- estimating size [19.2.16](managing-tables.md)
+		- estimating space use [18.7.1](managing-space-for-schema-objects.md)
+		- external [19.15](managing-tables.md)
+		- Flashback Drop [19.12](managing-tables.md)
+		- Flashback Table [19.10](managing-tables.md)
+		- global temporary [19.3.2.3](managing-tables.md)
+		- guidelines for managing [19.2](managing-tables.md)
+		- hash clustered
+		- See hash clusters [22.3.1](managing-hash-clusters.md)
+		- hybrid partitioned [19.16](managing-tables.md)
+		- increasing column length [19.7.5](managing-tables.md)
+		- index-organized [19.13](managing-tables.md)
+		- invisible columns [19.2.12.1](managing-tables.md)
+		- key-preserved [23.1.5.2](managing-views-sequences-and-synonyms.md)
+		- limiting indexes on [20.2.4](managing-indexes.md)
+		- managing [19](managing-tables.md)
+		- modifying column definition [19.7.5](managing-tables.md)
+		- moving [19.7.3.1](managing-tables.md)
+		- parallelizing creation [19.2.4](managing-tables.md), [19.3.3](managing-tables.md)
+		- partitioned [19.14](managing-tables.md)
+		- partitions
+		- moving online [19.7.3.3](managing-tables.md)
+		- private temporary [19.3.2.4](managing-tables.md)
+		- read-only [19.7.9](managing-tables.md)
+		- redefining online [19.8.1](managing-tables.md)
+		- replication [36.1.4.1](read-only-materialized-view-architecture.md)
+		- renaming columns [19.7.7](managing-tables.md)
+		- replicating [37.1](planning-for-read-only-materialized-views.md)
+		- researching and reversing erroneous changes to [19.9](managing-tables.md)
+		- restrictions when creating [19.2.17](managing-tables.md)
+		- setting storage parameters [19.2.16](managing-tables.md)
+		- shrinking [18.3.3](managing-space-for-schema-objects.md)
+		- specifying location [19.2.3](managing-tables.md)
+		- statistics collection, automatic [19.6](managing-tables.md)
+		- temporary [19.3.2.1](managing-tables.md)
+		- truncating [17.5](managing-schema-objects.md)
+		- types [19.2.2](managing-tables.md)
+		- unrecoverable (NOLOGGING) [19.2.5](managing-tables.md)
+		- validating structure [17.4.3](managing-schema-objects.md)
+		- zone maps [19.2.10](managing-tables.md)
+- table size
+	- estimating [18.7.1](managing-space-for-schema-objects.md)
+- tablespaces
+	- adding data files [12.2](managing-data-files-and-temp-files.md)
+		- assigning user quotas [11.1.2](managing-tablespaces.md)
+		- autoextending [11.8.1](managing-tablespaces.md)
+		- automatic segment space management [11.2.2.3](managing-tablespaces.md)
+		- bigfile [11.2.3.1](managing-tablespaces.md)
+		- checking default storage parameters [11.15.2](managing-tablespaces.md)
+		- compressed [11.2.4](managing-tablespaces.md)
+		- containing XMLTypes [13.1.4](transporting-data.md)
+		- data dictionary views reference [11.15.1](managing-tablespaces.md)
+		- DBMS\_SPACE\_ADMIN package [11.13.1](managing-tablespaces.md)
+		- detecting and repairing defects [11.13.1](managing-tablespaces.md)
+		- diagnosing and repairing problems in locally managed [11.13.1](managing-tablespaces.md)
+		- dictionary managed [11.2.3.3](managing-tablespaces.md)
+		- dropping [11.10](managing-tablespaces.md)
+		- encrypted [11.2.5.1](managing-tablespaces.md)
+		- creating [11.2.5.2](managing-tablespaces.md)
+		- guidelines for managing [11.1](managing-tablespaces.md)
+		- increasing size [11.8.1](managing-tablespaces.md)
+		- listing files of [11.15.3](managing-tablespaces.md)
+		- listing free space in [11.15.4](managing-tablespaces.md)
+		- locally managed [11.2.2.1](managing-tablespaces.md)
+		- locally managed temporary [11.2.6.2](managing-tablespaces.md)
+		- location [12.1.4](managing-data-files-and-temp-files.md)
+		- migrating SYSTEM to locally managed [11.14](managing-tablespaces.md)
+		- on a WORM device [11.7.4](managing-tablespaces.md)
+		- Oracle Managed Files, managing [15.5.1](using-oracle-managed-files.md), [15.5.2](using-oracle-managed-files.md)
+		- quotas, assigning [11.1.2](managing-tablespaces.md)
+		- read-only [11.7.1](managing-tablespaces.md)
+		- mounting [13.1.2.2.4](transporting-data.md)
+		- renaming [11.8](managing-tablespaces.md), [11.9](managing-tablespaces.md)
+		- single-file [11.2.3.1](managing-tablespaces.md), [11.8.3](managing-tablespaces.md)
+		- space usage alerts [18.1.2](managing-space-for-schema-objects.md)
+		- specifying nonstandard block sizes [11.4](managing-tablespaces.md)
+		- SYSAUX [11.2.1](managing-tablespaces.md), [11.9](managing-tablespaces.md)
+		- SYSAUX, managing [11.12](managing-tablespaces.md)
+		- SYSTEM [11.2.1](managing-tablespaces.md), [11.2.2.1](managing-tablespaces.md)
+		- taking offline normal [11.6.1](managing-tablespaces.md)
+		- taking offline temporarily [11.6.1](managing-tablespaces.md)
+		- temp files in locally managed [11.2.6.2](managing-tablespaces.md)
+		- temporary [11.2.6.1](managing-tablespaces.md), [11.2.7.4](managing-tablespaces.md)
+		- temporary bigfile [11.2.6.3](managing-tablespaces.md)
+		- temporary for creating large indexes [20.3.5](managing-indexes.md)
+		- undo [14.1](managing-undo.md)
+		- using multiple [11.1.1](managing-tablespaces.md)
+		- using Oracle Managed Files [15.3.4.1](using-oracle-managed-files.md)
+- tablespace set [13.3.3.1](transporting-data.md)
+- TEMP\_UNDO\_ENABLED parameter [14.7](managing-undo.md)
+- temp files [11.2.6.2](managing-tablespaces.md)
+	- creating as Oracle managed [15.3.5.1](using-oracle-managed-files.md)
+		- dropping [12.6](managing-data-files-and-temp-files.md)
+		- dropping Oracle managed [15.4.1](using-oracle-managed-files.md)
+- temporary segments
+	- index creation and [20.2.1](managing-indexes.md)
+- temporary tables [37.1.4](planning-for-read-only-materialized-views.md)
+	- global [19.3.2.1](managing-tables.md)
+		- private [19.3.2.1](managing-tables.md)
+- temporary tablespace, default
+	- specifying at database creation [15.3.3.5](using-oracle-managed-files.md)
+- temporary tablespaces
+	- altering [11.8.4](managing-tablespaces.md)
+		- bigfile [11.2.6.3](managing-tablespaces.md)
+		- creating [11.2.6.2](managing-tablespaces.md)
+		- groups [11.2.7.1](managing-tablespaces.md)
+		- renaming default [11.9](managing-tablespaces.md)
+		- shrinking, locally managed [11.8.5](managing-tablespaces.md)
+- temporary undo [14.7](managing-undo.md)
+- terminating user sessions
+	- active sessions [3.10.3](managing-processes.md)
+		- identifying sessions [3.10.2](managing-processes.md)
+		- inactive session, example [3.10.4](managing-processes.md)
+		- inactive sessions [3.10.4](managing-processes.md)
+- test case
+	- builder, SQL [7.1.1](diagnosing-and-resolving-problems.md)
+- threads
+	- online redo log [9.1.1](managing-the-redo-log.md)
+- threshold based alerts
+	- managing with Oracle Enterprise Manager Cloud Control [6.1.2.2](monitoring-the-database.md)
+- threshold-based alerts
+	- server-generated [6.1.2.1](monitoring-the-database.md)
+- thresholds
+	- setting alert [18.1.2](managing-space-for-schema-objects.md)
+- trace files [7.1.3.4](diagnosing-and-resolving-problems.md)
+	- location of [6.1.1.1](monitoring-the-database.md)
+		- log writer process and [9.2.1.1](managing-the-redo-log.md)
+		- materialized views [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+		- using [6.1.1.1](monitoring-the-database.md)
+		- when written [6.1.1.4](monitoring-the-database.md)
+- trace files, finding [7.3.3.2](diagnosing-and-resolving-problems.md)
+- traces [7.1.3.4](diagnosing-and-resolving-problems.md)
+- tracing
+	- archivelog process [10.7](managing-archived-redo-log-files.md)
+- transaction control statements
+	- distributed transactions and [33.1.2](distributed-transactions-concepts.md)
+- transaction failures
+	- simulating [34.9](managing-distributed-transactions.md)
+- transaction management
+	- overview [33.3.1](distributed-transactions-concepts.md)
+- transaction processing
+	- distributed systems [30.4](distributed-database-concepts.md)
+- transactions
+	- closing database links [32.2](developing-applications-for-a-distributed-database-system.md)
+		- distributed and two-phase commit [30.4.6](distributed-database-concepts.md)
+		- in-doubt [33.3.2.3](distributed-transactions-concepts.md), [33.4.1](distributed-transactions-concepts.md), [33.4.4](distributed-transactions-concepts.md), [34.4](managing-distributed-transactions.md)
+		- naming distributed [34.2](managing-distributed-transactions.md), [34.4.3.2](managing-distributed-transactions.md)
+		- remote [30.4.4](distributed-database-concepts.md)
+- transmitting archived redo log files [10.5](managing-archived-redo-log-files.md)
+- Transparent Data Encryption
+	- columns [19.2.13](managing-tables.md)
+		- keystore [11.2.5.1](managing-tablespaces.md), [19.2.13](managing-tables.md)
+		- tablespaces [11.2.5.1](managing-tablespaces.md)
+- transporting data
+	- across platforms [13.1.3](transporting-data.md)
+		- character sets [13.1.4](transporting-data.md)
+		- compatibility considerations [13.1.5](transporting-data.md)
+		- full transportable export/import [13.2](transporting-data.md)
+		- limitations [13.2.2](transporting-data.md)
+				- when to use [13.1.2](transporting-data.md)
+		- limitations [13.1.4](transporting-data.md)
+		- national character sets [13.1.4](transporting-data.md)
+		- PDBs [13.2.3](transporting-data.md), [13.2.4](transporting-data.md)
+		- transferring data files [13.6](transporting-data.md)
+		- transportable tables [13.4](transporting-data.md)
+		- limitations [13.4.2](transporting-data.md)
+		- transportable tablespaces [13.3](transporting-data.md)
+		- from backup [13.2.1](transporting-data.md), [13.3.1](transporting-data.md)
+				- limitations [13.3.2](transporting-data.md)
+				- tablespace set [13.3.3.1](transporting-data.md)
+				- transportable set [13.3.3](transporting-data.md)
+				- when to use [13.1.2](transporting-data.md)
+				- wizard in Oracle Enterprise Manager Cloud Control [13.3.1](transporting-data.md)
+		- XMLTypes in [13.1.4](transporting-data.md)
+- triggers
+	- disabling [17.6.3](managing-schema-objects.md)
+		- enabling [17.6.2](managing-schema-objects.md)
+		- for materialized view log [36.1.3](read-only-materialized-view-architecture.md)
+- TRUNCATE statement
+	- DROP ALL STORAGE [17.5.3](managing-schema-objects.md)
+		- DROP STORAGE [17.5.3](managing-schema-objects.md)
+		- DROP STORAGE clause [17.5.3](managing-schema-objects.md)
+		- REUSE STORAGE [17.5.3](managing-schema-objects.md)
+		- REUSE STORAGE clause [17.5.3](managing-schema-objects.md)
+- tuning
+	- analyzing tables [32.4.2.3.2](developing-applications-for-a-distributed-database-system.md)
+		- cost-based optimization [32.4.2.2](developing-applications-for-a-distributed-database-system.md)
+- two-phase commit
+	- case study [33.5.1](distributed-transactions-concepts.md)
+		- commit phase [33.3.3](distributed-transactions-concepts.md), [33.5.5](distributed-transactions-concepts.md)
+		- described [30.4.6](distributed-database-concepts.md)
+		- discovering problems with [34.4.1](managing-distributed-transactions.md)
+		- distributed transactions [33.3.1](distributed-transactions-concepts.md)
+		- example [33.5.1](distributed-transactions-concepts.md)
+		- forget phase [33.3.4](distributed-transactions-concepts.md)
+		- in-doubt transactions [33.4.1](distributed-transactions-concepts.md), [33.4.4](distributed-transactions-concepts.md)
+		- phases [33.3.1](distributed-transactions-concepts.md)
+		- prepare phase [33.3.2.1](distributed-transactions-concepts.md), [33.3.2.3](distributed-transactions-concepts.md)
+		- recognizing read-only nodes [33.3.2.2.2](distributed-transactions-concepts.md)
+		- specifying commit point strength [34.1](managing-distributed-transactions.md)
+		- steps in commit phase [33.3.3.1](distributed-transactions-concepts.md)
+		- tracing session tree in distributed transactions [34.3.2](managing-distributed-transactions.md)
+		- viewing database links [34.3.1](managing-distributed-transactions.md)
+
+---
+
+## U
+
+- Undo Advisor [14.4](managing-undo.md)
+- undo management
+	- automatic [14.2](managing-undo.md)
+		- described [14.1](managing-undo.md)
+		- initialization parameters for [14.2.1](managing-undo.md)
+		- temporary undo [14.7](managing-undo.md)
+- undo retention
+	- automatic tuning of [14.2.2.2](managing-undo.md)
+		- explained [14.2.2.1](managing-undo.md)
+		- guaranteeing [14.2.2.3](managing-undo.md)
+		- setting [14.3](managing-undo.md)
+- undo segments
+	- in-doubt distributed transactions [34.4.2](managing-distributed-transactions.md)
+- undo space
+	- data dictionary views reference [14.8](managing-undo.md)
+- undo space management
+	- automatic undo management mode [14.2](managing-undo.md)
+- Undo tablespace
+	- specifying at database creation [15.3.3.4](using-oracle-managed-files.md)
+- undo tablespaces
+	- altering [14.5.2](managing-undo.md)
+		- creating [14.5.1.1](managing-undo.md)
+		- data dictionary views reference [14.8](managing-undo.md)
+		- dropping [14.5.3](managing-undo.md)
+		- managing [14.5](managing-undo.md)
+		- managing space threshold alerts [14.5.6](managing-undo.md)
+		- monitoring [14.8](managing-undo.md)
+		- PENDING OFFLINE status [14.5.4](managing-undo.md)
+		- renaming [11.9](managing-tablespaces.md)
+		- sizing a fixed-size [14.4](managing-undo.md)
+		- switching [14.5.4](managing-undo.md)
+		- user quotas [14.5.5](managing-undo.md)
+- unions
+	- with subqueries
+		- materialized views [35.6.2.4](read-only-materialized-view-concepts.md)
+				- restrictions for materialized views [35.6.4](read-only-materialized-view-concepts.md)
+- UNIQUE key constraints
+	- associated indexes [20.3.4.2](managing-indexes.md)
+		- dropping associated indexes [20.6](managing-indexes.md)
+		- enabling on creation [20.3.4.1](managing-indexes.md)
+		- foreign key references when dropped [17.7.3.1](managing-schema-objects.md)
+		- indexes associated with [20.3.4.1](managing-indexes.md)
+- UNRECOVERABLE DATAFILE clause
+	- ALTER DATABASE statement [9.8](managing-the-redo-log.md)
+- UNREGISTER\_MVIEW procedure [35.11.3](read-only-materialized-view-concepts.md)
+- unusable indexes [20.2.11](managing-indexes.md)
+- updates
+	- bulk [19.5](managing-tables.md)
+		- location transparency and [30.5.1.2](distributed-database-concepts.md)
+- us [35.10.3](read-only-materialized-view-concepts.md)
+- USER\_DB\_LINKS view [31.5.1](managing-a-distributed-database.md)
+- USER\_DUMP\_DEST initialization parameter [7.1.3.1](diagnosing-and-resolving-problems.md)
+- USER\_REFRESH\_CHILDREN view [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+- USER\_REFRESH view [39.3.2](troubleshooting-problems-with-read-only-materialized-views.md)
+- user accounts
+	- predefined [5.5](managing-users-and-securing-the-database.md)
+- user-defined data types
+	- materialized views [35.10.1](read-only-materialized-view-concepts.md)
+		- collections [35.10.5](read-only-materialized-view-concepts.md)
+				- object tables [35.10.4.1](read-only-materialized-view-concepts.md)
+				- ON COMMIT REFRESH clause [35.10.1](read-only-materialized-view-concepts.md)
+				- REFs [35.10.6.1](read-only-materialized-view-concepts.md)
+				- type agreement [35.10.2](read-only-materialized-view-concepts.md)
+		- replication [35.10.1](read-only-materialized-view-concepts.md)
+		- collections [35.10.5](read-only-materialized-view-concepts.md)
+				- column objects [35.10.1](read-only-materialized-view-concepts.md)
+				- REFs [35.10.6.1](read-only-materialized-view-concepts.md)
+				- type agreement [35.10.2](read-only-materialized-view-concepts.md)
+- users
+	- assigning tablespace quotas [11.1.2](managing-tablespaces.md)
+		- session, terminating [3.10.4](managing-processes.md)
+		- SYS [1.6.2](getting-started-with-database-administration.md)
+		- SYSBACKUP [1.6.2](getting-started-with-database-administration.md)
+		- SYSDG [1.6.2](getting-started-with-database-administration.md)
+		- SYSKM [1.6.2](getting-started-with-database-administration.md)
+		- SYSTEM [1.6.2](getting-started-with-database-administration.md)
+- utilities
+	- for the database administrator [1.9](getting-started-with-database-administration.md)
+		- SQL\*Loader [1.9](getting-started-with-database-administration.md), [19.4.1](managing-tables.md)
+- utilization limits for PDBs [26.1.3.4.1.2](managing-resources-with-oracle-database-resource-manager.md)
+- UTLCHAIN.SQL script
+	- listing chained rows [17.4.5.1](managing-schema-objects.md)
+- UTLCHN1.SQL script
+	- listing chained rows [17.4.5.1](managing-schema-objects.md)
+- UTLLOCKT.SQL script [6.2.1](monitoring-the-database.md)
+
+---
+
+## V
+
+- V$ARCHIVE view [10.8](managing-archived-redo-log-files.md)
+- V$DATABASE view [10.8.1](managing-archived-redo-log-files.md)
+- V$DBLINK view [31.5.2](managing-a-distributed-database.md)
+- V$DIAG\_CRITICAL\_ERROR view [7.1.4](diagnosing-and-resolving-problems.md)
+- V$DIAG\_INFO view [7.1.4](diagnosing-and-resolving-problems.md)
+- V$DISPATCHER\_RATE view
+	- monitoring shared server dispatchers [3.4.4.4](managing-processes.md)
+- V$DISPATCHER view
+	- monitoring shared server dispatchers [3.4.4.4](managing-processes.md)
+- V$ENCRYPTED\_TABLESPACES view [11.2.5.3](managing-tablespaces.md), [11.15.1](managing-tablespaces.md)
+- V$LOG\_HISTORY view [9.10](managing-the-redo-log.md)
+- V$LOGFILE view [9.10](managing-the-redo-log.md)
+	- log file status [9.5.2](managing-the-redo-log.md)
+- V$LOG view [9.10](managing-the-redo-log.md), [10.8](managing-archived-redo-log-files.md)
+	- displaying archiving status [10.8](managing-archived-redo-log-files.md)
+- V$PWFILE\_USERS view [1.8.7](getting-started-with-database-administration.md)
+- V$QUARANTINE view [6.3.2](monitoring-the-database.md)
+- V$QUEUE view
+	- monitoring shared server dispatchers [3.4.4.4](managing-processes.md)
+- V$RSRCPDBMETRIC\_HISTORY view [26.8.6](managing-resources-with-oracle-database-resource-manager.md)
+- V$RSRCPDBMETRIC view [26.8.6](managing-resources-with-oracle-database-resource-manager.md)
+	- CPU usage [26.8.6.2](managing-resources-with-oracle-database-resource-manager.md)
+		- I/O generated [26.8.6.4](managing-resources-with-oracle-database-resource-manager.md)
+		- memory usage [26.8.6.5](managing-resources-with-oracle-database-resource-manager.md)
+		- parallel execution [26.8.6.3](managing-resources-with-oracle-database-resource-manager.md)
+- V$SESSION view [3.10.4](managing-processes.md)
+- V$THREAD view [9.10](managing-the-redo-log.md)
+- V$VERSION view [1.5.2](getting-started-with-database-administration.md)
+- VALIDATE STRUCTURE clause
+	- of ANALYZE statement [17.4.3](managing-schema-objects.md)
+- VALIDATE STRUCTURE ONLINE clause
+	- of ANALYZE statement [17.4.3](managing-schema-objects.md)
+- varrays
+	- materialized [35.10.5](read-only-materialized-view-concepts.md)
+		- materialized views
+		- restrictions [35.10.5.1](read-only-materialized-view-concepts.md)
+		- replication [35.10.5](read-only-materialized-view-concepts.md)
+- verifying blocks
+	- redo log files [9.7](managing-the-redo-log.md)
+- viewing
+	- alerts [18.1.3](managing-space-for-schema-objects.md)
+		- incident package details [7.4.3.1](diagnosing-and-resolving-problems.md)
+- views
+	- creating [23.1.2.1](managing-views-sequences-and-synonyms.md)
+		- creating with errors [23.1.2.4](managing-views-sequences-and-synonyms.md)
+		- data dictionary
+		- for archived redo log files [10.8.1](managing-archived-redo-log-files.md)
+				- for clusters [21.6](managing-clusters.md)
+				- for control files [8.8](managing-control-files.md)
+				- for database resident connection pooling [3.5.4](managing-processes.md)
+				- for Database Resource Manager [26.10.3](managing-resources-with-oracle-database-resource-manager.md)
+				- for data files [12.10](managing-data-files-and-temp-files.md)
+				- for hash clusters [22.6](managing-hash-clusters.md)
+				- for indexes [20.8](managing-indexes.md)
+				- for Oracle Scheduler [29.6.2](administering-oracle-scheduler.md)
+				- for redo log [9.10](managing-the-redo-log.md)
+				- for schema objects [17.13.2](managing-schema-objects.md)
+				- for sequences [23.4](managing-views-sequences-and-synonyms.md)
+				- for shared server [3.4.6](managing-processes.md)
+				- for space usage in schema objects [18.6.2](managing-space-for-schema-objects.md)
+				- for synonyms [23.4](managing-views-sequences-and-synonyms.md)
+				- for tables [19.19](managing-tables.md)
+				- for tablespaces [11.15.1](managing-tablespaces.md)
+				- for undo space [14.8](managing-undo.md)
+				- for views [23.4](managing-views-sequences-and-synonyms.md)
+		- data dictionary views for [23.4](managing-views-sequences-and-synonyms.md)
+		- DBA\_2PC\_NEIGHBORS [34.3.2](managing-distributed-transactions.md)
+		- DBA\_2PC\_PENDING [34.3.1](managing-distributed-transactions.md)
+		- DBA\_DB\_LINKS [31.5.1](managing-a-distributed-database.md)
+		- displaying dependencies of [17.13.2.2](managing-schema-objects.md)
+		- dropping [23.1.7](managing-views-sequences-and-synonyms.md)
+		- file mapping views [12.9.3.3](managing-data-files-and-temp-files.md)
+		- FOR UPDATE clause and [23.1.2.1](managing-views-sequences-and-synonyms.md)
+		- invalid [23.1.4](managing-views-sequences-and-synonyms.md)
+		- join
+		- See join views [23.1.2.2](managing-views-sequences-and-synonyms.md)
+		- location transparency in distributed databases [31.6.1](managing-a-distributed-database.md)
+		- managing [23.1](managing-views-sequences-and-synonyms.md), [23.1.3](managing-views-sequences-and-synonyms.md)
+		- managing privileges with [31.6.1](managing-a-distributed-database.md)
+		- name resolution in distributed databases [30.4.9.1](distributed-database-concepts.md)
+		- ORDER BY clause and [23.1.2.1](managing-views-sequences-and-synonyms.md)
+		- remote object security [31.6.1](managing-a-distributed-database.md)
+		- restrictions [23.1.4](managing-views-sequences-and-synonyms.md)
+		- using [23.1.4](managing-views-sequences-and-synonyms.md)
+		- V$ARCHIVE [10.8](managing-archived-redo-log-files.md)
+		- V$DATABASE [10.8.1](managing-archived-redo-log-files.md)
+		- V$LOG [10.8](managing-archived-redo-log-files.md)
+		- V$LOGFILE [9.5.2](managing-the-redo-log.md)
+		- wildcards in [23.1.2.3](managing-views-sequences-and-synonyms.md)
+		- WITH CHECK OPTION [23.1.2.1](managing-views-sequences-and-synonyms.md)
+- virtual columns [19.1](managing-tables.md), [37.1.4](planning-for-read-only-materialized-views.md)
+	- indexing [20.2.2](managing-indexes.md)
+- Virtual Private Database
+	- redefining tables online [19.8.6.3](managing-tables.md)
+- virtual private database (VPD) [37.2.4.2](planning-for-read-only-materialized-views.md)
+
+---
+
+## W
+
+- wildcards
+	- in views [23.1.2.3](managing-views-sequences-and-synonyms.md)
+- window groups
+	- creating [28.9.4.2](scheduling-jobs-with-oracle-scheduler.md)
+		- disabling [28.9.4.7](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping [28.9.4.3](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping a member from [28.9.4.5](scheduling-jobs-with-oracle-scheduler.md)
+		- enabling [28.9.4.6](scheduling-jobs-with-oracle-scheduler.md)
+		- managing job scheduling and job priorities with [28.9.4](scheduling-jobs-with-oracle-scheduler.md)
+		- overview [27.2.11.3](oracle-scheduler-concepts.md)
+- window logs [28.9.3.1](scheduling-jobs-with-oracle-scheduler.md)
+- windows, managing job scheduling and resource allocation with [28.9.3.1](scheduling-jobs-with-oracle-scheduler.md)
+- windows (Scheduler)
+	- altering [28.9.3.4](scheduling-jobs-with-oracle-scheduler.md)
+		- closing [28.9.3.6](scheduling-jobs-with-oracle-scheduler.md)
+		- creating [28.9.3.3](scheduling-jobs-with-oracle-scheduler.md)
+		- disabling [28.9.3.8](scheduling-jobs-with-oracle-scheduler.md)
+		- dropping [28.9.3.7](scheduling-jobs-with-oracle-scheduler.md)
+		- enabling [28.9.3.9](scheduling-jobs-with-oracle-scheduler.md)
+		- opening [28.9.3.5](scheduling-jobs-with-oracle-scheduler.md)
+		- overlapping [27.2.10.2](oracle-scheduler-concepts.md)
+		- overview [27.2.10.1](oracle-scheduler-concepts.md)
+- WITH ROWID clause
+	- REFs [35.10.6.5](read-only-materialized-view-concepts.md)
+- WORM devices
+	- and read-only tablespaces [11.7.4](managing-tablespaces.md)
+- WRH$\_UNDOSTAT view [14.8](managing-undo.md)
+
+---
+
+## X
+
+- XMLTypes
+	- transporting data [13.1.4](transporting-data.md)
+
+---
+
+## Z
+
+- zone maps [19.2.10](managing-tables.md)

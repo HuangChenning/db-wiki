@@ -1,0 +1,978 @@
+---
+title: "Administrator’s Guide"
+book: "Multitenant Administrator's Guide"
+doc_id: E96136-19
+version: "19c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/19/multi/book-index.html
+tags:
+  - oracle
+  - 19c
+  - multitenant-administrators-guide
+---
+
+## Index
+
+A B C D E F H I L M N O P R S T U V X
+
+---
+
+## A
+
+- ADD\_OUTBOUND procedure [25.4.2](using-xstream-with-a-cdb.md)
+- administrative users
+	- password files, multitenant environment [13.2.1.4](administering-a-cdb-with-sql-plus.md)
+- ALTER DATABASE statement [13.1.4](administering-a-cdb-with-sql-plus.md)
+- ALTER PLUGGABLE DATABASE statement [13.4.1](administering-a-cdb-with-sql-plus.md), [15.4.2](administering-pdbs-with-sql-plus.md), [17.2](administering-application-containers-with-sql-plus.md)
+	- DROP SNAPSHOT clause [16.5](administering-pdb-snapshots.md)
+		- MATERIALIZE clause [7.7.3](cloning-a-pdb.md)
+		- SET MAX\_PDB\_SNAPSHOTS clause [16.1.2.2](administering-pdb-snapshots.md), [16.2](administering-pdb-snapshots.md)
+		- SNAPSHOT clause [16.3](administering-pdb-snapshots.md), [16.4](administering-pdb-snapshots.md)
+		- SNAPSHOT COPY clause [7.7.3](cloning-a-pdb.md)
+		- UNPLUG INTO clause [11.1](removing-a-pdb.md), [12.1.2](creating-removing-application-containers-seeds-with-sql-plus.md), [12.2.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+- ALTER SESSION statement
+	- SET CONTAINER clause [13.2.2.2](administering-a-cdb-with-sql-plus.md)
+- ALTER SYSTEM statement
+	- CDBs [13.3.2](administering-a-cdb-with-sql-plus.md)
+		- CONTAINER clause [13.3.2](administering-a-cdb-with-sql-plus.md)
+		- PDBs [15.3](administering-pdbs-with-sql-plus.md)
+- application common objects [2.2.5](overview-of-the-multitenant-architecture.md), [2.3.2](overview-of-the-multitenant-architecture.md), [17.4](administering-application-containers-with-sql-plus.md), [17.4.1](administering-application-containers-with-sql-plus.md)
+	- CONTAINERS clause [17.5.1](administering-application-containers-with-sql-plus.md)
+		- creation [2.3.2.1](overview-of-the-multitenant-architecture.md), [17.4.1.1](administering-application-containers-with-sql-plus.md), [17.4.3](administering-application-containers-with-sql-plus.md)
+		- data-linked [2.1.2.5](overview-of-the-multitenant-architecture.md), [2.3.2.3](overview-of-the-multitenant-architecture.md)
+		- DDL statements [17.4.5](administering-application-containers-with-sql-plus.md)
+		- DML statements [17.4.4](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- extended data-linked objects [2.3.2.4](overview-of-the-multitenant-architecture.md)
+		- metadata-linked common objects [2.3.2.2](overview-of-the-multitenant-architecture.md)
+		- metadata links [2.3.2.2.1](overview-of-the-multitenant-architecture.md)
+		- naming rules [2.2.1.2](overview-of-the-multitenant-architecture.md)
+		- restrictions [17.4.2](administering-application-containers-with-sql-plus.md)
+- application containers
+	- about [2.3.1](overview-of-the-multitenant-architecture.md)
+		- administering [17](administering-application-containers-with-sql-plus.md), [17.1](administering-application-containers-with-sql-plus.md)
+		- application common objects [2.2.1.2](overview-of-the-multitenant-architecture.md), [2.2.5](overview-of-the-multitenant-architecture.md), [2.3.2](overview-of-the-multitenant-architecture.md), [2.3.2.1](overview-of-the-multitenant-architecture.md), [17.4](administering-application-containers-with-sql-plus.md), [17.4.3](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- application contexts [18.5.2](managing-security-for-a-multitenant-environment.md)
+		- application PDBs [2.3.1.3](overview-of-the-multitenant-architecture.md)
+		- application roots [2.3.1.2](overview-of-the-multitenant-architecture.md), [17.3.5.2](administering-application-containers-with-sql-plus.md)
+		- applications [2.3.3.2](overview-of-the-multitenant-architecture.md), [2.3.3.3](overview-of-the-multitenant-architecture.md)
+		- applications created implicitly [2.3.5](overview-of-the-multitenant-architecture.md)
+		- application seeds [2.3.1.4](overview-of-the-multitenant-architecture.md)
+		- creating [12.2.1](creating-removing-application-containers-seeds-with-sql-plus.md), [12.2.1.3](creating-removing-application-containers-seeds-with-sql-plus.md)
+				- preparing for [12.2.1.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+		- application synchronization [2.3.6](overview-of-the-multitenant-architecture.md)
+		- application versions [2.3.3.3.2](overview-of-the-multitenant-architecture.md)
+		- bulk inserts [17.3.9](administering-application-containers-with-sql-plus.md)
+		- compatibility version [17.3.8](administering-application-containers-with-sql-plus.md)
+		- container maps [2.3.7](overview-of-the-multitenant-architecture.md), [17.6.1](administering-application-containers-with-sql-plus.md)
+		- creating [17.6.2](administering-application-containers-with-sql-plus.md)
+		- creating [12.1.1](creating-removing-application-containers-seeds-with-sql-plus.md), [12.1.1.3](creating-removing-application-containers-seeds-with-sql-plus.md)
+		- DML statements [17.5](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- dropping [12.1.3](creating-removing-application-containers-seeds-with-sql-plus.md)
+		- how an application upgrade works [2.3.3.3.1](overview-of-the-multitenant-architecture.md)
+		- installing applications [2.3.3](overview-of-the-multitenant-architecture.md), [2.3.3.1](overview-of-the-multitenant-architecture.md), [2.3.3.2](overview-of-the-multitenant-architecture.md), [17.3.2.1](administering-application-containers-with-sql-plus.md)
+		- managing applications [17.3.1](administering-application-containers-with-sql-plus.md)
+		- migrating an application [2.3.4](overview-of-the-multitenant-architecture.md)
+		- migrating applications into [17.3.5](administering-application-containers-with-sql-plus.md)
+		- naming rules [2.1.2.4](overview-of-the-multitenant-architecture.md)
+		- patching applications [2.3.3.4](overview-of-the-multitenant-architecture.md), [17.3.4.1](administering-application-containers-with-sql-plus.md), [17.3.4.2](administering-application-containers-with-sql-plus.md)
+		- preparing for [12.1.1.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+		- purpose [2.3.1.1](overview-of-the-multitenant-architecture.md), [2.3.1.1.1](overview-of-the-multitenant-architecture.md), [2.3.1.1.2](overview-of-the-multitenant-architecture.md), [2.3.1.1.3](overview-of-the-multitenant-architecture.md)
+		- SQL\*Loader [17.3.9](administering-application-containers-with-sql-plus.md)
+		- synchronizing applications [17.3.6](administering-application-containers-with-sql-plus.md)
+		- synchronizing with proxy PDBs [17.3.7](administering-application-containers-with-sql-plus.md)
+		- Transport Layer Security [18.7](managing-security-for-a-multitenant-environment.md)
+		- uninstalling applications [17.3.10.1](administering-application-containers-with-sql-plus.md), [17.3.10.2](administering-application-containers-with-sql-plus.md)
+		- unplugging [12.1.2](creating-removing-application-containers-seeds-with-sql-plus.md), [12.1.2.1](creating-removing-application-containers-seeds-with-sql-plus.md)
+		- upgrading applications [2.3.3](overview-of-the-multitenant-architecture.md), [2.3.3.3](overview-of-the-multitenant-architecture.md), [17.3.3.1](administering-application-containers-with-sql-plus.md)
+		- viewing extended data-linked objects [19.11.8](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- viewing information about [19.11.1](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- viewing patches [19.11.4](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md), [19.11.5](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- viewing shared objects [19.11.7](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- viewing SQL statements [19.11.3](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- viewing status [19.11.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- viewing synchronization errors [19.11.6](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- views [19.11](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- Virtual Private Database policies [18.6.2](managing-security-for-a-multitenant-environment.md)
+- application contexts
+	- about [18.5.1](managing-security-for-a-multitenant-environment.md)
+		- application containers [18.5.2](managing-security-for-a-multitenant-environment.md)
+		- CDBs [18.5](managing-security-for-a-multitenant-environment.md)
+- application PDBs [2.3.1.3](overview-of-the-multitenant-architecture.md)
+	- application synchronization [2.3.6](overview-of-the-multitenant-architecture.md)
+		- cloning [7.1.1](cloning-a-pdb.md)
+		- creating [12.3](creating-removing-application-containers-seeds-with-sql-plus.md), [17.3.5.3](administering-application-containers-with-sql-plus.md)
+		- naming rules [2.1.2.4](overview-of-the-multitenant-architecture.md)
+		- synchronization [2.3.7](overview-of-the-multitenant-architecture.md)
+- application roots [2.3.1.2](overview-of-the-multitenant-architecture.md)
+	- ALTER DATABASE statement [17.2](administering-application-containers-with-sql-plus.md)
+		- ALTER PLUGGABLE DATABASE statement [17.2](administering-application-containers-with-sql-plus.md)
+		- application PDBs
+		- modifying [17.2](administering-application-containers-with-sql-plus.md)
+		- creating [17.3.5.2](administering-application-containers-with-sql-plus.md)
+		- modifying [17.2](administering-application-containers-with-sql-plus.md)
+- applications
+	- in a CDB
+		- metadata-linked common objects [2.3.2.2](overview-of-the-multitenant-architecture.md)
+		- in application containers [2.3.3](overview-of-the-multitenant-architecture.md), [2.3.3.2](overview-of-the-multitenant-architecture.md), [2.3.3.3](overview-of-the-multitenant-architecture.md), [2.3.3.3.1](overview-of-the-multitenant-architecture.md)
+		- at different versions [2.3.3.3.2](overview-of-the-multitenant-architecture.md)
+				- created implicitly [2.3.5](overview-of-the-multitenant-architecture.md)
+				- migrating an application [2.3.4](overview-of-the-multitenant-architecture.md)
+				- patching [2.3.3.4](overview-of-the-multitenant-architecture.md), [17.3.4.2](administering-application-containers-with-sql-plus.md)
+				- synchronization [2.3.6](overview-of-the-multitenant-architecture.md)
+		- uninstalling [17.3.10.2](administering-application-containers-with-sql-plus.md)
+- application seeds [1.3.2.1.1](introduction-to-the-multitenant-architecture.md), [2.1.2.1](overview-of-the-multitenant-architecture.md), [2.3.1.4](overview-of-the-multitenant-architecture.md)
+	- creating [12.2.1](creating-removing-application-containers-seeds-with-sql-plus.md), [12.2.1.3](creating-removing-application-containers-seeds-with-sql-plus.md)
+		- dropping [12.2.3](creating-removing-application-containers-seeds-with-sql-plus.md)
+		- preparing for [12.2.1.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+		- unplugging [12.2.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+- auditing
+	- audit configurations [2.2.6](overview-of-the-multitenant-architecture.md)
+		- audit policies [2.2.6](overview-of-the-multitenant-architecture.md)
+		- CDBs [18.9](managing-security-for-a-multitenant-environment.md), [18.9.1](managing-security-for-a-multitenant-environment.md)
+		- common objects [2.2.6](overview-of-the-multitenant-architecture.md)
+		- traditional [18.9.3.2](managing-security-for-a-multitenant-environment.md)
+- authentication
+	- operating system authentication [18.4.1](managing-security-for-a-multitenant-environment.md)
+		- operating system user in PDBs [18.4.1](managing-security-for-a-multitenant-environment.md)
+		- PDBs [18.4.1](managing-security-for-a-multitenant-environment.md)
+- AVAILABILITY MAX clause [8.3.2.2](relocating-a-pdb.md)
+- AVAILABILITY NORMAL clause [8.3.2.1](relocating-a-pdb.md)
+
+---
+
+## B
+
+- backup and recovery
+	- CDBs and PDBs [2.6.1](overview-of-the-multitenant-architecture.md), [20](backing-up-and-recovering-cdbs-and-pdbs.md)
+- break-glass protocol [24.9.1](using-oracle-database-vault-with-a-cdb.md)
+
+---
+
+## C
+
+- catcon.pl [13.5.3](administering-a-cdb-with-sql-plus.md)
+- CDB\_PDB\_HISTORY view [19.10](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- CDB\_PDBS view [19.4](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- CDB resource plans [22.2.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+	- PDB performance profiles [22.2.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md), [22.2.7.3](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- CDBs [3.1](overview-of-managing-a-multitenant-environment.md), [IV](managing-a-multitenant-environment.md), [13.1.8](administering-a-cdb-with-sql-plus.md), [15.6](administering-pdbs-with-sql-plus.md)
+	- about [1.1](introduction-to-the-multitenant-architecture.md)
+		- administering [13](administering-a-cdb-with-sql-plus.md)
+		- ALTER DATABASE statement [13.4.1](administering-a-cdb-with-sql-plus.md)
+		- ALTER PLUGGABLE DATABASE statement [13.4.1](administering-a-cdb-with-sql-plus.md)
+		- ALTER SYSTEM statement [13.3.2](administering-a-cdb-with-sql-plus.md)
+		- application common objects [2.2.1.2](overview-of-the-multitenant-architecture.md), [2.3.2](overview-of-the-multitenant-architecture.md), [2.3.2.1](overview-of-the-multitenant-architecture.md), [17.4](administering-application-containers-with-sql-plus.md), [17.4.1.1](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- querying [19.7.3](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- application containers [2.3.1](overview-of-the-multitenant-architecture.md), [2.3.1.1](overview-of-the-multitenant-architecture.md), [2.3.1.1.1](overview-of-the-multitenant-architecture.md), [2.3.1.1.2](overview-of-the-multitenant-architecture.md), [2.3.1.1.3](overview-of-the-multitenant-architecture.md)
+		- application common objects [2.1.2.5](overview-of-the-multitenant-architecture.md), [17.4.1.1](administering-application-containers-with-sql-plus.md)
+				- application upgrades [2.3.3.3.1](overview-of-the-multitenant-architecture.md)
+				- bulk inserts [17.3.9](administering-application-containers-with-sql-plus.md)
+				- compatibility version [17.3.8](administering-application-containers-with-sql-plus.md)
+				- creating [12.1.1](creating-removing-application-containers-seeds-with-sql-plus.md), [12.1.1.3](creating-removing-application-containers-seeds-with-sql-plus.md)
+				- DML statements [17.5](administering-application-containers-with-sql-plus.md)
+				- dropping [12.1.3](creating-removing-application-containers-seeds-with-sql-plus.md)
+				- installing applications [2.3.3.1](overview-of-the-multitenant-architecture.md), [2.3.3.2](overview-of-the-multitenant-architecture.md), [17.3.2.1](administering-application-containers-with-sql-plus.md)
+				- migrating applications into [17.3.5](administering-application-containers-with-sql-plus.md)
+				- patching applications [17.3.4.1](administering-application-containers-with-sql-plus.md)
+				- preparing for [12.1.1.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+				- synchronizing applications [17.3.6](administering-application-containers-with-sql-plus.md)
+				- uninstalling applications [17.3.10.1](administering-application-containers-with-sql-plus.md), [17.3.10.2](administering-application-containers-with-sql-plus.md)
+				- unplugging [12.1.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+				- upgrading applications [2.3.3.3](overview-of-the-multitenant-architecture.md), [17.3.3.1](administering-application-containers-with-sql-plus.md)
+		- application contexts [18.5](managing-security-for-a-multitenant-environment.md)
+		- application PDBs [2.3.1.3](overview-of-the-multitenant-architecture.md)
+		- cloning [7.1.1](cloning-a-pdb.md)
+				- creating [12.3](creating-removing-application-containers-seeds-with-sql-plus.md), [17.3.5.3](administering-application-containers-with-sql-plus.md)
+		- application seeds [2.3.1.4](overview-of-the-multitenant-architecture.md)
+		- creating [12.2.1](creating-removing-application-containers-seeds-with-sql-plus.md)
+				- dropping [12.2.3](creating-removing-application-containers-seeds-with-sql-plus.md)
+				- preparing for [12.2.1.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+				- unplugging [12.2.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+		- auditing [18.9](managing-security-for-a-multitenant-environment.md)
+		- how affects [18.9.1](managing-security-for-a-multitenant-environment.md)
+				- traditional [18.9.3.2](managing-security-for-a-multitenant-environment.md)
+		- backup and recovery [2.6.1](overview-of-the-multitenant-architecture.md), [20](backing-up-and-recovering-cdbs-and-pdbs.md)
+		- CDB fleets [14](configuring-cdb-fleet.md), [14.2](configuring-cdb-fleet.md)
+		- CDB member [14.4](configuring-cdb-fleet.md)
+				- lead CDB [14.1](configuring-cdb-fleet.md), [14.3](configuring-cdb-fleet.md)
+		- CDB resource plans
+		- viewing information about [22.2.9](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- character sets [2.1.1](overview-of-the-multitenant-architecture.md)
+		- common objects [2.1.2.5](overview-of-the-multitenant-architecture.md), [2.2.5](overview-of-the-multitenant-architecture.md)
+		- common privilege grants [2.2.4.3](overview-of-the-multitenant-architecture.md), [2.2.4.5](overview-of-the-multitenant-architecture.md), [18.1.2](managing-security-for-a-multitenant-environment.md)
+		- common roles [2.2.3](overview-of-the-multitenant-architecture.md), [2.2.3.1](overview-of-the-multitenant-architecture.md)
+		- common users [2.2](overview-of-the-multitenant-architecture.md), [2.2.2](overview-of-the-multitenant-architecture.md), [2.2.2.1](overview-of-the-multitenant-architecture.md), [2.2.4.3](overview-of-the-multitenant-architecture.md), [2.2.4.5](overview-of-the-multitenant-architecture.md)
+		- definition [3.1.1](overview-of-managing-a-multitenant-environment.md)
+				- naming rules [2.2.1.2](overview-of-the-multitenant-architecture.md)
+		- compatibility violations [15.4.5.1](administering-pdbs-with-sql-plus.md)
+		- connecting to [13.2.1](administering-a-cdb-with-sql-plus.md)
+		- ALTER SESSION statement [13.2.2.2](administering-a-cdb-with-sql-plus.md)
+				- CONNECT command [13.2.2.1](administering-a-cdb-with-sql-plus.md)
+		- container data objects [2.1.3.3](overview-of-the-multitenant-architecture.md), [19.1.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- querying [19.6](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- container maps [2.3.7](overview-of-the-multitenant-architecture.md), [17.6](administering-application-containers-with-sql-plus.md)
+		- containers [1.1.1](introduction-to-the-multitenant-architecture.md), [13.5.1.1](administering-a-cdb-with-sql-plus.md), [19.3](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- CONTAINERS clause [19.7.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- creating [4](creating-and-configuring-a-cdb.md), [4.3.1](creating-and-configuring-a-cdb.md)
+		- creation [1.3.1](introduction-to-the-multitenant-architecture.md)
+		- cross-container operations [2.1.5](overview-of-the-multitenant-architecture.md)
+		- current container [2.1.4](overview-of-the-multitenant-architecture.md), [13.1.1](administering-a-cdb-with-sql-plus.md), [19.8](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- Database Resource Manager [22](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- Database Vault operations control [24.9.1](using-oracle-database-vault-with-a-cdb.md)
+		- data definition language (DDL) [13.5.2](administering-a-cdb-with-sql-plus.md)
+		- data dictionary [2.1.3](overview-of-the-multitenant-architecture.md)
+		- data links [2.1.3.2](overview-of-the-multitenant-architecture.md)
+		- Data Redaction masking policies [18.8](managing-security-for-a-multitenant-environment.md)
+		- DBMS\_SQL package [13.5.4](administering-a-cdb-with-sql-plus.md)
+		- DML statements [13.5.1](administering-a-cdb-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- EM Express [4.4](creating-and-configuring-a-cdb.md)
+		- ENABLE PLUGGABLE DATABASE clause [4.3.2.1](creating-and-configuring-a-cdb.md)
+		- executing PL/SQL code [13.5.4](administering-a-cdb-with-sql-plus.md)
+		- files [2.5](overview-of-the-multitenant-architecture.md)
+		- flashback [20.5](backing-up-and-recovering-cdbs-and-pdbs.md)
+		- flashback of PDBs [2.6.2](overview-of-the-multitenant-architecture.md)
+		- functionality in Oracle Database Vault [24.2](using-oracle-database-vault-with-a-cdb.md)
+		- granting common roles and privileges [2.2.4.3.1](overview-of-the-multitenant-architecture.md)
+		- granting privileges and roles [2.2.4.2.1](overview-of-the-multitenant-architecture.md), [18.1.5](managing-security-for-a-multitenant-environment.md)
+		- initialization parameters [19.9](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- local privilege grants [18.1.2](managing-security-for-a-multitenant-environment.md)
+		- local roles [2.2.3](overview-of-the-multitenant-architecture.md), [2.2.3.2](overview-of-the-multitenant-architecture.md), [2.2.4.2](overview-of-the-multitenant-architecture.md)
+		- local users [2.2.2](overview-of-the-multitenant-architecture.md), [2.2.2.2](overview-of-the-multitenant-architecture.md)
+		- definition [3.1.1](overview-of-managing-a-multitenant-environment.md)
+		- metadata links [2.1.3.2](overview-of-the-multitenant-architecture.md)
+		- modifying [13.3.2](administering-a-cdb-with-sql-plus.md), [13.4.1](administering-a-cdb-with-sql-plus.md), [13.4.2](administering-a-cdb-with-sql-plus.md)
+		- monitoring [19](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- object privileges [18.1.4](managing-security-for-a-multitenant-environment.md)
+		- Oracle Database Vault [13.1.2](administering-a-cdb-with-sql-plus.md), [24](using-oracle-database-vault-with-a-cdb.md)
+		- Oracle Data Pump [1.3.2.2.2](introduction-to-the-multitenant-architecture.md)
+		- Oracle Managed Files [4.3.2.2.2](creating-and-configuring-a-cdb.md)
+		- PDB\_FILE\_NAME\_CONVERT initialization parameter [4.3.2.2.3](creating-and-configuring-a-cdb.md)
+		- PDB lockdown profiles [2.2.7](overview-of-the-multitenant-architecture.md), [13.1.7.1](administering-a-cdb-with-sql-plus.md), [18.3.1](managing-security-for-a-multitenant-environment.md)
+		- PDBs
+		- modifying [13.4.1](administering-a-cdb-with-sql-plus.md)
+				- refreshing [15.4.4.1](administering-pdbs-with-sql-plus.md)
+		- PDB snapshots [16](administering-pdb-snapshots.md)
+		- configuring automatic creation [16.3](administering-pdb-snapshots.md)
+				- creating manually [7.6.1](cloning-a-pdb.md), [16.4](administering-pdb-snapshots.md)
+				- dropping [16.5](administering-pdb-snapshots.md)
+				- setting maximum number [16.1.2.2](administering-pdb-snapshots.md), [16.2](administering-pdb-snapshots.md)
+		- planning creation [4.2](creating-and-configuring-a-cdb.md)
+		- plugging in PDBs
+		- methods for [5.1](overview-of-pdb-creation.md)
+				- preparing for [5.5](overview-of-pdb-creation.md)
+		- point-in-time recovery [20.4](backing-up-and-recovering-cdbs-and-pdbs.md)
+		- prerequisites for [3.2](overview-of-managing-a-multitenant-environment.md)
+		- principles of grants [2.2.4.1](overview-of-the-multitenant-architecture.md)
+		- privilege management [18.1](managing-security-for-a-multitenant-environment.md)
+		- realms [24.5.1.2](using-oracle-database-vault-with-a-cdb.md)
+		- recovering [20](backing-up-and-recovering-cdbs-and-pdbs.md)
+		- resource management [2.7](overview-of-the-multitenant-architecture.md)
+		- revoking privileges [18.1.5](managing-security-for-a-multitenant-environment.md)
+		- roles
+		- creating common [18.2.6](managing-security-for-a-multitenant-environment.md)
+				- creating local [18.2.8](managing-security-for-a-multitenant-environment.md)
+				- granting common [2.2.4.3](overview-of-the-multitenant-architecture.md), [2.2.4.5](overview-of-the-multitenant-architecture.md), [18.2.9](managing-security-for-a-multitenant-environment.md)
+				- how common roles work [18.2.2](managing-security-for-a-multitenant-environment.md)
+				- managing [18.2](managing-security-for-a-multitenant-environment.md)
+				- privileges required to manage [18.2.4](managing-security-for-a-multitenant-environment.md)
+				- rules for creating common [18.2.5](managing-security-for-a-multitenant-environment.md)
+		- root container [2.1.1](overview-of-the-multitenant-architecture.md)
+		- modifying [13.4.4](administering-a-cdb-with-sql-plus.md)
+		- rule sets [24.6](using-oracle-database-vault-with-a-cdb.md)
+		- security [18](managing-security-for-a-multitenant-environment.md)
+		- SEED FILE\_NAME\_CONVERT clause [4.3.2.2.1](creating-and-configuring-a-cdb.md)
+		- seed PDBs [1.3.2.1.1](introduction-to-the-multitenant-architecture.md), [2.1.2.1](overview-of-the-multitenant-architecture.md)
+		- services [2.4](overview-of-the-multitenant-architecture.md)
+		- shutting down [13.6](administering-a-cdb-with-sql-plus.md)
+		- snapshot copy PDBs [7.7.1.1](cloning-a-pdb.md)
+		- materializing [7.7.3](cloning-a-pdb.md)
+		- SQL scripts [13.5.3](administering-a-cdb-with-sql-plus.md)
+		- standby database [13.1.2](administering-a-cdb-with-sql-plus.md)
+		- system container [2.1.1](overview-of-the-multitenant-architecture.md)
+		- system privileges [18.1.3](managing-security-for-a-multitenant-environment.md)
+		- tasks for [3.3.1](overview-of-managing-a-multitenant-environment.md)
+		- temp files [2.5](overview-of-the-multitenant-architecture.md)
+		- tools for [3.3.2](overview-of-managing-a-multitenant-environment.md)
+		- Transparent Data Encryption [13.1.2](administering-a-cdb-with-sql-plus.md)
+		- undo mode [2.5](overview-of-the-multitenant-architecture.md), [4.3.2.4](creating-and-configuring-a-cdb.md), [13.4.3](administering-a-cdb-with-sql-plus.md)
+		- unplugging PDBs [11.1](removing-a-pdb.md)
+		- user privileges, how affects [18.1.1](managing-security-for-a-multitenant-environment.md)
+		- using Data Pump to move data into [21.1.2](using-database-utilities-in-a-cdb.md)
+		- viewing information about [18.1.7.1](managing-security-for-a-multitenant-environment.md), [19](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- views [19.1.3](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- Virtual Private Database [18.6](managing-security-for-a-multitenant-environment.md)
+		- policies [18.6.2](managing-security-for-a-multitenant-environment.md)
+		- XStream [25](using-xstream-with-a-cdb.md)
+		- XStream In [25.5](using-xstream-with-a-cdb.md)
+		- XStream Out [25.3](using-xstream-with-a-cdb.md)
+		- configuring [25.4.1](using-xstream-with-a-cdb.md)
+				- configuring multiple [25.4.2](using-xstream-with-a-cdb.md)
+- CDBS
+	- PDB access by infrastructure DBAs [24.9.1](using-oracle-database-vault-with-a-cdb.md)
+- CLONEDB parameter [7.1](cloning-a-pdb.md)
+- cloning an application PDB [7.1.1](cloning-a-pdb.md)
+- cloning a non-CDB [7.4.1](cloning-a-pdb.md)
+- cloning a PDB [7.1](cloning-a-pdb.md)
+	- local [7.2.1](cloning-a-pdb.md), [7.2.2](cloning-a-pdb.md)
+		- refreshable clone PDBs [7.5](cloning-a-pdb.md), [15.4.4.2](administering-pdbs-with-sql-plus.md)
+		- remote [7.3.1](cloning-a-pdb.md), [7.3.2](cloning-a-pdb.md)
+		- using split mirrors [7.8](cloning-a-pdb.md)
+- command rules
+	- with PDBs [24.7](using-oracle-database-vault-with-a-cdb.md)
+- COMMON\_USER\_PREFIX parameter [13.5.2.1](administering-a-cdb-with-sql-plus.md)
+- commonality, principles of [2.2.1.1](overview-of-the-multitenant-architecture.md)
+- common objects [2.2.5](overview-of-the-multitenant-architecture.md)
+- common privilege grants [2.2.4.3](overview-of-the-multitenant-architecture.md), [2.2.4.5](overview-of-the-multitenant-architecture.md)
+	- about [18.1.2](managing-security-for-a-multitenant-environment.md)
+		- granting [18.1.5](managing-security-for-a-multitenant-environment.md)
+		- revoking [18.1.5](managing-security-for-a-multitenant-environment.md)
+		- with object privileges [18.1.4](managing-security-for-a-multitenant-environment.md)
+		- with system privileges [18.1.3](managing-security-for-a-multitenant-environment.md)
+- common roles [2.2.3](overview-of-the-multitenant-architecture.md), [2.2.3.1](overview-of-the-multitenant-architecture.md)
+	- about [18.2.1](managing-security-for-a-multitenant-environment.md)
+		- creating [18.2.6](managing-security-for-a-multitenant-environment.md)
+		- granting [2.2.4.3](overview-of-the-multitenant-architecture.md), [2.2.4.5](overview-of-the-multitenant-architecture.md), [18.2.9](managing-security-for-a-multitenant-environment.md)
+		- how they work [18.2.2](managing-security-for-a-multitenant-environment.md)
+		- privileges required to manage [18.2.4](managing-security-for-a-multitenant-environment.md)
+		- rules for creating [18.2.5](managing-security-for-a-multitenant-environment.md)
+- common user accounts [1.1.1](introduction-to-the-multitenant-architecture.md), [2.2](overview-of-the-multitenant-architecture.md), [2.2.2](overview-of-the-multitenant-architecture.md)
+	- definition [3.1.1](overview-of-managing-a-multitenant-environment.md)
+		- enabling access to other PDBs [18.1.7](managing-security-for-a-multitenant-environment.md)
+		- granting privileges to [2.2.4.3](overview-of-the-multitenant-architecture.md), [2.2.4.5](overview-of-the-multitenant-architecture.md), [18.1](managing-security-for-a-multitenant-environment.md)
+		- naming rules [2.2.1.2](overview-of-the-multitenant-architecture.md)
+- common users [2.2.2.1](overview-of-the-multitenant-architecture.md)
+	- accessing data in PDBs [18.1.7.2](managing-security-for-a-multitenant-environment.md)
+		- prefix [13.5.2.1](administering-a-cdb-with-sql-plus.md)
+- CONFIGURE\_DV procedure
+	- registering Database Vault with [24.4.2](using-oracle-database-vault-with-a-cdb.md), [24.4.3](using-oracle-database-vault-with-a-cdb.md)
+- CONNECT command, SQL\*Plus
+	- CDBs [13.2.2.1](administering-a-cdb-with-sql-plus.md)
+- CONTAINER\_DATA objects
+	- viewing information about [18.1.7](managing-security-for-a-multitenant-environment.md)
+- container databases
+	- See: CDBs
+- container data objects [2.1.3.3](overview-of-the-multitenant-architecture.md), [19.1.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+	- about [18.1.7.1](managing-security-for-a-multitenant-environment.md)
+		- definition [19.1.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- querying [19.6](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- container maps [2.3.7](overview-of-the-multitenant-architecture.md), [17.6](administering-application-containers-with-sql-plus.md), [17.6.1](administering-application-containers-with-sql-plus.md)
+	- creating [17.6.2](administering-application-containers-with-sql-plus.md)
+- CONTAINERS\_DEFAULT\_TARGET property [2.1.5](overview-of-the-multitenant-architecture.md)
+- CONTAINERS\_DEFAULT attribute [17.4.1](administering-application-containers-with-sql-plus.md)
+- CONTAINERS\_PARALLEL\_DEGREE parameter [19.7.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md), [19.7.3](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- containers, CDB [1.1.1](introduction-to-the-multitenant-architecture.md), [2.1](overview-of-the-multitenant-architecture.md), [2.6.2](overview-of-the-multitenant-architecture.md)
+	- root [2.1.1](overview-of-the-multitenant-architecture.md)
+- CONTAINERS clause [17.4.1](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md), [19.7.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md), [19.7.3](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- CPU\_COUNT initialization parameter [22.1.4.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- CREATE\_FILE\_DEST clause [5.2.4.2](overview-of-pdb-creation.md), [7.2.4.3](cloning-a-pdb.md), [13.1.7.3](administering-a-cdb-with-sql-plus.md)
+- CREATE\_SIMPLE\_PLAN procedure
+	- Database Resource Manager [22.3.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- CREATE DATABASE statement
+	- CDBs [4.3](creating-and-configuring-a-cdb.md)
+		- ENABLE PLUGGABLE DATABASE clause [4.3.2.1](creating-and-configuring-a-cdb.md)
+		- SEED FILE\_NAME\_CONVERT clause [4.3.2.2.1](creating-and-configuring-a-cdb.md)
+		- undo\_mode\_clause [4.3.2.4](creating-and-configuring-a-cdb.md)
+- CREATE LOCKDOWN PROFILE statement [2.2.7](overview-of-the-multitenant-architecture.md), [18.3.3](managing-security-for-a-multitenant-environment.md)
+- CREATE PLUGGABLE DATABASE statement [1.3.2.1.1](introduction-to-the-multitenant-architecture.md), [1.3.2.1.2](introduction-to-the-multitenant-architecture.md), [2.1.2.1](overview-of-the-multitenant-architecture.md)
+	- application containers [2.3.1](overview-of-the-multitenant-architecture.md)
+		- AS PROXY clause [1.3.2.4](introduction-to-the-multitenant-architecture.md), [2.1.2.3](overview-of-the-multitenant-architecture.md), [10.1](creating-a-proxy-pdb.md)
+		- clauses [5.4](overview-of-pdb-creation.md)
+		- DEFAULT TABLESPACE clause [5.2.2](overview-of-pdb-creation.md)
+		- file locations [5.2.4](overview-of-pdb-creation.md)
+		- HOST clause [10.1.4.1](creating-a-proxy-pdb.md)
+		- logging\_clause [15.4.1](administering-pdbs-with-sql-plus.md), [15.4.1.2](administering-pdbs-with-sql-plus.md)
+		- MAX\_AUDIT\_SIZE clause [5.2.1](overview-of-pdb-creation.md)
+		- MAX\_DIAG\_SIZE clause [5.2.1](overview-of-pdb-creation.md)
+		- NO DATA clause [7.2.2](cloning-a-pdb.md)
+		- PATH\_PREFIX clause [5.2.4.3](overview-of-pdb-creation.md)
+		- pdb\_force\_logging\_clause [15.4.1](administering-pdbs-with-sql-plus.md)
+		- PDB listener host name [10.1.4](creating-a-proxy-pdb.md)
+		- PDB listener port number [10.1.4](creating-a-proxy-pdb.md)
+		- PORT clause [10.1.4.2](creating-a-proxy-pdb.md)
+		- REFRESH MODE clause [7.5](cloning-a-pdb.md)
+		- RELOCATE clause [1.3.2.3](introduction-to-the-multitenant-architecture.md), [8.1](relocating-a-pdb.md), [8.4](relocating-a-pdb.md), [8.5](relocating-a-pdb.md)
+		- SERVICE\_NAME\_CONVERT clause [5.3](overview-of-pdb-creation.md)
+		- SNAPSHOT COPY clause [1.3.2.1.2.2](introduction-to-the-multitenant-architecture.md), [7.1](cloning-a-pdb.md), [7.7.1.1](cloning-a-pdb.md)
+		- SNAPSHOT MODE clause [16.1.3](administering-pdb-snapshots.md)
+		- SOURCE\_FILE\_DIRECTORY clause [9.1.2.2](plugging-in-a-pdb.md)
+		- SOURCE\_FILE\_NAME\_CONVERT clause [9.1.2.1](plugging-in-a-pdb.md)
+		- source file locations [9.1.2](plugging-in-a-pdb.md)
+		- STORAGE clause [5.2.1](overview-of-pdb-creation.md)
+		- USER\_TABLESPACES clause [5.2.3](overview-of-pdb-creation.md)
+		- USING clause [1.3.2.2.1](introduction-to-the-multitenant-architecture.md), [9.2](plugging-in-a-pdb.md)
+		- USING SNAPSHOT clause [7.6.1](cloning-a-pdb.md)
+- CREATE ROLE statement [2.2.3.1](overview-of-the-multitenant-architecture.md)
+- creating an application PDB [17.3.5.3](administering-application-containers-with-sql-plus.md)
+- creating CDBs [4](creating-and-configuring-a-cdb.md)
+	- CREATE DATABASE statement [4.3](creating-and-configuring-a-cdb.md)
+		- Database Configuration Assistant [4.3.1](creating-and-configuring-a-cdb.md)
+		- ENABLE PLUGGABLE DATABASE clause [4.3.2.1](creating-and-configuring-a-cdb.md)
+		- manually from a script [4.3](creating-and-configuring-a-cdb.md)
+		- Oracle Managed Files [4.3.2.2.2](creating-and-configuring-a-cdb.md)
+		- PDB\_FILE\_NAME\_CONVERT initialization parameter [4.3.2.2.3](creating-and-configuring-a-cdb.md)
+		- planning [4.2](creating-and-configuring-a-cdb.md)
+		- SEED FILE\_NAME\_CONVERT clause [4.3.2.2.1](creating-and-configuring-a-cdb.md)
+		- undo\_mode\_clause [4.3.2.4](creating-and-configuring-a-cdb.md)
+- creating PDBs [5](overview-of-pdb-creation.md)
+- cross-container operations [2.1.5](overview-of-the-multitenant-architecture.md)
+- current container [2.1.4](overview-of-the-multitenant-architecture.md), [13.1.1](administering-a-cdb-with-sql-plus.md)
+
+---
+
+## D
+
+- Database Configuration Assistant
+	- CDBs [4.3.1](creating-and-configuring-a-cdb.md)
+- database consolidation [1.2.2](introduction-to-the-multitenant-architecture.md)
+- database links, PDBs [2.1.2.5](overview-of-the-multitenant-architecture.md)
+- Database Resource Manager [1.2.2](introduction-to-the-multitenant-architecture.md)
+	- CDB resource plans [22.2.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- CDBs [2.7](overview-of-the-multitenant-architecture.md), [22](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- CREATE\_SIMPLE\_PLAN procedure [22.3.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- monitoring PDBs [22.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- PDB resource plans [22.3.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- PDBs [22](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- databases
+	- grouped schemas
+		- See realms [24.5.1.1](using-oracle-database-vault-with-a-cdb.md)
+- database services [2.4.1](overview-of-the-multitenant-architecture.md), [2.4.1.2](overview-of-the-multitenant-architecture.md)
+	- in a CDB [2.4.1.1](overview-of-the-multitenant-architecture.md)
+		- PDBs [2.4](overview-of-the-multitenant-architecture.md)
+- Database Upgrade Assistant (DBUA)
+	- multitenant architecture support [1.1.2](introduction-to-the-multitenant-architecture.md)
+- Database Vault
+	- See: Oracle Database Vault
+- Database Vault operations control
+	- adding users and packages to exception list [24.9.3](using-oracle-database-vault-with-a-cdb.md)
+		- deleting users and packages from exception list [24.9.4](using-oracle-database-vault-with-a-cdb.md)
+		- disabling [24.9.5](using-oracle-database-vault-with-a-cdb.md)
+		- enabling [24.9.2](using-oracle-database-vault-with-a-cdb.md)
+- Database Vault realm protection [24.5.1.1](using-oracle-database-vault-with-a-cdb.md)
+- Database Vault realm protections [24.5.1.1](using-oracle-database-vault-with-a-cdb.md)
+- data definition language (DDL)
+	- CDBs [13.5.2](administering-a-cdb-with-sql-plus.md)
+- data dictionary
+	- CDBs [2.1.3](overview-of-the-multitenant-architecture.md)
+		- PDBs [1.2.3](introduction-to-the-multitenant-architecture.md)
+		- storage in a CDB [2.1.3.4](overview-of-the-multitenant-architecture.md)
+- data-linked application common objects [2.3.2.1](overview-of-the-multitenant-architecture.md), [12.1.1.1](creating-removing-application-containers-seeds-with-sql-plus.md)
+- data-linked common objects [2.1.2.5](overview-of-the-multitenant-architecture.md), [2.3.2](overview-of-the-multitenant-architecture.md), [2.3.2.3](overview-of-the-multitenant-architecture.md), [17.4.1](administering-application-containers-with-sql-plus.md)
+- data links [2.1.3.2](overview-of-the-multitenant-architecture.md), [2.3.2.3](overview-of-the-multitenant-architecture.md)
+- data manipulation language
+	- CDBs [13.5.1](administering-a-cdb-with-sql-plus.md)
+- DB\_CACHE\_SIZE parameter [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- DB\_CREATE\_FILE\_DEST initialization parameter [5.2.4.2](overview-of-pdb-creation.md)
+- DB\_PERFORMANCE\_PROFILE parameter [22.2.5](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- DBA\_APP\_ERRORS view [19.11.6](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- DBA\_APP\_PATCHES view [19.11.5](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- DBA\_APP\_PDB\_STATUS view [19.11.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- DBA\_APP\_STATEMENTS view [19.11.3](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- DBA\_APP\_VERSIONS view [19.11.4](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- DBA\_APPLICATIONS view [19.11.1](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- DBA\_CONTAINER\_DATA data dictionary view [18.1.7.1](managing-security-for-a-multitenant-environment.md)
+- DBA\_OBJECTS view [17.3.5.2](administering-application-containers-with-sql-plus.md)
+	- shared objects [19.11.7](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- DBA\_PDB\_SAVED\_STATES view [15.4.5.4](administering-pdbs-with-sql-plus.md)
+- DBA\_PDB\_SNAPSHOTFILE view [16.6](administering-pdb-snapshots.md)
+- DBA\_PDB\_SNAPSHOTS view [16.6](administering-pdb-snapshots.md)
+- DBA\_PROFILES view [17.3.5.2](administering-application-containers-with-sql-plus.md)
+- DBA\_ROLES view [17.3.5.2](administering-application-containers-with-sql-plus.md)
+- DBA\_TABLES view
+	- extended data-linked objects [19.11.8](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- DBA\_USERS view [17.3.5.2](administering-application-containers-with-sql-plus.md)
+- DBMS\_CREDENTIAL package [13.1.7.2](administering-a-cdb-with-sql-plus.md)
+- DBMS\_JOB
+	- using with PDB [23.3](using-oracle-scheduler-with-a-cdb.md)
+- DBMS\_MACADM.ENABLE\_DV procedure
+	- registering Database Vault with [24.4.1](using-oracle-database-vault-with-a-cdb.md), [24.4.2](using-oracle-database-vault-with-a-cdb.md), [24.4.3](using-oracle-database-vault-with-a-cdb.md)
+- DBMS\_PDB package [1.3.2.2.2](introduction-to-the-multitenant-architecture.md), [5.1](overview-of-pdb-creation.md), [5.1.2](overview-of-pdb-creation.md), [7.3.2](cloning-a-pdb.md), [9.1.3](plugging-in-a-pdb.md), [17.3.5.2](administering-application-containers-with-sql-plus.md)
+- DBMS\_SCHEDULER package [23.3](using-oracle-scheduler-with-a-cdb.md)
+- DBMS\_SQL package
+	- CDBs [13.5.4](administering-a-cdb-with-sql-plus.md)
+- DEFAULT TABLESPACE clause [5.2.2](overview-of-pdb-creation.md)
+- default temporary tablespaces
+	- specifying for root [4.3.4.1](creating-and-configuring-a-cdb.md), [4.3.4.2](creating-and-configuring-a-cdb.md)
+- DESCRIBE procedure [9.1.3](plugging-in-a-pdb.md)
+- direct-path load [1.3.2.2.2](introduction-to-the-multitenant-architecture.md)
+- DROP PLUGGABLE DATABASE statement [11.2](removing-a-pdb.md), [12.1.3](creating-removing-application-containers-seeds-with-sql-plus.md), [12.2.3](creating-removing-application-containers-seeds-with-sql-plus.md)
+- DVSYS schema
+	- CDBs [24.2](using-oracle-database-vault-with-a-cdb.md)
+
+---
+
+## E
+
+- EM Express [1.1.2](introduction-to-the-multitenant-architecture.md)
+	- CDBs [4.4](creating-and-configuring-a-cdb.md)
+- ENABLE\_PLUGGABLE\_DATABASE initialization parameter [4.3.3](creating-and-configuring-a-cdb.md)
+- ENABLE PLUGGABLE DATABASE clause [4.3.2.1](creating-and-configuring-a-cdb.md)
+- Enterprise Manager
+	- multitenant architecture support [1.1.2](introduction-to-the-multitenant-architecture.md)
+- extended data-linked application common objects [12.1.1.1](creating-removing-application-containers-seeds-with-sql-plus.md)
+- extended data-linked objects [2.3.2.4](overview-of-the-multitenant-architecture.md), [17.4.1](administering-application-containers-with-sql-plus.md)
+
+---
+
+## H
+
+- HOST clause [10.1.4.1](creating-a-proxy-pdb.md)
+
+---
+
+## I
+
+- Information Lifecycle Management [24.5.1.1](using-oracle-database-vault-with-a-cdb.md)
+- installations
+	- Database Vault and Label Security in a multitenant environment [24.4.5](using-oracle-database-vault-with-a-cdb.md)
+
+---
+
+## L
+
+- LEAD\_CDB\_URI database property [14.4](configuring-cdb-fleet.md)
+- LEAD\_CDB database property [14.3](configuring-cdb-fleet.md)
+- lead CDB [14.1](configuring-cdb-fleet.md)
+- local privilege grants
+	- about [18.1.2](managing-security-for-a-multitenant-environment.md)
+		- granting [18.1.5](managing-security-for-a-multitenant-environment.md)
+		- revoking [18.1.5](managing-security-for-a-multitenant-environment.md)
+- local privileges
+	- granting [2.2.4.2.1](overview-of-the-multitenant-architecture.md)
+- local roles [2.2.3](overview-of-the-multitenant-architecture.md), [2.2.3.2](overview-of-the-multitenant-architecture.md), [2.2.4.2](overview-of-the-multitenant-architecture.md)
+	- about [18.2.1](managing-security-for-a-multitenant-environment.md)
+		- creating [18.2.8](managing-security-for-a-multitenant-environment.md)
+		- granting [2.2.4.2.1](overview-of-the-multitenant-architecture.md)
+		- rules for creating [18.2.7](managing-security-for-a-multitenant-environment.md)
+- local users [2.2.2](overview-of-the-multitenant-architecture.md), [2.2.2.2](overview-of-the-multitenant-architecture.md)
+	- definition [3.1.1](overview-of-managing-a-multitenant-environment.md)
+- lockdown profiles, PDB [2.2.7](overview-of-the-multitenant-architecture.md), [18.3.1](managing-security-for-a-multitenant-environment.md)
+- logging\_clause [15.4.1](administering-pdbs-with-sql-plus.md), [15.4.1.2](administering-pdbs-with-sql-plus.md)
+- logical change records (LCRs) [25.1](using-xstream-with-a-cdb.md)
+- LogMiner utility
+	- using in a CDB [21.2](using-database-utilities-in-a-cdb.md)
+
+---
+
+## M
+
+- MAX\_AUDIT\_SIZE clause [5.2.1](overview-of-pdb-creation.md)
+- MAX\_DIAG\_SIZE clause [5.2.1](overview-of-pdb-creation.md)
+- MAX\_IOPS parameter [22.1.4.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- MAX\_MBPS parameter [22.1.4.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- MAX\_PDB\_SNAPSHOTS database property [16.1](administering-pdb-snapshots.md)
+- metadata-linked application common objects [2.3.2.1](overview-of-the-multitenant-architecture.md), [12.1.1.1](creating-removing-application-containers-seeds-with-sql-plus.md)
+- metadata-linked common objects [2.3.2](overview-of-the-multitenant-architecture.md), [2.3.2.2](overview-of-the-multitenant-architecture.md), [17.4.1](administering-application-containers-with-sql-plus.md)
+	- metadata links [2.3.2.2.1](overview-of-the-multitenant-architecture.md)
+- metadata links [2.1.3.2](overview-of-the-multitenant-architecture.md), [2.3.2.2.1](overview-of-the-multitenant-architecture.md)
+- multitenant architecture [1.1](introduction-to-the-multitenant-architecture.md), [3.1](overview-of-managing-a-multitenant-environment.md), [IV](managing-a-multitenant-environment.md), [21.2.2](using-database-utilities-in-a-cdb.md)
+	- benefits [1.2.1](introduction-to-the-multitenant-architecture.md), [1.2.2](introduction-to-the-multitenant-architecture.md), [1.2.3](introduction-to-the-multitenant-architecture.md)
+		- overview [2](overview-of-the-multitenant-architecture.md)
+		- user interfaces [1.1.2](introduction-to-the-multitenant-architecture.md)
+		- XStream In [25.5](using-xstream-with-a-cdb.md)
+		- XStream Out [25.3](using-xstream-with-a-cdb.md)
+- multitenant container database
+	- See: CDBs
+- multitenant container databases [21.2](using-database-utilities-in-a-cdb.md)
+	- See: CDBs
+- multitenant environment [3.1](overview-of-managing-a-multitenant-environment.md)
+
+---
+
+## O
+
+- object privileges
+	- with common privilege grants [18.1.4](managing-security-for-a-multitenant-environment.md)
+- open modes
+	- PDBs [15.4.5](administering-pdbs-with-sql-plus.md)
+- operating systems [18.4.1](managing-security-for-a-multitenant-environment.md)
+	- authentication
+		- operating system user for PDB [18.4.1](managing-security-for-a-multitenant-environment.md)
+- operating system users
+	- configuring for PDBs [18.4.2](managing-security-for-a-multitenant-environment.md)
+- ORA-39357: Warning: Oracle Data Pump operations are not typically needed when connected to the root or seed of a container database [21.1.1](using-database-utilities-in-a-cdb.md)
+- ORA-47503 error [24.4.2](using-oracle-database-vault-with-a-cdb.md), [24.4.3](using-oracle-database-vault-with-a-cdb.md)
+- Oracle ASM [5.2.4.2](overview-of-pdb-creation.md), [7.8](cloning-a-pdb.md)
+- Oracle Database Configuration Assistant (DBCA) [1.1.2](introduction-to-the-multitenant-architecture.md)
+- Oracle Database Vault
+	- about [24.1](using-oracle-database-vault-with-a-cdb.md)
+		- CDBs [13.1.2](administering-a-cdb-with-sql-plus.md), [24](using-oracle-database-vault-with-a-cdb.md)
+- Oracle Database Vault operations control
+	- about [24.9.1](using-oracle-database-vault-with-a-cdb.md)
+- Oracle Database Vault policies
+	- in multitenant environment [24.8](using-oracle-database-vault-with-a-cdb.md)
+- Oracle Database Vault registration
+	- common users to manage specific PDBs [24.4.2](using-oracle-database-vault-with-a-cdb.md)
+		- common user to manage CDB root [24.4.1](using-oracle-database-vault-with-a-cdb.md)
+		- local users to manage specific PDBs [24.4.3](using-oracle-database-vault-with-a-cdb.md)
+		- plugging in a Database Vault-enabled database [24.4.4](using-oracle-database-vault-with-a-cdb.md)
+		- verifying configuration and enablement [24.3](using-oracle-database-vault-with-a-cdb.md)
+- Oracle Data Guard
+	- CDBs [13.1.2](administering-a-cdb-with-sql-plus.md)
+- Oracle Data Pump [1.3.2.2.2](introduction-to-the-multitenant-architecture.md), [5.1.2](overview-of-pdb-creation.md)
+- Oracle Data Redaction
+	- CDBs [18.8](managing-security-for-a-multitenant-environment.md)
+- Oracle Enterprise Manager Database Express
+	- See: EM Express
+- Oracle Flashback Technology [24.5.1.1](using-oracle-database-vault-with-a-cdb.md)
+- Oracle GoldenGate [1.3.2.2.2](introduction-to-the-multitenant-architecture.md), [5.1.2](overview-of-pdb-creation.md)
+- Oracle Managed Files [4.3.2.2.2](creating-and-configuring-a-cdb.md), [5.2.4.2](overview-of-pdb-creation.md)
+- Oracle Multitenant [13.1.8](administering-a-cdb-with-sql-plus.md)
+- Oracle Multitenant option [1](introduction-to-the-multitenant-architecture.md), [IV](managing-a-multitenant-environment.md)
+- Oracle Universal Installer [4.1](creating-and-configuring-a-cdb.md)
+- Oracle Virtual Private Database
+	- CDBs [18.6](managing-security-for-a-multitenant-environment.md)
+- Oracle Virtual Private Database (VPD)
+	- about [18.6.1](managing-security-for-a-multitenant-environment.md)
+		- application containers [18.6.2](managing-security-for-a-multitenant-environment.md)
+		- CDBs [18.6.2](managing-security-for-a-multitenant-environment.md)
+
+---
+
+## P
+
+- PATH\_PREFIX clause [5.2.4.3](overview-of-pdb-creation.md), [7.2.4.3](cloning-a-pdb.md), [13.1.7.3](administering-a-cdb-with-sql-plus.md)
+- PDB\_FILE\_NAME\_CONVERT initialization parameter [4.3.2.2.3](creating-and-configuring-a-cdb.md), [7.3.2](cloning-a-pdb.md)
+- pdb\_force\_logging\_clause [15.4.1](administering-pdbs-with-sql-plus.md), [15.4.1.2](administering-pdbs-with-sql-plus.md)
+- PDB\_OS\_CREDENTIAL initialization parameter [13.1.7.1](administering-a-cdb-with-sql-plus.md), [13.1.7.2](administering-a-cdb-with-sql-plus.md)
+- PDB\_PLUG\_IN\_VIOLATIONS view [15.4.5.1](administering-pdbs-with-sql-plus.md)
+- pdb\_save\_or\_discard\_state clause [15.4.5.4](administering-pdbs-with-sql-plus.md)
+- pdb\_to\_apppdb.sql script [17.3.5.3](administering-application-containers-with-sql-plus.md)
+- PDB$SEED [2.1.2.1](overview-of-the-multitenant-architecture.md)
+- PDB lockdown profiles
+	- about [18.3.1](managing-security-for-a-multitenant-environment.md)
+		- creating [18.3.3](managing-security-for-a-multitenant-environment.md)
+		- default [18.3.2](managing-security-for-a-multitenant-environment.md)
+		- disabling [18.3.4](managing-security-for-a-multitenant-environment.md)
+		- dropping [18.3.5](managing-security-for-a-multitenant-environment.md)
+		- enabling [18.3.4](managing-security-for-a-multitenant-environment.md)
+- PDB performance profiles [22.2.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+	- managing [22.2.7.3](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- PDB relocation
+	- basic steps [8.5](relocating-a-pdb.md)
+		- how it works [8.3](relocating-a-pdb.md)
+		- user interface [8.4](relocating-a-pdb.md)
+- PDB resource plans [22.3.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- PDBs [3.1](overview-of-managing-a-multitenant-environment.md), [IV](managing-a-multitenant-environment.md), [13.1.8](administering-a-cdb-with-sql-plus.md), [15.6](administering-pdbs-with-sql-plus.md)
+	- about [1.1](introduction-to-the-multitenant-architecture.md)
+		- administering [15](administering-pdbs-with-sql-plus.md)
+		- ALTER SYSTEM statement [15.3](administering-pdbs-with-sql-plus.md)
+		- archive files [1.3.2.2.1](introduction-to-the-multitenant-architecture.md)
+		- auditing
+		- types of audit settings allowed [18.9.1](managing-security-for-a-multitenant-environment.md)
+		- backup and recovery [2.6.1](overview-of-the-multitenant-architecture.md)
+		- benefits [1.2.1](introduction-to-the-multitenant-architecture.md)
+		- buffer pool size [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- CDB resource plans [22.2.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- creating [22.2.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md), [22.2.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- directives [22.2.1.3](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- disabling [22.2.8](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- enabling [22.2.6](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- managing [22.2.7](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- shares [22.2.1.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- utilization limits [22.2.1.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- viewing information about [22.2.9](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- character sets [2.1.1](overview-of-the-multitenant-architecture.md)
+		- cloning [1.3.2.1.2](introduction-to-the-multitenant-architecture.md), [2.1.2.2](overview-of-the-multitenant-architecture.md), [7](cloning-a-pdb.md), [7.1](cloning-a-pdb.md)
+		- cloning application [7.1.1](cloning-a-pdb.md)
+		- cloning local [7.2.1](cloning-a-pdb.md), [7.2.2](cloning-a-pdb.md), [7.3.1](cloning-a-pdb.md)
+		- command rules in [24.7](using-oracle-database-vault-with-a-cdb.md)
+		- common roles
+		- about [18.2.1](managing-security-for-a-multitenant-environment.md)
+				- creating [18.2.6](managing-security-for-a-multitenant-environment.md)
+				- granting [18.2.9](managing-security-for-a-multitenant-environment.md)
+				- how they work [18.2.2](managing-security-for-a-multitenant-environment.md)
+				- privileges required for management [18.2.4](managing-security-for-a-multitenant-environment.md)
+				- revoking [18.2.9](managing-security-for-a-multitenant-environment.md)
+				- rules for creating [18.2.5](managing-security-for-a-multitenant-environment.md)
+		- common users [2.2.1.2](overview-of-the-multitenant-architecture.md)
+		- accessing data in PDBs [18.1.7.2](managing-security-for-a-multitenant-environment.md)
+				- viewing privilege information [18.1.7.1](managing-security-for-a-multitenant-environment.md)
+		- compatibility violations [15.4.5.1](administering-pdbs-with-sql-plus.md)
+		- connecting to [2.4.2](overview-of-the-multitenant-architecture.md), [13.2.1](administering-a-cdb-with-sql-plus.md), [15.2.1](administering-pdbs-with-sql-plus.md)
+		- ALTER SESSION statement [13.2.2.2](administering-a-cdb-with-sql-plus.md)
+				- CONNECT command [13.2.2.1](administering-a-cdb-with-sql-plus.md)
+		- consolidation of data into [1.3](introduction-to-the-multitenant-architecture.md)
+		- containers [2.1](overview-of-the-multitenant-architecture.md)
+		- CPU limits [22.1.4.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- creating as proxies [10](creating-a-proxy-pdb.md)
+		- creating by plugging in [1.3.2.2.2](introduction-to-the-multitenant-architecture.md), [9.2](plugging-in-a-pdb.md)
+		- creating from seed [1.3.2.1.1](introduction-to-the-multitenant-architecture.md), [6](creating-a-pdb-from-scratch.md)
+		- creation [1.3.2](introduction-to-the-multitenant-architecture.md), [5](overview-of-pdb-creation.md)
+		- current container [2.1.4](overview-of-the-multitenant-architecture.md), [13.1.1](administering-a-cdb-with-sql-plus.md)
+		- database links [2.1.2.5](overview-of-the-multitenant-architecture.md)
+		- Database Resource Manager [22](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- data dictionary [1.2.3](introduction-to-the-multitenant-architecture.md)
+		- Data Redaction policies [18.8](managing-security-for-a-multitenant-environment.md)
+		- DBMS\_SQL package [13.5.4](administering-a-cdb-with-sql-plus.md)
+		- definition [2.1.2](overview-of-the-multitenant-architecture.md), [3.1](overview-of-managing-a-multitenant-environment.md)
+		- dropping [11.2](removing-a-pdb.md)
+		- EM Express [4.4](creating-and-configuring-a-cdb.md)
+		- encryption [7.1](cloning-a-pdb.md)
+		- executing PL/SQL code [13.5.4](administering-a-cdb-with-sql-plus.md)
+		- fine-grained audit policies [18.9.4](managing-security-for-a-multitenant-environment.md)
+		- flashback [2.6.2](overview-of-the-multitenant-architecture.md), [13.1.6](administering-a-cdb-with-sql-plus.md), [20.5](backing-up-and-recovering-cdbs-and-pdbs.md)
+		- granting privileges and roles [2.2.4](overview-of-the-multitenant-architecture.md)
+		- hot cloning [7.1](cloning-a-pdb.md)
+		- I/O limits [22.1.4.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- instances\_clause [15.4.5.2](administering-pdbs-with-sql-plus.md)
+		- keystore [7.1](cloning-a-pdb.md)
+		- local roles
+		- about [18.2.1](managing-security-for-a-multitenant-environment.md)
+				- creating [18.2.8](managing-security-for-a-multitenant-environment.md)
+				- rules for creating [18.2.7](managing-security-for-a-multitenant-environment.md)
+		- lockdown profiles [2.2.7](overview-of-the-multitenant-architecture.md), [13.1.7.1](administering-a-cdb-with-sql-plus.md)
+		- managing [15.6](administering-pdbs-with-sql-plus.md)
+		- modifying [15.4](administering-pdbs-with-sql-plus.md)
+		- moving [8](relocating-a-pdb.md), [8.3.2.1](relocating-a-pdb.md), [8.3.2.2](relocating-a-pdb.md)
+		- how it works [8.3](relocating-a-pdb.md)
+				- purpose [8.2](relocating-a-pdb.md)
+		- moving non-CDBs into [5.1.2](overview-of-pdb-creation.md), [9.1.3](plugging-in-a-pdb.md)
+		- naming rules [2.1.2.4](overview-of-the-multitenant-architecture.md)
+		- open mode [15.4.5](administering-pdbs-with-sql-plus.md), [19.5](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- preserving on restart [15.4.5.4](administering-pdbs-with-sql-plus.md)
+		- operating system user configuration [18.4.2](managing-security-for-a-multitenant-environment.md)
+		- operating system user for, setting [18.4.1](managing-security-for-a-multitenant-environment.md)
+		- PDB resource plans [22.3.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- creating [22.3.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- disabling [22.3.5](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- enabling [22.3.3](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+				- modifying [22.3.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- PGA size [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- plugging Database Vault-enabled PDB to CDB [24.10](using-oracle-database-vault-with-a-cdb.md)
+		- plugging in [9](plugging-in-a-pdb.md)
+		- methods for [5.1](overview-of-pdb-creation.md)
+				- preparing for [5.5](overview-of-pdb-creation.md)
+		- point-in-time recovery [20.4](backing-up-and-recovering-cdbs-and-pdbs.md)
+		- prerequisites for [3.2](overview-of-managing-a-multitenant-environment.md)
+		- privileges
+		- common [18.1.3](managing-security-for-a-multitenant-environment.md)
+				- granting [18.1.5](managing-security-for-a-multitenant-environment.md)
+				- how affected [18.1.1](managing-security-for-a-multitenant-environment.md)
+				- object [18.1.4](managing-security-for-a-multitenant-environment.md)
+				- revoking [18.1.5](managing-security-for-a-multitenant-environment.md)
+				- viewing information about [18.1.7.1](managing-security-for-a-multitenant-environment.md)
+		- proxy [1.3.2](introduction-to-the-multitenant-architecture.md), [1.3.2.4](introduction-to-the-multitenant-architecture.md), [2.1.2.1](overview-of-the-multitenant-architecture.md), [2.1.2.3](overview-of-the-multitenant-architecture.md), [10.1.1](creating-a-proxy-pdb.md), [17.3.7.1](administering-application-containers-with-sql-plus.md)
+		- PUBLIC role [18.2.3](managing-security-for-a-multitenant-environment.md)
+		- purpose of [2.1.2.2](overview-of-the-multitenant-architecture.md)
+		- refreshable clone [1.3.2.1.2.3](introduction-to-the-multitenant-architecture.md)
+		- refreshing [15.4.4.1](administering-pdbs-with-sql-plus.md)
+		- relocate\_clause [15.4.5.2](administering-pdbs-with-sql-plus.md)
+		- relocating [1.3.2.3](introduction-to-the-multitenant-architecture.md), [8](relocating-a-pdb.md), [8.1](relocating-a-pdb.md), [8.3.2.1](relocating-a-pdb.md), [8.3.2.2](relocating-a-pdb.md), [8.5](relocating-a-pdb.md)
+		- how it works [8.3](relocating-a-pdb.md)
+				- purpose [8.2](relocating-a-pdb.md)
+				- user interface [8.4](relocating-a-pdb.md)
+		- renaming [15.4.3](administering-pdbs-with-sql-plus.md)
+		- resource management [2.7](overview-of-the-multitenant-architecture.md)
+		- restore points [2.6.2](overview-of-the-multitenant-architecture.md)
+		- services [2.4](overview-of-the-multitenant-architecture.md), [2.4.1](overview-of-the-multitenant-architecture.md), [2.4.1.1](overview-of-the-multitenant-architecture.md), [2.4.1.2](overview-of-the-multitenant-architecture.md), [15.2.2](administering-pdbs-with-sql-plus.md)
+		- services\_clause [15.4.5.2](administering-pdbs-with-sql-plus.md)
+		- SGA size [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- shared pool size [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- SHUTDOWN command [15.5](administering-pdbs-with-sql-plus.md), [15.5.4](administering-pdbs-with-sql-plus.md)
+		- shutting down [13.6](administering-a-cdb-with-sql-plus.md)
+		- snapshot copy [1.3.2.1.2.2](introduction-to-the-multitenant-architecture.md), [7.7.1.1](cloning-a-pdb.md)
+		- snapshots [7.7.3](cloning-a-pdb.md), [16.2](administering-pdb-snapshots.md), [16](administering-pdb-snapshots.md), [16.1](administering-pdb-snapshots.md), [16.1.2.1](administering-pdb-snapshots.md), [16.1.2.2](administering-pdb-snapshots.md), [16.1.3](administering-pdb-snapshots.md), [16.3](administering-pdb-snapshots.md), [16.4](administering-pdb-snapshots.md), [16.5](administering-pdb-snapshots.md), [16.6](administering-pdb-snapshots.md)
+		- STARTUP command [15.5](administering-pdbs-with-sql-plus.md), [15.5.2](administering-pdbs-with-sql-plus.md), [15.5.3](administering-pdbs-with-sql-plus.md)
+		- tasks for [3.3.1](overview-of-managing-a-multitenant-environment.md)
+		- temp files [2.5](overview-of-the-multitenant-architecture.md)
+		- tools for [3.3.2](overview-of-managing-a-multitenant-environment.md)
+		- types [2.1.2.1](overview-of-the-multitenant-architecture.md)
+		- unplugged [1.3.2.2.1](introduction-to-the-multitenant-architecture.md)
+		- unplugging [11.1](removing-a-pdb.md)
+		- viewing information about [18.1.7.1](managing-security-for-a-multitenant-environment.md)
+		- views [19.1.3](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+		- Virtual Private Database policies [18.6.2](managing-security-for-a-multitenant-environment.md)
+		- XStream In [25.5](using-xstream-with-a-cdb.md)
+		- XStream Out [25.3](using-xstream-with-a-cdb.md)
+		- configuring [25.4.1](using-xstream-with-a-cdb.md)
+- PDB snapshot carousel
+	- about [16.1](administering-pdb-snapshots.md)
+		- administering [16](administering-pdb-snapshots.md)
+		- contents [16.1.2.2](administering-pdb-snapshots.md)
+		- how it works [16.1.2](administering-pdb-snapshots.md)
+		- purpose [16.1.1](administering-pdb-snapshots.md)
+		- setting the maximum number of snapshots [16.2](administering-pdb-snapshots.md)
+		- viewing snapshots [16.6](administering-pdb-snapshots.md)
+- PDB snapshots
+	- viewing [16.6](administering-pdb-snapshots.md)
+- PGA\_AGGREGATE\_LIMIT parameter [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- PGA\_AGGREGATE\_TARGET parameter [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- pluggable database
+	- See: PDBs
+- pluggable databases
+	- See: PDBs
+- plugging in unplugged PDBs [9.2](plugging-in-a-pdb.md)
+- PORT clause [10.1.4.2](creating-a-proxy-pdb.md)
+- privileges
+	- granting common [2.2.4.3](overview-of-the-multitenant-architecture.md), [2.2.4.3.1](overview-of-the-multitenant-architecture.md), [2.2.4.5](overview-of-the-multitenant-architecture.md)
+		- granting in a CDB [2.2.4](overview-of-the-multitenant-architecture.md), [2.2.4.1](overview-of-the-multitenant-architecture.md)
+		- local [2.2.4.2.1](overview-of-the-multitenant-architecture.md)
+- proxy PDBs [1.3.2](introduction-to-the-multitenant-architecture.md), [1.3.2.4](introduction-to-the-multitenant-architecture.md), [2.1.2.1](overview-of-the-multitenant-architecture.md), [2.1.2.3](overview-of-the-multitenant-architecture.md), [2.1.2.5](overview-of-the-multitenant-architecture.md), [10](creating-a-proxy-pdb.md)
+	- creating [17.3.7.2](administering-application-containers-with-sql-plus.md)
+		- referenced PDB
+		- altering listener host name [15.2.3.1](administering-pdbs-with-sql-plus.md)
+				- altering listener port number [15.2.3.2](administering-pdbs-with-sql-plus.md)
+		- synchronizing an application root replica [17.3.7.1](administering-application-containers-with-sql-plus.md)
+- PUBLIC role, CDBs [18.2.3](managing-security-for-a-multitenant-environment.md)
+
+---
+
+## R
+
+- realms
+	- about [24.5.1.1](using-oracle-database-vault-with-a-cdb.md)
+		- authorizations in multitenant environment [24.5.2](using-oracle-database-vault-with-a-cdb.md)
+		- multitenant environment
+		- about [24.5.1.2](using-oracle-database-vault-with-a-cdb.md)
+- recovering CDBs [20](backing-up-and-recovering-cdbs-and-pdbs.md)
+- refreshable clone PDBs [1.3.2.1.2.3](introduction-to-the-multitenant-architecture.md), [7.5](cloning-a-pdb.md)
+	- switchover [15.4.4.2](administering-pdbs-with-sql-plus.md)
+- REFRESH MODE clause [7.5](cloning-a-pdb.md)
+- relocating PDBs [8](relocating-a-pdb.md)
+	- common listener network [8.3.2.1](relocating-a-pdb.md)
+		- isolated listener network [8.3.2.2](relocating-a-pdb.md)
+		- user interface [8.4](relocating-a-pdb.md)
+- REMOTE\_RECOVERY\_FILE\_DEST parameter [7.5](cloning-a-pdb.md)
+- resource plans
+	- CDB [22.2.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- PDB [22.3.1](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- roles
+	- common [2.2.4.3.1](overview-of-the-multitenant-architecture.md)
+		- common, granting [18.2.9](managing-security-for-a-multitenant-environment.md)
+		- granting in a CDB [2.2.4](overview-of-the-multitenant-architecture.md), [2.2.4.1](overview-of-the-multitenant-architecture.md)
+		- in a CDB [2.2.3](overview-of-the-multitenant-architecture.md)
+		- local [2.2.3.2](overview-of-the-multitenant-architecture.md), [2.2.4.2](overview-of-the-multitenant-architecture.md), [2.2.4.2.1](overview-of-the-multitenant-architecture.md)
+- root container [1.1.1](introduction-to-the-multitenant-architecture.md), [1.3.1](introduction-to-the-multitenant-architecture.md), [2.1.1](overview-of-the-multitenant-architecture.md)
+	- modifying [13.4.4](administering-a-cdb-with-sql-plus.md)
+		- viewing information about [18.1.7.1](managing-security-for-a-multitenant-environment.md)
+- row-level security
+	- See: fine-grained access control, Oracle Virtual Private Database (VPD)
+- rsmgr:io rate limit [22.1.4.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- rule-based transformations [25.1](using-xstream-with-a-cdb.md)
+- rules [25.1](using-xstream-with-a-cdb.md)
+- rule sets
+	- multitenant environment
+		- about [24.6](using-oracle-database-vault-with-a-cdb.md)
+
+---
+
+## S
+
+- Scheduler
+	- CDB [23.1](using-oracle-scheduler-with-a-cdb.md)
+		- closing a PDB [23.4](using-oracle-scheduler-with-a-cdb.md)
+		- invocations to CDB [23.1](using-oracle-scheduler-with-a-cdb.md)
+		- using job coordinator in CDB [23.2](using-oracle-scheduler-with-a-cdb.md)
+		- using slave processes in CDB [23.2](using-oracle-scheduler-with-a-cdb.md)
+		- views [23.5](using-oracle-scheduler-with-a-cdb.md)
+- security
+	- CDBs [18](managing-security-for-a-multitenant-environment.md)
+		- PDBs [13.1.7](administering-a-cdb-with-sql-plus.md)
+- SEED FILE\_NAME\_CONVERT clause [4.3.2.2.1](creating-and-configuring-a-cdb.md)
+- seed PDB [1.1.1](introduction-to-the-multitenant-architecture.md), [1.3.1](introduction-to-the-multitenant-architecture.md)
+- SERVICE\_NAME\_CONVERT clause [5.3](overview-of-pdb-creation.md), [7.2.4.3](cloning-a-pdb.md)
+- services
+	- PDBs [15.2.2](administering-pdbs-with-sql-plus.md)
+- SGA\_MIN\_SIZE parameter [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- SGA\_TARGET parameter [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- SHARED\_POOL\_SIZE parameter [22.1.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- SHUTDOWN command
+	- closing a PDB [15.5](administering-pdbs-with-sql-plus.md)
+		- PDBs [15.5.4](administering-pdbs-with-sql-plus.md)
+- shutting down an instance
+	- CDBs [13.6](administering-a-cdb-with-sql-plus.md)
+- SNAPSHOT COPY clause [1.3.2.1.2.2](introduction-to-the-multitenant-architecture.md), [7.1](cloning-a-pdb.md), [7.7.1.1](cloning-a-pdb.md)
+- snapshot copy PDBs [1.3.2.1.2.2](introduction-to-the-multitenant-architecture.md)
+- SNAPSHOT MODE clause [16.1.3](administering-pdb-snapshots.md)
+- snapshots, PDB [16.1](administering-pdb-snapshots.md)
+	- contents [16.1.2.1](administering-pdb-snapshots.md)
+		- viewing [16.6](administering-pdb-snapshots.md)
+- SOURCE\_FILE\_DIRECTORY clause [9.1.2.2](plugging-in-a-pdb.md)
+- SOURCE\_FILE\_NAME\_CONVERT clause [9.1.2.1](plugging-in-a-pdb.md)
+- split mirror clone PDBs [7.8](cloning-a-pdb.md)
+- SQL\*Loader
+	- application containers [17.3.9](administering-application-containers-with-sql-plus.md)
+- SQL\*Plus
+	- multitenant architecture support [1.1.2](introduction-to-the-multitenant-architecture.md)
+- SQL scripts
+	- CDBs [13.5.3](administering-a-cdb-with-sql-plus.md)
+- STANDBY\_PDB\_SOURCE\_FILE\_DBLINK initialization parameter [7.3.2](cloning-a-pdb.md)
+- STANDBY\_PDB\_SOURCE\_FILE\_DIRECTORY initialization parameter [9.2](plugging-in-a-pdb.md)
+- standby database
+	- CDBs [13.1.2](administering-a-cdb-with-sql-plus.md)
+- STARTUP command
+	- PDBs [15.5.2](administering-pdbs-with-sql-plus.md), [15.5.3](administering-pdbs-with-sql-plus.md)
+		- starting a PDB [15.5](administering-pdbs-with-sql-plus.md)
+- STORAGE clause [5.2.1](overview-of-pdb-creation.md)
+- switching over refreshable clone PDBs [15.4.4.2](administering-pdbs-with-sql-plus.md)
+- synchronizing applications [17.3.6](administering-application-containers-with-sql-plus.md)
+- system container [2.1.1](overview-of-the-multitenant-architecture.md)
+- system privileges
+	- CDBs [18.1.3](managing-security-for-a-multitenant-environment.md)
+		- with common privilege grants [18.1.3](managing-security-for-a-multitenant-environment.md)
+
+---
+
+## T
+
+- Transparent Data Encryption
+	- CDBs [13.1.2](administering-a-cdb-with-sql-plus.md)
+- Transport Layer Security (TLS)
+	- application containers [18.7](managing-security-for-a-multitenant-environment.md)
+
+---
+
+## U
+
+- undo\_mode\_clause [4.3.2.4](creating-and-configuring-a-cdb.md)
+- undo mode
+	- CDBs [2.5](overview-of-the-multitenant-architecture.md), [13.4.3](administering-a-cdb-with-sql-plus.md)
+- undo tablespaces [13.1.4](administering-a-cdb-with-sql-plus.md)
+	- specifying for CDBs [4.3.4.1](creating-and-configuring-a-cdb.md), [4.3.4.2](creating-and-configuring-a-cdb.md)
+- unified audit policies, application containers
+	- example [18.9.3.6](managing-security-for-a-multitenant-environment.md)
+- unified audit policies, CDBs
+	- about [18.9.3.1](managing-security-for-a-multitenant-environment.md)
+		- appearance in audit trail [18.9.3.7](managing-security-for-a-multitenant-environment.md)
+		- configuring [18.9.3.3](managing-security-for-a-multitenant-environment.md)
+		- examples [18.9.3.4](managing-security-for-a-multitenant-environment.md), [18.9.3.5](managing-security-for-a-multitenant-environment.md)
+- unified audit policies, roles
+	- examples [18.9.2](managing-security-for-a-multitenant-environment.md)
+- unplugging [11.1](removing-a-pdb.md), [12.1.2](creating-removing-application-containers-seeds-with-sql-plus.md), [12.2.2](creating-removing-application-containers-seeds-with-sql-plus.md)
+- upgrades
+	- database [1.2.2](introduction-to-the-multitenant-architecture.md), [2.1.3.1](overview-of-the-multitenant-architecture.md)
+- USER\_TABLESPACES clause [5.2.3](overview-of-pdb-creation.md)
+- user privileges
+	- CDBs [18.1.1](managing-security-for-a-multitenant-environment.md)
+- users
+	- common [1.1.1](introduction-to-the-multitenant-architecture.md), [2.2.1.2](overview-of-the-multitenant-architecture.md), [2.2.2.1](overview-of-the-multitenant-architecture.md)
+		- user name, specifying with CREATE USER statement [13.2.1.3](administering-a-cdb-with-sql-plus.md)
+- USING SNAPSHOT clause [7.6.1](cloning-a-pdb.md)
+- utilization limits for PDBs [22.2.1.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+
+---
+
+## V
+
+- V$CON\_SYS\_TIME\_MODEL view [19.1.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- V$CON\_SYSSTAT view [19.1.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- V$CON\_SYSTEM\_EVENT view [19.1.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- V$CON\_SYSTEM\_WAIT\_CLASS view [19.1.2](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- V$CONTAINERS view [19.3](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- V$PDBS view [15.4.1.2](administering-pdbs-with-sql-plus.md), [19.4](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md), [19.5](viewing-information-about-cdbs-and-pdbs-with-sql-plus.md)
+- V$RSRCPDBMETRIC\_HISTORY view [22.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- V$RSRCPDBMETRIC view [22.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+	- CPU usage [22.4.2](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- I/O generated [22.4.4](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- memory usage [22.4.5](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+		- parallel execution [22.4.3](using-oracle-resource-manager-for-pdbs-with-sql-plus.md)
+- Virtual Private Database
+	- See: Oracle Virtual Private Database
+- VPD
+	- See: Oracle Virtual Private Database
+
+---
+
+## X
+
+- XStream
+	- CDBs [25](using-xstream-with-a-cdb.md)

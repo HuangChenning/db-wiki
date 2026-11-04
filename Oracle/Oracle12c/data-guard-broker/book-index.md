@@ -1,0 +1,1021 @@
+---
+title: Broker
+book: Data Guard Broker
+doc_id: E85768-01
+version: "12.2"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/12.2/dgbkr/book-index.html
+tags:
+  - oracle
+  - 12c
+  - data-guard-broker
+---
+
+A B C D E F H I L M N O P Q R S T U V W
+
+---
+
+## A
+
+- ADD DATABASE command [7.5](oracle-data-guard-broker-commands.md)
+- ADD FAR\_SYNC command [7.6](oracle-data-guard-broker-commands.md)
+- Add Standby Database wizard
+- altering
+	- properties
+		- database [6.9.1.1](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- states
+		- database [6.9.1.3](examples-using-data-guard-broker-DGMGRL-utility.md), [6.9.1.4](examples-using-data-guard-broker-DGMGRL-utility.md)
+- AlternateLocation property [8.3.1](oracle-data-guard-broker-properties.md)
+	- setting log apply services [4.4.5](managing-oracle-data-guard-broker-configuration-members.md)
+- application continuity
+	- support in Oracle Data Guard broker [5.6.1.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- application integration [1.2](oracle-data-guard-broker-concepts.md)
+- apply instance [4.6.6](managing-oracle-data-guard-broker-configuration-members.md)
+	- failover [4.6.6](managing-oracle-data-guard-broker-configuration-members.md)
+		- PreferredApplyInstance property [4.6.6.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- selecting [4.6.6.1](managing-oracle-data-guard-broker-configuration-members.md)
+- ApplyInstanceTimeout property [8.3.3](oracle-data-guard-broker-properties.md)
+- ApplyLagThreshold property [8.3.4](oracle-data-guard-broker-properties.md)
+- ApplyParallel property [8.3.5](oracle-data-guard-broker-properties.md)
+- architecture
+	- Data Guard broker [1.3](oracle-data-guard-broker-concepts.md)
+- ARCHIVE\_LAG\_TARGET initialization parameter
+	- setting in a broker configuration [8.3.6](oracle-data-guard-broker-properties.md)
+- archived redo logs
+	- destination and configuration parameters [3.1](managing-oracle-data-guard-broker-configurations.md)
+		- in a Data Guard configuration [3.1](managing-oracle-data-guard-broker-configurations.md)
+		- primary database setup [2.2](oracle-data-guard-broker-installation-requirements.md)
+- ArchiveLagTarget property [8.3.6](oracle-data-guard-broker-properties.md)
+- ASYNC redo transport service [4.4.2](managing-oracle-data-guard-broker-configuration-members.md)
+
+---
+
+## B
+
+- background processes
+	- DMON [1.5.1](oracle-data-guard-broker-concepts.md)
+- banners
+	- suppressing from DGMGRL command-line interface output [7.1.1](oracle-data-guard-broker-commands.md)
+- batch programs
+	- using Data Guard command-line interface (DGMGRL) [7](oracle-data-guard-broker-commands.md)
+- before you perform a switchover [5.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- before you use DGMGRL [6.1](examples-using-data-guard-broker-DGMGRL-utility.md)
+- benefits
+	- Data Guard broker [1.2](oracle-data-guard-broker-concepts.md)
+		- high availability [1.2](oracle-data-guard-broker-concepts.md)
+		- scalability [1.2](oracle-data-guard-broker-concepts.md)
+		- with Oracle Real Application Clusters [1.2](oracle-data-guard-broker-concepts.md)
+- Binding property [8.3.7](oracle-data-guard-broker-properties.md)
+- broker
+	- components [1.3](oracle-data-guard-broker-concepts.md)
+		- configuration [1.1.1](oracle-data-guard-broker-concepts.md)
+		- Data Guard configuration file [1.5.2](oracle-data-guard-broker-concepts.md)
+		- drc\* log files [9.1](troubleshooting-oracle-data-guard-broker.md)
+		- introduction [1.1.2](oracle-data-guard-broker-concepts.md)
+		- user interfaces [1.4](oracle-data-guard-broker-concepts.md)
+- broker configurations
+	- benefits [1.2](oracle-data-guard-broker-concepts.md)
+		- changing roles [3.5](managing-oracle-data-guard-broker-configurations.md)
+		- creating [6.2](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- Data Guard configuration file [1.5.1](oracle-data-guard-broker-concepts.md)
+		- disabling databases [3.6](managing-oracle-data-guard-broker-configurations.md), [7.11](oracle-data-guard-broker-commands.md)
+		- effects of removing metadata from [7.46](oracle-data-guard-broker-commands.md)
+		- enabling [6.4](examples-using-data-guard-broker-DGMGRL-utility.md), [7.33](oracle-data-guard-broker-commands.md)
+		- enabling databases [3.5](managing-oracle-data-guard-broker-configurations.md), [3.6](managing-oracle-data-guard-broker-configurations.md), [6.4](examples-using-data-guard-broker-DGMGRL-utility.md), [7.33](oracle-data-guard-broker-commands.md)
+		- enabling fast-start failover [7.36](oracle-data-guard-broker-commands.md)
+		- health [1.5.1](oracle-data-guard-broker-concepts.md), [3.7](managing-oracle-data-guard-broker-configurations.md)
+		- life cycle [3.5](managing-oracle-data-guard-broker-configurations.md)
+		- management [1.4.1](oracle-data-guard-broker-concepts.md), [1.4.2](oracle-data-guard-broker-concepts.md), [1.5.2](oracle-data-guard-broker-concepts.md)
+		- monitoring [6.14](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- Oracle Net Services configuration [1.2](oracle-data-guard-broker-concepts.md), [1.4.1](oracle-data-guard-broker-concepts.md)
+		- properties [4.3](managing-oracle-data-guard-broker-configuration-members.md)
+		- protection modes [7.18](oracle-data-guard-broker-commands.md)
+		- setting protection mode [4.7.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- status modes [3.7](managing-oracle-data-guard-broker-configurations.md)
+		- supported [3.1](managing-oracle-data-guard-broker-configurations.md)
+- BystandersFollowRoleChange property [8.1.1](oracle-data-guard-broker-properties.md)
+- bystander standby databases [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+	- reintegrating into configuration [5.4.2.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+
+---
+
+## C
+
+- CDBs
+	- Data Guard broker support [1.1.3](oracle-data-guard-broker-concepts.md)
+- CFS
+	- See: cluster file system
+- changing [7.17](oracle-data-guard-broker-commands.md), [7.18](oracle-data-guard-broker-commands.md)
+	- properties
+		- databases in a broker configuration [3.5](managing-oracle-data-guard-broker-configurations.md), [4.3.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- roles
+		- within the broker configuration [3.5](managing-oracle-data-guard-broker-configurations.md)
+		- states
+		- databases in a broker configuration [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+				- of databases in a broker configuration [6.9](examples-using-data-guard-broker-DGMGRL-utility.md)
+- cluster file system (CFS)
+	- broker configuration files [3.3.2.1](managing-oracle-data-guard-broker-configurations.md)
+- command-line interface
+	- See: Data Guard command-line interface (DGMGRL)
+- command prompts
+	- suppressing from DGMGRL command-line interface output [7.1.1](oracle-data-guard-broker-commands.md)
+- CommunicationTimeout property [8.1.2](oracle-data-guard-broker-properties.md)
+- complete failover [5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md), [7.40](oracle-data-guard-broker-commands.md)
+- components
+	- broker [1.3](oracle-data-guard-broker-concepts.md)
+		- Data Guard configuration [3.1](managing-oracle-data-guard-broker-configurations.md)
+- configurable properties [4.3](managing-oracle-data-guard-broker-configuration-members.md)
+	- AlternateLocation [8.3.1](oracle-data-guard-broker-properties.md)
+		- ApplyInstanceTimeout [8.3.3](oracle-data-guard-broker-properties.md)
+		- ApplyLagThreshold [8.3.4](oracle-data-guard-broker-properties.md)
+		- ApplyParallel [8.3.5](oracle-data-guard-broker-properties.md)
+		- ArchiveLagTarget [8.3.6](oracle-data-guard-broker-properties.md)
+		- Binding [8.3.7](oracle-data-guard-broker-properties.md)
+		- database [4.3.2](managing-oracle-data-guard-broker-configuration-members.md), [8.3](oracle-data-guard-broker-properties.md)
+		- DbFileNameConvert [8.3.9](oracle-data-guard-broker-properties.md)
+		- DelayMins [8.3.10](oracle-data-guard-broker-properties.md)
+		- DGConnectIdentifier [8.3.11](oracle-data-guard-broker-properties.md)
+		- FastStartFailoverTarget [8.3.13](oracle-data-guard-broker-properties.md)
+		- LogArchiveFormat [8.3.14](oracle-data-guard-broker-properties.md)
+		- LogArchiveMaxProcesses [8.3.15](oracle-data-guard-broker-properties.md)
+		- LogArchiveMinSucceedDest [8.3.16](oracle-data-guard-broker-properties.md)
+		- LogArchiveTrace [8.3.17](oracle-data-guard-broker-properties.md)
+		- LogFileNameConvert [8.3.18](oracle-data-guard-broker-properties.md)
+		- LogShipping [8.3.19](oracle-data-guard-broker-properties.md)
+		- LogXptMode [8.3.20](oracle-data-guard-broker-properties.md)
+		- LsbyMaxEventsRecorded [8.3.21](oracle-data-guard-broker-properties.md)
+		- LsbyMaxServers [8.3.22](oracle-data-guard-broker-properties.md)
+		- LsbyMaxSga [8.3.23](oracle-data-guard-broker-properties.md)
+		- LsbyPreserveCommitOrder [8.3.24](oracle-data-guard-broker-properties.md)
+		- LsbyRecordAppliedDdl [8.3.25](oracle-data-guard-broker-properties.md)
+		- LsbyRecordSkipDdl [8.3.26](oracle-data-guard-broker-properties.md)
+		- LsbyRecordSkipErrors [8.3.27](oracle-data-guard-broker-properties.md)
+		- managing redo transport services [4.4](managing-oracle-data-guard-broker-configuration-members.md)
+		- MaxConnections [8.3.28](oracle-data-guard-broker-properties.md)
+		- MaxFailure [8.3.29](oracle-data-guard-broker-properties.md)
+		- NetTimeout [8.3.30](oracle-data-guard-broker-properties.md)
+		- ObserverConnectIdentifier [8.3.31](oracle-data-guard-broker-properties.md)
+		- PreferredApplyInstance [8.3.32](oracle-data-guard-broker-properties.md)
+		- RedoCompression [8.3.34](oracle-data-guard-broker-properties.md)
+		- RedoRoutes [8.3.35](oracle-data-guard-broker-properties.md)
+		- ReopenSecs [8.3.36](oracle-data-guard-broker-properties.md)
+		- SidName [8.3.37](oracle-data-guard-broker-properties.md)
+		- StandbyArchiveLocation [8.3.38](oracle-data-guard-broker-properties.md)
+		- StandbyFileManagement [8.3.39](oracle-data-guard-broker-properties.md)
+		- StaticConnectIdentifier [8.3.40](oracle-data-guard-broker-properties.md)
+		- TransportDisconnectedThreshold [8.3.41](oracle-data-guard-broker-properties.md)
+		- TransportLagThreshold [8.3.42](oracle-data-guard-broker-properties.md)
+- configuration files
+	- fast-start failover configuration (fsfo.dat) file [5.5.7.8](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- See Also Data Guard configuration file [1.5.2](oracle-data-guard-broker-concepts.md)
+- configuration properties
+	- BystandersFollowRoleChange [8.1.1](oracle-data-guard-broker-properties.md)
+		- CommunicationTimeout [8.1.2](oracle-data-guard-broker-properties.md)
+		- FastStartFailoverAutoReinstate [8.1.6](oracle-data-guard-broker-properties.md)
+		- FastStartFailoverLagLimit [8.1.7](oracle-data-guard-broker-properties.md)
+		- FastStartFailoverPmyShutdown [8.1.8](oracle-data-guard-broker-properties.md)
+		- FastStartFailoverThreshold [8.1.9](oracle-data-guard-broker-properties.md)
+		- ObserverOverride [8.1.10](oracle-data-guard-broker-properties.md)
+		- ObserverReconnect [8.1.11](oracle-data-guard-broker-properties.md)
+		- OperationTimeout [8.1.12](oracle-data-guard-broker-properties.md)
+		- PrimaryLostWriteAction [8.1.14](oracle-data-guard-broker-properties.md)
+		- Tracelevel [8.1.15](oracle-data-guard-broker-properties.md)
+- connecting
+	- privileges required for Data Guard broker configurations [7.1.3](oracle-data-guard-broker-commands.md)
+		- starting the observer [6.7](examples-using-data-guard-broker-DGMGRL-utility.md)
+- controlling
+	- available SGA memory [4.6.4](managing-oracle-data-guard-broker-configuration-members.md)
+- CONVERT DATABASE command [7.9](oracle-data-guard-broker-commands.md)
+- CREATE CONFIGURATION command [7.10](oracle-data-guard-broker-commands.md)
+- creating
+	- a broker configuration [6.2](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- with the Add Standby Database wizard [3.5](managing-oracle-data-guard-broker-configurations.md)
+		- a standby database [3.5](managing-oracle-data-guard-broker-configurations.md)
+
+---
+
+## D
+
+- database resources
+	- monitoring [1.2](oracle-data-guard-broker-concepts.md)
+- databases
+	- changing the state of [6.9](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- creating and adding to a broker configuration [1.4.1](oracle-data-guard-broker-concepts.md)
+		- dependencies [4.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- disabling management of [7.11](oracle-data-guard-broker-commands.md)
+		- during
+		- fast-start failover [5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- manual failover [5.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- switchover [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- enabling [6.4](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- health [4.11](managing-oracle-data-guard-broker-configuration-members.md)
+		- installation for broker management [2.2](oracle-data-guard-broker-installation-requirements.md)
+		- monitorable properties [4.3.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- network setup [1.5.1](oracle-data-guard-broker-concepts.md), [2.2](oracle-data-guard-broker-installation-requirements.md)
+		- properties [1.4.1](oracle-data-guard-broker-concepts.md), [4.3.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- property management [1.5.3](oracle-data-guard-broker-concepts.md)
+		- reenabling after a role transition [5.4.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- restarting
+		- after fast-start failover [5.5.9](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- shutting down
+		- effect on fast-start failover [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md), [5.5.2.12](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- states [4.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- dependencies [4.2](managing-oracle-data-guard-broker-configuration-members.md)
+				- transitions [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- status [4.11](managing-oracle-data-guard-broker-configuration-members.md)
+- Data Guard
+	- troubleshooting [9](troubleshooting-oracle-data-guard-broker.md)
+- Data Guard broker
+	- See Also broker [1.1.2](oracle-data-guard-broker-concepts.md)
+- Data Guard command-line interface
+	- commands
+		- ENABLE FAST\_START FAILOVER [7.36](oracle-data-guard-broker-commands.md)
+				- SET STATE [4.6.6.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- DG\_BROKER\_START initialization parameter [2.2](oracle-data-guard-broker-installation-requirements.md)
+		- enabling a database [6.4](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- introduction [1.4.2](oracle-data-guard-broker-concepts.md)
+- Data Guard command-line interface (DGMGRL)
+	- banners from output [7.1.1](oracle-data-guard-broker-commands.md)
+		- commands
+		- ADD DATABASE [7.5](oracle-data-guard-broker-commands.md)
+				- ADD FAR\_SYNC [7.6](oracle-data-guard-broker-commands.md)
+				- CONVERT DATABASE [7.9](oracle-data-guard-broker-commands.md)
+				- CREATE CONFIGURATION [7.10](oracle-data-guard-broker-commands.md)
+				- DISABLE CONFIGURATION [7.11](oracle-data-guard-broker-commands.md)
+				- DISABLE DATABASE [7.12](oracle-data-guard-broker-commands.md)
+				- DISABLE FAR\_SYNC [7.10](oracle-data-guard-broker-commands.md), [7.13](oracle-data-guard-broker-commands.md)
+				- DISABLE FAST\_START FAILOVER [7.14](oracle-data-guard-broker-commands.md)
+				- DISABLE FAST\_START FAILOVER CONDITION [7.15](oracle-data-guard-broker-commands.md)
+				- EDIT CONFIGURATION (property) [7.17](oracle-data-guard-broker-commands.md)
+				- EDIT CONFIGURATION (protection mode) [7.18](oracle-data-guard-broker-commands.md)
+				- EDIT CONFIGURATION (RENAME) [7.10](oracle-data-guard-broker-commands.md), [7.19](oracle-data-guard-broker-commands.md)
+				- EDIT CONFIGURATION RESET (Property) [7.10](oracle-data-guard-broker-commands.md), [7.20](oracle-data-guard-broker-commands.md)
+				- EDIT DATABASE (Property) [7.10](oracle-data-guard-broker-commands.md), [7.21](oracle-data-guard-broker-commands.md)
+				- EDIT DATABASE (rename) [7.22](oracle-data-guard-broker-commands.md)
+				- EDIT DATABASE (state) [7.23](oracle-data-guard-broker-commands.md)
+				- EDIT DATABASE RESET (Property) [7.24](oracle-data-guard-broker-commands.md)
+				- EDIT FAR\_SYNC [7.25](oracle-data-guard-broker-commands.md)
+				- EDIT FAR\_SYNC RESET (Property) [7.26](oracle-data-guard-broker-commands.md)
+				- EDIT INSTANCE (AUTO PFILE) [7.27](oracle-data-guard-broker-commands.md)
+				- EDIT INSTANCE (property) [7.28](oracle-data-guard-broker-commands.md), [7.29](oracle-data-guard-broker-commands.md)
+				- EDIT INSTANCE RESET (Property) [7.29](oracle-data-guard-broker-commands.md)
+				- ENABLE CONFIGURATION [7.33](oracle-data-guard-broker-commands.md)
+				- ENABLE DATABASE [7.34](oracle-data-guard-broker-commands.md)
+				- ENABLE FAR\_SYNC [7.35](oracle-data-guard-broker-commands.md)
+				- ENABLE FAST\_START FAILOVER [7.36](oracle-data-guard-broker-commands.md)
+				- ENABLE FAST\_START FAILOVER CONDITION [7.37](oracle-data-guard-broker-commands.md)
+				- EXIT [7.39](oracle-data-guard-broker-commands.md)
+				- FAILOVER [6.11](examples-using-data-guard-broker-DGMGRL-utility.md)
+				- HELP [7.41](oracle-data-guard-broker-commands.md)
+				- QUIT [7.44](oracle-data-guard-broker-commands.md)
+				- REINSTATE DATABASE [7.45](oracle-data-guard-broker-commands.md)
+				- REMOVE CONFIGURATION [7.46](oracle-data-guard-broker-commands.md)
+				- REMOVE DATABASE [7.47](oracle-data-guard-broker-commands.md)
+				- REMOVE FAR\_SYNC [7.48](oracle-data-guard-broker-commands.md)
+				- REMOVE INSTANCE [7.49](oracle-data-guard-broker-commands.md)
+				- SHOW CONFIGURATION [7.55](oracle-data-guard-broker-commands.md), [7.56](oracle-data-guard-broker-commands.md)
+				- SHOW DATABASE [7.57](oracle-data-guard-broker-commands.md)
+				- SHOW FAR\_SYNC [7.58](oracle-data-guard-broker-commands.md)
+				- SHOW FAST\_START FAILOVER [7.59](oracle-data-guard-broker-commands.md)
+				- SHOW INSTANCE [7.60](oracle-data-guard-broker-commands.md)
+				- SHUTDOWN [7.65](oracle-data-guard-broker-commands.md)
+				- SQL [7.67](oracle-data-guard-broker-commands.md)
+				- START OBSERVER [7.68](oracle-data-guard-broker-commands.md)
+				- STARTUP [7.71](oracle-data-guard-broker-commands.md)
+				- STOP OBSERVER [7.72](oracle-data-guard-broker-commands.md)
+				- SWITCHOVER [6.10](examples-using-data-guard-broker-DGMGRL-utility.md), [7.74](oracle-data-guard-broker-commands.md)
+				- VALIDATE DATABASE [7.75](oracle-data-guard-broker-commands.md)
+				- VALIDATE FAR\_SYNC [7.77](oracle-data-guard-broker-commands.md)
+		- creating a configuration [6.2](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- DG\_BROKER\_START initialization parameter [7.1.3](oracle-data-guard-broker-commands.md)
+		- enabling the configuration [6.4](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- monitoring broker configurations [6.14](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- performing routine management tasks [6.9](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- prerequisites [6.1](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- setting critical database properties [6.3](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- setting up standby redo log files [4.7.1.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- single command mode [7.1.1](oracle-data-guard-broker-commands.md)
+		- starting [7.1](oracle-data-guard-broker-commands.md)
+		- stopping [7.2](oracle-data-guard-broker-commands.md)
+		- string values [7.1.3](oracle-data-guard-broker-commands.md)
+		- summary of commands [7.1.2](oracle-data-guard-broker-commands.md)
+		- suppressing command prompts [7.1.1](oracle-data-guard-broker-commands.md)
+- Data Guard configuration file
+	- for an Oracle RAC database [3.3.2](managing-oracle-data-guard-broker-configurations.md)
+		- in a CFS area [3.3.2.1](managing-oracle-data-guard-broker-configurations.md)
+		- inconsistent values from server parameter file [8.2.2](oracle-data-guard-broker-properties.md)
+		- relationship to DMON process [1.5.1](oracle-data-guard-broker-concepts.md)
+		- setting up [3.3](managing-oracle-data-guard-broker-configurations.md)
+- Data Guard configurations
+	- automated creation of [1.2](oracle-data-guard-broker-concepts.md)
+		- background [3.1](managing-oracle-data-guard-broker-configurations.md)
+- Data Guard monitor (DMON) [1.5](oracle-data-guard-broker-concepts.md)
+	- interaction with the Oracle database [1.5.1](oracle-data-guard-broker-concepts.md)
+		- managing objects [3.1](managing-oracle-data-guard-broker-configurations.md), [3.5](managing-oracle-data-guard-broker-configurations.md), [6.4](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- Oracle database background processes [1.5.1](oracle-data-guard-broker-concepts.md)
+		- overview [1.5.1](oracle-data-guard-broker-concepts.md)
+		- two-way network communication [1.5.1](oracle-data-guard-broker-concepts.md)
+- data protection modes
+	- See: protection modes
+- DBA\_LOGSTDBY\_EVENTS table
+	- managing [4.6.5](managing-oracle-data-guard-broker-configuration-members.md)
+- DbFileNameConvert property [8.3.9](oracle-data-guard-broker-properties.md)
+- DBMS\_DG package
+	- using to direct fast-start failover [5.5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- delaying
+	- application of redo data with DelayMins property [4.6.1](managing-oracle-data-guard-broker-configuration-members.md)
+- DelayMins property [8.3.10](oracle-data-guard-broker-properties.md)
+- destinations
+	- archived redo log file parameters [3.1](managing-oracle-data-guard-broker-configurations.md)
+		- viewing the LogXptStatus property [8.2.3](oracle-data-guard-broker-properties.md)
+- DG\_BROKER\_CONFIG\_FILEn file [3.3.2](managing-oracle-data-guard-broker-configurations.md)
+	- in a CFS area [3.3.2.1](managing-oracle-data-guard-broker-configurations.md)
+- DG\_BROKER\_START initialization parameter [2.2](oracle-data-guard-broker-installation-requirements.md), [6.1](examples-using-data-guard-broker-DGMGRL-utility.md), [7.1.3](oracle-data-guard-broker-commands.md)
+- DGConnectIdentifier property [8.3.11](oracle-data-guard-broker-properties.md)
+- DGMGRL
+	- reinstating a database [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- diagnostic information
+	- sources [9.1](troubleshooting-oracle-data-guard-broker.md)
+- DISABLE CONFIGURATION command [7.11](oracle-data-guard-broker-commands.md)
+	- example [6.9.2.1](examples-using-data-guard-broker-DGMGRL-utility.md)
+- DISABLE DATABASE command [7.12](oracle-data-guard-broker-commands.md)
+	- example [6.9.2.2](examples-using-data-guard-broker-DGMGRL-utility.md)
+- DISABLE FAR\_SYNC command [7.10](oracle-data-guard-broker-commands.md), [7.13](oracle-data-guard-broker-commands.md)
+- DISABLE FAST\_START FAILOVER command [7.14](oracle-data-guard-broker-commands.md)
+- DISABLE FAST\_START FAILOVER CONDITION command [7.15](oracle-data-guard-broker-commands.md)
+- disabling [7.11](oracle-data-guard-broker-commands.md)
+	- broker configuration [6.9.2](examples-using-data-guard-broker-DGMGRL-utility.md), [7.11](oracle-data-guard-broker-commands.md)
+		- broker management of standby database [7.12](oracle-data-guard-broker-commands.md)
+		- databases [6.9.2.2](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- fast-start failover [5.5.5](using-data-guard-broker-to-manage-switchovers-failovers.md), [7.14](oracle-data-guard-broker-commands.md)
+		- on a standby database [5.5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- disaster protection
+	- benefits [1.2](oracle-data-guard-broker-concepts.md)
+- displaying
+	- configuration information [7.55](oracle-data-guard-broker-commands.md)
+		- help for DGMGRL commands [7.41](oracle-data-guard-broker-commands.md)
+- distributed management framework [1.1.2](oracle-data-guard-broker-concepts.md)
+- DMON
+	- See: Data Guard monitor (DMON)
+- downgrading
+	- Data Guard [A.3](upgrading-downgrading-in-data-guard-broker-configuration.md)
+		- Oracle Enterprise Manager [A.3](upgrading-downgrading-in-data-guard-broker-configuration.md)
+		- protection mode [4.7.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+- drc\* log files
+	- broker diagnostic information [9.1](troubleshooting-oracle-data-guard-broker.md)
+		- during reinstatement [5.5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- recording failed reinstatement [5.5.8.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+
+---
+
+## E
+
+- EDIT CONFIGURATION (Property) command [7.17](oracle-data-guard-broker-commands.md)
+- EDIT CONFIGURATION (protection mode) command [7.18](oracle-data-guard-broker-commands.md)
+- EDIT CONFIGURATION (RENAME) command [7.10](oracle-data-guard-broker-commands.md), [7.19](oracle-data-guard-broker-commands.md)
+- EDIT CONFIGURATION RESET (Property) command [7.10](oracle-data-guard-broker-commands.md), [7.20](oracle-data-guard-broker-commands.md)
+- EDIT DATABASE (property) command
+	- example [6.9.1.1](examples-using-data-guard-broker-DGMGRL-utility.md)
+- EDIT DATABASE (Property) command [7.10](oracle-data-guard-broker-commands.md), [7.21](oracle-data-guard-broker-commands.md)
+- EDIT DATABASE (rename) command [7.22](oracle-data-guard-broker-commands.md)
+- EDIT DATABASE (state) command [7.23](oracle-data-guard-broker-commands.md)
+	- example [6.9.1.3](examples-using-data-guard-broker-DGMGRL-utility.md)
+- EDIT DATABASE RESET (Property) command [7.24](oracle-data-guard-broker-commands.md)
+- EDIT FAR\_SYNC command [7.25](oracle-data-guard-broker-commands.md)
+- EDIT FAR\_SYNC RESET (Property) command [7.26](oracle-data-guard-broker-commands.md)
+- editing
+	- configurable properties [7.17](oracle-data-guard-broker-commands.md)
+		- database instance [7.27](oracle-data-guard-broker-commands.md), [7.28](oracle-data-guard-broker-commands.md), [7.29](oracle-data-guard-broker-commands.md)
+		- database name [7.22](oracle-data-guard-broker-commands.md)
+		- database state [7.23](oracle-data-guard-broker-commands.md)
+		- protection modes [7.18](oracle-data-guard-broker-commands.md)
+- EDIT INSTANCE (AUTO PFILE) command [7.27](oracle-data-guard-broker-commands.md)
+- EDIT INSTANCE (property) command [7.28](oracle-data-guard-broker-commands.md), [7.29](oracle-data-guard-broker-commands.md)
+- EDIT INSTANCE RESET (Property) command [7.29](oracle-data-guard-broker-commands.md)
+- e-mail
+	- reporting events [1.4.1](oracle-data-guard-broker-concepts.md)
+- ENABLE CONFIGURATION command [6.4](examples-using-data-guard-broker-DGMGRL-utility.md), [7.33](oracle-data-guard-broker-commands.md)
+- ENABLE DATABASE command [7.34](oracle-data-guard-broker-commands.md)
+- ENABLE FAR\_SYNC command [7.35](oracle-data-guard-broker-commands.md)
+- ENABLE FAST\_START FAILOVER command [7.36](oracle-data-guard-broker-commands.md)
+- ENABLE FAST\_START FAILOVER CONDITION command [7.37](oracle-data-guard-broker-commands.md)
+- enabling [7.36](oracle-data-guard-broker-commands.md)
+	- broker configuration [3.5](managing-oracle-data-guard-broker-configurations.md), [6.4](examples-using-data-guard-broker-DGMGRL-utility.md)
+- Enterprise Edition database
+	- installation [2.1](oracle-data-guard-broker-installation-requirements.md)
+- Enterprise Manager
+	- Fast-Start Failover wizard
+		- disabling fast-start failover [5.5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- wizards
+		- automate standby database creation [1.1.2](oracle-data-guard-broker-concepts.md)
+- error messages
+	- ORA-16795 [5.4.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- error status [3.7](managing-oracle-data-guard-broker-configurations.md)
+- events
+	- managing
+		- in a logical standby database [4.6.5](managing-oracle-data-guard-broker-configuration-members.md)
+		- monitoring with Oracle Enterprise Manager [1.1.2](oracle-data-guard-broker-concepts.md)
+		- Oracle Enterprise Manager [1.2](oracle-data-guard-broker-concepts.md)
+		- reporting [1.4.1](oracle-data-guard-broker-concepts.md)
+		- responding to [1.2](oracle-data-guard-broker-concepts.md)
+- EXIT command [7.39](oracle-data-guard-broker-commands.md), [7.44](oracle-data-guard-broker-commands.md)
+	- See also: QUIT command
+
+---
+
+## F
+
+- failover
+	- failing over to a standby database [7.40](oracle-data-guard-broker-commands.md)
+		- Oracle Enterprise Manager [1.4.1](oracle-data-guard-broker-concepts.md)
+- FAILOVER command [6.11](examples-using-data-guard-broker-DGMGRL-utility.md), [7.40](oracle-data-guard-broker-commands.md)
+- failovers
+	- benefits [1.2](oracle-data-guard-broker-concepts.md)
+		- broker tasks [5.4.2.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- choosing a target standby database [5.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- complete [5.4.2.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- fast-start failover [5.5.2.11](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- immediate [5.4.2.6](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- managing [5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- fast-start [5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- manual [5.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- manual
+		- complete option [5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- effect on data protection mode [5.4.2.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- immediate option [5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- reenabling disabled databases after [5.4.2.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- starting manually [5.4.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- using DGMGRL [6.11](examples-using-data-guard-broker-DGMGRL-utility.md)
+- failures
+	- observer [5.5.7.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- far sync instances
+	- managing [4.8](managing-oracle-data-guard-broker-configuration-members.md)
+- fast-start failover
+	- configuration information in the fsfo.dat file [5.5.7.8](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- defined [5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- DGMGRL client as the observer [1.4.2](oracle-data-guard-broker-concepts.md)
+		- directed from an application [5.5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- disabling [5.5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- to perform manual failover [5.5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- enabling [7.36](oracle-data-guard-broker-commands.md)
+		- instance failures [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- monitoring by the observer [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- observer overview [5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- performing manual failovers when enabled [5.5.2.13](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- performing switchover when enabled [5.5.2.13](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- querying V$DATABASE [5.5.2.11](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- reinstating the former primary database [5.5.8](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- restarting databases after shut down [5.5.9](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- setting the FastStartFailoverThreshold property [5.5.2.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- shutdown abort [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md), [5.5.2.12](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- to Oracle RAC database instances [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- unobserved [5.5.7.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- viewing failover configuration statistics [5.5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- FastStartFailoverAutoReinstate property [8.1.6](oracle-data-guard-broker-properties.md)
+- FastStartFailoverLagLimit property [8.1.7](oracle-data-guard-broker-properties.md)
+- FastStartFailoverPmyShutdown property [8.1.8](oracle-data-guard-broker-properties.md)
+- FastStartFailoverTarget property [8.3.13](oracle-data-guard-broker-properties.md)
+- FastStartFailoverThreshold property [8.1.9](oracle-data-guard-broker-properties.md)
+	- setting [5.5.2.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- FASTSYNC redo transport mode [8.3.20](oracle-data-guard-broker-properties.md)
+- FASTSYNC redo transport service [4.4.2](managing-oracle-data-guard-broker-configuration-members.md)
+- files
+	- naming the server parameter file [1.5.3](oracle-data-guard-broker-concepts.md)
+- Flashback Database
+	- reinstating databases [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- use after failover [5.4.2.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- flashback logs
+	- reinstating a failed primary database [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- FORCE option
+	- performing a manual failover [5.5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- FS\_FAILOVER\_OBSERVER\_HOST column
+	- of V$DATABASE view [5.5.7.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- FS\_FAILOVER\_OBSERVER\_PRESENT column
+	- of V$DATABASE view [5.5.7.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- FS\_FAILOVER\_STATUS column
+	- of V$DATABASE view
+		- failed reinstatement [5.5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- FSFO.DAT file
+	- overview [5.5.7.8](using-data-guard-broker-to-manage-switchovers-failovers.md)
+
+---
+
+## H
+
+- health check [1.2](oracle-data-guard-broker-concepts.md)
+	- monitoring [1.5.1](oracle-data-guard-broker-concepts.md)
+		- on primary database [4.11](managing-oracle-data-guard-broker-configuration-members.md)
+		- on standby database [4.11](managing-oracle-data-guard-broker-configuration-members.md)
+		- revealed by configuration status [3.7](managing-oracle-data-guard-broker-configurations.md)
+- HELP command [7.41](oracle-data-guard-broker-commands.md)
+- high availability
+	- benefits [1.2](oracle-data-guard-broker-concepts.md)
+		- levels of data protection [4.7](managing-oracle-data-guard-broker-configuration-members.md), [8.3.20](oracle-data-guard-broker-properties.md)
+		- LogXptMode property [8.3.20](oracle-data-guard-broker-properties.md)
+		- restoring after fast-start failover [5.5.8](using-data-guard-broker-to-manage-switchovers-failovers.md)
+
+---
+
+## I
+
+- immediate failover [5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md), [7.40](oracle-data-guard-broker-commands.md)
+- InconsistenLogXptProps property [8.2.1](oracle-data-guard-broker-properties.md)
+- InconsistentProperties property [8.2.2](oracle-data-guard-broker-properties.md)
+- increased scalability
+	- benefits [1.2](oracle-data-guard-broker-concepts.md)
+- initialization parameters
+	- database configurable properties [4.3.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- DG\_BROKER\_CONFIG\_FILEn [3.3.2](managing-oracle-data-guard-broker-configurations.md)
+		- DG\_BROKER\_START [2.2](oracle-data-guard-broker-installation-requirements.md), [6.1](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- dynamic [4.3.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- static [4.3.2](managing-oracle-data-guard-broker-configuration-members.md)
+- installation
+	- ARCHIVELOG mode setup [2.2](oracle-data-guard-broker-installation-requirements.md)
+		- Data Guard [2.1](oracle-data-guard-broker-installation-requirements.md)
+		- Oracle Enterprise Manager [2.1](oracle-data-guard-broker-installation-requirements.md)
+		- Oracle Instant Client [2.1](oracle-data-guard-broker-installation-requirements.md), [7.68](oracle-data-guard-broker-commands.md)
+		- prerequisites [2.2](oracle-data-guard-broker-installation-requirements.md)
+- instances
+	- failures [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- removing [7.15](oracle-data-guard-broker-commands.md), [7.37](oracle-data-guard-broker-commands.md)
+		- shutting down [7.65](oracle-data-guard-broker-commands.md)
+		- starting [7.71](oracle-data-guard-broker-commands.md)
+- intended state
+	- configuration health check [3.7](managing-oracle-data-guard-broker-configurations.md)
+
+---
+
+## L
+
+- life cycle of a broker configuration [3.5](managing-oracle-data-guard-broker-configurations.md)
+- log apply services
+	- and apply instance failover [4.6.6](managing-oracle-data-guard-broker-configuration-members.md)
+		- and parallel apply [4.6.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- apply instance [4.6.6](managing-oracle-data-guard-broker-configuration-members.md)
+		- configuring [1.4.1](oracle-data-guard-broker-concepts.md)
+		- Data Guard configuration [3.1](managing-oracle-data-guard-broker-configurations.md)
+		- delayed application of redo data [4.6.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- delaying [8.3.10](oracle-data-guard-broker-properties.md)
+		- in an Oracle RAC database [4.6.6](managing-oracle-data-guard-broker-configuration-members.md)
+		- managing [4.6](managing-oracle-data-guard-broker-configuration-members.md)
+		- selecting the apply instance [4.6.6.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- verifying [1.2](oracle-data-guard-broker-concepts.md)
+- LogArchiveFormat property [8.3.14](oracle-data-guard-broker-properties.md)
+- LogArchiveMaxProcesses property [8.3.15](oracle-data-guard-broker-properties.md)
+- LogArchiveMinSucceedDest property [8.3.16](oracle-data-guard-broker-properties.md)
+- LogArchiveTrace property [8.3.17](oracle-data-guard-broker-properties.md)
+- LogFileNameConvert property [8.3.18](oracle-data-guard-broker-properties.md)
+- log files
+	- broker [5.5.8.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- logical standby databases
+	- managing events [4.6.5](managing-oracle-data-guard-broker-configuration-members.md)
+		- SQL Apply [4.6.4](managing-oracle-data-guard-broker-configuration-members.md)
+		- state transitions [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- switchover to the primary role [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- LogShipping property [8.3.19](oracle-data-guard-broker-properties.md)
+- LogXptMode property [8.3.20](oracle-data-guard-broker-properties.md)
+- LogXptStatus property [8.2.3](oracle-data-guard-broker-properties.md)
+- LsbyFailedTxnInfo property [8.2.4](oracle-data-guard-broker-properties.md)
+- LsbyMaxEventsRecorded property [8.3.21](oracle-data-guard-broker-properties.md)
+- LsbyMaxServers property [8.3.22](oracle-data-guard-broker-properties.md)
+- LsbyMaxSga property [8.3.23](oracle-data-guard-broker-properties.md)
+- LsbyParameters property [8.2.5](oracle-data-guard-broker-properties.md)
+- LsbyPreserveCommitOrder property [8.3.24](oracle-data-guard-broker-properties.md)
+- LsbyRecordAppliedDdl property [8.3.25](oracle-data-guard-broker-properties.md)
+- LsbyRecordSkipDdl property [8.3.26](oracle-data-guard-broker-properties.md)
+- LsbyRecordSkipErrors property [8.3.27](oracle-data-guard-broker-properties.md)
+
+---
+
+## M
+
+- management
+	- benefits [1.2](oracle-data-guard-broker-concepts.md)
+		- Oracle Enterprise Manager [1.4.1](oracle-data-guard-broker-concepts.md)
+- managing
+	- a broker configuration [6](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- broker configurations [3](managing-oracle-data-guard-broker-configurations.md)
+		- databases [4](managing-oracle-data-guard-broker-configuration-members.md)
+		- DBA\_LOGSTDBY\_EVENTS table [4.6.5](managing-oracle-data-guard-broker-configuration-members.md)
+		- events
+		- in a logical standby database [4.6.5](managing-oracle-data-guard-broker-configuration-members.md)
+		- fast-start failover [5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- local operations [1.1.2](oracle-data-guard-broker-concepts.md)
+		- log apply services [4.6](managing-oracle-data-guard-broker-configuration-members.md)
+		- manual failover [5.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- parallel apply in a physical standby database [4.6.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- remote operations [1.1.2](oracle-data-guard-broker-concepts.md)
+		- roles [5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- fast-start failover [5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- manual failover [5.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- switchover [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- switchover [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- manual failover [1.2](oracle-data-guard-broker-concepts.md), [5.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+	- complete option [5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- effect on protection modes [4.7.2.3](managing-oracle-data-guard-broker-configuration-members.md)
+		- immediate option [5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- performing when fast-start failover is enabled [5.5.2.13](using-data-guard-broker-to-manage-switchovers-failovers.md), [5.5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- starting [5.4.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- manual role changes
+	- performing when fast-start failover is enabled [5.5.2.13](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- MaxConnections property [8.3.28](oracle-data-guard-broker-properties.md)
+- MaxFailure property [8.3.29](oracle-data-guard-broker-properties.md)
+- maximize availability [1.2](oracle-data-guard-broker-concepts.md), [8.3.20](oracle-data-guard-broker-properties.md)
+- maximize data protection [1.2](oracle-data-guard-broker-concepts.md), [8.3.20](oracle-data-guard-broker-properties.md)
+- maximize performance [1.2](oracle-data-guard-broker-concepts.md), [8.3.20](oracle-data-guard-broker-properties.md)
+- maximum availability
+	- data protection mode [4.7.1.1](managing-oracle-data-guard-broker-configuration-members.md)
+- maximum performance
+	- data protection mode [4.7.1.1](managing-oracle-data-guard-broker-configuration-members.md)
+- maximum protection
+	- data protection mode [4.7.1.1](managing-oracle-data-guard-broker-configuration-members.md)
+- monitorable properties [4.3](managing-oracle-data-guard-broker-configuration-members.md), [4.3.1](managing-oracle-data-guard-broker-configuration-members.md), [8.2](oracle-data-guard-broker-properties.md)
+	- InconsistentLogXptProps [8.2.1](oracle-data-guard-broker-properties.md)
+		- InconsistentProperties [8.2.2](oracle-data-guard-broker-properties.md)
+		- LogXptStatus [8.2.3](oracle-data-guard-broker-properties.md)
+		- LsbyFailedTxnInfo [8.2.4](oracle-data-guard-broker-properties.md)
+		- LsbyParameters [8.2.5](oracle-data-guard-broker-properties.md)
+		- RecvQEntries [8.2.6](oracle-data-guard-broker-properties.md)
+		- SendQEntries [8.2.7](oracle-data-guard-broker-properties.md)
+		- TopWaitEvents [8.2.8](oracle-data-guard-broker-properties.md)
+- monitoring
+	- broker configurations [1.5.1](oracle-data-guard-broker-concepts.md), [6](examples-using-data-guard-broker-DGMGRL-utility.md), [6.14](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- local and remote databases [1.2](oracle-data-guard-broker-concepts.md)
+		- Oracle Enterprise Manager performance page [3.5](managing-oracle-data-guard-broker-configurations.md)
+		- through the command-line interface [1.4.2](oracle-data-guard-broker-concepts.md)
+- multitenant container databases
+	- See CDBs [1.1.3](oracle-data-guard-broker-concepts.md)
+
+---
+
+## N
+
+- NetTimeout property [8.3.30](oracle-data-guard-broker-properties.md)
+- networks
+	- Data Guard configuration [3.1](managing-oracle-data-guard-broker-configurations.md)
+		- two-way communication [1.5.1](oracle-data-guard-broker-concepts.md)
+- normal status [3.7](managing-oracle-data-guard-broker-configurations.md)
+
+---
+
+## O
+
+- objects
+	- broker configuration [3.1](managing-oracle-data-guard-broker-configurations.md)
+		- disabling [6.9.2](examples-using-data-guard-broker-DGMGRL-utility.md)
+- observer [5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+	- and FastStartFailoverThreshold property [5.5.2.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- connecting to the configuration [6.7](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- connection to the local computer [5.5.7.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- detecting
+		- database shutdown [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md), [5.5.2.12](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- instance failures [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- failures [5.5.7.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- finding host machine name [5.5.7.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- installing Oracle Instant Client kit [2.1](oracle-data-guard-broker-installation-requirements.md), [7.68](oracle-data-guard-broker-commands.md)
+		- lost connection [5.5.7.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- maintaining fast-start failover configuration information [5.5.7.8](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- monitoring [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- using Oracle Wallet for connection credentials [7.8](oracle-data-guard-broker-commands.md)
+- ObserverConnectIdentifier property [8.3.31](oracle-data-guard-broker-properties.md)
+- ObserverOverride property [8.1.10](oracle-data-guard-broker-properties.md)
+- ObserverReconnect property [8.1.11](oracle-data-guard-broker-properties.md)
+- operations
+	- complete failover [7.40](oracle-data-guard-broker-commands.md)
+		- disable broker management
+		- effect on protection modes [4.7.2.4](managing-oracle-data-guard-broker-configuration-members.md)
+		- downgrade
+		- effect on protection modes [4.7.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- effect on protection modes [4.7.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- enable broker management
+		- effect on protection modes [4.7.2.4](managing-oracle-data-guard-broker-configuration-members.md)
+		- failover [6.11](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- immediate failover [7.40](oracle-data-guard-broker-commands.md)
+		- manual failover
+		- effect on protection modes [4.7.2.3](managing-oracle-data-guard-broker-configuration-members.md)
+		- removing a database from the configuration
+		- effect on protection modes [4.7.2.5](managing-oracle-data-guard-broker-configuration-members.md)
+- OperationTimeout property [8.1.12](oracle-data-guard-broker-properties.md)
+- ORA-16661 message
+	- reinstating a database [5.4.3](using-data-guard-broker-to-manage-switchovers-failovers.md), [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- ORA-16795 message
+	- re-creating a database [5.4.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- Oracle Clusterware [1.2](oracle-data-guard-broker-concepts.md)
+	- and instances of an Oracle RAC database [1.2](oracle-data-guard-broker-concepts.md)
+		- integration with Data Guard broker [1.2](oracle-data-guard-broker-concepts.md)
+		- recover failed instances [1.2](oracle-data-guard-broker-concepts.md)
+- Oracle Enterprise Manager [1.4.1](oracle-data-guard-broker-concepts.md)
+	- Add Standby Database wizard [1.4.1](oracle-data-guard-broker-concepts.md)
+		- database property pages [1.4.1](oracle-data-guard-broker-concepts.md)
+		- downgrading [A.3](upgrading-downgrading-in-data-guard-broker-configuration.md)
+		- event management system [1.2](oracle-data-guard-broker-concepts.md)
+		- integration [1.4.1](oracle-data-guard-broker-concepts.md)
+		- integration with the Data Guard monitor [1.4.1](oracle-data-guard-broker-concepts.md)
+		- introduction [1.1.2](oracle-data-guard-broker-concepts.md), [1.3](oracle-data-guard-broker-concepts.md)
+		- making Oracle Net Services configuration changes [1.2](oracle-data-guard-broker-concepts.md), [1.4.1](oracle-data-guard-broker-concepts.md)
+		- monitoring events [1.1.2](oracle-data-guard-broker-concepts.md)
+		- performance tools and graphs [1.4.1](oracle-data-guard-broker-concepts.md)
+		- upgrading [A.1](upgrading-downgrading-in-data-guard-broker-configuration.md)
+		- wizards
+		- creating standby databases [1.4.1](oracle-data-guard-broker-concepts.md)
+- Oracle Instant Client
+	- installing [2.1](oracle-data-guard-broker-installation-requirements.md), [7.68](oracle-data-guard-broker-commands.md)
+- Oracle Net Services
+	- configuration changes [1.2](oracle-data-guard-broker-concepts.md), [1.4.1](oracle-data-guard-broker-concepts.md)
+		- supported configuration [3.1](managing-oracle-data-guard-broker-configurations.md)
+		- two-way communication [1.5.1](oracle-data-guard-broker-concepts.md)
+- Oracle RAC One Node
+	- supported by Oracle Data Guard broker [1.1](oracle-data-guard-broker-concepts.md)
+- Oracle Real Application Clusters
+	- and log apply services [4.6.6](managing-oracle-data-guard-broker-configuration-members.md)
+		- and setting the apply instance [4.6.6.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- availability of instances with Oracle Clusterware [1.2](oracle-data-guard-broker-concepts.md)
+		- benefits [1.2](oracle-data-guard-broker-concepts.md)
+		- fast-start failover [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- observer behavior in [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- observer connection to instances [5.5.7.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- Oracle Clusterware [1.2](oracle-data-guard-broker-concepts.md)
+- Oracle Universal Installer
+	- installing Oracle Instant Client [2.1](oracle-data-guard-broker-installation-requirements.md), [7.68](oracle-data-guard-broker-commands.md)
+- Oracle Wallet
+	- starting the observer [7.8](oracle-data-guard-broker-commands.md)
+
+---
+
+## P
+
+- parallel apply
+	- and log apply services [4.6.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- managing in a physical standby database [4.6.2](managing-oracle-data-guard-broker-configuration-members.md)
+- performance
+	- Oracle Enterprise Manager tools [1.4.1](oracle-data-guard-broker-concepts.md)
+- physical standby databases
+	- managing parallel apply [4.6.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- state transitions [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- switchover to the primary role [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- PreferredApplyInstance property [8.3.32](oracle-data-guard-broker-properties.md)
+- prerequisites
+	- installation [2.2](oracle-data-guard-broker-installation-requirements.md)
+		- switchover [5.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- primary database
+	- ARCHIVELOG mode [2.2](oracle-data-guard-broker-installation-requirements.md)
+		- constructing a standby database [3.5](managing-oracle-data-guard-broker-configurations.md), [6.1](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- Data Guard configuration [3.1](managing-oracle-data-guard-broker-configurations.md)
+		- during failover [1.4.1](oracle-data-guard-broker-concepts.md)
+		- during switchover [5.3.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- Flashback Database [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- health check [4.11](managing-oracle-data-guard-broker-configuration-members.md)
+		- preparing for switchover [5.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- reinstating after a fast-start failover [5.5.8](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- state transitions [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- switching over to the standby role [7.74](oracle-data-guard-broker-commands.md)
+- PrimaryLostWriteAction property [8.1.14](oracle-data-guard-broker-properties.md)
+- processes
+	- DMON [1.5.1](oracle-data-guard-broker-concepts.md)
+		- Oracle database [1.5.1](oracle-data-guard-broker-concepts.md)
+- properties [4.3.2](managing-oracle-data-guard-broker-configuration-members.md)
+	- configurable [4.3](managing-oracle-data-guard-broker-configuration-members.md)
+		- database [4.3](managing-oracle-data-guard-broker-configuration-members.md)
+		- managing [1.5.3](oracle-data-guard-broker-concepts.md)
+		- monitorable [4.3](managing-oracle-data-guard-broker-configuration-members.md)
+		- setting [3.5](managing-oracle-data-guard-broker-configurations.md), [6.3](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- in server parameter file [1.5.3](oracle-data-guard-broker-concepts.md), [2.2](oracle-data-guard-broker-installation-requirements.md)
+- property pages
+	- database [1.4.1](oracle-data-guard-broker-concepts.md)
+- protection modes
+	- after a failover [4.7.2.3](managing-oracle-data-guard-broker-configuration-members.md), [5.4.2.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- benefits [1.2](oracle-data-guard-broker-concepts.md)
+		- configuration [7.18](oracle-data-guard-broker-commands.md), [7.19](oracle-data-guard-broker-commands.md), [7.20](oracle-data-guard-broker-commands.md)
+		- downgrading [4.7.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- redo transport services setup [8.3.20](oracle-data-guard-broker-properties.md)
+		- setting for a broker configuration [4.7](managing-oracle-data-guard-broker-configuration-members.md)
+		- updating [3.5](managing-oracle-data-guard-broker-configurations.md)
+		- upgrading [4.7.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+
+---
+
+## Q
+
+- QUIT command [7.39](oracle-data-guard-broker-commands.md), [7.44](oracle-data-guard-broker-commands.md)
+	- See also: EXIT command
+
+---
+
+## R
+
+- RecvQEntries property [8.2.6](oracle-data-guard-broker-properties.md)
+- Redo Apply [3.1](managing-oracle-data-guard-broker-configurations.md)
+- RedoCompression property [8.3.34](oracle-data-guard-broker-properties.md)
+- RedoRoutes property [8.3.35](oracle-data-guard-broker-properties.md)
+- redo transport services
+	- ASYNC mode [4.4.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- configuring [1.4.1](oracle-data-guard-broker-concepts.md)
+		- data protection modes [8.3.20](oracle-data-guard-broker-properties.md)
+		- Data Guard configuration [3.1](managing-oracle-data-guard-broker-configurations.md)
+		- FASTSYNC mode [4.4.2](managing-oracle-data-guard-broker-configuration-members.md), [8.3.20](oracle-data-guard-broker-properties.md)
+		- managing [4.4](managing-oracle-data-guard-broker-configuration-members.md)
+		- SYNC mode [4.4.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- tuning [4.4.6](managing-oracle-data-guard-broker-configuration-members.md)
+		- turning off [4.4.4](managing-oracle-data-guard-broker-configuration-members.md)
+		- turning on [4.4.4](managing-oracle-data-guard-broker-configuration-members.md)
+		- verifying [1.2](oracle-data-guard-broker-concepts.md)
+- REINSTATE DATABASE command [7.45](oracle-data-guard-broker-commands.md)
+- reinstatement [5.5.8](using-data-guard-broker-to-manage-switchovers-failovers.md)
+	- failure logged in broker drc\* log files [5.5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- Flashback Database requirement [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- flashback logs requirement [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- how to [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- logged in broker log files [5.5.8.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- ORA-16661 message [5.4.3](using-data-guard-broker-to-manage-switchovers-failovers.md), [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- using DGMGRL [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- using Enterprise Manager [5.4.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- REMOVE CONFIGURATION command [7.46](oracle-data-guard-broker-commands.md)
+	- example [6.9.3.3](examples-using-data-guard-broker-DGMGRL-utility.md)
+- REMOVE DATABASE command [7.47](oracle-data-guard-broker-commands.md)
+- REMOVE FAR\_SYNC command [7.48](oracle-data-guard-broker-commands.md)
+- REMOVE INSTANCE command [7.49](oracle-data-guard-broker-commands.md)
+- removing
+	- See: each REMOVE command
+	- a standby database [4.7.2.5](managing-oracle-data-guard-broker-configuration-members.md)
+- ReopenSecs property [8.3.36](oracle-data-guard-broker-properties.md)
+- requests
+	- passing between sites [1.5.1](oracle-data-guard-broker-concepts.md)
+- restarting
+	- databases
+		- when fast-start failover is enabled [5.5.9](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- role transitions
+	- changing [3.5](managing-oracle-data-guard-broker-configurations.md)
+		- managing [5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- fast-start failover [5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- manual failover [5.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- switchover [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+
+---
+
+## S
+
+- scripts
+	- using Data Guard command-line interface (DGMGRL) [7](oracle-data-guard-broker-commands.md)
+- selecting the apply instance [4.6.6.1](managing-oracle-data-guard-broker-configuration-members.md)
+- SendQEntries property [8.2.7](oracle-data-guard-broker-properties.md)
+- server parameter file
+	- broker property management [1.5.3](oracle-data-guard-broker-concepts.md), [2.2](oracle-data-guard-broker-installation-requirements.md)
+		- filenames [1.5.3](oracle-data-guard-broker-concepts.md)
+		- inconsistent values from Data Guard configuration file [8.2.2](oracle-data-guard-broker-properties.md)
+- server-side software [1.5](oracle-data-guard-broker-concepts.md)
+- SET STATE command
+	- and setting the apply instance [4.6.6.1](managing-oracle-data-guard-broker-configuration-members.md)
+- setting
+	- configuration protection mode [4.7.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- database properties [6.3](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- log apply services [4.4.5](managing-oracle-data-guard-broker-configuration-members.md)
+		- redo transport services [4.4.6](managing-oracle-data-guard-broker-configuration-members.md)
+- SGA memory
+	- and SQL Apply [4.6.4](managing-oracle-data-guard-broker-configuration-members.md)
+- SHOW CONFIGURATION command [6.4](examples-using-data-guard-broker-DGMGRL-utility.md), [7.55](oracle-data-guard-broker-commands.md), [7.56](oracle-data-guard-broker-commands.md)
+- SHOW DATABASE command [7.57](oracle-data-guard-broker-commands.md)
+- SHOW FAR\_SYNC command [7.58](oracle-data-guard-broker-commands.md)
+- SHOW FAST\_START FAILOVER command [7.59](oracle-data-guard-broker-commands.md)
+- showing
+	- See: each SHOW command
+- SHOW INSTANCE command [7.60](oracle-data-guard-broker-commands.md)
+- shutdown abort [5.5.2.10](using-data-guard-broker-to-manage-switchovers-failovers.md)
+	- effect on fast-start failover [5.5.2.12](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- SHUTDOWN command [7.65](oracle-data-guard-broker-commands.md)
+- shutting down an Oracle instance [7.65](oracle-data-guard-broker-commands.md)
+- SidName property [8.3.37](oracle-data-guard-broker-properties.md)
+- single command mode
+	- for Data Guard command-line interface [7.1.1](oracle-data-guard-broker-commands.md)
+- SQL Apply [3.1](managing-oracle-data-guard-broker-configurations.md)
+	- and logical standby databases [4.6.4](managing-oracle-data-guard-broker-configuration-members.md)
+- SQL command [7.67](oracle-data-guard-broker-commands.md)
+- SQL statements
+	- executing from DGMGRL command line [7.67](oracle-data-guard-broker-commands.md)
+- StandbyArchiveLocation property [8.3.38](oracle-data-guard-broker-properties.md)
+	- setting log apply services [4.4.5](managing-oracle-data-guard-broker-configuration-members.md)
+- standby databases
+	- choosing a target standby database [5.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- constructing from backups [3.5](managing-oracle-data-guard-broker-configurations.md), [6.1](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- creating [1.4.1](oracle-data-guard-broker-concepts.md)
+		- health check [4.11](managing-oracle-data-guard-broker-configuration-members.md)
+		- not involved in a switchover [5.3.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- reenabling after failover [5.4.2.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- removing [4.7.2.5](managing-oracle-data-guard-broker-configuration-members.md)
+		- specifying the location of archived redo logs [4.4.5](managing-oracle-data-guard-broker-configuration-members.md)
+		- switching over to the primary role [7.74](oracle-data-guard-broker-commands.md)
+- StandbyFileManagement property [8.3.39](oracle-data-guard-broker-properties.md)
+- standby redo log files
+	- setting up with DGMGRL [4.7.1.2](managing-oracle-data-guard-broker-configuration-members.md)
+- starting [7.1](oracle-data-guard-broker-commands.md)
+	- Data Guard command-line interface (DGMGRL) [6.2.1](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- Data Guard monitor (DMON) [3.4](managing-oracle-data-guard-broker-configurations.md)
+		- manual failover [5.4.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- Oracle instance [7.71](oracle-data-guard-broker-commands.md)
+		- switchover [5.3.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- START OBSERVER command
+	- fast-start failover configuration file (fsfo.dat) [5.5.7.8](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- STARTUP command [7.71](oracle-data-guard-broker-commands.md)
+- states [3.6](managing-oracle-data-guard-broker-configurations.md)
+	- changing [6.9](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- database [4.2](managing-oracle-data-guard-broker-configuration-members.md)
+		- database transitions [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+- state transitions
+	- effect on database states [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- logical standby database [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- physical standby database [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+		- primary database [4.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+- StaticConnectIdentifier property [8.3.40](oracle-data-guard-broker-properties.md)
+- status
+	- configuration [3.7](managing-oracle-data-guard-broker-configurations.md)
+		- health check on primary database [4.11](managing-oracle-data-guard-broker-configuration-members.md)
+		- health check on standby database [4.11](managing-oracle-data-guard-broker-configuration-members.md)
+		- health of the database [4.11](managing-oracle-data-guard-broker-configuration-members.md)
+		- intended state of a configuration [3.7](managing-oracle-data-guard-broker-configurations.md)
+- status messages
+	- ORA-16661 [5.4.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- ORA-16795 [5.4.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- STOP OBSERVER command [7.68](oracle-data-guard-broker-commands.md), [7.72](oracle-data-guard-broker-commands.md)
+- string values
+	- Data Guard command-line interface [7.1.3](oracle-data-guard-broker-commands.md)
+- SWITCHOVER command [6.10](examples-using-data-guard-broker-DGMGRL-utility.md), [7.74](oracle-data-guard-broker-commands.md)
+- switchovers
+	- benefits [1.2](oracle-data-guard-broker-concepts.md)
+		- broker tasks [5.3.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- choosing a target standby database [5.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- DGMGRL SWITCHOVER command [6.10](examples-using-data-guard-broker-DGMGRL-utility.md)
+		- effect on
+		- database startup [7.74](oracle-data-guard-broker-commands.md)
+				- primary database [5.3.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- protection modes [4.7.2.2](managing-oracle-data-guard-broker-configuration-members.md)
+				- standby databases not involved in the switchover [5.3.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- managing [5](using-data-guard-broker-to-manage-switchovers-failovers.md), [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- overview [5.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- Oracle Enterprise Manager [1.4.1](oracle-data-guard-broker-concepts.md)
+		- performing when fast-start failover is enabled [5.5.2.13](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- preparing the primary database [5.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- prerequisites [5.3.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- reenabling disabled standby databases [5.4.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- starting [5.3.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- transitioning
+		- a logical standby database to the primary role [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+				- a physical standby database to the primary role [5.3](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- using the DGMGRL SWITCHOVER command [7.74](oracle-data-guard-broker-commands.md)
+- SYNC redo transport mode [4.4.2](managing-oracle-data-guard-broker-configuration-members.md)
+- SYSDBA privileges
+	- to connect to the database [7.1.3](oracle-data-guard-broker-commands.md)
+
+---
+
+## T
+
+- target standby database
+	- choosing [5.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- disabling fast-start failover on [5.5.5](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- TopWaitEvents property [8.2.8](oracle-data-guard-broker-properties.md)
+- TraceLevel property [8.1.15](oracle-data-guard-broker-properties.md)
+- transaction commit order
+	- controlling [4.6.4](managing-oracle-data-guard-broker-configuration-members.md)
+- TransportDisconnectedThreshold property [8.3.41](oracle-data-guard-broker-properties.md)
+- TransportLagThreshold property [8.3.42](oracle-data-guard-broker-properties.md)
+- TRANSPORT-ON state
+	- setting LogShipping property [8.3.19](oracle-data-guard-broker-properties.md)
+- troubleshooting
+	- Data Guard [9](troubleshooting-oracle-data-guard-broker.md)
+		- diagnostics logged in broker drc\* log files [9.1](troubleshooting-oracle-data-guard-broker.md)
+- tuning
+	- redo transport services [4.4.6](managing-oracle-data-guard-broker-configuration-members.md)
+- two-way communication channel [1.5.1](oracle-data-guard-broker-concepts.md)
+
+---
+
+## U
+
+- unobserved configuration [5.5.7.4](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- updating configuration properties [4.3](managing-oracle-data-guard-broker-configuration-members.md)
+- upgrading
+	- Data Guard [A.1](upgrading-downgrading-in-data-guard-broker-configuration.md), [A.2](upgrading-downgrading-in-data-guard-broker-configuration.md)
+		- Oracle Enterprise Manager [A.1](upgrading-downgrading-in-data-guard-broker-configuration.md)
+		- protection mode [4.7.2.1](managing-oracle-data-guard-broker-configuration-members.md)
+- user interfaces
+	- overview [1.4](oracle-data-guard-broker-concepts.md)
+
+---
+
+## V
+
+- V$DATABASE view
+	- fast-start failover columns [5.5.2.11](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- FS\_FAILOVER\_OBSERVER\_HOST column [5.5.7.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- FS\_FAILOVER\_OBSERVER\_PRESENT column [5.5.7.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+		- viewing
+		- fast-start failover statistics [5.5.4.1](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- V$FS\_FAILOVER\_STATS view [5.5.4.2](using-data-guard-broker-to-manage-switchovers-failovers.md)
+- VALIDATE DATABASE command [7.75](oracle-data-guard-broker-commands.md)
+- VALIDATE FAR\_SYNC command [7.77](oracle-data-guard-broker-commands.md)
+
+---
+
+## W
+
+- warning status [3.7](managing-oracle-data-guard-broker-configurations.md)
+- wizards
+	- Add Standby Database [1.4.1](oracle-data-guard-broker-concepts.md)

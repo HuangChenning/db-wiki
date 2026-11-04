@@ -1,0 +1,932 @@
+---
+title: "Administrator’s Guide"
+book: "Multitenant Administrator's Guide"
+doc_id: F31734-10
+version: "21c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/21/multi/book-index.html
+tags:
+  - oracle
+  - 21c
+  - multitenant-administrators-guide
+---
+
+Symbols A B C D E F G H I L M N O P Q R S T U V W
+
+---
+
+## A
+
+- administrative accounts [1.4.1.2.1.2](introduction-to-the-multitenant-architecture.md)
+- administrative users
+	- password files, multitenant environment [15.2.1.4](administering-a-cdb-with-sql-plus.md)
+- administrator privileges [1.4.1.2.1.2](introduction-to-the-multitenant-architecture.md)
+- ALTER DATABASE statement [15.1.4](administering-a-cdb-with-sql-plus.md)
+	- application roots [14.1.2](application-containers2.md), [17.2](administering-application-containers-with-sql-plus.md)
+		- CDBs [15.5.1](administering-a-cdb-with-sql-plus.md)
+		- database partially available to users [15.3.2.1](administering-a-cdb-with-sql-plus.md)
+		- MOUNT clause [15.3.2.1](administering-a-cdb-with-sql-plus.md)
+		- OPEN clause [15.3.2.2](administering-a-cdb-with-sql-plus.md)
+		- READ ONLY clause [15.3.2.3](administering-a-cdb-with-sql-plus.md)
+- ALTER PLUGGABLE DATABASE statement [15.5.1](administering-a-cdb-with-sql-plus.md), [16.4.2](administering-pdbs-with-sql-plus.md), [17.2](administering-application-containers-with-sql-plus.md)
+	- DROP SNAPSHOT clause [12.5](administering-pdb-snapshots.md)
+		- MATERIALIZE clause [8.6.3](cloning-a-pdb.md)
+		- SET MAX\_PDB\_SNAPSHOTS clause [12.1.2.2](administering-pdb-snapshots.md), [12.2](administering-pdb-snapshots.md)
+		- SNAPSHOT clause [12.3](administering-pdb-snapshots.md), [12.4](administering-pdb-snapshots.md)
+		- SNAPSHOT COPY clause [8.6.3](cloning-a-pdb.md)
+		- UNPLUG INTO clause [13.1](removing-a-pdb.md), [14.3](unplugging-application-container-cdb.md), [14.6](unplugging-application-seed-application-container.md)
+- ALTER SESSION statement
+	- SET CONTAINER clause [15.2.2.2](administering-a-cdb-with-sql-plus.md)
+		- setting time zone [4.1.10.1](create-cdb-adv.md)
+- ALTER SYSTEM statement
+	- CDBs [15.4.2](administering-a-cdb-with-sql-plus.md)
+		- CONTAINER clause [15.4.2](administering-a-cdb-with-sql-plus.md)
+		- ENABLE RESTRICTED SESSION clause [15.3.2.4](administering-a-cdb-with-sql-plus.md)
+		- PDBs [16.3](administering-pdbs-with-sql-plus.md)
+		- QUIESCE RESTRICTED [15.3.4.2](administering-a-cdb-with-sql-plus.md)
+		- RESUME clause [15.3.5](administering-a-cdb-with-sql-plus.md)
+		- SUSPEND clause [15.3.5](administering-a-cdb-with-sql-plus.md)
+		- UNQUIESCE [15.3.4.3](administering-a-cdb-with-sql-plus.md)
+- application common objects [1.4.1.4](introduction-to-the-multitenant-architecture.md), [17.4](administering-application-containers-with-sql-plus.md), [17.4.1](administering-application-containers-with-sql-plus.md)
+	- CONTAINERS clause [17.5.1](administering-application-containers-with-sql-plus.md)
+		- creation [17.4.1.1](administering-application-containers-with-sql-plus.md), [17.4.3](administering-application-containers-with-sql-plus.md)
+		- DDL statements [17.4.5](administering-application-containers-with-sql-plus.md)
+		- DML statements [17.4.4](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- naming rules [1.4.1.1.2](introduction-to-the-multitenant-architecture.md)
+		- restrictions [17.4.2](administering-application-containers-with-sql-plus.md)
+- application containers
+	- about [14.1](application-containers2.md)
+		- administering [17](administering-application-containers-with-sql-plus.md), [17.1.1](administering-application-containers-with-sql-plus.md)
+		- application common objects [1.4.1.1.2](introduction-to-the-multitenant-architecture.md), [1.4.1.4](introduction-to-the-multitenant-architecture.md), [17.4](administering-application-containers-with-sql-plus.md), [17.4.3](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- application PDBs [14.1.3](application-containers2.md)
+		- application roots [14.1.2](application-containers2.md), [17.3.5.2](administering-application-containers-with-sql-plus.md)
+		- applications [17.1.2.2](administering-application-containers-with-sql-plus.md), [17.1.2.3](administering-application-containers-with-sql-plus.md)
+		- applications created implicitly [17.1.4](administering-application-containers-with-sql-plus.md)
+		- application seeds [14.1.4](application-containers2.md)
+		- creating [14.5](creating-application-seeds.md), [14.5.3](creating-application-seeds.md)
+				- preparing for [14.5.2](creating-application-seeds.md)
+		- application synchronization [17.1.5](administering-application-containers-with-sql-plus.md)
+		- application versions [17.1.2.3.2](administering-application-containers-with-sql-plus.md)
+		- bulk inserts [17.3.9](administering-application-containers-with-sql-plus.md)
+		- compatibility version [17.3.8](administering-application-containers-with-sql-plus.md)
+		- container maps [17.6.1](administering-application-containers-with-sql-plus.md)
+		- creating [17.6.2](administering-application-containers-with-sql-plus.md)
+		- creating [14.2](creating-application-containers1.md), [14.2.3](creating-application-containers1.md)
+		- DML statements [17.5](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- dropping [14.4](dropping-application-container.md)
+		- how an application upgrade works [17.1.2.3.1](administering-application-containers-with-sql-plus.md)
+		- installing applications [17.1.2](administering-application-containers-with-sql-plus.md), [17.1.2.1](administering-application-containers-with-sql-plus.md), [17.1.2.2](administering-application-containers-with-sql-plus.md), [17.3.2.1](administering-application-containers-with-sql-plus.md)
+		- managing applications [17.3.1](administering-application-containers-with-sql-plus.md)
+		- migrating an application [17.1.3](administering-application-containers-with-sql-plus.md)
+		- migrating applications into [17.3.5](administering-application-containers-with-sql-plus.md)
+		- patching applications [17.1.2.4](administering-application-containers-with-sql-plus.md), [17.3.4.1](administering-application-containers-with-sql-plus.md), [17.3.4.2](administering-application-containers-with-sql-plus.md)
+		- preparing for [14.2.2](creating-application-containers1.md)
+		- purpose [14.1.1](application-containers2.md), [14.1.1.1](application-containers2.md), [14.1.1.2](application-containers2.md), [14.1.1.3](application-containers2.md)
+		- SQL\*Loader [17.3.9](administering-application-containers-with-sql-plus.md)
+		- synchronizing applications [17.3.6](administering-application-containers-with-sql-plus.md)
+		- synchronizing with proxy PDBs [17.3.7](administering-application-containers-with-sql-plus.md)
+		- uninstalling applications [17.3.10.1](administering-application-containers-with-sql-plus.md), [17.3.10.2](administering-application-containers-with-sql-plus.md)
+		- unplugging [14.3](unplugging-application-container-cdb.md), [14.3.1](unplugging-application-container-cdb.md)
+		- upgrading applications [17.1.2](administering-application-containers-with-sql-plus.md), [17.1.2.3](administering-application-containers-with-sql-plus.md), [17.3.3.1](administering-application-containers-with-sql-plus.md)
+		- viewing extended data-linked objects [17.7.8](administering-application-containers-with-sql-plus.md)
+		- viewing information about [17.7.1](administering-application-containers-with-sql-plus.md)
+		- viewing patches [17.7.4](administering-application-containers-with-sql-plus.md), [17.7.5](administering-application-containers-with-sql-plus.md)
+		- viewing shared objects [17.7.7](administering-application-containers-with-sql-plus.md)
+		- viewing SQL statements [17.7.3](administering-application-containers-with-sql-plus.md)
+		- viewing status [17.7.2](administering-application-containers-with-sql-plus.md)
+		- viewing synchronization errors [17.7.6](administering-application-containers-with-sql-plus.md)
+		- views [17.7](administering-application-containers-with-sql-plus.md)
+- Application Continuity [3.3.4](creating-and-configuring-an-oracle-database.md)
+- application PDBs [14.1.3](application-containers2.md)
+	- application synchronization [17.1.5](administering-application-containers-with-sql-plus.md)
+		- cloning [8.1.1](cloning-a-pdb.md)
+		- creating [14.8](creating-application-pdb.md), [17.3.5.3](administering-application-containers-with-sql-plus.md)
+- application roots [14.1.2](application-containers2.md)
+	- ALTER DATABASE statement [17.2](administering-application-containers-with-sql-plus.md)
+		- ALTER PLUGGABLE DATABASE statement [17.2](administering-application-containers-with-sql-plus.md)
+		- application PDBs
+		- modifying [17.2](administering-application-containers-with-sql-plus.md)
+		- creating [17.3.5.2](administering-application-containers-with-sql-plus.md)
+		- modifying [17.2](administering-application-containers-with-sql-plus.md)
+- applications
+	- in application containers [17.1.2](administering-application-containers-with-sql-plus.md), [17.1.2.2](administering-application-containers-with-sql-plus.md), [17.1.2.3](administering-application-containers-with-sql-plus.md), [17.1.2.3.1](administering-application-containers-with-sql-plus.md)
+		- at different versions [17.1.2.3.2](administering-application-containers-with-sql-plus.md)
+				- created implicitly [17.1.4](administering-application-containers-with-sql-plus.md)
+				- migrating an application [17.1.3](administering-application-containers-with-sql-plus.md)
+				- patching [17.1.2.4](administering-application-containers-with-sql-plus.md), [17.3.4.2](administering-application-containers-with-sql-plus.md)
+				- synchronization [17.1.5](administering-application-containers-with-sql-plus.md)
+		- uninstalling [17.3.10.2](administering-application-containers-with-sql-plus.md)
+- application seeds [1.4.3.2.1.1](introduction-to-the-multitenant-architecture.md), [14.1.4](application-containers2.md)
+	- creating [14.5](creating-application-seeds.md), [14.5.3](creating-application-seeds.md)
+		- dropping [14.7](dropping-application-seed.md)
+		- preparing for [14.5.2](creating-application-seeds.md)
+		- unplugging [14.6](unplugging-application-seed-application-container.md)
+- at-sign [3.2.11](creating-and-configuring-an-oracle-database.md)
+- automatic undo management [4.1.5](create-cdb-adv.md)
+- AVAILABILITY MAX clause [9.3.2.2](relocating-a-pdb.md)
+- AVAILABILITY NORMAL clause [9.3.2.1](relocating-a-pdb.md)
+
+---
+
+## B
+
+- backups
+	- after creating new CDBs [3.2.13](creating-and-configuring-an-oracle-database.md)
+- batch jobs, authenticating users in [3.3.3](creating-and-configuring-an-oracle-database.md)
+- bigfile tablespaces
+	- setting database default [4.1.9.1](create-cdb-adv.md)
+
+---
+
+## C
+
+- catcdb.sql [3.2.11](creating-and-configuring-an-oracle-database.md)
+- catcon.pl [15.6.3](administering-a-cdb-with-sql-plus.md)
+- CDB
+	- creating and configuring [3](creating-and-configuring-an-oracle-database.md)
+		- creating with DBCA [3.1.1](creating-and-configuring-an-oracle-database.md)
+- CDB\_PDB\_HISTORY view [15.7.8.1](administering-a-cdb-with-sql-plus.md)
+- CDB\_PDBS view [15.7.3](administering-a-cdb-with-sql-plus.md)
+- CDBs [1.2](introduction-to-the-multitenant-architecture.md), [1.4.1](introduction-to-the-multitenant-architecture.md), [III](managing-a-multitenant-environment.md), [16.5.5](administering-pdbs-with-sql-plus.md)
+	- administering [15](administering-a-cdb-with-sql-plus.md)
+		- ALTER DATABASE statement [15.5.1](administering-a-cdb-with-sql-plus.md)
+		- ALTER PLUGGABLE DATABASE statement [15.5.1](administering-a-cdb-with-sql-plus.md)
+		- ALTER SYSTEM statement [15.4.2](administering-a-cdb-with-sql-plus.md)
+		- application common objects [1.4.1.1.2](introduction-to-the-multitenant-architecture.md), [17.4](administering-application-containers-with-sql-plus.md), [17.4.1.1](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- querying [15.7.6.3](administering-a-cdb-with-sql-plus.md)
+		- application containers [14.1](application-containers2.md), [14.1.1](application-containers2.md), [14.1.1.1](application-containers2.md), [14.1.1.2](application-containers2.md), [14.1.1.3](application-containers2.md)
+		- application common objects [17.4.1.1](administering-application-containers-with-sql-plus.md)
+				- application upgrades [17.1.2.3.1](administering-application-containers-with-sql-plus.md)
+				- bulk inserts [17.3.9](administering-application-containers-with-sql-plus.md)
+				- compatibility version [17.3.8](administering-application-containers-with-sql-plus.md)
+				- creating [14.2](creating-application-containers1.md), [14.2.3](creating-application-containers1.md)
+				- DML statements [17.5](administering-application-containers-with-sql-plus.md)
+				- dropping [14.4](dropping-application-container.md)
+				- installing applications [17.1.2.1](administering-application-containers-with-sql-plus.md), [17.1.2.2](administering-application-containers-with-sql-plus.md), [17.3.2.1](administering-application-containers-with-sql-plus.md)
+				- migrating applications into [17.3.5](administering-application-containers-with-sql-plus.md)
+				- patching applications [17.3.4.1](administering-application-containers-with-sql-plus.md)
+				- preparing for [14.2.2](creating-application-containers1.md)
+				- synchronizing applications [17.3.6](administering-application-containers-with-sql-plus.md)
+				- uninstalling applications [17.3.10.1](administering-application-containers-with-sql-plus.md), [17.3.10.2](administering-application-containers-with-sql-plus.md)
+				- unplugging [14.3](unplugging-application-container-cdb.md)
+				- upgrading applications [17.1.2.3](administering-application-containers-with-sql-plus.md), [17.3.3.1](administering-application-containers-with-sql-plus.md)
+		- application PDBs [14.1.3](application-containers2.md)
+		- cloning [8.1.1](cloning-a-pdb.md)
+				- creating [14.8](creating-application-pdb.md), [17.3.5.3](administering-application-containers-with-sql-plus.md)
+		- application seeds [14.1.4](application-containers2.md)
+		- creating [14.5](creating-application-seeds.md)
+				- dropping [14.7](dropping-application-seed.md)
+				- preparing for [14.5.2](creating-application-seeds.md)
+				- unplugging [14.6](unplugging-application-seed-application-container.md)
+		- backing up [3.2.13](creating-and-configuring-an-oracle-database.md)
+		- CDB fleets [5](configuring-cdb-fleet.md), [5.2](configuring-cdb-fleet.md)
+		- CDB member [5.4](configuring-cdb-fleet.md)
+				- lead CDB [5.1](configuring-cdb-fleet.md), [5.3](configuring-cdb-fleet.md)
+		- common objects [1.4.1.4](introduction-to-the-multitenant-architecture.md)
+		- common roles [1.4.1.3](introduction-to-the-multitenant-architecture.md), [1.4.1.3.1](introduction-to-the-multitenant-architecture.md)
+		- common users [1.4.1.2](introduction-to-the-multitenant-architecture.md), [1.4.1.2.1](introduction-to-the-multitenant-architecture.md)
+		- naming rules [1.4.1.1.2](introduction-to-the-multitenant-architecture.md)
+		- compatibility violations [16.5.1](administering-pdbs-with-sql-plus.md)
+		- connecting to [15.2.1](administering-a-cdb-with-sql-plus.md)
+		- ALTER SESSION statement [15.2.2.2](administering-a-cdb-with-sql-plus.md)
+				- CONNECT command [15.2.2.1](administering-a-cdb-with-sql-plus.md)
+		- container data objects [15.7.1.2](administering-a-cdb-with-sql-plus.md)
+		- querying [15.7.5](administering-a-cdb-with-sql-plus.md)
+		- container maps [17.6](administering-application-containers-with-sql-plus.md)
+		- containers [15.6.1.1](administering-a-cdb-with-sql-plus.md), [15.7.2](administering-a-cdb-with-sql-plus.md)
+		- CONTAINERS clause [15.7.6.2](administering-a-cdb-with-sql-plus.md)
+		- creation [1.4.3.1](introduction-to-the-multitenant-architecture.md)
+		- current container [15.1.1](administering-a-cdb-with-sql-plus.md), [15.7.7](administering-a-cdb-with-sql-plus.md)
+		- data definition language (DDL) [15.6.2](administering-a-cdb-with-sql-plus.md)
+		- DBMS\_SQL package [15.6.4](administering-a-cdb-with-sql-plus.md)
+		- default temporary tablespace, specifying [4.1.7](create-cdb-adv.md)
+		- DML statements [15.6.1](administering-a-cdb-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+		- dropping [4.8](create-cdb-adv.md)
+		- EM Express [4.7](create-cdb-adv.md)
+		- ENABLE\_PLUGGABLE\_DATABASE initialization parameter [3.2.1.2](creating-and-configuring-an-oracle-database.md)
+		- ENABLE PLUGGABLE DATABASE SEED FILE\_NAME\_CONVERT clause [3.2.1.3.1](creating-and-configuring-an-oracle-database.md)
+		- executing PL/SQL code [15.6.4](administering-a-cdb-with-sql-plus.md)
+		- initialization parameters [15.7.8](administering-a-cdb-with-sql-plus.md)
+		- local roles [1.4.1.3](introduction-to-the-multitenant-architecture.md), [1.4.1.3.2](introduction-to-the-multitenant-architecture.md)
+		- local users [1.4.1.2](introduction-to-the-multitenant-architecture.md), [1.4.1.2.2](introduction-to-the-multitenant-architecture.md)
+		- modifying [15.4.2](administering-a-cdb-with-sql-plus.md), [15.5.1](administering-a-cdb-with-sql-plus.md), [15.5.2](administering-a-cdb-with-sql-plus.md)
+		- monitoring [15.7](administering-a-cdb-with-sql-plus.md)
+		- mounting a database [15.3.1.5.4](administering-a-cdb-with-sql-plus.md)
+		- Oracle Database Vault [15.1.2](administering-a-cdb-with-sql-plus.md)
+		- Oracle Managed Files [3.2.1.3.2](creating-and-configuring-an-oracle-database.md)
+		- PDB\_FILE\_NAME\_CONVERT initialization parameter [3.2.1.3.3](creating-and-configuring-an-oracle-database.md)
+		- PDB lockdown profiles [15.1.7.1](administering-a-cdb-with-sql-plus.md)
+		- PDBs
+		- modifying [15.5.1](administering-a-cdb-with-sql-plus.md)
+				- refreshing [16.4.4.1](administering-pdbs-with-sql-plus.md)
+		- PDB snapshots [12](administering-pdb-snapshots.md)
+		- configuring automatic creation [12.3](administering-pdb-snapshots.md)
+				- creating manually [8.5.1](cloning-a-pdb.md), [12.4](administering-pdb-snapshots.md)
+				- dropping [12.5](administering-pdb-snapshots.md)
+				- setting maximum number [12.1.2.2](administering-pdb-snapshots.md), [12.2](administering-pdb-snapshots.md)
+		- plugging in PDBs
+		- methods for [6.2](overview-of-pdb-creation.md)
+				- preparing for [6.6](overview-of-pdb-creation.md)
+		- prerequisites for [2.1](preparing-cdb.md)
+		- root container
+		- modifying [15.5.4](administering-a-cdb-with-sql-plus.md)
+		- seed PDBs [1.4.3.2.1.1](introduction-to-the-multitenant-architecture.md)
+		- snapshot copy PDBs [8.6.1.1](cloning-a-pdb.md)
+		- materializing [8.6.3](cloning-a-pdb.md)
+		- specifying control files [4.2.4](create-cdb-adv.md)
+		- SQL scripts [15.6.3](administering-a-cdb-with-sql-plus.md)
+		- standby database [15.1.2](administering-a-cdb-with-sql-plus.md)
+		- tasks for [1.4.2.1](introduction-to-the-multitenant-architecture.md)
+		- tools for [1.4.2.2](introduction-to-the-multitenant-architecture.md)
+		- Transparent Data Encryption [15.1.2](administering-a-cdb-with-sql-plus.md)
+		- undo mode [3.2.1.5](creating-and-configuring-an-oracle-database.md), [15.5.3](administering-a-cdb-with-sql-plus.md)
+		- unplugging PDBs [13.1](removing-a-pdb.md)
+		- viewing information about [15.7](administering-a-cdb-with-sql-plus.md)
+		- views [15.7.1.3](administering-a-cdb-with-sql-plus.md)
+- character sets [2.4.4.1](preparing-cdb.md)
+- CLONEDB parameter [8.1](cloning-a-pdb.md)
+- cloning
+	- a database [4.6](create-cdb-adv.md)
+- cloning an application PDB [8.1.1](cloning-a-pdb.md)
+- cloning a PDB [8.1](cloning-a-pdb.md)
+	- local [8.2.1](cloning-a-pdb.md), [8.2.2](cloning-a-pdb.md)
+		- refreshable clone PDBs [8.4](cloning-a-pdb.md), [16.4.4.2](administering-pdbs-with-sql-plus.md)
+		- remote [8.3.1](cloning-a-pdb.md), [8.3.2](cloning-a-pdb.md)
+		- using split mirrors [8.7](cloning-a-pdb.md)
+- column encryption [3.3.2](creating-and-configuring-an-oracle-database.md)
+- COMMON\_USER\_PREFIX parameter [15.6.2.1](administering-a-cdb-with-sql-plus.md)
+- commonality, principles of [1.4.1.1.1](introduction-to-the-multitenant-architecture.md)
+- common objects [1.4.1.4](introduction-to-the-multitenant-architecture.md)
+- common roles [1.4.1.3](introduction-to-the-multitenant-architecture.md), [1.4.1.3.1](introduction-to-the-multitenant-architecture.md)
+- common user accounts [1.4.1.2](introduction-to-the-multitenant-architecture.md)
+	- naming rules [1.4.1.1.2](introduction-to-the-multitenant-architecture.md)
+- common users [1.4.1.2.1](introduction-to-the-multitenant-architecture.md)
+	- prefix [15.6.2.1](administering-a-cdb-with-sql-plus.md)
+- compatibility level [4.2.9.1](create-cdb-adv.md)
+- COMPATIBLE Initialization Parameter [4.2.9.1](create-cdb-adv.md)
+- configuring
+	- a CDB [3](creating-and-configuring-an-oracle-database.md)
+- CONNECT command
+	- starting an instance [15.3.1.4](administering-a-cdb-with-sql-plus.md)
+- CONNECT command, SQL\*Plus
+	- CDBs [15.2.2.1](administering-a-cdb-with-sql-plus.md)
+- container data objects [15.7.1.2](administering-a-cdb-with-sql-plus.md)
+	- definition [15.7.1.2](administering-a-cdb-with-sql-plus.md)
+		- querying [15.7.5](administering-a-cdb-with-sql-plus.md)
+- container maps [17.6](administering-application-containers-with-sql-plus.md), [17.6.1](administering-application-containers-with-sql-plus.md)
+	- creating [17.6.2](administering-application-containers-with-sql-plus.md)
+- CONTAINERS\_DEFAULT attribute [17.4.1](administering-application-containers-with-sql-plus.md)
+- CONTAINERS\_PARALLEL\_DEGREE parameter [15.7.6.2](administering-a-cdb-with-sql-plus.md), [15.7.6.3](administering-a-cdb-with-sql-plus.md)
+- CONTAINERS clause [15.7.6.2](administering-a-cdb-with-sql-plus.md), [15.7.6.3](administering-a-cdb-with-sql-plus.md), [17.4.1](administering-application-containers-with-sql-plus.md), [17.5.1](administering-application-containers-with-sql-plus.md)
+- CONTROL\_FILES initialization parameter
+	- overwriting existing control files [4.2.4](create-cdb-adv.md)
+		- when creating a CDB [4.2.4](create-cdb-adv.md)
+- CONTROLFILE REUSE clause [4.2.4](create-cdb-adv.md)
+- control files
+	- default name [4.2.4](create-cdb-adv.md)
+		- mirroring [4.2.4](create-cdb-adv.md)
+		- overwriting existing [4.2.4](create-cdb-adv.md)
+		- specifying names before CDB creation [4.2.4](create-cdb-adv.md)
+		- unavailable during startup [15.3.1.5.1](administering-a-cdb-with-sql-plus.md)
+- CREATE\_FILE\_DEST clause [6.3.4.2](overview-of-pdb-creation.md), [6.3.4.3](overview-of-pdb-creation.md), [8.2.4.3](cloning-a-pdb.md)
+- CREATE DATABASE statement [3.2.1.1](creating-and-configuring-an-oracle-database.md)
+	- clauses [4.1.1](create-cdb-adv.md)
+		- DEFAULT TEMPORARY TABLESPACE clause [4.1.7](create-cdb-adv.md)
+		- ENABLE\_PLUGGABLE\_DATABASE initialization parameter [3.2.1.2](creating-and-configuring-an-oracle-database.md)
+		- ENABLE PLUGGABLE DATABASE SEED FILE\_NAME\_CONVERT clause [3.2.1.3.1](creating-and-configuring-an-oracle-database.md)
+		- example of CDB creation [3.2.10](creating-and-configuring-an-oracle-database.md)
+		- password for SYS [4.1.2](create-cdb-adv.md)
+		- password for SYSTEM [4.1.2](create-cdb-adv.md)
+		- setting time zone [4.1.10.1](create-cdb-adv.md)
+		- specifying FORCE LOGGING [4.1.11](create-cdb-adv.md)
+		- undo\_mode\_clause [3.2.1.5](creating-and-configuring-an-oracle-database.md)
+		- UNDO TABLESPACE clause [4.1.5](create-cdb-adv.md)
+- CREATE PFILE FROM MEMORY statement [4.3.8](create-cdb-adv.md)
+- CREATE PLUGGABLE DATABASE statement [1.4.3.2.1.1](introduction-to-the-multitenant-architecture.md), [1.4.3.2.1.2](introduction-to-the-multitenant-architecture.md)
+	- application containers [14.1](application-containers2.md)
+		- AS PROXY clause [1.4.3.2.4](introduction-to-the-multitenant-architecture.md), [11.1](creating-a-proxy-pdb.md)
+		- clauses [6.5](overview-of-pdb-creation.md)
+		- DEFAULT TABLESPACE clause [6.3.2](overview-of-pdb-creation.md)
+		- file locations [6.3.4](overview-of-pdb-creation.md)
+		- HOST clause [11.1.4.1](creating-a-proxy-pdb.md)
+		- logging\_clause [16.4.1](administering-pdbs-with-sql-plus.md), [16.4.1.2](administering-pdbs-with-sql-plus.md)
+		- MAX\_AUDIT\_SIZE clause [6.3.1](overview-of-pdb-creation.md)
+		- MAX\_DIAG\_SIZE clause [6.3.1](overview-of-pdb-creation.md)
+		- NO DATA clause [8.2.2](cloning-a-pdb.md)
+		- PATH\_PREFIX clause [6.3.4.4](overview-of-pdb-creation.md)
+		- pdb\_force\_logging\_clause [16.4.1](administering-pdbs-with-sql-plus.md)
+		- PDB listener host name [11.1.4](creating-a-proxy-pdb.md)
+		- PDB listener port number [11.1.4](creating-a-proxy-pdb.md)
+		- PORT clause [11.1.4.2](creating-a-proxy-pdb.md)
+		- REFRESH MODE clause [8.4](cloning-a-pdb.md)
+		- RELOCATE clause [1.4.3.2.3](introduction-to-the-multitenant-architecture.md), [9.1](relocating-a-pdb.md), [9.4](relocating-a-pdb.md), [9.5](relocating-a-pdb.md)
+		- SERVICE\_NAME\_CONVERT clause [6.4](overview-of-pdb-creation.md)
+		- SNAPSHOT COPY clause [1.4.3.2.1.2.2](introduction-to-the-multitenant-architecture.md), [8.1](cloning-a-pdb.md), [8.6.1.1](cloning-a-pdb.md)
+		- SNAPSHOT MODE clause [12.1.3](administering-pdb-snapshots.md)
+		- SOURCE\_FILE\_DIRECTORY clause [10.1.2.2](plugging-in-a-pdb.md)
+		- SOURCE\_FILE\_NAME\_CONVERT clause [10.1.2.1](plugging-in-a-pdb.md)
+		- source file locations [10.1.2](plugging-in-a-pdb.md)
+		- STORAGE clause [6.3.1](overview-of-pdb-creation.md)
+		- USER\_TABLESPACES clause [6.3.3](overview-of-pdb-creation.md)
+		- USING clause [1.4.3.2.2](introduction-to-the-multitenant-architecture.md), [10.2](plugging-in-a-pdb.md)
+		- USING SNAPSHOT clause [8.5.1](cloning-a-pdb.md)
+- CREATE ROLE statement [1.4.1.3.1](introduction-to-the-multitenant-architecture.md)
+- creating
+	- a CDB [3](creating-and-configuring-an-oracle-database.md)
+		- database services [4.4.1.4](create-cdb-adv.md)
+- creating an application PDB [17.3.5.3](administering-application-containers-with-sql-plus.md)
+- creating CDBs
+	- backing up the new CDB [3.2.13](creating-and-configuring-an-oracle-database.md)
+		- default temporary tablespace, specifying [4.1.7](create-cdb-adv.md)
+		- ENABLE\_PLUGGABLE\_DATABASE initialization parameter [3.2.1.2](creating-and-configuring-an-oracle-database.md)
+		- example [3.2.10](creating-and-configuring-an-oracle-database.md)
+		- Oracle Managed Files [3.2.1.3.2](creating-and-configuring-an-oracle-database.md)
+		- overriding default tablespace type [4.1.9.2](create-cdb-adv.md)
+		- PDB\_FILE\_NAME\_CONVERT initialization parameter [3.2.1.3.3](creating-and-configuring-an-oracle-database.md)
+		- SEED FILE\_NAME\_CONVERT clause [3.2.1.3.1](creating-and-configuring-an-oracle-database.md)
+		- setting default tablespace type [4.1.9.1](create-cdb-adv.md)
+		- specifying bigfile tablespaces [4.1.9](create-cdb-adv.md), [4.1.9.2](create-cdb-adv.md)
+		- undo\_mode\_clause [3.2.1.5](creating-and-configuring-an-oracle-database.md)
+		- UNDO TABLESPACE clause [4.1.5](create-cdb-adv.md)
+		- using Oracle Managed Files [4.1.8](create-cdb-adv.md)
+		- with DBCA [3.1.1](creating-and-configuring-an-oracle-database.md)
+- creating PDBs [6](overview-of-pdb-creation.md)
+- current container [15.1.1](administering-a-cdb-with-sql-plus.md)
+
+---
+
+## D
+
+- database
+	- cloning [4.6](create-cdb-adv.md)
+		- cloning in a multitenant environment [4.6.1](create-cdb-adv.md)
+		- cloning with Oracle ASM [4.6.2](create-cdb-adv.md)
+		- data dictionary views reference [3.4](creating-and-configuring-an-oracle-database.md)
+		- starting up [15.3.1](administering-a-cdb-with-sql-plus.md)
+- database clouds [4.4.2](create-cdb-adv.md)
+- database consolidation [1.3.1](introduction-to-the-multitenant-architecture.md)
+- Database Resource Manager [1.3.1](introduction-to-the-multitenant-architecture.md)
+	- used for quiescing a database [15.3.4.1](administering-a-cdb-with-sql-plus.md)
+- databases
+	- administrative accounts [1.4.1.2.1.2](introduction-to-the-multitenant-architecture.md)
+		- altering availability [15.3.2](administering-a-cdb-with-sql-plus.md)
+		- mounting to an instance [15.3.2.1](administering-a-cdb-with-sql-plus.md)
+		- opening a closed database [15.3.2.2](administering-a-cdb-with-sql-plus.md)
+		- quiescing [15.3.4.1](administering-a-cdb-with-sql-plus.md)
+		- read-only, opening [15.3.2.3](administering-a-cdb-with-sql-plus.md)
+		- recovery [15.3.1.5.7](administering-a-cdb-with-sql-plus.md)
+		- restricting access [15.3.2.4](administering-a-cdb-with-sql-plus.md)
+		- resuming [15.3.5](administering-a-cdb-with-sql-plus.md)
+		- shutting down [15.3.3](administering-a-cdb-with-sql-plus.md)
+		- starting up [1.4.1.2.1.2](introduction-to-the-multitenant-architecture.md)
+		- suspending [15.3.5](administering-a-cdb-with-sql-plus.md)
+		- undo management [4.1.5](create-cdb-adv.md)
+- database services
+	- about [4.4.1.1](create-cdb-adv.md)
+		- controlling automatic startup of [15.3.1.3](administering-a-cdb-with-sql-plus.md)
+		- creating [4.4.1.4](create-cdb-adv.md)
+		- data dictionary views [4.4.3](create-cdb-adv.md)
+		- managing application workloads with [4.4](create-cdb-adv.md)
+- data blocks
+	- altering size of [4.2.5.1](create-cdb-adv.md)
+		- nonstandard block size [4.2.5.2](create-cdb-adv.md)
+		- specifying size of [4.2.5](create-cdb-adv.md)
+		- standard block size [4.2.5](create-cdb-adv.md)
+- data definition language (DDL)
+	- CDBs [15.6.2](administering-a-cdb-with-sql-plus.md)
+- data dictionary [1.4.1.2.1.2](introduction-to-the-multitenant-architecture.md), [3.4](creating-and-configuring-an-oracle-database.md)
+	- See also: views, data dictionary
+	- PDBs [1.3.2](introduction-to-the-multitenant-architecture.md)
+- data files
+	- unavailable when CDB is opened [15.3.1.5.1](administering-a-cdb-with-sql-plus.md)
+- data-linked application common objects [14.2.1](creating-application-containers1.md)
+- data-linked common objects [17.4.1](administering-application-containers-with-sql-plus.md)
+- data manipulation language
+	- CDBs [15.6.1](administering-a-cdb-with-sql-plus.md)
+- DB\_BLOCK\_SIZE initialization parameter
+	- setting [4.2.5](create-cdb-adv.md)
+- DB\_CREATE\_FILE\_DEST initialization parameter [6.3.4.2](overview-of-pdb-creation.md)
+- DB\_DOMAIN initialization parameter
+	- setting for database creation [4.2.2](create-cdb-adv.md)
+- DB\_NAME initialization parameter
+	- setting before database creation [4.2.2](create-cdb-adv.md)
+- DBA\_APP\_ERRORS view [17.7.6](administering-application-containers-with-sql-plus.md)
+- DBA\_APP\_PATCHES view [17.7.5](administering-application-containers-with-sql-plus.md)
+- DBA\_APP\_PDB\_STATUS view [17.7.2](administering-application-containers-with-sql-plus.md)
+- DBA\_APP\_STATEMENTS view [17.7.3](administering-application-containers-with-sql-plus.md)
+- DBA\_APP\_VERSIONS view [17.7.4](administering-application-containers-with-sql-plus.md)
+- DBA\_APPLICATIONS view [17.7.1](administering-application-containers-with-sql-plus.md)
+- DBA\_OBJECTS view [17.3.5.2](administering-application-containers-with-sql-plus.md)
+	- shared objects [17.7.7](administering-application-containers-with-sql-plus.md)
+- DBA\_PDB\_SAVED\_STATES view [16.5.3](administering-pdbs-with-sql-plus.md)
+- DBA\_PDB\_SNAPSHOTFILE view [12.6](administering-pdb-snapshots.md)
+- DBA\_PDB\_SNAPSHOTS view [12.6](administering-pdb-snapshots.md)
+- DBA\_PROFILES view [17.3.5.2](administering-application-containers-with-sql-plus.md)
+- DBA\_ROLES view [17.3.5.2](administering-application-containers-with-sql-plus.md)
+- DBA\_TABLES view
+	- extended data-linked objects [17.7.8](administering-application-containers-with-sql-plus.md)
+- DBA\_USERS view [17.3.5.2](administering-application-containers-with-sql-plus.md)
+- DBCA
+	- exit codes [20](dbca-exit-codes.md)
+- DBMS\_CREDENTIAL package [15.1.7.2](administering-a-cdb-with-sql-plus.md)
+- DBMS\_PDB package [6.2](overview-of-pdb-creation.md), [8.3.2](cloning-a-pdb.md), [17.3.5.2](administering-application-containers-with-sql-plus.md)
+- DBMS\_SQL package
+	- CDBs [15.6.4](administering-a-cdb-with-sql-plus.md)
+- DDL\_LOCK\_TIMEOUT initialization parameter [4.2.7](create-cdb-adv.md)
+- DDL lock timeout [4.2.7](create-cdb-adv.md)
+- DEFAULT TABLESPACE clause [6.3.2](overview-of-pdb-creation.md)
+- default temporary tablespaces
+	- specifying at CDB creation [4.1.7](create-cdb-adv.md)
+		- specifying bigfile temp file [4.1.9.2](create-cdb-adv.md)
+		- specifying for root [3.2.10.1](creating-and-configuring-an-oracle-database.md), [3.2.10.2](creating-and-configuring-an-oracle-database.md)
+- distributed databases
+	- database clouds [4.4.2](create-cdb-adv.md)
+		- Global Data Services [4.4.2](create-cdb-adv.md)
+		- starting a remote instance [15.3.1.5.9](administering-a-cdb-with-sql-plus.md)
+- DROP DATABASE statement [4.8](create-cdb-adv.md)
+- DROP PLUGGABLE DATABASE statement [13.2](removing-a-pdb.md), [14.4](dropping-application-container.md), [14.7](dropping-application-seed.md)
+
+---
+
+## E
+
+- EM Express
+	- CDBs [4.7](create-cdb-adv.md)
+- ENABLE PLUGGABLE DATABASE clause [3.2.1.2](creating-and-configuring-an-oracle-database.md)
+- encryption, transparent data [3.3.2](creating-and-configuring-an-oracle-database.md)
+- environment variables
+	- ORACLE\_SID [3.2.2](creating-and-configuring-an-oracle-database.md)
+- errors
+	- ORA-01090 [15.3.3.1](administering-a-cdb-with-sql-plus.md)
+		- while starting a database [15.3.1.5.6](administering-a-cdb-with-sql-plus.md)
+		- while starting an instance [15.3.1.5.6](administering-a-cdb-with-sql-plus.md)
+- exit codes
+	- DBCA [20](dbca-exit-codes.md)
+- export operations
+	- restricted mode and [15.3.1.5.5](administering-a-cdb-with-sql-plus.md)
+- extended data-linked application common objects [14.2.1](creating-application-containers1.md)
+- extended data-linked objects [17.4.1](administering-application-containers-with-sql-plus.md)
+
+---
+
+## F
+
+- fast recovery area
+	- initialization parameters to specify [4.2.3](create-cdb-adv.md)
+- FILE\_NAME\_CONVERT clause [8.2.4.3](cloning-a-pdb.md)
+- Flashback PDB [15.1.6](administering-a-cdb-with-sql-plus.md)
+- fleets, CDB [5](configuring-cdb-fleet.md), [5.1](configuring-cdb-fleet.md), [5.2](configuring-cdb-fleet.md)
+- FORCE LOGGING clause
+	- CREATE DATABASE [4.1.11](create-cdb-adv.md)
+		- performance considerations [4.1.11.2](create-cdb-adv.md)
+
+---
+
+## G
+
+- GDS configuration [4.4.2](create-cdb-adv.md)
+- Global Data Services [4.4.2](create-cdb-adv.md)
+
+---
+
+## H
+
+- HOST clause [11.1.4.1](creating-a-proxy-pdb.md)
+
+---
+
+## I
+
+- import operations
+	- restricted mode and [15.3.1.5.5](administering-a-cdb-with-sql-plus.md)
+- initialization parameter file
+	- about [4.2.1](create-cdb-adv.md)
+		- creating [3.2.5](creating-and-configuring-an-oracle-database.md)
+		- creating by copying and pasting from alert log [4.3.10](create-cdb-adv.md)
+		- creating for database creation [3.2.5](creating-and-configuring-an-oracle-database.md)
+		- default locations [15.3.1.2.1](administering-a-cdb-with-sql-plus.md)
+		- editing before database creation [4.2](create-cdb-adv.md)
+		- individual parameter names [4.2.2](create-cdb-adv.md)
+		- sample [4.2.1.1](create-cdb-adv.md)
+		- search order [15.3.1.2.1](administering-a-cdb-with-sql-plus.md)
+		- server parameter file [4.3](create-cdb-adv.md)
+- initialization parameters
+	- about [4.2.1](create-cdb-adv.md)
+		- and database startup [15.3.1.2.1](administering-a-cdb-with-sql-plus.md)
+		- changing [4.3.6.2](create-cdb-adv.md)
+		- changing values [4.3.6.1](create-cdb-adv.md)
+		- clearing [4.3.7](create-cdb-adv.md)
+		- CONTROL\_FILES [4.2.4](create-cdb-adv.md)
+		- DB\_BLOCK\_SIZE [4.2.5](create-cdb-adv.md)
+		- DB\_DOMA [4.2.2](create-cdb-adv.md)
+		- DB\_NAME [4.2.2](create-cdb-adv.md)
+		- PROCESSES [4.2.6](create-cdb-adv.md)
+		- resetting [4.3.7](create-cdb-adv.md)
+		- server parameter file and [4.3](create-cdb-adv.md), [4.3.11](create-cdb-adv.md)
+		- setting [4.3.6.2](create-cdb-adv.md)
+		- SPFILE [4.3.5](create-cdb-adv.md)
+		- UNDO\_MANAGEMENT [4.1.5](create-cdb-adv.md)
+		- UNDO\_TABLESPACE [4.2.8.2](create-cdb-adv.md)
+- instance\_abort\_delay\_time parameter [15.3.6](administering-a-cdb-with-sql-plus.md)
+- instances
+	- aborting [15.3.3.5](administering-a-cdb-with-sql-plus.md)
+		- shutting down immediately [15.3.3.3](administering-a-cdb-with-sql-plus.md)
+		- shutting down normally [15.3.3.2](administering-a-cdb-with-sql-plus.md)
+		- transactional shutdown [15.3.3.4](administering-a-cdb-with-sql-plus.md)
+- INTERNAL username
+	- connecting for shutdown [15.3.3.1](administering-a-cdb-with-sql-plus.md)
+
+---
+
+## M
+
+- MAX\_AUDIT\_SIZE clause [6.3.1](overview-of-pdb-creation.md)
+- MAX\_DIAG\_SIZE clause [6.3.1](overview-of-pdb-creation.md)
+- MAX\_PDB\_SNAPSHOTS database property [12.1](administering-pdb-snapshots.md)
+- metadata-linked application common objects [14.2.1](creating-application-containers1.md)
+- metadata-linked common objects [17.4.1](administering-application-containers-with-sql-plus.md)
+- mirrored files
+	- control files [4.2.4](create-cdb-adv.md)
+- mounting a CDB [15.3.1.5.4](administering-a-cdb-with-sql-plus.md)
+- multitenant architecture [1.4.1](introduction-to-the-multitenant-architecture.md), [III](managing-a-multitenant-environment.md)
+	- benefits [1.3.1](introduction-to-the-multitenant-architecture.md), [1.3.2](introduction-to-the-multitenant-architecture.md)
+		- definition [1.2](introduction-to-the-multitenant-architecture.md)
+- multitenant container database
+	- See: CDBs
+- multitenant container databases
+	- See: CDBs
+- multitenant environment [1.4.1](introduction-to-the-multitenant-architecture.md)
+
+---
+
+## N
+
+- named user limits
+	- setting initially [4.2.10](create-cdb-adv.md)
+- NFS support [3.3.5](creating-and-configuring-an-oracle-database.md)
+- NO DATA clause [8.2.2](cloning-a-pdb.md)
+- noncdb\_to\_pdb.sql script [8.3.2](cloning-a-pdb.md)
+- non-CDBs
+	- cloning as PDBs [1.4.3.2.1.2](introduction-to-the-multitenant-architecture.md), [8.3.2](cloning-a-pdb.md)
+
+---
+
+## O
+
+- object quarantine [15.3.6](administering-a-cdb-with-sql-plus.md)
+- open modes
+	- PDBs [16.5](administering-pdbs-with-sql-plus.md)
+- ORA-01013 error message [15.3.3.6](administering-a-cdb-with-sql-plus.md)
+- ORACLE\_SID environment variable [3.2.2](creating-and-configuring-an-oracle-database.md)
+- Oracle ASM [6.3.4.2](overview-of-pdb-creation.md), [8.7](cloning-a-pdb.md)
+- Oracle Database Vault
+	- CDBs [15.1.2](administering-a-cdb-with-sql-plus.md)
+- Oracle Data Guard
+	- CDBs [15.1.2](administering-a-cdb-with-sql-plus.md)
+- Oracle Enterprise Manager Cloud Control [15.3.1.1.3](administering-a-cdb-with-sql-plus.md)
+- Oracle Managed Files [3.2.1.3.2](creating-and-configuring-an-oracle-database.md), [6.3.4.2](overview-of-pdb-creation.md)
+	- introduction [4.1.8](create-cdb-adv.md)
+- Oracle Multitenant option [1](introduction-to-the-multitenant-architecture.md), [III](managing-a-multitenant-environment.md)
+- Oracle Universal Installer [2.3](preparing-cdb.md)
+- ORADIM
+	- creating a database instance [3.2.6](creating-and-configuring-an-oracle-database.md)
+		- enabling automatic instance startup [3.2.14](creating-and-configuring-an-oracle-database.md)
+
+---
+
+## P
+
+- parameter files
+	- See: initialization parameter file
+- password
+	- setting for SYSTEM account in CREATE DATABASE statement [4.1.2](create-cdb-adv.md)
+		- setting SYS in CREATE DATABASE statement [4.1.2](create-cdb-adv.md)
+- PATH\_PREFIX clause [6.3.4.3](overview-of-pdb-creation.md), [6.3.4.4](overview-of-pdb-creation.md), [8.2.4.3](cloning-a-pdb.md)
+- PDB\_FILE\_NAME\_CONVERT initialization parameter [3.2.1.3.3](creating-and-configuring-an-oracle-database.md), [8.3.2](cloning-a-pdb.md)
+- pdb\_force\_logging\_clause [16.4.1](administering-pdbs-with-sql-plus.md), [16.4.1.2](administering-pdbs-with-sql-plus.md)
+- PDB\_OS\_CREDENTIAL initialization parameter [15.1.7.1](administering-a-cdb-with-sql-plus.md), [15.1.7.2](administering-a-cdb-with-sql-plus.md)
+- PDB\_PLUG\_IN\_VIOLATIONS view [16.5.1](administering-pdbs-with-sql-plus.md)
+- pdb\_save\_or\_discard\_state clause [16.5.3](administering-pdbs-with-sql-plus.md)
+- pdb\_to\_apppdb.sql script [17.3.5.3](administering-application-containers-with-sql-plus.md)
+- PDB relocation
+	- basic steps [9.5](relocating-a-pdb.md)
+		- how it works [9.3](relocating-a-pdb.md)
+		- user interface [9.4](relocating-a-pdb.md)
+- PDBs [1.2](introduction-to-the-multitenant-architecture.md), [1.4.1](introduction-to-the-multitenant-architecture.md), [III](managing-a-multitenant-environment.md)
+	- administering [16](administering-pdbs-with-sql-plus.md)
+		- ALTER SYSTEM statement [16.3](administering-pdbs-with-sql-plus.md)
+		- archive files [1.4.3.2.2](introduction-to-the-multitenant-architecture.md)
+		- cloning [1.4.3.2.1.2](introduction-to-the-multitenant-architecture.md), [8](cloning-a-pdb.md), [8.1](cloning-a-pdb.md)
+		- cloning application [8.1.1](cloning-a-pdb.md)
+		- cloning local [8.2.1](cloning-a-pdb.md), [8.2.2](cloning-a-pdb.md), [8.3.1](cloning-a-pdb.md)
+		- common users [1.4.1.1.2](introduction-to-the-multitenant-architecture.md)
+		- compatibility violations [16.5.1](administering-pdbs-with-sql-plus.md)
+		- connecting to [15.2.1](administering-a-cdb-with-sql-plus.md), [16.2.1](administering-pdbs-with-sql-plus.md)
+		- ALTER SESSION statement [15.2.2.2](administering-a-cdb-with-sql-plus.md)
+				- CONNECT command [15.2.2.1](administering-a-cdb-with-sql-plus.md)
+		- consolidation of data into [1.4.3](introduction-to-the-multitenant-architecture.md)
+		- creating as proxies [11](creating-a-proxy-pdb.md)
+		- creating by plugging in [10.2](plugging-in-a-pdb.md)
+		- creating from seed [1.4.3.2.1.1](introduction-to-the-multitenant-architecture.md), [7](creating-a-pdb-from-scratch.md)
+		- creation [1.4.3.2](introduction-to-the-multitenant-architecture.md), [6](overview-of-pdb-creation.md)
+		- current container [15.1.1](administering-a-cdb-with-sql-plus.md)
+		- data dictionary [1.3.2](introduction-to-the-multitenant-architecture.md)
+		- DBMS\_SQL package [15.6.4](administering-a-cdb-with-sql-plus.md)
+		- dropping [13.2](removing-a-pdb.md)
+		- EM Express [4.7](create-cdb-adv.md)
+		- enabling and disabling [16.5.5](administering-pdbs-with-sql-plus.md)
+		- encryption [8.1](cloning-a-pdb.md)
+		- executing PL/SQL code [15.6.4](administering-a-cdb-with-sql-plus.md)
+		- flashback [15.1.6](administering-a-cdb-with-sql-plus.md)
+		- hot cloning [8.1](cloning-a-pdb.md)
+		- instances\_clause [16.5.1.2](administering-pdbs-with-sql-plus.md)
+		- keystore [8.1](cloning-a-pdb.md)
+		- lockdown profiles [15.1.7.1](administering-a-cdb-with-sql-plus.md)
+		- managing services [16.5.5](administering-pdbs-with-sql-plus.md)
+		- modifying [16.4](administering-pdbs-with-sql-plus.md), [16.5.5](administering-pdbs-with-sql-plus.md)
+		- moving [9](relocating-a-pdb.md), [9.3.2.1](relocating-a-pdb.md), [9.3.2.2](relocating-a-pdb.md)
+		- how it works [9.3](relocating-a-pdb.md)
+				- purpose [9.2](relocating-a-pdb.md)
+		- open mode [15.7.4](administering-a-cdb-with-sql-plus.md), [16.5](administering-pdbs-with-sql-plus.md)
+		- preserving on restart [16.5.3](administering-pdbs-with-sql-plus.md)
+		- plugging in [10](plugging-in-a-pdb.md)
+		- methods for [6.2](overview-of-pdb-creation.md)
+				- preparing for [6.6](overview-of-pdb-creation.md)
+		- prerequisites for [2.1](preparing-cdb.md)
+		- proxy [1.4.3.2](introduction-to-the-multitenant-architecture.md), [1.4.3.2.4](introduction-to-the-multitenant-architecture.md), [11.1.1](creating-a-proxy-pdb.md), [17.3.7.1](administering-application-containers-with-sql-plus.md)
+		- refreshable clone [1.4.3.2.1.2.3](introduction-to-the-multitenant-architecture.md)
+		- refreshing [16.4.4.1](administering-pdbs-with-sql-plus.md)
+		- relocate\_clause [16.5.1.2](administering-pdbs-with-sql-plus.md)
+		- relocating [1.4.3.2.3](introduction-to-the-multitenant-architecture.md), [9](relocating-a-pdb.md), [9.1](relocating-a-pdb.md), [9.3.2.1](relocating-a-pdb.md), [9.3.2.2](relocating-a-pdb.md), [9.5](relocating-a-pdb.md)
+		- how it works [9.3](relocating-a-pdb.md)
+				- purpose [9.2](relocating-a-pdb.md)
+				- user interface [9.4](relocating-a-pdb.md)
+		- renaming [16.4.3](administering-pdbs-with-sql-plus.md)
+		- services [16.2.2](administering-pdbs-with-sql-plus.md)
+		- services\_clause [16.5.1.2](administering-pdbs-with-sql-plus.md)
+		- SHUTDOWN command [16.5.4](administering-pdbs-with-sql-plus.md), [16.5.4.4](administering-pdbs-with-sql-plus.md)
+		- snapshot copy [1.4.3.2.1.2.2](introduction-to-the-multitenant-architecture.md), [8.6.1.1](cloning-a-pdb.md)
+		- snapshots [8.6.3](cloning-a-pdb.md), [12.2](administering-pdb-snapshots.md), [12](administering-pdb-snapshots.md), [12.1](administering-pdb-snapshots.md), [12.1.2.1](administering-pdb-snapshots.md), [12.1.2.2](administering-pdb-snapshots.md), [12.1.3](administering-pdb-snapshots.md), [12.3](administering-pdb-snapshots.md), [12.4](administering-pdb-snapshots.md), [12.5](administering-pdb-snapshots.md), [12.6](administering-pdb-snapshots.md)
+		- starting and stopping [16.5.5](administering-pdbs-with-sql-plus.md)
+		- STARTUP command [16.5.4](administering-pdbs-with-sql-plus.md), [16.5.4.2](administering-pdbs-with-sql-plus.md), [16.5.4.3](administering-pdbs-with-sql-plus.md)
+		- status [16.5.5](administering-pdbs-with-sql-plus.md)
+		- tasks for [1.4.2.1](introduction-to-the-multitenant-architecture.md)
+		- tools for [1.4.2.2](introduction-to-the-multitenant-architecture.md)
+		- unplugged [1.4.3.2.2](introduction-to-the-multitenant-architecture.md)
+		- unplugging [13.1](removing-a-pdb.md)
+		- views [15.7.1.3](administering-a-cdb-with-sql-plus.md)
+- PDB snapshot carousel
+	- about [12.1](administering-pdb-snapshots.md)
+		- administering [12](administering-pdb-snapshots.md)
+		- contents [12.1.2.2](administering-pdb-snapshots.md)
+		- how it works [12.1.2](administering-pdb-snapshots.md)
+		- purpose [12.1.1](administering-pdb-snapshots.md)
+		- setting the maximum number of snapshots [12.2](administering-pdb-snapshots.md)
+		- viewing snapshots [12.6](administering-pdb-snapshots.md)
+- PDB snapshots
+	- viewing [12.6](administering-pdb-snapshots.md)
+- pluggable database
+	- See: PDBs
+- pluggable databases
+	- See: PDBs
+- plugging in unplugged PDBs [10.2](plugging-in-a-pdb.md)
+- PORT clause [11.1.4.2](creating-a-proxy-pdb.md)
+- predefined user accounts [3.3.1](creating-and-configuring-an-oracle-database.md)
+- privileges
+	- RESTRICTED SESSION system privilege [15.3.1.5.5](administering-a-cdb-with-sql-plus.md)
+- PROCESSES initialization parameter
+	- setting before database creation [4.2.6](create-cdb-adv.md)
+- proxy PDBs [1.4.3.2](introduction-to-the-multitenant-architecture.md), [1.4.3.2.4](introduction-to-the-multitenant-architecture.md), [11](creating-a-proxy-pdb.md)
+	- creating [17.3.7.2](administering-application-containers-with-sql-plus.md)
+		- referenced PDB
+		- altering listener host name [16.2.3.1](administering-pdbs-with-sql-plus.md)
+				- altering listener port number [16.2.3.2](administering-pdbs-with-sql-plus.md)
+		- synchronizing an application root replica [17.3.7.1](administering-application-containers-with-sql-plus.md)
+
+---
+
+## Q
+
+- question mark [3.2.11](creating-and-configuring-an-oracle-database.md)
+- quiescing a database [15.3.4.1](administering-a-cdb-with-sql-plus.md)
+
+---
+
+## R
+
+- read-only database
+	- opening [15.3.2.3](administering-a-cdb-with-sql-plus.md)
+- read-only databases
+	- limitations [15.3.2.3](administering-a-cdb-with-sql-plus.md)
+- read-only Oracle home [2.2](preparing-cdb.md)
+- RECOVER clause
+	- STARTUP command [15.3.1.5.7](administering-a-cdb-with-sql-plus.md)
+- Recovery Manager
+	- starting a database [15.3.1.1.2](administering-a-cdb-with-sql-plus.md)
+		- starting an instance [15.3.1.1.2](administering-a-cdb-with-sql-plus.md)
+- redo log files
+	- unavailable when database is opened [15.3.1.5.1](administering-a-cdb-with-sql-plus.md)
+- refreshable clone PDBs [1.4.3.2.1.2.3](introduction-to-the-multitenant-architecture.md), [8.4](cloning-a-pdb.md)
+	- switchover [16.4.4.2](administering-pdbs-with-sql-plus.md)
+- REFRESH MODE clause [8.4](cloning-a-pdb.md)
+- relocating PDBs [9](relocating-a-pdb.md)
+	- common listener network [9.3.2.1](relocating-a-pdb.md)
+		- isolated listener network [9.3.2.2](relocating-a-pdb.md)
+		- user interface [9.4](relocating-a-pdb.md)
+- REMOTE\_RECOVERY\_FILE\_DEST parameter [8.4](cloning-a-pdb.md)
+- RESTRICTED SESSION system privilege
+	- restricted mode and [15.3.1.5.5](administering-a-cdb-with-sql-plus.md)
+- RMAN
+	- See: Recovery Manager
+- roles
+	- in a CDB [1.4.1.3](introduction-to-the-multitenant-architecture.md)
+		- local [1.4.1.3.2](introduction-to-the-multitenant-architecture.md)
+- root container [1.4.3.1](introduction-to-the-multitenant-architecture.md)
+	- modifying [15.5.4](administering-a-cdb-with-sql-plus.md)
+
+---
+
+## S
+
+- Sample Schemas
+	- description [3.3.6](creating-and-configuring-an-oracle-database.md)
+- SCOPE clause [4.3.6.2.1](create-cdb-adv.md)
+- scripts, authenticating users in [3.3.3](creating-and-configuring-an-oracle-database.md)
+- security
+	- PDBs [15.1.7](administering-a-cdb-with-sql-plus.md)
+- SEED FILE\_NAME\_CONVERT clause [3.2.1.3.1](creating-and-configuring-an-oracle-database.md)
+- seed PDB [1.4.3.1](introduction-to-the-multitenant-architecture.md)
+- server parameter file
+	- creating [4.3.4](create-cdb-adv.md)
+		- defined [4.3.1](create-cdb-adv.md)
+		- exporting [4.3.8](create-cdb-adv.md)
+		- migrating to [4.3.2](create-cdb-adv.md)
+		- recovering [4.3.10](create-cdb-adv.md)
+		- RMAN backup [4.3.9](create-cdb-adv.md)
+		- setting initialization parameter values [4.3.6](create-cdb-adv.md)
+		- SPFILE initialization parameter [4.3.5](create-cdb-adv.md)
+		- viewing parameter settings [4.3.11](create-cdb-adv.md)
+- SERVICE\_NAME\_CONVERT clause [6.4](overview-of-pdb-creation.md), [8.2.4.3](cloning-a-pdb.md)
+- services
+	- controlling automatic startup of [15.3.1.3](administering-a-cdb-with-sql-plus.md)
+		- PDBs [16.2.2](administering-pdbs-with-sql-plus.md)
+		- role-based [15.3.1.3](administering-a-cdb-with-sql-plus.md)
+- SET TIME\_ZONE clause
+	- ALTER SESSION [4.1.10.1](create-cdb-adv.md)
+		- CREATE DATABASE [4.1.10.1](create-cdb-adv.md)
+- shutdown
+	- default mode [15.3.3.2](administering-a-cdb-with-sql-plus.md)
+- SHUTDOWN command
+	- closing a PDB [16.5.4](administering-pdbs-with-sql-plus.md)
+		- IMMEDIATE clause [15.3.3.3](administering-a-cdb-with-sql-plus.md)
+		- interrupting [15.3.3.6](administering-a-cdb-with-sql-plus.md)
+		- NORMAL clause [15.3.3.2](administering-a-cdb-with-sql-plus.md)
+		- PDBs [16.5.4.4](administering-pdbs-with-sql-plus.md)
+- single-instance
+	- defined [3.2.1.1](creating-and-configuring-an-oracle-database.md)
+- SNAPSHOT COPY clause [1.4.3.2.1.2.2](introduction-to-the-multitenant-architecture.md), [8.1](cloning-a-pdb.md), [8.6.1.1](cloning-a-pdb.md)
+- snapshot copy PDBs [1.4.3.2.1.2.2](introduction-to-the-multitenant-architecture.md)
+- SNAPSHOT MODE clause [12.1.3](administering-pdb-snapshots.md)
+- snapshots, PDB [12.1](administering-pdb-snapshots.md)
+	- contents [12.1.2.1](administering-pdb-snapshots.md)
+		- viewing [12.6](administering-pdb-snapshots.md)
+- SOURCE\_FILE\_DIRECTORY clause [10.1.2.2](plugging-in-a-pdb.md)
+- SOURCE\_FILE\_NAME\_CONVERT clause [10.1.2.1](plugging-in-a-pdb.md)
+- SPFILE initialization parameter [4.3.5](create-cdb-adv.md)
+- split mirror clone PDBs [8.7](cloning-a-pdb.md)
+- SQL\*Loader
+	- application containers [17.3.9](administering-application-containers-with-sql-plus.md)
+- SQL\*Plus
+	- starting [15.3.1.4](administering-a-cdb-with-sql-plus.md)
+		- starting a database [15.3.1.1.1](administering-a-cdb-with-sql-plus.md)
+		- starting an instance [15.3.1.1.1](administering-a-cdb-with-sql-plus.md)
+- SQL scripts
+	- CDBs [15.6.3](administering-a-cdb-with-sql-plus.md)
+- SRVCTL stop option
+	- default [15.3.3.2](administering-a-cdb-with-sql-plus.md)
+- standard edition high availability
+	- enabling [4.5.3](create-cdb-adv.md)
+		- guidelines [4.5.2](create-cdb-adv.md)
+		- relocating databases [4.5.4](create-cdb-adv.md)
+- Standard Edition High Availability
+	- adding nodes [4.5.5](create-cdb-adv.md)
+- STANDBY\_PDB\_SOURCE\_FILE\_DBLINK initialization parameter [8.3.2](cloning-a-pdb.md)
+- STANDBY\_PDB\_SOURCE\_FILE\_DIRECTORY initialization parameter [10.2](plugging-in-a-pdb.md)
+- standby database
+	- CDBs [15.1.2](administering-a-cdb-with-sql-plus.md)
+- starting a CDB
+	- when control files unavailable [15.3.1.5.1](administering-a-cdb-with-sql-plus.md)
+		- when redo logs unavailable [15.3.1.5.1](administering-a-cdb-with-sql-plus.md)
+- starting a database [15.3.1](administering-a-cdb-with-sql-plus.md)
+	- forcing [15.3.1.5.6](administering-a-cdb-with-sql-plus.md)
+		- Oracle Enterprise Manager Cloud Control [15.3.1.1.3](administering-a-cdb-with-sql-plus.md)
+		- recovery and [15.3.1.5.7](administering-a-cdb-with-sql-plus.md)
+		- Recovery Manager [15.3.1.1.2](administering-a-cdb-with-sql-plus.md)
+		- restricted mode [15.3.1.5.5](administering-a-cdb-with-sql-plus.md)
+		- SQL\*Plus [15.3.1.1.1](administering-a-cdb-with-sql-plus.md)
+- starting an instance
+	- automatically at system startup [15.3.1.5.8](administering-a-cdb-with-sql-plus.md)
+		- database closed and mounted [15.3.1.5.4](administering-a-cdb-with-sql-plus.md)
+		- forcing [15.3.1.5.6](administering-a-cdb-with-sql-plus.md)
+		- mounting and opening the database [15.3.1.5.2](administering-a-cdb-with-sql-plus.md)
+		- normally [15.3.1.5.2](administering-a-cdb-with-sql-plus.md)
+		- Oracle Enterprise Manager Cloud Control [15.3.1.1.3](administering-a-cdb-with-sql-plus.md)
+		- recovery and [15.3.1.5.7](administering-a-cdb-with-sql-plus.md)
+		- Recovery Manager [15.3.1.1.2](administering-a-cdb-with-sql-plus.md)
+		- remote instance startup [15.3.1.5.9](administering-a-cdb-with-sql-plus.md)
+		- restricted mode [15.3.1.5.5](administering-a-cdb-with-sql-plus.md)
+		- SQL\*Plus [15.3.1.1.1](administering-a-cdb-with-sql-plus.md)
+		- when control files unavailable [15.3.1.5.1](administering-a-cdb-with-sql-plus.md)
+		- when redo logs unavailable [15.3.1.5.1](administering-a-cdb-with-sql-plus.md)
+		- without mounting a database [15.3.1.5.3](administering-a-cdb-with-sql-plus.md)
+- startup
+	- of database services, controlling [15.3.1.3](administering-a-cdb-with-sql-plus.md)
+- STARTUP command
+	- NOMOUNT clause [3.2.9](creating-and-configuring-an-oracle-database.md)
+		- PDBs [16.5.4.2](administering-pdbs-with-sql-plus.md), [16.5.4.3](administering-pdbs-with-sql-plus.md)
+		- RECOVER clause [15.3.1.5.7](administering-a-cdb-with-sql-plus.md)
+		- starting a database [15.3.1.1.1](administering-a-cdb-with-sql-plus.md), [15.3.1.5](administering-a-cdb-with-sql-plus.md)
+		- starting a PDB [16.5.4](administering-pdbs-with-sql-plus.md)
+- STORAGE clause [6.3.1](overview-of-pdb-creation.md)
+- switching over refreshable clone PDBs [16.4.4.2](administering-pdbs-with-sql-plus.md)
+- synchronizing applications [17.3.6](administering-application-containers-with-sql-plus.md)
+- SYS account
+	- specifying password for CREATE DATABASE statement [4.1.2](create-cdb-adv.md)
+- SYSAUX tablespace
+	- about [4.1.4.1](create-cdb-adv.md)
+		- creating at database creation [4.1.4.1](create-cdb-adv.md)
+		- DATAFILE clause [4.1.4.1](create-cdb-adv.md)
+- SYSTEM account
+	- specifying password for CREATE DATABASE [4.1.2](create-cdb-adv.md)
+- SYSTEM tablespace
+	- creating locally managed [4.1.3](create-cdb-adv.md)
+- SYSTEM user name [1.4.1.2.1.2](introduction-to-the-multitenant-architecture.md)
+- SYS user name [1.4.1.2.1.2](introduction-to-the-multitenant-architecture.md)
+
+---
+
+## T
+
+- tablespaces
+	- bigfile [4.1.9](create-cdb-adv.md)
+		- creating undo tablespace at database creation [4.1.5](create-cdb-adv.md), [4.1.9.2](create-cdb-adv.md)
+		- default temporary tablespace, creating [4.1.7](create-cdb-adv.md), [4.1.9.2](create-cdb-adv.md)
+		- overriding default type [4.1.9.2](create-cdb-adv.md)
+		- setting default type [4.1.9.1](create-cdb-adv.md)
+		- single-file [4.1.9](create-cdb-adv.md), [4.1.9.2](create-cdb-adv.md)
+		- SYSAUX creation [4.1.4.1](create-cdb-adv.md)
+- time zone
+	- files [4.1.10.2](create-cdb-adv.md)
+		- setting for database [4.1.10.1](create-cdb-adv.md)
+- Transaction Guard [3.3.4](creating-and-configuring-an-oracle-database.md)
+- Transparent Data Encryption [3.3.2](creating-and-configuring-an-oracle-database.md)
+	- CDBs [15.1.2](administering-a-cdb-with-sql-plus.md)
+
+---
+
+## U
+
+- UNDO\_MANAGEMENT initialization parameter [4.1.5](create-cdb-adv.md)
+- undo\_mode\_clause [3.2.1.5](creating-and-configuring-an-oracle-database.md)
+- UNDO\_TABLESPACE initialization parameter
+	- for undo tablespaces [4.2.8.2](create-cdb-adv.md)
+- undo mode
+	- CDBs [15.5.3](administering-a-cdb-with-sql-plus.md)
+- undo tablespaces [15.1.4](administering-a-cdb-with-sql-plus.md)
+	- specifying at database creation [4.1.5](create-cdb-adv.md), [4.1.9.2](create-cdb-adv.md)
+		- specifying for CDBs [3.2.10.1](creating-and-configuring-an-oracle-database.md), [3.2.10.2](creating-and-configuring-an-oracle-database.md)
+- unplugging [13.1](removing-a-pdb.md), [14.3](unplugging-application-container-cdb.md), [14.6](unplugging-application-seed-application-container.md)
+- upgrades
+	- database [1.3.1](introduction-to-the-multitenant-architecture.md)
+- USER\_TABLESPACES clause [6.3.3](overview-of-pdb-creation.md)
+- user accounts
+	- predefined [3.3.1](creating-and-configuring-an-oracle-database.md)
+- users
+	- common [1.4.1.1.2](introduction-to-the-multitenant-architecture.md), [1.4.1.2.1](introduction-to-the-multitenant-architecture.md)
+		- in a newly created database [3.3.1](creating-and-configuring-an-oracle-database.md)
+		- limiting number of [4.2.10](create-cdb-adv.md)
+		- predefined [3.3.1](creating-and-configuring-an-oracle-database.md)
+		- user name, specifying with CREATE USER statement [15.2.1.3](administering-a-cdb-with-sql-plus.md)
+- USING SNAPSHOT clause [8.5.1](cloning-a-pdb.md)
+
+---
+
+## V
+
+- V$CON\_SYS\_TIME\_MODEL view [15.7.1.2](administering-a-cdb-with-sql-plus.md)
+- V$CON\_SYSSTAT view [15.7.1.2](administering-a-cdb-with-sql-plus.md)
+- V$CON\_SYSTEM\_EVENT view [15.7.1.2](administering-a-cdb-with-sql-plus.md)
+- V$CON\_SYSTEM\_WAIT\_CLASS view [15.7.1.2](administering-a-cdb-with-sql-plus.md)
+- V$CONTAINERS view [15.7.2](administering-a-cdb-with-sql-plus.md)
+- V$PDBS view [15.7.3](administering-a-cdb-with-sql-plus.md), [15.7.4](administering-a-cdb-with-sql-plus.md), [16.4.1.2](administering-pdbs-with-sql-plus.md)
+- V$TIMEZONE\_NAMES view
+	- time zone table information [4.1.10.2](create-cdb-adv.md)
+- views
+	- data dictionary
+		- for database [3.4](creating-and-configuring-an-oracle-database.md)
+
+---
+
+## W
+
+- workloads
+	- managing with database services [4.4](create-cdb-adv.md)

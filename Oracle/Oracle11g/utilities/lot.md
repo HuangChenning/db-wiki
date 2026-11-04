@@ -1,0 +1,68 @@
+---
+title: List of Tables
+book: Utilities
+doc_id: E22490-08
+version: "11.2"
+source: https://docs.oracle.com/cd/E11882_01/server.112/e22490/lot.htm
+tags:
+  - oracle
+  - 11g
+  - utilities
+---
+
+- [1-1 Data Pump Exit Codes](dp_overview.md)
+- [2-1 Supported Activities in Data Pump Export's Interactive-Command Mode](dp_export.md)
+- [3-1 Valid Object Types For the Data Pump Import TRANSFORM Parameter](dp_import.md)
+- [3-2 Supported Activities in Data Pump Import's Interactive-Command Mode](dp_import.md)
+- [4-1 How Data Pump Export Handles Original Export Parameters](dp_legacy.md)
+- [4-2 How Data Pump Import Handles Original Import Parameters](dp_legacy.md)
+- [6-1 Valid Job States in Which DBMS\_DATAPUMP Procedures Can Be Executed](dp_api.md)
+- [7-1 Case Studies and Their Related Files](ldr_concepts.md)
+- [8-1 Exit Codes for SQL\*Loader](ldr_params.md)
+- [9-1 Parameters for the INFILE Keyword](ldr_control_file.md)
+- [9-2 Parameters for the CONTINUEIF Clause](ldr_control_file.md)
+- [9-3 Fixed-Length Fields](ldr_control_file.md)
+- [9-4 Nongraphic Fields](ldr_control_file.md)
+- [9-5 Graphic Fields](ldr_control_file.md)
+- [9-6 Variable-Length Fields](ldr_control_file.md)
+- [10-1 Parameters for the Position Specification Clause](ldr_field_list.md)
+- [10-2 Datatype Conversions for Datetime and Interval Datatypes](ldr_field_list.md)
+- [10-3 Parameters Used for Specifying Delimiters](ldr_field_list.md)
+- [10-4 Parameters for the Field Condition Clause](ldr_field_list.md)
+- [10-5 Behavior Summary for Trimming Whitespace](ldr_field_list.md)
+- [10-6 Parameters Used for Column Specification](ldr_field_list.md)
+- [16-1 ADRCI Command Line Parameters for Batch Operation](adrci.md)
+- [16-2 List of ADRCI commands](adrci.md)
+- [16-3 IPS Command Set](adrci.md)
+- [16-4 Arguments of IPS ADD command](adrci.md)
+- [16-5 Arguments of IPS CREATE PACKAGE command](adrci.md)
+- [16-6 Arguments of IPS PACK command](adrci.md)
+- [16-7 Arguments of IPS REMOVE command](adrci.md)
+- [16-8 IPS Configuration Parameters](adrci.md)
+- [16-9 Flags for the PURGE command](adrci.md)
+- [16-10 Flags for the SELECT command](adrci.md)
+- [16-11 ADRCI Utility Functions for the SELECT Command](adrci.md)
+- [16-12 Flags for the SHOW ALERT command](adrci.md)
+- [16-13 Alert Fields for SHOW ALERT](adrci.md)
+- [16-14 Fields for Health Monitor Runs](adrci.md)
+- [16-15 Flags for SHOW INCIDENT command](adrci.md)
+- [16-16 Incident Fields for SHOW INCIDENT](adrci.md)
+- [16-17 Flags for SHOW PROBLEM command](adrci.md)
+- [16-18 Problem Fields for SHOW PROBLEM](adrci.md)
+- [16-19 Arguments for SHOW TRACEFILE Command](adrci.md)
+- [16-20 Flags for SHOW TRACEFILE Command](adrci.md)
+- [18-1 Parameters for the DBNEWID Utility](dbnewid.md)
+- [20-1 DBMS\_METADATA Procedures Used for Retrieving Multiple Objects](metadata_api.md)
+- [20-2 DBMS\_METADATA Procedures Used for the Browsing Interface](metadata_api.md)
+- [20-3 DBMS\_METADATA Procedures and Functions for Submitting XML Data](metadata_api.md)
+- [20-4 DBMS\_METADATA\_DIFF Procedures and Functions](metadata_api.md)
+- [21-1 Objects Exported in Each Mode](original_export.md)
+- [21-2 Sequence of Events During Updates by Two Users](original_export.md)
+- [21-3 Maximum Size for Dump Files](original_export.md)
+- [21-4 Exit Codes for Export](original_export.md)
+- [21-5 Using Different Releases of Export and Import](original_export.md)
+- [22-1 Privileges Required to Import Objects into Your Own Schema](original_import.md)
+- [22-2 Privileges Required to Import Grants](original_import.md)
+- [22-3 Objects Imported in Each Mode](original_import.md)
+- [22-4 Exit Codes for Import](original_import.md)
+- [22-5 Using Different Releases of Export and Import](original_import.md)

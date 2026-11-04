@@ -1,0 +1,1793 @@
+---
+title: Database PL/SQL Language Reference
+book: Database PL/SQL Language Reference
+doc_id: F31827-07
+version: "21c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/book-index.html
+tags:
+  - oracle
+  - 21c
+  - pl-sql-language-reference
+---
+
+Symbols A B C D E F G H I J K L M N O P Q R S T U V W Z
+
+---
+
+## Symbols
+
+- \_ wildcard character [3.7.5.3](plsql-language-fundamentals.md)
+- $$PLSQL\_LINE inquiry directive [3.9.1.4.1](plsql-language-fundamentals.md)
+- $$PLSQL\_UNIT\_OWNER inquiry directive [3.9.1.4.1](plsql-language-fundamentals.md)
+- $$PLSQL\_UNIT\_TYPE inquiry directive [3.9.1.4.1](plsql-language-fundamentals.md)
+- $$PLSQL\_UNIT inquiry directive [3.9.1.4.1](plsql-language-fundamentals.md)
+- %BULK\_EXCEPTIONS cursor attribute [13.4.1.4](plsql-optimization-and-tuning.md)
+- %BULK\_ROWCOUNT cursor attribute [13.4.1.5](plsql-optimization-and-tuning.md)
+- %FOUND cursor attribute
+	- for implicit cursor [7.2.1.2](static-sql.md)
+		- for named cursor [7.2.2.7.2](static-sql.md)
+- %ISOPEN cursor attribute
+	- for implicit cursor [7.2.1.1](static-sql.md)
+		- for named cursor [7.2.2.7.1](static-sql.md)
+- %NOTFOUND cursor attribute
+	- for implicit cursor [7.2.1.3](static-sql.md)
+		- for named cursor [7.2.2.7.3](static-sql.md)
+- %ROWCOUNT cursor attribute
+	- for implicit cursor [7.2.1.4](static-sql.md)
+		- for named cursor [7.2.2.7.4](static-sql.md)
+- %ROWTYPE attribute [6.12.4](plsql-collections-and-records.md)
+	- column alias and [7.2.2.5](static-sql.md)
+		- explicit cursor and [7.2.2.5](static-sql.md)
+		- invisible columns and [6.12.4.4](plsql-collections-and-records.md)
+		- syntax diagram [14.59](ROWTYPE-attribute.md)
+		- virtual columns and [6.12.4.3](plsql-collections-and-records.md)
+- %TYPE attribute [3.3.5](plsql-language-fundamentals.md)
+	- initial value and [3.3.5](plsql-language-fundamentals.md)
+		- NOT NULL constraint and [3.3.5](plsql-language-fundamentals.md)
+		- syntax diagram [14.68](TYPE-attribute.md)
+- % wildcard character [3.7.5.3](plsql-language-fundamentals.md)
+
+---
+
+## A
+
+- Abstract Data Type (ADT) [2.2.8.5](overview.md), [15.6](ALTER-TYPE-statement.md)
+	- creating [15.13](CREATE-TYPE-statement.md)
+- accent-insensitive comparison [3.7.5.2.3](plsql-language-fundamentals.md)
+- ACCESS\_INTO\_NULL exception [12.4](plsql-error-handling.md)
+- ACCESSIBLE BY clause [14.1](ACCESSIBLE-BY-clause.md)
+	- in CREATE FUNCTION statement [15.7](CREATE-FUNCTION-statement.md)
+		- in CREATE PACKAGE statement [15.9](CREATE-PACKAGE-statement.md)
+		- in CREATE PROCEDURE statement [15.11](CREATE-PROCEDURE-statement.md)
+		- in CREATE TYPE BODY statement [15.14](CREATE-TYPE-BODY-statement.md)
+		- in CREATE TYPE statement [15.13](CREATE-TYPE-statement.md)
+		- in package specification [11.1](plsql-packages.md)
+		- in subprogram [9.2](plsql-subprograms.md)
+- accessor [14.1](ACCESSIBLE-BY-clause.md)
+- accessor list [14.1](ACCESSIBLE-BY-clause.md)
+- ADT
+	- See: Abstract Data Type (ADT)
+- aggregate [6.6](plsql-collections-and-records.md)
+- AGGREGATE clause [14.2](AGGREGATE-clause.md)
+	- in CREATE FUNCTION statement [15.7](CREATE-FUNCTION-statement.md)
+- aggregate function [15.7](CREATE-FUNCTION-statement.md)
+	- in PL/SQL expression [3.7.8](plsql-language-fundamentals.md)
+		- pipelined table function as [13.5.6](plsql-optimization-and-tuning.md)
+		- SQL%NOTFOUND attribute and [7.2.1.3](static-sql.md)
+- alias
+	- column
+		- in cursor FOR LOOP [7.3.2](static-sql.md)
+				- in explicit cursor [7.2.2.5](static-sql.md)
+		- table
+		- for avoiding inner capture [B.6](plsql-name-resolution.md)
+				- for row expression [B.6.2](plsql-name-resolution.md)
+				- for table element attribute or method [B.6.1](plsql-name-resolution.md)
+- aliasing (problem)
+	- SELECT BULK COLLECT INTO statement and [13.4.2.1.1](plsql-optimization-and-tuning.md)
+		- subprogram parameter [9.7.4](plsql-subprograms.md)
+- ALTER FUNCTION statement [15.1](ALTER-FUNCTION-statement.md)
+- ALTER LIBRARY statement [15.2](ALTER-LIBRARY-statement.md)
+- ALTER PACKAGE statement [15.3](ALTER-PACKAGE-statement.md)
+- ALTER PROCEDURE statement [15.4](ALTER-PROCEDURE-statement.md)
+- ALTER TRIGGER statement [15.5](ALTER-TRIGGER-statement.md)
+- ALTER TYPE statement [15.6](ALTER-TYPE-statement.md)
+- AND operator [3.7.3](plsql-language-fundamentals.md)
+- anonymous block [2.2.2](overview.md)
+	- AUTHID property and [9.14](plsql-subprograms.md)
+- ANYDATA data type [13.5.2](plsql-optimization-and-tuning.md)
+- ANYDATASET data type [13.5.2](plsql-optimization-and-tuning.md)
+- ANYTYPE data type [13.5.2](plsql-optimization-and-tuning.md)
+- application common object
+	- metadata-linked [14.63](SHARING-clause.md)
+- architecture of PL/SQL [2.3](overview.md)
+- array
+	- associative
+		- See associative array [6.1](plsql-collections-and-records.md)
+		- non-PL/SQL [6.1](plsql-collections-and-records.md)
+- assignment of value
+	- to composite variable
+		- collection [6.7](plsql-collections-and-records.md)
+				- record [6.13](plsql-collections-and-records.md)
+		- to scalar variable [3.6](plsql-language-fundamentals.md)
+- assignment statement [3.6.1](plsql-language-fundamentals.md)
+	- syntax diagram [14.3](assignment-statement.md)
+- associative array [6.2](plsql-collections-and-records.md)
+	- See also: collection
+	- characteristics of [6.1](plsql-collections-and-records.md)
+		- comparisons [6.9](plsql-collections-and-records.md)
+		- declaring constant [6.2.1](plsql-collections-and-records.md)
+		- FIRST and LAST methods for [6.10.5.1](plsql-collections-and-records.md)
+		- in FORALL statement [14.34](FORALL-statement.md)
+		- NLS parameters and [6.2.2](plsql-collections-and-records.md)
+- atomic (lexical) unit [3.2](plsql-language-fundamentals.md)
+- atomically null collection
+	- See: null collection
+- attribute
+	- %ROWTYPE
+		- See %ROWTYPE attribute [6.12.4](plsql-collections-and-records.md)
+		- %TYPE
+		- See %TYPE attribute [3.3.5](plsql-language-fundamentals.md)
+		- cursor
+		- See cursor attribute [7.2](static-sql.md)
+- AUTHID property [9.14](plsql-subprograms.md)
+	- syntax diagram [14.41](invokers_rights_clause.md)
+- AUTONOMOUS\_TRANSACTION pragma [7.7.4](static-sql.md)
+	- for pipelined table function [13.5.2](plsql-optimization-and-tuning.md)
+		- syntax diagram [14.4](AUTONOMOUS_TRANSACTION-pragma.md)
+- autonomous routine [7.7](static-sql.md)
+	- declaring [7.7.4](static-sql.md)
+- autonomous transaction [7.7](static-sql.md)
+	- controlling [7.7.5](static-sql.md)
+		- pipelined table function in [14.49](PIPE-ROW-statement.md)
+- autonomous trigger [7.7.6](static-sql.md)
+
+---
+
+## B
+
+- bag data structure [6.1](plsql-collections-and-records.md)
+- base type [4](plsql-data-types.md)
+- basic LOOP statement [5.2.1](plsql-control-statements.md)
+	- syntax diagram [14.5](basic-LOOP-statement.md)
+- BETWEEN operator [3.7.5.4](plsql-language-fundamentals.md)
+- BINARY\_DOUBLE data type
+	- predefined constants for [4.1.2](plsql-data-types.md)
+		- subtype of [4.1.3](plsql-data-types.md)
+		- tuning code and [13.3.5.1](plsql-optimization-and-tuning.md)
+- BINARY\_FLOAT data type
+	- predefined constants for [4.1.2](plsql-data-types.md)
+		- subtype of [4.1.3](plsql-data-types.md)
+		- tuning code and [13.3.5.1](plsql-optimization-and-tuning.md)
+- BINARY\_INTEGER data type
+	- See: PLS\_INTEGER data type
+- bind variable
+	- avoiding SQL injection with [8.4.2.1](dynamic-sql.md)
+		- placeholder for
+		- See placeholder for bind variable [8.2.1](dynamic-sql.md)
+- blank-padding
+	- in assignment [4.1.4.3.2](plsql-data-types.md)
+		- in comparison [4.1.4.3.3](plsql-data-types.md)
+- block [2.2.2](overview.md)
+	- syntax diagram [14.6](block.md)
+- BOOLEAN data type [4.2](plsql-data-types.md)
+- BOOLEAN expression [3.7.6](plsql-language-fundamentals.md)
+- BOOLEAN static expression [3.7.9.2](plsql-language-fundamentals.md)
+- BOOLEAN variable [3.6.4](plsql-language-fundamentals.md)
+- built-in function
+	- See: SQL function
+- bulk binding [13.4](plsql-optimization-and-tuning.md)
+- BULK COLLECT clause [13.4.2](plsql-optimization-and-tuning.md), [13.4.2.3](plsql-optimization-and-tuning.md)
+	- aliasing and [13.4.2.1.1](plsql-optimization-and-tuning.md)
+		- of FETCH statement [13.4.2.2](plsql-optimization-and-tuning.md)
+		- of RETURNING INTO clause
+		- FORALL statement and [13.4.3](plsql-optimization-and-tuning.md)
+		- of SELECT INTO statement [13.4.2.1](plsql-optimization-and-tuning.md)
+		- query result set processing and [7.3.1.2](static-sql.md)
+		- that returns no rows [13.4.2](plsql-optimization-and-tuning.md)
+- bulk SQL [13.4](plsql-optimization-and-tuning.md)
+	- in compound DML trigger [10.3.3.3](plsql-triggers.md)
+
+---
+
+## C
+
+- cache, function result [9.12](plsql-subprograms.md)
+- calculated column
+	- See: virtual column
+- call specification [9.15](plsql-subprograms.md)
+	- in CREATE FUNCTION statement [15.7](CREATE-FUNCTION-statement.md)
+		- in CREATE PROCEDURE statement [15.11](CREATE-PROCEDURE-statement.md)
+		- in CREATE TYPE statement [15.13](CREATE-TYPE-statement.md)
+		- in package [11.1](plsql-packages.md)
+		- syntax diagram [14.7](call-specification.md)
+- call stack, AUTHID property and [9.14](plsql-subprograms.md)
+- capture [B.5](plsql-name-resolution.md)
+- cascading triggers [10.11](plsql-triggers.md)
+- CASE\_NOT\_FOUND exception [12.4](plsql-error-handling.md)
+- CASE expression
+	- searched [3.7.7.2](plsql-language-fundamentals.md)
+		- simple [3.7.7.1](plsql-language-fundamentals.md)
+- case-insensitive comparison [3.7.5.2.3](plsql-language-fundamentals.md)
+- case sensitivity
+	- character comparison and [3.7.5.2.3](plsql-language-fundamentals.md)
+		- character literal and [3.2.3](plsql-language-fundamentals.md)
+		- identifier and [3.2.2](plsql-language-fundamentals.md)
+		- quoted user-defined identifier [3.2.2.3.2](plsql-language-fundamentals.md)
+		- keyword and [D](plsql-reserved-words-keywords.md)
+		- LIKE operator and [3.7.5.3](plsql-language-fundamentals.md)
+		- reserved word and [D](plsql-reserved-words-keywords.md)
+- CASE statement [5.1](plsql-control-statements.md)
+	- searched [5.1.5](plsql-control-statements.md)
+		- syntax diagram [14.8](CASE-statement.md)
+		- simple [5.1.4](plsql-control-statements.md)
+		- IF THEN ELSIF statement and [5.1.3](plsql-control-statements.md)
+				- syntax diagram [14.8](CASE-statement.md)
+- C declaration [14.7](call-specification.md)
+- character code [3.1](plsql-language-fundamentals.md)
+- character literal [3.2.3](plsql-language-fundamentals.md)
+	- See also: string
+- character set [3.1](plsql-language-fundamentals.md)
+- CHAR data type [4.1.4](plsql-data-types.md)
+- CHAR data type family [E](plsql-predefined-data-types.md)
+- CLOB data type and comparison operator [3.7.5](plsql-language-fundamentals.md)
+- CLOB data type family [E](plsql-predefined-data-types.md)
+- CLOSE statement [14.9](CLOSE-statement.md)
+- collating sequence [3.7.5.2.3](plsql-language-fundamentals.md)
+- collation [14.20](DEFAULT-COLLATION-clause.md)
+- collection [6](plsql-collections-and-records.md)
+	- as public package item [6.11](plsql-collections-and-records.md)
+		- assigning one to another [6.7](plsql-collections-and-records.md)
+		- comparing one to another [6.9](plsql-collections-and-records.md)
+		- cursor variable and [14.18](cursor-variable-declaration.md)
+		- declaration syntax [14.11](collection-variable.md)
+		- empty [6.1](plsql-collections-and-records.md)
+		- creating with constructor [6.5](plsql-collections-and-records.md)
+		- index
+		- See index collection [13.4.1.1](plsql-optimization-and-tuning.md)
+		- internal size of
+		- DELETE method and [6.10.1](plsql-collections-and-records.md)
+				- EXTEND method and [6.10.3](plsql-collections-and-records.md)
+				- TRIM method and [6.10.2](plsql-collections-and-records.md)
+		- multidimensional [6.8](plsql-collections-and-records.md)
+		- null [6.1](plsql-collections-and-records.md)
+		- assigning to collection variable [6.7.2](plsql-collections-and-records.md)
+		- pipelined table function and [13.5.1](plsql-optimization-and-tuning.md)
+		- querying
+		- with dynamic SQL [8.2.2](dynamic-sql.md)
+				- with static SQL [7.4.6](static-sql.md)
+		- retrieving query results into [13.4.2](plsql-optimization-and-tuning.md)
+		- types of [6.1](plsql-collections-and-records.md)
+- COLLECTION\_IS\_NULL exception [12.4](plsql-error-handling.md)
+- collection constructor [6.5](plsql-collections-and-records.md)
+- collection method [6.10](plsql-collections-and-records.md)
+	- as subprogram parameter [6.10](plsql-collections-and-records.md)
+		- invocation syntax [14.10](collection-method.md)
+		- null collection and [6.10](plsql-collections-and-records.md)
+- column alias
+	- in cursor FOR LOOP [7.3.2](static-sql.md)
+		- in explicit cursor [7.2.2.5](static-sql.md)
+- COLUMNS pseudo-operator [13.6.3.2](plsql-optimization-and-tuning.md)
+- comment [3.2.5](plsql-language-fundamentals.md)
+	- nested [3.2.5.2](plsql-language-fundamentals.md)
+		- PL/SQL Wrapper utility and [A.3](plsql-source-text-wrapping.md)
+		- syntax diagram [14.12](comment.md)
+- COMMIT statement [7.6.1](static-sql.md)
+	- FOR UPDATE cursor and [7.6.6.3](static-sql.md)
+		- in autonomous transaction [7.7.5.2](static-sql.md)
+- comparison operator [3.7.5](plsql-language-fundamentals.md)
+	- cursor variable and [14.18](cursor-variable-declaration.md)
+- compatible data type
+	- for collection variables [6.7.1](plsql-collections-and-records.md)
+		- for scalar variables [3.6](plsql-language-fundamentals.md)
+- compilation
+	- conditional [3.9](plsql-language-fundamentals.md)
+		- for native execution [13.10](plsql-optimization-and-tuning.md)
+		- interpreted [13.10.5](plsql-optimization-and-tuning.md)
+- compilation parameter [2.3.2](overview.md)
+	- displaying value of [3.9.1.4.1](plsql-language-fundamentals.md)
+		- predefined inquiry directive for [3.9.1.4.1](plsql-language-fundamentals.md)
+- compile\_clause
+	- in ALTER FUNCTION statement [15.1](ALTER-FUNCTION-statement.md)
+- compile\_clause syntax diagram [14.13](COMPILE-clause.md)
+- compile clause [14.13](COMPILE-clause.md)
+- compiler directive
+	- See: pragma
+- compile-time warning [12.1](plsql-error-handling.md)
+- composite data type [6](plsql-collections-and-records.md)
+- composite variable [6](plsql-collections-and-records.md)
+- compound trigger [10.3.3](plsql-triggers.md)
+- computation-intensive code [13.3.5](plsql-optimization-and-tuning.md)
+- concatenation operator (||) [3.7.1](plsql-language-fundamentals.md)
+- concurrent transactions [7.7.5.4](static-sql.md)
+- condition, SQL multiset [6.9.3](plsql-collections-and-records.md)
+- conditional compilation [3.9](plsql-language-fundamentals.md)
+- conditional compilation directive [3.9.1](plsql-language-fundamentals.md)
+	- error [3.9.1.3](plsql-language-fundamentals.md)
+		- inquiry [3.9.1.4](plsql-language-fundamentals.md)
+		- restrictions on [3.9.4](plsql-language-fundamentals.md)
+		- selection [3.9.1.2](plsql-language-fundamentals.md)
+- conditional predicate [10.3.1](plsql-triggers.md)
+- conditional selection statement [5.1](plsql-control-statements.md)
+- conditional trigger [10.1](plsql-triggers.md)
+- constant
+	- declaring [3.3.3](plsql-language-fundamentals.md)
+		- associative array [6.2.1](plsql-collections-and-records.md)
+				- record [6.12.2](plsql-collections-and-records.md)
+				- syntax diagram [14.14](constant-declaration.md)
+		- initial value of [3.3.4](plsql-language-fundamentals.md)
+		- predefined [4.1.2](plsql-data-types.md)
+		- static [3.7.9.4](plsql-language-fundamentals.md)
+		- in DBMS\_DB\_VERSION package [3.9.1.5](plsql-language-fundamentals.md)
+- constrained subtype [4.4.2](plsql-data-types.md)
+	- in performance-critical code [13.3.5.2](plsql-optimization-and-tuning.md)
+		- subprogram parameter and [9.7.1.1](plsql-subprograms.md)
+- constraint
+	- cursor parameter and [14.30](explicit-cursor-declaration-and-definition.md)
+		- NOT NULL
+		- See NOT NULL constraint [3.3.1](plsql-language-fundamentals.md)
+		- trigger compared to [10.2](plsql-triggers.md)
+- constructor
+	- See: collection constructor
+- context of transaction [7.7.2](static-sql.md)
+- CONTINUE statement
+	- syntax diagram [14.15](CONTINUE-statement.md)
+- CONTINUE WHEN statement
+	- syntax diagram [14.15](CONTINUE-statement.md)
+- control statement [5](plsql-control-statements.md)
+- control token [3.9.1.1](plsql-language-fundamentals.md)
+- correlated subquery [7.3.4](static-sql.md)
+- correlation name [10.4](plsql-triggers.md)
+	- See also: pseudorecord
+	- with LONG or LONG RAW column [10.10.2](plsql-triggers.md)
+- COUNT collection method [6.10.6](plsql-collections-and-records.md)
+- COVERAGE pragma [14.16](COVERAGE-pragma.md)
+- C procedure, invoking [9.15](plsql-subprograms.md)
+- CREATE\_WRAPPED procedure [A.4](plsql-source-text-wrapping.md)
+- CREATE FUNCTION statement [15.7](CREATE-FUNCTION-statement.md)
+- CREATE LIBRARY statement [15.8](CREATE-LIBRARY-statement.md)
+- CREATE PACKAGE statement [15.9](CREATE-PACKAGE-statement.md)
+- CREATE TRIGGER statement [15.12](CREATE-TRIGGER-statement.md)
+- CREATE TYPE BODY statement [15.14](CREATE-TYPE-BODY-statement.md)
+- CREATE TYPE statement [15.13](CREATE-TYPE-statement.md)
+- crossedition trigger [10.1](plsql-triggers.md)
+- CURRENT OF clause [7.6.6.2](static-sql.md)
+	- FOR UPDATE cursor and [7.6.6.2](static-sql.md)
+		- ROWID pseudocolumn instead of [7.6.6.3](static-sql.md)
+- CURRVAL pseudocolumn [7.1.2.1](static-sql.md)
+- cursor [7.2](static-sql.md)
+	- explicit
+		- See explicit cursor [7.2.2](static-sql.md)
+		- FOR UPDATE [7.6.6.2](static-sql.md)
+		- after COMMIT or ROLLBACK [7.6.6.3](static-sql.md)
+		- implicit
+		- See implicit cursor [7.2.1](static-sql.md)
+		- in SERIALLY\_REUSABLE package [11.7.2](plsql-packages.md)
+		- named [7.2.2](static-sql.md)
+		- pipelined table function and [13.5.5](plsql-optimization-and-tuning.md)
+				- See also explicit cursor and cursor variable [7.2.2](static-sql.md)
+		- nested [7.5](static-sql.md)
+- CURSOR\_ALREADY\_OPEN exception [12.4](plsql-error-handling.md)
+- cursor\_control [5.2.2.7](plsql-control-statements.md)
+- cursor attribute
+	- for cursor variable [7.4.7](static-sql.md)
+		- for explicit cursor [7.2.2.7](static-sql.md)
+		- %FOUND [7.2.2.7.2](static-sql.md)
+				- %ISOPEN [7.2.2.7.1](static-sql.md)
+				- %NOTFOUND [7.2.2.7.3](static-sql.md)
+				- %ROWCOUNT [7.2.2.7.4](static-sql.md)
+		- for implicit cursor [7.2.1](static-sql.md)
+		- DBMS\_SQL package and [8.3](dynamic-sql.md)
+				- native dynamic SQL and [8.2](dynamic-sql.md)
+				- SQL%BULK\_EXCEPTIONS [13.4.1.4](plsql-optimization-and-tuning.md)
+				- SQL%BULK\_ROWCOUNT [13.4.1.5](plsql-optimization-and-tuning.md)
+				- SQL%FOUND [7.2.1.2](static-sql.md)
+				- SQL%ISOPEN [7.2.1.1](static-sql.md)
+				- SQL%NOTFOUND [7.2.1.3](static-sql.md)
+				- SQL%ROWCOUNT [7.2.1.4](static-sql.md)
+		- where you can use [7.2](static-sql.md)
+- CURSOR expression [7.5](static-sql.md)
+	- passing to pipelined table function [13.5.6](plsql-optimization-and-tuning.md)
+- cursor FOR LOOP statement
+	- query result set processing with [7.3.2](static-sql.md)
+		- recursive invocation in [9.10](plsql-subprograms.md)
+		- syntax diagram [14.17](cursor-FOR-LOOP-statement.md)
+- cursor number
+	- converting cursor variable to [8.3.4](dynamic-sql.md)
+		- converting to cursor variable [8.3.3](dynamic-sql.md)
+		- DBMS\_SQL.GET\_NEXT\_RESULT procedure and [8.3.2](dynamic-sql.md)
+		- DBMS\_SQL.RETURN\_RESULT procedure and [8.3.1](dynamic-sql.md)
+- cursor parameter [7.2.2.6](static-sql.md)
+- cursor specification [14.30](explicit-cursor-declaration-and-definition.md)
+- cursor variable [7.4](static-sql.md)
+	- converting cursor number to [8.3.3](dynamic-sql.md)
+		- converting to cursor number [8.3.4](dynamic-sql.md)
+		- DBMS\_SQL.GET\_NEXT\_RESULT procedure and [8.3.2](dynamic-sql.md)
+		- DBMS\_SQL.RETURN\_RESULT procedure and [8.3.1](dynamic-sql.md)
+		- declaration syntax diagram [14.18](cursor-variable-declaration.md)
+
+---
+
+## D
+
+- data abstraction [2.2.8](overview.md)
+- database character set [3.1.1](plsql-language-fundamentals.md)
+- database links
+	- DR units [9.14.3](plsql-subprograms.md)
+- DATABASE trigger [10.5.2](plsql-triggers.md)
+- Data-bound collation [14.20](DEFAULT-COLLATION-clause.md)
+- data definition language statement
+	- See: DDL statement
+- Data Pump Import and triggers [10.14](plsql-triggers.md)
+- datatype
+	- in CREATE TYPE statement [15.13](CREATE-TYPE-statement.md)
+- Datatype [14.19](datatype-attribute.md)
+- data type [4](plsql-data-types.md)
+	- See also: subtype
+	- collection
+		- See collection [6](plsql-collections-and-records.md)
+		- compatible
+		- for collection variables [6.7.1](plsql-collections-and-records.md)
+				- for scalar variables [3.6](plsql-language-fundamentals.md)
+		- composite [6](plsql-collections-and-records.md)
+		- object
+		- See Abstract Data Type (ADT) [2.2.8.5](overview.md)
+		- of expression [3.7](plsql-language-fundamentals.md)
+		- predefined [E](plsql-predefined-data-types.md)
+		- RECORD
+		- See record [6](plsql-collections-and-records.md)
+		- scalar [4](plsql-data-types.md)
+		- SQL [4.1](plsql-data-types.md)
+		- user-defined
+		- See Abstract Data Type (ADT) [2.2.8.5](overview.md)
+		- what it determines [4](plsql-data-types.md)
+- data type conversion [4.1](plsql-data-types.md)
+	- implicit
+		- See implicit data type conversion [13.3.5.3](plsql-optimization-and-tuning.md)
+		- SQL injection and [8.4.1.3](dynamic-sql.md)
+- data type family [4](plsql-data-types.md)
+	- overloaded subprogram and [9.9](plsql-subprograms.md)
+		- predefined data types grouped by [E](plsql-predefined-data-types.md)
+		- subtypes with base types in same [4.4.3](plsql-data-types.md)
+- DATE data type family [E](plsql-predefined-data-types.md)
+- DBMS\_ASSERT package [8.4.2.2](dynamic-sql.md)
+- DBMS\_DB\_VERSION package [3.9.1.5](plsql-language-fundamentals.md)
+- DBMS\_DDL package [A.4](plsql-source-text-wrapping.md)
+- DBMS\_PARALLEL\_EXECUTE package [13.7](plsql-optimization-and-tuning.md)
+- DBMS\_PREPROCESSOR package [3.9.3](plsql-language-fundamentals.md)
+- DBMS\_SQL.GET\_NEXT\_RESULT procedure [8.3.2](dynamic-sql.md)
+- DBMS\_SQL.RETURN\_RESULT procedure [8.3.1](dynamic-sql.md)
+- DBMS\_SQL.TO\_NUMBER function [8.3.4](dynamic-sql.md)
+- DBMS\_SQL.TO\_REFCURSOR function [8.3.3](dynamic-sql.md)
+- DBMS\_SQL package [8.3](dynamic-sql.md)
+	- switching to native dynamic SQL from [8.3](dynamic-sql.md)
+- DBMS\_STANDARD package [3.4](plsql-language-fundamentals.md)
+- DBMS\_WARNING package [12.1.1](plsql-error-handling.md)
+- dbmsupgin.sql script [13.10.5](plsql-optimization-and-tuning.md)
+- dbmsupgnv.sql script [13.10.5](plsql-optimization-and-tuning.md)
+- DDL statement
+	- dynamic SQL for [8](dynamic-sql.md)
+		- in trigger [7.7.6](static-sql.md)
+		- subprogram side effects and [9.13](plsql-subprograms.md)
+- deadlock
+	- autonomous transaction and [7.7.5.4](static-sql.md)
+		- implicit rollback and [7.6.4](static-sql.md)
+- declaration [3.3](plsql-language-fundamentals.md)
+	- exception raised in [12.8.1](plsql-error-handling.md)
+- DEFAULT COLLATION clause [14.20](DEFAULT-COLLATION-clause.md)
+	- in CREATE FUNCTION statement [15.7](CREATE-FUNCTION-statement.md)
+		- in CREATE PACKAGE statement [15.9](CREATE-PACKAGE-statement.md)
+		- in CREATE PROCEDURE statement [15.11](CREATE-PROCEDURE-statement.md)
+		- in CREATE TRIGGER statement [15.12](CREATE-TRIGGER-statement.md)
+		- in CREATE TYPE statement [15.13](CREATE-TYPE-statement.md)
+- default value [9.7.5](plsql-subprograms.md)
+	- See also: initial value
+	- of cursor parameter [7.2.2.6.1](static-sql.md)
+		- of subprogram parameter [9.7.5](plsql-subprograms.md)
+- DEFINE
+	- binding category [13.4](plsql-optimization-and-tuning.md)
+- definer’s rights clause [14.41](invokers_rights_clause.md)
+- definer’s rights unit
+	- See: DR unit
+- DELETE collection method [6.10.1](plsql-collections-and-records.md)
+	- COUNT method and [6.10.6](plsql-collections-and-records.md)
+		- EXISTS method and [6.10.4](plsql-collections-and-records.md)
+		- EXTEND method and [6.10.3](plsql-collections-and-records.md)
+		- FIRST method and [6.10.5](plsql-collections-and-records.md)
+		- LAST method and [6.10.5](plsql-collections-and-records.md)
+		- NEXT method and [6.10.8](plsql-collections-and-records.md)
+		- PRIOR method and [6.10.8](plsql-collections-and-records.md)
+		- TRIM method and [6.10.2](plsql-collections-and-records.md)
+- DELETE statement [14.21](DELETE-statement-extension.md)
+	- See also: DML statement
+	- BEFORE statement trigger and [10.9](plsql-triggers.md)
+		- PL/SQL extension to [14.21](DELETE-statement-extension.md)
+- DELETING conditional predicate [10.3.1](plsql-triggers.md)
+- delimiter [3.2.1](plsql-language-fundamentals.md)
+- dense collection [6.1](plsql-collections-and-records.md)
+- DEPRECATE pragma [14.22](DEPRECATE-pragma.md)
+- Descriptive Intermediate Attributed Notation for Ada (DIANA) [C](plsql-program-limits.md)
+- DETERMINISTIC
+	- in CREATE FUNCTION statement [15.7](CREATE-FUNCTION-statement.md)
+- DETERMINISTIC clause [14.23](DETERMINISTIC-clause.md)
+- DETERMINISTIC option [14.36](function-declaration-and-definition.md)
+	- for pipelined table function [13.5.2](plsql-optimization-and-tuning.md)
+- DIAGNOSTIC\_DEST initialization parameter [12](plsql-error-handling.md)
+- directive [3.9.1](plsql-language-fundamentals.md)
+	- See also: conditional compilation directive
+	- compiler
+		- See pragma [3.2.4](plsql-language-fundamentals.md)
+		- error [3.9.1.3](plsql-language-fundamentals.md)
+		- inquiry [3.9.1.4](plsql-language-fundamentals.md)
+		- selection [3.9.1.2](plsql-language-fundamentals.md)
+- direct-key partitioning [15.7](CREATE-FUNCTION-statement.md), [15.14](CREATE-TYPE-BODY-statement.md)
+- DML statement
+	- avoiding inner capture in [B.6](plsql-name-resolution.md)
+		- in FORALL statement [13.4.1](plsql-optimization-and-tuning.md)
+		- inside pipelined table function [13.5.2](plsql-optimization-and-tuning.md)
+		- on pipelined table function result [13.5.7](plsql-optimization-and-tuning.md)
+		- PL/SQL syntax of [7.1.1](static-sql.md)
+		- repeating efficiently [13.4.1](plsql-optimization-and-tuning.md)
+- DML trigger [10.3](plsql-triggers.md)
+- dot notation
+	- for collection method [6.10](plsql-collections-and-records.md)
+		- for identifier in named PL/SQL unit [3.4](plsql-language-fundamentals.md)
+		- for pseudocolumn [7.1.2.1](static-sql.md)
+		- for record field [6](plsql-collections-and-records.md)
+		- name resolution and [B.1](plsql-name-resolution.md)
+- double quotation mark (") [3.1.1](plsql-language-fundamentals.md)
+- DROP FUNCTION statement [15.15](DROP-FUNCTION-statement.md)
+- DROP LIBRARY statement [15.16](DROP-LIBRARY-statement.md)
+- DROP PACKAGE statement [15.17](DROP-PACKAGE-statement.md)
+- DROP PROCEDURE statement [15.18](DROP-PROCEDURE-statement.md)
+- DROP TRIGGER statement [15.19](DROP-TRIGGER-statement.md)
+- DROP TYPE BODY statement [15.21](DROP-TYPE-BODY-statement.md)
+- DR unit [9.14](plsql-subprograms.md)
+	- See also: AUTHID property
+	- call stack and [9.14](plsql-subprograms.md)
+		- database links [9.14.3](plsql-subprograms.md)
+		- dynamic SQL and [9.14](plsql-subprograms.md)
+		- INHERIT REMOTE PRIVILEGES privilege [9.14.3](plsql-subprograms.md)
+		- name resolution and [9.14](plsql-subprograms.md)
+		- privilege checking and [9.14](plsql-subprograms.md)
+		- SCHEMA trigger and [10.5.1](plsql-triggers.md)
+		- static SQL and [9.14](plsql-subprograms.md)
+- DUP\_VAL\_ON\_INDEX exception [12.4](plsql-error-handling.md)
+- dynamic SQL [8](dynamic-sql.md)
+	- AUTHID property and [9.14](plsql-subprograms.md)
+		- native [8.2](dynamic-sql.md)
+		- switching to DBMS\_SQL package from [8.3](dynamic-sql.md)
+		- placeholder for bind variable in
+		- EXECUTE IMMEDIATE statement and [8.2.1](dynamic-sql.md)
+				- repeated [8.2.3](dynamic-sql.md)
+		- tuning [13.2](plsql-optimization-and-tuning.md)
+
+---
+
+## E
+
+- editioned [15.6](ALTER-TYPE-statement.md)
+- editioned Abstract Data Type (ADT) [15.6](ALTER-TYPE-statement.md)
+- element of collection [6](plsql-collections-and-records.md)
+- element specification
+	- in CREATE TYPE statement [15.13](CREATE-TYPE-statement.md)
+		- syntax diagram [14.24](element-specification.md)
+- embedded SQL
+	- See: static SQL
+- empty collection [6.1](plsql-collections-and-records.md)
+	- creating with constructor [6.5](plsql-collections-and-records.md)
+- error directive [3.9.1.3](plsql-language-fundamentals.md)
+- error handling [12](plsql-error-handling.md)
+- error-reporting function
+	- SQLCODE [14.65](SQLCODE-function.md)
+		- SQLERRM [14.66](SQLERRM-function.md)
+		- SQL%BULK\_EXCEPTIONS and [13.4.1.4](plsql-optimization-and-tuning.md)
+- escape character [3.7.5.3](plsql-language-fundamentals.md)
+- escaped identifier [B.4](plsql-name-resolution.md)
+- evaluation order [3.7.2](plsql-language-fundamentals.md)
+- events publication [10.15](plsql-triggers.md)
+- evolution of type [15.6](ALTER-TYPE-statement.md)
+- exception
+	- handling [12.2](plsql-error-handling.md)
+		- in FORALL statement [13.4.1.2](plsql-optimization-and-tuning.md)
+				- in trigger [10.8](plsql-triggers.md)
+				- See also exception handler [12.2](plsql-error-handling.md)
+		- internally defined
+		- See internally defined exception [12.3](plsql-error-handling.md)
+		- predefined
+		- See predefined exception [12.4](plsql-error-handling.md)
+		- raised in cursor FOR LOOP statement [7.3.2](static-sql.md)
+		- raised in declaration [12.8.1](plsql-error-handling.md)
+		- raised in exception handler [12.8.2](plsql-error-handling.md)
+		- raising explicitly [12.7](plsql-error-handling.md)
+		- reraising [12.7.1.3](plsql-error-handling.md)
+		- unhandled [12.9](plsql-error-handling.md)
+		- in FORALL statement [13.4.1.2](plsql-optimization-and-tuning.md)
+		- user-defined
+		- See user-defined exception [12.5](plsql-error-handling.md)
+- EXCEPTION\_INIT pragma [14.25](EXCEPTION_INIT-pragma.md)
+	- for giving error code to user-defined exception [12.7.2](plsql-error-handling.md)
+		- for giving name to internally defined exception [12.3](plsql-error-handling.md)
+- exception handler [12.2](plsql-error-handling.md)
+	- continuing execution after [12.11](plsql-error-handling.md)
+		- exception raised in [12.8.2](plsql-error-handling.md)
+		- for NO\_DATA\_NEEDED [13.5.8](plsql-optimization-and-tuning.md)
+		- GOTO statement and [14.37](GOTO-statement.md)
+		- locator variables for [12.2.2](plsql-error-handling.md)
+		- retrieving error code and message in [12.10](plsql-error-handling.md)
+		- retrying transaction after [12.12](plsql-error-handling.md)
+		- syntax diagram [14.27](exception-handler.md)
+- EXECUTE IMMEDIATE statement [8.2.1](dynamic-sql.md)
+	- syntax diagram [14.28](EXECUTE-IMMEDIATE-statement.md)
+- EXISTS collection method [6.10.4](plsql-collections-and-records.md)
+- exiting a loop [5.2](plsql-control-statements.md)
+- EXIT statement
+	- syntax diagram [14.29](EXIT-statement.md)
+- EXIT WHEN statement
+	- syntax diagram [14.29](EXIT-statement.md)
+- explicit cursor [7.2.2](static-sql.md)
+	- declaration syntax diagram [14.30](explicit-cursor-declaration-and-definition.md)
+		- in package
+		- declaring [11.8](plsql-packages.md)
+				- opening and closing [11.7.3](plsql-packages.md)
+		- query result processing with
+		- in FOR LOOP statement [7.3.2](static-sql.md)
+				- with OPEN, FETCH, and CLOSE statements [7.3.3](static-sql.md)
+- explicit format model [8.4.2.3](dynamic-sql.md)
+- expression [3.7](plsql-language-fundamentals.md)
+	- CURSOR [7.5](static-sql.md)
+		- passing to pipelined table function [13.5.6](plsql-optimization-and-tuning.md)
+		- data type of [3.7](plsql-language-fundamentals.md)
+		- in explicit cursor [7.2.2.5](static-sql.md)
+		- SQL function in PL/SQL [3.7.8](plsql-language-fundamentals.md)
+		- static [3.7.9](plsql-language-fundamentals.md)
+		- syntax diagram [14.31](expression.md)
+- EXTEND collection method [6.10.3](plsql-collections-and-records.md)
+- external subprogram [9.15](plsql-subprograms.md)
+	- call specification [14.7](call-specification.md)
+
+---
+
+## F
+
+- FETCH FIRST clause [13.4.2.1.2](plsql-optimization-and-tuning.md)
+- FETCH statement
+	- across COMMIT [7.6.6.3](static-sql.md)
+		- record variable and [6.13.3.2](plsql-collections-and-records.md)
+		- syntax diagram [14.32](FETCH-statement.md)
+		- that returns no row [7.2.2.3](static-sql.md)
+		- with BULK COLLECT clause [13.4.2.2](plsql-optimization-and-tuning.md)
+		- with cursor variable [7.4.3](static-sql.md)
+		- with explicit cursor [7.2.2.3](static-sql.md)
+- field of record [6](plsql-collections-and-records.md)
+- FIRST collection method [6.10.5](plsql-collections-and-records.md)
+- FORALL statement [13.4.1](plsql-optimization-and-tuning.md)
+	- associative array in [14.34](FORALL-statement.md)
+		- bulk binding and [13.4](plsql-optimization-and-tuning.md)
+		- BULK COLLECT clause and [13.4.3](plsql-optimization-and-tuning.md)
+		- for sparse collection [13.4.1.1](plsql-optimization-and-tuning.md)
+		- SQL%BULK\_EXCEPTIONS and [13.4.1.4.1](plsql-optimization-and-tuning.md)
+		- handling exception raised in
+		- after FORALL completes [13.4.1.4](plsql-optimization-and-tuning.md)
+				- immediately [13.4.1.3](plsql-optimization-and-tuning.md)
+		- number of rows affected by [13.4.1.5](plsql-optimization-and-tuning.md)
+		- syntax diagram [14.34](FORALL-statement.md)
+		- unhandled exception in [13.4.1.2](plsql-optimization-and-tuning.md)
+- FOR LOOP index [5.2.2.1](plsql-control-statements.md)
+- FOR LOOP iterand [5.2.2.1](plsql-control-statements.md)
+- FOR LOOP statement [5.2.2](plsql-control-statements.md)
+	- See also: cursor FOR LOOP statement
+	- FORALL statement and [13.4.1](plsql-optimization-and-tuning.md)
+		- FOR LOOP statement
+		- bounds of [14.33](FOR-LOOP-statement.md)
+		- STEP clause and [5.2.2](plsql-control-statements.md)
+		- syntax diagram [14.33](FOR-LOOP-statement.md)
+- format model [8.4.2.3](dynamic-sql.md)
+- FOR UPDATE cursor [7.6.6.2](static-sql.md)
+	- after COMMIT or ROLLBACK [7.6.6.3](static-sql.md)
+- forward declaration of subprogram [9.6](plsql-subprograms.md)
+- function [9](plsql-subprograms.md)
+	- See also: subprogram
+	- aggregate
+		- See aggregate function [13.5.6](plsql-optimization-and-tuning.md)
+		- built-in
+		- See SQL function [13.3.6](plsql-optimization-and-tuning.md)
+		- declaration syntax diagram [14.36](function-declaration-and-definition.md)
+		- error-reporting
+		- SQLCODE [14.65](SQLCODE-function.md)
+				- SQLERRM [13.4.1.4](plsql-optimization-and-tuning.md)
+		- invoking [9.3](plsql-subprograms.md)
+		- in SQL statement [9.13](plsql-subprograms.md)
+		- options for [9.5.1](plsql-subprograms.md)
+		- SQL
+		- See SQL function [13.3.6](plsql-optimization-and-tuning.md)
+		- structure of [9.5.1](plsql-subprograms.md)
+		- table
+		- See table function [13.5.1](plsql-optimization-and-tuning.md)
+- function result cache [9.12](plsql-subprograms.md)
+- function specification [14.36](function-declaration-and-definition.md)
+
+---
+
+## G
+
+- generated column
+	- See: virtual column
+- GET\_NEXT\_RESULT procedure [8.3.2](dynamic-sql.md)
+- global identifier [3.5](plsql-language-fundamentals.md)
+- GOTO statement [5.3.1](plsql-control-statements.md)
+	- restrictions on [14.37](GOTO-statement.md)
+		- syntax diagram [14.37](GOTO-statement.md)
+- granting roles to PL/SQL units [9.14.1](plsql-subprograms.md)
+
+---
+
+## H
+
+- hardware arithmetic [13.3.5.1](plsql-optimization-and-tuning.md)
+- hash table [6.1](plsql-collections-and-records.md)
+- hiding PL/SQL source text
+	- See: wrapping PL/SQL source text
+- host variable
+	- bulk-binding [13.4.4](plsql-optimization-and-tuning.md)
+		- cursor variable as [7.4.9](static-sql.md)
+		- packages and [11.2](plsql-packages.md)
+
+---
+
+## I
+
+- identifier [3.2.2](plsql-language-fundamentals.md), [3.4](plsql-language-fundamentals.md)
+	- See also: name
+	- ambiguous reference to [B](plsql-name-resolution.md)
+		- escaped [B.4](plsql-name-resolution.md)
+		- global [3.5](plsql-language-fundamentals.md)
+		- in static SQL [7.1.1](static-sql.md)
+		- local [3.5](plsql-language-fundamentals.md)
+		- reference to [3.4](plsql-language-fundamentals.md)
+		- scope of [3.5](plsql-language-fundamentals.md)
+		- user-defined [3.2.2.3](plsql-language-fundamentals.md)
+		- collecting data about [13.8](plsql-optimization-and-tuning.md)
+		- visibility of [3.5](plsql-language-fundamentals.md)
+- IDL [C](plsql-program-limits.md)
+- IF statement [5.1](plsql-control-statements.md)
+	- IF THEN ELSE form [5.1.2](plsql-control-statements.md)
+		- IF THEN ELSIF form [5.1.3](plsql-control-statements.md)
+		- nested IF THEN ELSE statement and [5.1.3](plsql-control-statements.md)
+				- simple CASE statement and [5.1.3](plsql-control-statements.md)
+		- IF THEN form [5.1.1](plsql-control-statements.md)
+		- nested [5.1.2](plsql-control-statements.md)
+		- syntax diagram [14.38](IF-statement.md)
+- immutable iterand [5.2.2.2](plsql-control-statements.md)
+- imp and triggers [10.14](plsql-triggers.md)
+- implicit cursor [7.2.1](static-sql.md)
+	- CURSOR expression with [7.5](static-sql.md)
+		- declaration syntax [14.39](implicit-cursor-attribute.md)
+		- dynamic SQL and [8.3](dynamic-sql.md)
+		- query result processing with
+		- with cursor FOR LOOP statement [7.3.2](static-sql.md)
+				- with SELECT INTO statement [7.3.1](static-sql.md)
+- implicit data type conversion
+	- minimizing [13.3.5.3](plsql-optimization-and-tuning.md)
+		- of subprogram parameter [9.7.2](plsql-subprograms.md)
+		- causing overload error [9.9.3](plsql-subprograms.md)
+		- of subtypes
+		- constrained [4.4.2](plsql-data-types.md)
+				- unconstrained [4.4.1](plsql-data-types.md)
+				- with base types in same family [4.4.3](plsql-data-types.md)
+- implicitly returning query results [8.3.1](dynamic-sql.md)
+- implicit ROLLBACK statement [7.6.4](static-sql.md)
+- Import and triggers [10.14](plsql-triggers.md)
+- in-bind [13.4](plsql-optimization-and-tuning.md)
+- independent transaction
+	- See: autonomous transaction
+- index-by table
+	- See: associative array
+- index collection [13.4.1.1](plsql-optimization-and-tuning.md)
+	- representing subset with [13.4.1.1](plsql-optimization-and-tuning.md)
+- index iterator choice [6.6](plsql-collections-and-records.md)
+- index of collection [6](plsql-collections-and-records.md)
+- indices\_of\_control [5.2.2.6](plsql-control-statements.md)
+- infinite loop [5.2.1](plsql-control-statements.md)
+- INFORMATIONAL compile-time warning [12.1](plsql-error-handling.md)
+- INHERIT ANY PRIVILEGES privilege [9.14](plsql-subprograms.md)
+- INHERIT PRIVILEGES privilege [9.14](plsql-subprograms.md)
+- INHERIT REMOTE PRIVILEGES privilege [9.14.3](plsql-subprograms.md)
+- initialization parameter [2.3.2](overview.md)
+- initial value [9.7.5](plsql-subprograms.md)
+	- See also: default value
+	- %TYPE attribute and [3.3.5](plsql-language-fundamentals.md)
+		- NOT NULL constraint and [3.3.1](plsql-language-fundamentals.md)
+		- of constant [3.3.4](plsql-language-fundamentals.md)
+		- of variable
+		- nested table [6.4](plsql-collections-and-records.md)
+				- record [6.12.1](plsql-collections-and-records.md)
+				- scalar [3.3.4](plsql-language-fundamentals.md)
+				- varray [6.3](plsql-collections-and-records.md)
+- INLINE pragma [13.1.1](plsql-optimization-and-tuning.md)
+	- syntax diagram [14.40](INLINE-pragma.md)
+- inner capture [B.5.3](plsql-name-resolution.md)
+	- avoiding [B.6](plsql-name-resolution.md)
+- IN operator [3.7.5.5](plsql-language-fundamentals.md)
+- IN OUT parameter mode [9.7.3](plsql-subprograms.md)
+- IN parameter mode [9.7.3](plsql-subprograms.md)
+- input [2.2.7](overview.md)
+- inquiry directive [3.9.1.4](plsql-language-fundamentals.md)
+- INSERTING conditional predicate [10.3.1](plsql-triggers.md)
+- INSERT statement [14.42](INSERT-statement-extension.md)
+	- See also: DML statement
+	- inserting record with [6.15](plsql-collections-and-records.md)
+		- restrictions on [6.17](plsql-collections-and-records.md)
+		- PL/SQL extension to [14.42](INSERT-statement-extension.md)
+- INSTEAD OF trigger [10.1](plsql-triggers.md)
+	- for CREATE statement [10.5.3](plsql-triggers.md)
+		- on DML statement [10.3.2](plsql-triggers.md)
+		- compound [10.3.3.1](plsql-triggers.md)
+				- for pipelined table function result [13.5.7](plsql-optimization-and-tuning.md)
+				- on nested table column [10.3.2](plsql-triggers.md)
+- Interface Definition Language (IDL) [C](plsql-program-limits.md)
+- internally defined exception [12.3](plsql-error-handling.md)
+	- giving name to [12.3](plsql-error-handling.md)
+		- raising explicitly [12.7.1.2](plsql-error-handling.md)
+- interpreted compilation [13.10.5](plsql-optimization-and-tuning.md)
+- INVALID\_CURSOR exception [12.4](plsql-error-handling.md)
+- INVALID\_NUMBER exception [12.4](plsql-error-handling.md)
+- invisible column [6.12.4.4](plsql-collections-and-records.md)
+- invoker’s rights clause [14.41](invokers_rights_clause.md)
+- invoker’s rights unit
+	- See: IR unit
+- IR unit [9.14](plsql-subprograms.md)
+	- See also: AUTHID property
+	- call stack and [9.14](plsql-subprograms.md)
+		- dynamic SQL and [9.14](plsql-subprograms.md)
+		- granting roles to [9.14.1](plsql-subprograms.md)
+		- name resolution and [9.14](plsql-subprograms.md)
+		- privilege checking and [9.14](plsql-subprograms.md)
+		- static SQL and [9.14](plsql-subprograms.md), [9.14.2](plsql-subprograms.md)
+		- template objects for [9.14.2](plsql-subprograms.md)
+- IS \[NOT\] NULL operator [3.7.5.1](plsql-language-fundamentals.md)
+	- collections and [6.9.1](plsql-collections-and-records.md)
+- isolation level of transaction [7.7.3](static-sql.md)
+- iterand [14.43](iterator.md)
+- iterand declaration [14.43](iterator.md)
+- iterand mutability property [5.2.2.2](plsql-control-statements.md)
+- iteration control [14.43](iterator.md)
+- iterator [14.43](iterator.md)
+	- FOR LOOP statement
+		- bounds of [14.43](iterator.md)
+				- PAIRS OF [14.43](iterator.md)
+		- INDICES OF [14.43](iterator.md)
+		- syntax diagram [14.43](iterator.md)
+		- VALUES OF [14.43](iterator.md)
+
+---
+
+## K
+
+- key-value pair
+	- See: associative array
+- keywords [3.2.2.1](plsql-language-fundamentals.md)
+	- list of [D](plsql-reserved-words-keywords.md)
+
+---
+
+## L
+
+- LAST collection method [6.10.5](plsql-collections-and-records.md)
+- LEVEL pseudocolumn [7.1.2](static-sql.md)
+- lexical unit [3.2](plsql-language-fundamentals.md)
+- library
+	- creating [15.8](CREATE-LIBRARY-statement.md)
+		- dropping [15.16](DROP-LIBRARY-statement.md)
+		- explicitly recompiling [15.2](ALTER-LIBRARY-statement.md)
+- library arithmetic [13.3.5.1](plsql-optimization-and-tuning.md)
+- LIKE operator [3.7.5.3](plsql-language-fundamentals.md)
+- LIMIT clause [13.4.2.2.1](plsql-optimization-and-tuning.md)
+- LIMIT collection method [6.10.7](plsql-collections-and-records.md)
+- line-continuation character [3.2.3](plsql-language-fundamentals.md)
+- literal [3.2.3](plsql-language-fundamentals.md)
+- local identifier [3.5](plsql-language-fundamentals.md)
+- locator variable [12.2.2](plsql-error-handling.md)
+- locking
+	- overriding default [7.6.6](static-sql.md)
+		- result set row [7.6.6.2](static-sql.md)
+		- table [7.6.6.1](static-sql.md)
+- lock mode [7.6.6.1](static-sql.md)
+- LOCK TABLE statement [7.6.6.1](static-sql.md)
+- logical operator [3.7.3](plsql-language-fundamentals.md)
+- logical value [4.2](plsql-data-types.md)
+- LOGIN\_DENIED exception [12.4](plsql-error-handling.md)
+- LONG data type [4.1.5](plsql-data-types.md)
+	- in trigger [10.10.2](plsql-triggers.md)
+- LONG RAW data type [4.1.5](plsql-data-types.md)
+	- in trigger [10.10.2](plsql-triggers.md)
+- LOOP statement
+	- exiting [5.2](plsql-control-statements.md)
+		- kinds of [5.2](plsql-control-statements.md)
+		- labeled [5.2](plsql-control-statements.md)
+		- optimizing [13.3.4](plsql-optimization-and-tuning.md)
+- LOOP UNTIL structure [5.2.3](plsql-control-statements.md)
+
+---
+
+## M
+
+- MALFORMED\_WRAP\_INPUT exception [A.4](plsql-source-text-wrapping.md)
+- manageability [2.1.6](overview.md)
+- MapReduce workloads [15.7](CREATE-FUNCTION-statement.md), [15.14](CREATE-TYPE-BODY-statement.md)
+- materialized view, trigger and [15.12](CREATE-TRIGGER-statement.md)
+- membership test [3.7.5.5](plsql-language-fundamentals.md)
+- method, collection
+	- See: collection method
+- Method 4 [8.3](dynamic-sql.md)
+- mixed parameter notation [9.7.6](plsql-subprograms.md)
+- mode
+	- lock [7.6.6.1](static-sql.md)
+		- subprogram parameter [9.7.3](plsql-subprograms.md)
+- multibyte character set
+	- as database character set [3.1.1](plsql-language-fundamentals.md)
+		- variables for values from [4.1.4.2](plsql-data-types.md)
+- multidimensional collection [6.8](plsql-collections-and-records.md)
+- multiline comment [3.2.5.2](plsql-language-fundamentals.md)
+- multiple data transformations [13.5](plsql-optimization-and-tuning.md)
+- multiset condition [6.9.3](plsql-collections-and-records.md)
+- mutable iterand [5.2.2.2](plsql-control-statements.md)
+- mutating table [10.10.3](plsql-triggers.md)
+- mutating-table error
+	- for function [9.13](plsql-subprograms.md)
+		- for trigger [10.10.3](plsql-triggers.md)
+
+---
+
+## N
+
+- name [3.4](plsql-language-fundamentals.md)
+	- See also: identifier
+	- qualified
+		- See dot notation [3.4](plsql-language-fundamentals.md)
+		- qualified remote [3.4](plsql-language-fundamentals.md)
+		- remote [3.4](plsql-language-fundamentals.md)
+		- simple [3.4](plsql-language-fundamentals.md)
+- named choice list [6.6](plsql-collections-and-records.md)
+- named cursor [7.2.2](static-sql.md)
+	- See also: explicit cursor and cursor variable
+	- pipelined table function and [13.5.5](plsql-optimization-and-tuning.md)
+- named parameter notation [9.7.6](plsql-subprograms.md)
+- name resolution [B](plsql-name-resolution.md)
+	- AUTHID property and [9.14](plsql-subprograms.md)
+		- in static SQL [B.4](plsql-name-resolution.md)
+		- PL/SQL and SQL differences [B.3](plsql-name-resolution.md)
+- national character set [3.1.2](plsql-language-fundamentals.md)
+- native dynamic SQL [8.2](dynamic-sql.md)
+	- switching to DBMS\_SQL package from [8.3](dynamic-sql.md)
+- native execution, compilation for [13.10](plsql-optimization-and-tuning.md)
+- NATURALN subtype [4.3.2](plsql-data-types.md)
+- NATURAL subtype [4.3.2](plsql-data-types.md)
+- nested comment [3.2.5.2](plsql-language-fundamentals.md)
+- nested cursor [7.5](static-sql.md)
+- nested IF statement [5.1.2](plsql-control-statements.md)
+	- IF THEN ELSIF form and [5.1.3](plsql-control-statements.md)
+- nested record
+	- assignment example [6.13.2](plsql-collections-and-records.md)
+		- declaration example [6.12.3](plsql-collections-and-records.md)
+- nested subprogram [9.2](plsql-subprograms.md)
+	- declaration and definition of [9.2](plsql-subprograms.md)
+		- forward declaration for [9.6](plsql-subprograms.md)
+- nested table [6.4](plsql-collections-and-records.md)
+	- See also: collection
+	- assigning null value to [6.7.2](plsql-collections-and-records.md)
+		- assigning set operation result to [6.7.3](plsql-collections-and-records.md)
+		- characteristics of [6.1](plsql-collections-and-records.md)
+		- column in view, trigger on [10.3.2](plsql-triggers.md)
+		- comparing to NULL [6.9.1](plsql-collections-and-records.md)
+		- comparing two [6.9.2](plsql-collections-and-records.md)
+		- correlation names and [10.4](plsql-triggers.md)
+		- COUNT method for [6.10.6.2](plsql-collections-and-records.md)
+		- FIRST and LAST methods for [6.10.5.3](plsql-collections-and-records.md)
+		- returned by function [13.5.1](plsql-optimization-and-tuning.md)
+		- SQL multiset conditions and [6.9.3](plsql-collections-and-records.md)
+- nested transaction [7.7](static-sql.md)
+- NEW correlation name [10.4](plsql-triggers.md)
+	- with LONG or LONG RAW column [10.10.2](plsql-triggers.md)
+- NEXT collection method [6.10.8](plsql-collections-and-records.md)
+- NEXTVAL pseudocolumn [7.1.2.1](static-sql.md)
+- NLS parameters
+	- associative array and [6.2.2](plsql-collections-and-records.md)
+		- character comparison and [3.7.5.2.3](plsql-language-fundamentals.md)
+		- SQL injection and [8.4.1.3](dynamic-sql.md)
+- NO\_DATA\_FOUND exception [12.4](plsql-error-handling.md)
+- NO\_DATA\_NEEDED exception [13.5.8](plsql-optimization-and-tuning.md)
+	- SQLCODE for [12.4](plsql-error-handling.md)
+- NOCOPY hint [14.35](formal-parameter-declaration.md)
+	- subprogram parameter aliasing and [9.7.4.1](plsql-subprograms.md)
+		- tuning subprogram invocation with [13.3.3](plsql-optimization-and-tuning.md)
+- nonpadded comparison semantics [4.1.4.3.3](plsql-data-types.md)
+- no-op (no operation) statement [5.3.2](plsql-control-statements.md)
+- NOT\_LOGGED\_ON exception [12.4](plsql-error-handling.md)
+- NOT NULL constraint [3.3.1](plsql-language-fundamentals.md)
+	- %TYPE attribute and [3.3.5](plsql-language-fundamentals.md)
+		- EXTEND method and [6.10.3](plsql-collections-and-records.md)
+- NOT operator [3.7.3](plsql-language-fundamentals.md)
+- null collection [6.1](plsql-collections-and-records.md)
+	- assigning to collection variable [6.7.2](plsql-collections-and-records.md)
+		- collection method and [6.10](plsql-collections-and-records.md)
+- NULL statement
+	- syntax diagram [14.45](NULL-statement.md)
+		- uses for [5.3.2](plsql-control-statements.md)
+- null string [3.2.3](plsql-language-fundamentals.md)
+- NULL value
+	- assigning to record variable [6.13.4](plsql-collections-and-records.md)
+		- comparing to collection
+		- associative array [6.9](plsql-collections-and-records.md)
+				- nested table [6.9.1](plsql-collections-and-records.md)
+				- varray [6.9.1](plsql-collections-and-records.md)
+		- comparison operator and [3.7.5](plsql-language-fundamentals.md)
+		- concatenation operator and [3.7.1](plsql-language-fundamentals.md)
+		- for $$PLSQL\_UNIT\_OWNER inquiry directive [3.9.1.4.1](plsql-language-fundamentals.md)
+		- for $$PLSQL\_UNIT inquiry directive [3.9.1.4.1](plsql-language-fundamentals.md)
+		- for collection variable [6.7.2](plsql-collections-and-records.md)
+		- for subprogram parameter [9.7.5](plsql-subprograms.md)
+		- for unresolvable inquiry directive [3.9.1.4.3](plsql-language-fundamentals.md)
+		- in control statement [3.7.3](plsql-language-fundamentals.md)
+		- IN operator and [3.7.5.5](plsql-language-fundamentals.md)
+		- in set [3.7.5.5](plsql-language-fundamentals.md)
+		- in USING clause [8.2.1](dynamic-sql.md)
+		- simple CASE expression and [3.7.7.1](plsql-language-fundamentals.md)
+		- simple CASE statement and [5.1.4](plsql-control-statements.md)
+- NUMBER data type family
+	- inefficiency of [13.3.5.1](plsql-optimization-and-tuning.md)
+		- members of [E](plsql-predefined-data-types.md)
+
+---
+
+## O
+
+- obfuscating PL/SQL source text
+	- See: wrapping PL/SQL source text
+- OBJECT\_VALUE pseudocolumn [10.4.1](plsql-triggers.md)
+- object type
+	- See: Abstract Data Type (ADT)
+- OCI
+	- associative array and [6.2.3](plsql-collections-and-records.md)
+		- cursor variable and [7.4.9](static-sql.md)
+- of RETURNING INTO clause [13.4.2.3](plsql-optimization-and-tuning.md)
+- OLD correlation name [10.4](plsql-triggers.md)
+- OPEN FOR statement [14.47](OPEN-FOR-statement.md)
+	- recursive invocation and [9.10](plsql-subprograms.md)
+- OPEN statement [14.46](OPEN-statement.md)
+	- recursive invocation and [9.10](plsql-subprograms.md)
+- operation [3.7.2](plsql-language-fundamentals.md)
+- operator
+	- comparison [3.7.5](plsql-language-fundamentals.md)
+		- cursor variable and [14.18](cursor-variable-declaration.md)
+		- logical [3.7.3](plsql-language-fundamentals.md)
+		- relational [3.7.5.2](plsql-language-fundamentals.md)
+		- collection and [6.9](plsql-collections-and-records.md)
+- operator precedence [3.7.2](plsql-language-fundamentals.md)
+- optimizer
+	- PL/SQL [13.1](plsql-optimization-and-tuning.md)
+		- SQL [13.5.5](plsql-optimization-and-tuning.md)
+- Oracle Call Interface (OCI)
+	- associative array and [6.2.3](plsql-collections-and-records.md)
+		- cursor variable and [7.4.9](static-sql.md)
+- Oracle RAC environment, result caches in [9.12.5.6](plsql-subprograms.md)
+- ORA-n error
+	- See: internally defined exception
+- ordinary user-defined identifier [3.2.2.3.1](plsql-language-fundamentals.md)
+- Original Import and triggers [10.14](plsql-triggers.md)
+- OR operator [3.7.3](plsql-language-fundamentals.md)
+- others choice [6.6](plsql-collections-and-records.md)
+- out-bind [13.4](plsql-optimization-and-tuning.md)
+- outer capture [B.5.1](plsql-name-resolution.md)
+- OUT parameter mode [9.7.3](plsql-subprograms.md)
+- output [2.2.7](overview.md)
+- overloaded subprogram [9.9](plsql-subprograms.md)
+	- INLINE pragma and [13.1.1](plsql-optimization-and-tuning.md)
+
+---
+
+## P
+
+- package [11.1](plsql-packages.md)
+	- body of
+		- See package body [11.4](plsql-packages.md)
+		- DBMS\_STANDARD [3.4](plsql-language-fundamentals.md)
+		- explicitly recompiling [15.3](ALTER-PACKAGE-statement.md)
+		- features of [11.2](plsql-packages.md)
+		- granting roles to [9.14.1](plsql-subprograms.md)
+		- guidelines for writing [11.8](plsql-packages.md)
+		- initialization of [11.5](plsql-packages.md)
+		- of static constants [3.7.9.4](plsql-language-fundamentals.md)
+		- private items in [11.4](plsql-packages.md)
+		- product-specific [11](plsql-packages.md)
+		- public items in
+		- See public package item [11.3](plsql-packages.md)
+		- reasons to use [11.2](plsql-packages.md)
+		- SERIALLY\_REUSABLE [11.7](plsql-packages.md)
+		- specification of
+		- See package specification [11.3](plsql-packages.md)
+		- STANDARD
+		- See STANDARD package [11.10](plsql-packages.md)
+		- state of [11.6](plsql-packages.md)
+		- supplied by Oracle [11](plsql-packages.md)
+		- wrapping [A](plsql-source-text-wrapping.md)
+		- guideline for [A.2](plsql-source-text-wrapping.md)
+- package body [11.1](plsql-packages.md)
+	- creating [15.10](CREATE-PACKAGE-BODY-statement.md)
+		- dropping [15.17](DROP-PACKAGE-statement.md)
+		- initialization part of [11.4](plsql-packages.md)
+		- assigning initial values in [11.8](plsql-packages.md)
+		- replacing [15.10](CREATE-PACKAGE-BODY-statement.md)
+- package specification [11.1](plsql-packages.md), [11.3](plsql-packages.md)
+	- See also: public package item
+	- creating [15.9](CREATE-PACKAGE-statement.md)
+		- cursor variable in [14.18](cursor-variable-declaration.md)
+		- dropping [15.17](DROP-PACKAGE-statement.md)
+		- replacing [15.9](CREATE-PACKAGE-statement.md)
+- package subprogram [9.2](plsql-subprograms.md)
+- pairs\_of\_control [5.2.2.6](plsql-control-statements.md)
+- PARALLEL\_ENABLE clause [14.48](PARALLEL_ENABLE-clause.md)
+	- in CREATE FUNCTION statement [15.7](CREATE-FUNCTION-statement.md)
+- PARALLEL\_ENABLE option [14.36](function-declaration-and-definition.md)
+	- for pipelined table function [13.5.2](plsql-optimization-and-tuning.md)
+		- for table function [13.5.1](plsql-optimization-and-tuning.md)
+- parallel DML
+	- bulk binding and [13.4](plsql-optimization-and-tuning.md)
+		- for large table [13.7](plsql-optimization-and-tuning.md)
+- parameter
+	- compilation
+		- See compilation parameter [2.3.2](overview.md)
+		- explicit cursor [7.2.2.6](static-sql.md)
+		- initialization [2.3.2](overview.md)
+		- subprogram
+		- See subprogram parameter [9.7](plsql-subprograms.md)
+- parameter mode [9.7.3](plsql-subprograms.md)
+- PARENT correlation name [10.4](plsql-triggers.md)
+	- with LONG or LONG RAW column [10.10.2](plsql-triggers.md)
+- parentheses
+	- nested [3.7.2](plsql-language-fundamentals.md)
+		- to control evaluation order [3.7.2](plsql-language-fundamentals.md)
+		- to improve readability [3.7.2](plsql-language-fundamentals.md)
+- pattern matching [3.7.5.3](plsql-language-fundamentals.md)
+- percent sign (%) wildcard character [3.7.5.3](plsql-language-fundamentals.md)
+- PERFORMANCE compile-time warning [12.1](plsql-error-handling.md)
+- PIPELINED Function
+	- syntax diagram [14.50](PIPELINED-clause.md)
+- PIPELINED option [13.5.1](plsql-optimization-and-tuning.md)
+	- where to specify [13.5.2](plsql-optimization-and-tuning.md)
+- pipelined table function [13.5](plsql-optimization-and-tuning.md), [13.5.1](plsql-optimization-and-tuning.md)
+	- See also: table function
+	- as aggregate function [13.5.6](plsql-optimization-and-tuning.md)
+		- in autonomous transaction [14.49](PIPE-ROW-statement.md)
+- PIPE ROW statement [13.5.2](plsql-optimization-and-tuning.md)
+	- in autonomous routine [7.7.5.4](static-sql.md)
+- PL/Scope tool [13.8](plsql-optimization-and-tuning.md)
+- PL/SQL architecture [2.3](overview.md)
+- PL/SQL block
+	- See: block
+- PL/SQL engine [2.3.1](overview.md)
+- PL/SQL function result cache [9.12](plsql-subprograms.md)
+- PL/SQL language
+	- advantages of [2.1](overview.md)
+		- high performance of [2.1.2](overview.md)
+		- high productivity with [2.1.3](overview.md)
+		- lexical units of [3.2](plsql-language-fundamentals.md)
+		- limits of [C](plsql-program-limits.md)
+		- main features of [2.2](overview.md)
+		- manageability and [2.1.6](overview.md)
+		- portability of [2.1.4](overview.md)
+		- program limits of [C](plsql-program-limits.md)
+		- scalability of [2.1.5](overview.md)
+		- SQL integration in [2.1.1](overview.md)
+		- syntax and semantics [14](plsql-language-elements.md)
+- PL/SQL optimizer [13.1](plsql-optimization-and-tuning.md)
+- PL/SQL table
+	- See: associative array
+- PL/SQL unit [2.3.2](overview.md)
+	- stored
+		- See stored PL/SQL unit [2.3.2](overview.md)
+- PL/SQL Wrapper utility [A.3](plsql-source-text-wrapping.md)
+- placeholder for bind variable
+	- in conditional compilation directive [3.9.4](plsql-language-fundamentals.md)
+		- in dynamic SQL
+		- EXECUTE IMMEDIATE statement and [8.2.1](dynamic-sql.md)
+				- repeated [8.2.3](dynamic-sql.md)
+		- in static SQL [7.1.1](static-sql.md)
+		- OPEN FOR statement and [7.4.2](static-sql.md)
+		- in trigger body [10.4](plsql-triggers.md)
+- PLS\_INTEGER data type [4.3](plsql-data-types.md)
+	- tuning code and [13.3.5.1](plsql-optimization-and-tuning.md)
+- PLS\_INTEGER static expression [3.7.9.1](plsql-language-fundamentals.md)
+- PLSQL\_CCFLAGS compilation parameter [3.9.1.4.2](plsql-language-fundamentals.md)
+- PLSQL\_OPTIMIZE\_LEVEL compilation parameter [13.1](plsql-optimization-and-tuning.md)
+- PLSQL\_WARNINGS compilation parameter
+	- displaying value of
+		- with ALL\_PLSQL\_OBJECT\_SETTINGS view [12.1](plsql-error-handling.md)
+				- with DBMS\_WARNING subprogram [12.1.1](plsql-error-handling.md)
+		- setting value of
+		- with ALTER statements [12.1](plsql-error-handling.md)
+				- with PLSQL\_WARNINGS subprogram [12.1.1](plsql-error-handling.md)
+- polymorphic table function [13.6](plsql-optimization-and-tuning.md)
+	- compilation and execution [13.6.4](plsql-optimization-and-tuning.md)
+		- definition [13.6.1](plsql-optimization-and-tuning.md)
+		- implementation [13.6.2](plsql-optimization-and-tuning.md)
+		- invocation [13.6.3](plsql-optimization-and-tuning.md)
+		- COLUMNS pseudo-operator [13.6.3.2](plsql-optimization-and-tuning.md)
+		- optimization [13.6.5](plsql-optimization-and-tuning.md)
+- portability [2.1.4](overview.md)
+- positional choice list [6.6](plsql-collections-and-records.md)
+- positional parameter notation [9.7.6](plsql-subprograms.md)
+- POSITIVEN subtype [4.3.2](plsql-data-types.md)
+- POSITIVE subtype [4.3.2](plsql-data-types.md)
+- post-processed source text [3.9.3](plsql-language-fundamentals.md)
+- pragma [3.2.4](plsql-language-fundamentals.md)
+	- AUTONOMOUS\_TRANSACTION [14.4](AUTONOMOUS_TRANSACTION-pragma.md)
+		- for pipelined table function [13.5.2](plsql-optimization-and-tuning.md)
+		- COVERAGE [14.16](COVERAGE-pragma.md)
+		- DEPRECATE [14.22](DEPRECATE-pragma.md)
+		- EXCEPTION\_INIT [14.25](EXCEPTION_INIT-pragma.md)
+		- INLINE [13.1.1](plsql-optimization-and-tuning.md)
+		- syntax diagram [14.40](INLINE-pragma.md)
+		- RESTRICT\_REFERENCES [14.55](RESTRICT_REFERENCES-pragma.md)
+		- SERIALLY\_REUSABLE [14.62](SERIALLY_REUSABLE-pragma.md)
+		- SUPPRESSES\_WARNING\_6009 [14.67](Supresses-warning-pragma-6009.md)
+		- UDF [14.69](UDF-pragma.md)
+- precedence, operator [3.7.2](plsql-language-fundamentals.md)
+- predefined constant [4.1.2](plsql-data-types.md)
+- predefined data type [E](plsql-predefined-data-types.md)
+- predefined exception [12.4](plsql-error-handling.md)
+	- raising explicitly [12.7.1.2](plsql-error-handling.md)
+		- redeclared [12.6](plsql-error-handling.md)
+- predefined inquiry directive [3.9.1.4.1](plsql-language-fundamentals.md)
+- predefined subtype [E](plsql-predefined-data-types.md)
+- preprocessor control token [3.9.1.1](plsql-language-fundamentals.md)
+- PRIOR collection method [6.10.8](plsql-collections-and-records.md)
+- privilege checking and AUTHID property [9.14](plsql-subprograms.md)
+- procedure [9](plsql-subprograms.md)
+	- See also: subprogram
+	- declaration syntax [14.51](procedure-declaration-and-definition.md)
+		- invoking [9.3](plsql-subprograms.md)
+		- structure of [9.5.1](plsql-subprograms.md)
+- procedure specification [14.51](procedure-declaration-and-definition.md)
+- product-specific package [11](plsql-packages.md)
+- profiling and tracing programs [13.9](plsql-optimization-and-tuning.md)
+- PROGRAM\_ERROR exception [12.4](plsql-error-handling.md)
+- program limits [C](plsql-program-limits.md)
+- pseudocolumn [7.1.2](static-sql.md)
+	- OBJECT\_VALUE [10.4.1](plsql-triggers.md)
+- pseudoinstruction
+	- See: pragma
+- pseudorecord [10.4](plsql-triggers.md)
+	- See also: correlation name
+- public package item
+	- appropriate [11.3.1](plsql-packages.md)
+		- collection type as [6.11](plsql-collections-and-records.md)
+		- cursor variable as [14.18](cursor-variable-declaration.md)
+		- declaring [11.3](plsql-packages.md)
+		- RECORD type as [6.12.3](plsql-collections-and-records.md)
+		- referencing [11.3](plsql-packages.md)
+		- remote variable [11.3.1](plsql-packages.md)
+		- scope of [11.3](plsql-packages.md)
+		- visibility of [11.3](plsql-packages.md)
+- publishing events [10.15](plsql-triggers.md)
+- purity rules for subprograms [9.13](plsql-subprograms.md)
+
+---
+
+## Q
+
+- qualified expression [6.6](plsql-collections-and-records.md)
+	- syntax diagram [14.52](qualified-expression.md)
+- qualified name
+	- See: dot notation
+- qualified remote name [3.4](plsql-language-fundamentals.md)
+- query [7.1.1](static-sql.md)
+	- See also: SELECT INTO statement
+	- implicitly returning results of [8.3.1](dynamic-sql.md)
+		- invoking function in [13.3.2](plsql-optimization-and-tuning.md)
+		- processing result set of [7.3](static-sql.md)
+		- multiple-row dynamic query [8.2.2](dynamic-sql.md)
+- quotation mark, single or double [3.1.1](plsql-language-fundamentals.md)
+- quoted user-defined identifier [3.2.2.3.2](plsql-language-fundamentals.md)
+
+---
+
+## R
+
+- RAISE\_APPLICATION\_ERROR procedure [12.7.2](plsql-error-handling.md)
+- RAISE statement [12.7.1](plsql-error-handling.md)
+	- syntax diagram [14.53](RAISE-statement.md)
+- raising exception explicitly [12.7](plsql-error-handling.md)
+- range test [3.7.5.4](plsql-language-fundamentals.md)
+- read-only transaction [7.6.5](static-sql.md)
+- read-write transaction [7.6.5](static-sql.md)
+- recompiling stored PL/SQL unit [15](sql-statements-for-stored-plsql-units.md)
+- record [6](plsql-collections-and-records.md)
+	- as public package item [6.12.3](plsql-collections-and-records.md)
+		- assigning value to [6.13](plsql-collections-and-records.md)
+		- comparing one to another [6.14](plsql-collections-and-records.md)
+		- creating [6.12](plsql-collections-and-records.md)
+		- syntax diagram [14.54](record-variable-declaration.md)
+		- declaring constant [6.12.2](plsql-collections-and-records.md)
+		- nested
+		- See nested record [6.12.3](plsql-collections-and-records.md)
+		- representing row [6.12.4](plsql-collections-and-records.md)
+		- types of [6.12.3](plsql-collections-and-records.md)
+- record type variables [6.13.1](plsql-collections-and-records.md)
+- recursive subprogram [9.10](plsql-subprograms.md)
+	- result-cached [9.12.4.2](plsql-subprograms.md)
+- recursive trigger [10.9](plsql-triggers.md)
+- REF CURSOR
+	- See: cursor variable
+- REF CURSOR type [7.4.1](static-sql.md)
+- relational operator [3.7.5.2](plsql-language-fundamentals.md)
+	- collection and [6.9](plsql-collections-and-records.md)
+- RELEASE constant [3.9.1.5](plsql-language-fundamentals.md)
+- remote exception handling
+	- subprograms and [12.8](plsql-error-handling.md)
+		- triggers and [10.8](plsql-triggers.md)
+- remote name [3.4](plsql-language-fundamentals.md)
+- remote public package variable [11.3.1](plsql-packages.md)
+- remote subprogram
+	- exceptions in [12.8](plsql-error-handling.md)
+		- invoked by trigger [10.6](plsql-triggers.md)
+		- with composite parameter [6](plsql-collections-and-records.md)
+- REPEAT UNTIL structure [5.2.3](plsql-control-statements.md)
+- replacing stored PL/SQL unit [15](sql-statements-for-stored-plsql-units.md)
+- reraising exception [12.7.1.3](plsql-error-handling.md)
+- reserved preprocessor control token [3.9.1.1](plsql-language-fundamentals.md)
+- reserved words
+	- information about [3.2.2.1](plsql-language-fundamentals.md)
+		- list of [D](plsql-reserved-words-keywords.md)
+- RESTRICT\_REFERENCES pragma [14.55](RESTRICT_REFERENCES-pragma.md)
+- RESULT\_CACHE\_EXECUTION\_THRESHOLD [9.12](plsql-subprograms.md)
+- RESULT\_CACHE\_MAX\_RESULT [9.12](plsql-subprograms.md)
+- RESULT\_CACHE\_MAX\_SIZE [9.12](plsql-subprograms.md)
+- RESULT\_CACHE\_MAX\_TEMP\_SIZE [9.12](plsql-subprograms.md)
+- RESULT\_CACHE clause [9.12.1](plsql-subprograms.md), [14.58](RESULT_CACHE-clause.md)
+- RESULT\_CACHE option for function [14.36](function-declaration-and-definition.md), [15.7](CREATE-FUNCTION-statement.md)
+- result cache [9.12](plsql-subprograms.md)
+- RETURN\_RESULT procedure [8.3.1](dynamic-sql.md)
+- RETURN clause of function [9.5.1](plsql-subprograms.md)
+- RETURNING INTO clause [14.57](RETURNING-INTO-clause.md)
+	- BULK COLLECT clause of [13.4.2.3](plsql-optimization-and-tuning.md)
+		- FORALL statement and [13.4.3](plsql-optimization-and-tuning.md)
+- returning query results implicitly [8.3.1](dynamic-sql.md)
+- RETURN INTO clause
+	- See: RETURNING INTO clause
+- RETURN statement [9.5.2](plsql-subprograms.md)
+- REUSE SETTINGS clause [2.3.2](overview.md)
+- ROLLBACK statement [7.6.2](static-sql.md)
+	- FOR UPDATE cursor and [7.6.6.3](static-sql.md)
+		- implicit [7.6.4](static-sql.md)
+		- in autonomous transaction [7.7.5.2](static-sql.md)
+		- transparent [10.9](plsql-triggers.md)
+- rowid [4.1.6](plsql-data-types.md)
+- ROWID data type [4.1.6](plsql-data-types.md)
+- ROWID pseudocolumn [7.1.2](static-sql.md)
+	- instead of CURRENT OF clause [7.6.6.3](static-sql.md)
+- row-level trigger [10.3](plsql-triggers.md)
+- ROWNUM pseudocolumn
+	- bulk SELECT operation and [13.4.2.1.2](plsql-optimization-and-tuning.md)
+		- single-row result set and [7.3.1.1](static-sql.md)
+- ROWTYPE\_MISMATCH exception
+	- error code for [12.4](plsql-error-handling.md)
+		- example of [12.4](plsql-error-handling.md)
+- runtime error
+	- See: exception
+
+---
+
+## S
+
+- same-scope capture [B.5.2](plsql-name-resolution.md)
+- SAMPLE clause [13.4.2.1.2](plsql-optimization-and-tuning.md)
+- SAVEPOINT statement [7.6.3](static-sql.md)
+	- in autonomous transaction [7.7.5.3](static-sql.md)
+- scalability
+	- SERIALLY\_REUSABLE packages and [11.7](plsql-packages.md)
+		- subprograms and [2.1.5](overview.md)
+- scalar data type [4](plsql-data-types.md)
+- scalar variable
+	- assigning value to [3.6](plsql-language-fundamentals.md)
+		- declaration [3.3.2](plsql-language-fundamentals.md)
+		- syntax diagram [14.60](scalar-variable-declaration.md)
+		- initial value of [3.3.4](plsql-language-fundamentals.md)
+- schema object
+	- See: stored PL/SQL unit
+- SCHEMA trigger [10.5.1](plsql-triggers.md)
+- scope of identifier [3.5](plsql-language-fundamentals.md)
+- searched CASE expression [3.7.7.2](plsql-language-fundamentals.md)
+- searched CASE statement [5.1.5](plsql-control-statements.md)
+	- syntax diagram [14.8](CASE-statement.md)
+- security mechanism
+	- against SQL injection [8.4](dynamic-sql.md)
+		- PL/SQL source text wrapping
+		- benefit of [A](plsql-source-text-wrapping.md)
+				- limitations of [A.1](plsql-source-text-wrapping.md)
+		- trigger as [10.2](plsql-triggers.md)
+- SELECT FOR UPDATE statement [7.6.6.2](static-sql.md)
+- SELECT INTO statement [7.1.1](static-sql.md)
+	- See also: query
+	- assigning values with
+		- to record variable [6.13.3.1](plsql-collections-and-records.md)
+				- to scalar variables [3.6.2](plsql-language-fundamentals.md)
+		- avoiding inner capture in [B.6](plsql-name-resolution.md)
+		- query result set processing with [7.3.1](static-sql.md)
+		- SQL%NOTFOUND attribute and [7.2.1.3](static-sql.md)
+		- SQL%ROWCOUNT attribute and [7.2.1.4](static-sql.md)
+		- syntax diagram [14.61](SELECT-INTO-statement.md)
+		- with BULK COLLECT clause [13.4.2.1](plsql-optimization-and-tuning.md)
+- selection directive [3.9.1.2](plsql-language-fundamentals.md)
+- selector
+	- in simple CASE expression [3.7.7.1](plsql-language-fundamentals.md)
+		- in simple CASE statement [5.1.4](plsql-control-statements.md)
+- SELF\_IS\_NULL exception [12.4](plsql-error-handling.md)
+- sequence [7.1.2.1](static-sql.md)
+- sequence iterator choice [6.6](plsql-collections-and-records.md)
+- sequential control statement [5.3](plsql-control-statements.md)
+- SERIALLY\_REUSABLE package [11.7](plsql-packages.md)
+- SERIALLY\_REUSABLE pragma [14.62](SERIALLY_REUSABLE-pragma.md)
+- session cursor [7.2](static-sql.md)
+- set data structure [6.1](plsql-collections-and-records.md)
+- set membership test [3.7.5.5](plsql-language-fundamentals.md)
+- SET TRANSACTION statement [7.6.5](static-sql.md)
+- SEVERE compile-time warning [12.1](plsql-error-handling.md)
+- SHARING clause
+	- in CREATE FUNCTION statement [15.7](CREATE-FUNCTION-statement.md)
+		- in CREATE LIBRARY statement [15.8](CREATE-LIBRARY-statement.md)
+		- in CREATE PACKAGE statement [15.9](CREATE-PACKAGE-statement.md)
+		- in CREATE PROCEDURE statement [15.11](CREATE-PROCEDURE-statement.md)
+		- in CREATE TRIGGER statement [15.12](CREATE-TRIGGER-statement.md)
+		- in CREATE TYPE statement [15.13](CREATE-TYPE-statement.md)
+		- sharing\_clause syntax diagram [14.63](SHARING-clause.md)
+- short-circuit evaluation
+	- how it works [3.7.4](plsql-language-fundamentals.md)
+		- tuning code and [13.3.7](plsql-optimization-and-tuning.md)
+- side effects of subprogram [9.11](plsql-subprograms.md)
+- SIGNTYPE subtype [4.3.2](plsql-data-types.md)
+- SIMPLE\_DOUBLE subtype [4.1.3](plsql-data-types.md)
+	- tuning code and [13.3.5.1](plsql-optimization-and-tuning.md)
+- SIMPLE\_FLOAT subtype [4.1.3](plsql-data-types.md)
+	- tuning code and [13.3.5.1](plsql-optimization-and-tuning.md)
+- SIMPLE\_INTEGER subtype [4.3.3](plsql-data-types.md)
+	- tuning code and [13.3.5.1](plsql-optimization-and-tuning.md)
+- simple CASE expression [3.7.7.1](plsql-language-fundamentals.md)
+- simple CASE statement [5.1.4](plsql-control-statements.md)
+	- IF THEN ELSIF statement and [5.1.3](plsql-control-statements.md)
+		- syntax diagram [14.8](CASE-statement.md)
+- simple DML trigger [10.3](plsql-triggers.md)
+- simple name [3.4](plsql-language-fundamentals.md)
+- single-line comment [3.2.5.1](plsql-language-fundamentals.md)
+- single quotation mark (’) [3.1.1](plsql-language-fundamentals.md)
+- sort ordering [14.20](DEFAULT-COLLATION-clause.md)
+- sparse collection [6.1](plsql-collections-and-records.md)
+	- FORALL statement for [13.4.1.1](plsql-optimization-and-tuning.md)
+		- SQL%BULK\_EXCEPTIONS and [13.4.1.4.1](plsql-optimization-and-tuning.md)
+		- traversing [6.10.8](plsql-collections-and-records.md)
+- specification
+	- cursor [14.30](explicit-cursor-declaration-and-definition.md)
+		- function [14.36](function-declaration-and-definition.md)
+		- package
+		- See package specification [11.1](plsql-packages.md)
+		- procedure [14.51](procedure-declaration-and-definition.md)
+- SQL
+	- bulk [13.4](plsql-optimization-and-tuning.md)
+		- in compound DML trigger [10.3.3.3](plsql-triggers.md)
+		- dynamic
+		- See dynamic SQL [8](dynamic-sql.md)
+		- static
+		- See static SQL [7](static-sql.md)
+- SQL\_MACRO clause [14.64](sql_macro-clause.md)
+	- in CREATE FUNCTION statement [15.7](CREATE-FUNCTION-statement.md)
+- SQL\*Loader and triggers [10.14](plsql-triggers.md)
+- SQL%BULK\_EXCEPTIONS cursor attribute [13.4.1.4](plsql-optimization-and-tuning.md)
+- SQL%BULK\_ROWCOUNT cursor attribute [13.4.1.5](plsql-optimization-and-tuning.md)
+- SQL%FOUND cursor attribute [7.2.1.2](static-sql.md)
+- SQL%NOTFOUND cursor attribute [7.2.1.3](static-sql.md)
+- SQL%ROWCOUNT cursor attribute [7.2.1.4](static-sql.md)
+- SQLCODE function [14.65](SQLCODE-function.md)
+- SQL cursor
+	- See: implicit cursor
+- SQL data type [4.1](plsql-data-types.md)
+- SQLERRM function [14.66](SQLERRM-function.md)
+	- SQL%BULK\_EXCEPTIONS and [13.4.1.4](plsql-optimization-and-tuning.md)
+- SQL function
+	- in PL/SQL expression [3.7.8](plsql-language-fundamentals.md)
+		- tuning and [13.3.6](plsql-optimization-and-tuning.md)
+- SQL injection [8.4](dynamic-sql.md)
+- SQL integration in PL/SQL [2.1.1](overview.md)
+- SQL multiset condition [6.9.3](plsql-collections-and-records.md)
+- SQL MULTISET operator [6.7.3](plsql-collections-and-records.md)
+- SQL optimizer [13.5.5](plsql-optimization-and-tuning.md)
+- SQL statement [2.2.2](overview.md)
+	- See also: anonymous block
+	- for stored PL/SQL unit [15](sql-statements-for-stored-plsql-units.md)
+		- in trigger [10.1](plsql-triggers.md)
+		- invoking collection method in [6.10](plsql-collections-and-records.md)
+		- invoking PL/SQL function in [9.13](plsql-subprograms.md)
+		- tuning [13.3.1](plsql-optimization-and-tuning.md)
+- standalone subprogram [9.2](plsql-subprograms.md)
+	- function
+		- creating [15.7](CREATE-FUNCTION-statement.md)
+				- dropping [15.15](DROP-FUNCTION-statement.md)
+				- explicitly recompiling [15.1](ALTER-FUNCTION-statement.md)
+				- replacing [15.7](CREATE-FUNCTION-statement.md)
+		- procedure
+		- creating [15.11](CREATE-PROCEDURE-statement.md)
+				- dropping [15.18](DROP-PROCEDURE-statement.md)
+				- explicitly recompiling [15.4](ALTER-PROCEDURE-statement.md)
+				- replacing [15.11](CREATE-PROCEDURE-statement.md)
+- STANDARD package
+	- data type defined in
+		- See predefined data type [E](plsql-predefined-data-types.md)
+		- exception defined in
+		- See predefined exception [12.4](plsql-error-handling.md)
+		- how it defines PL/SQL environment [11.10](plsql-packages.md)
+		- listing identifiers defined in [3.2.2.2](plsql-language-fundamentals.md)
+		- referencing item defined in [3.4](plsql-language-fundamentals.md)
+- statement injection [8.4.1.2](dynamic-sql.md)
+- statement-level trigger [10.3](plsql-triggers.md)
+- statement modification [8.4.1.1](dynamic-sql.md)
+- static constant [3.7.9.4](plsql-language-fundamentals.md)
+	- in DBMS\_DB\_VERSION package [3.9.1.5](plsql-language-fundamentals.md)
+- static expression [3.7.9](plsql-language-fundamentals.md)
+- static SQL [7](static-sql.md)
+	- AUTHID property and [9.14](plsql-subprograms.md)
+		- name resolution in [B.4](plsql-name-resolution.md)
+		- PL/SQL identifier in [7.1.1](static-sql.md)
+		- placeholder for bind variable in [7.1.1](static-sql.md)
+		- OPEN FOR statement and [7.4.2](static-sql.md)
+- STORAGE\_ERROR exception [12.4](plsql-error-handling.md)
+	- recursive invocation and [9.10](plsql-subprograms.md)
+- stored PL/SQL unit [2.3.2](overview.md)
+	- creating [15](sql-statements-for-stored-plsql-units.md)
+		- recompiling [15](sql-statements-for-stored-plsql-units.md)
+		- replacing [15](sql-statements-for-stored-plsql-units.md)
+		- wrapping [A](plsql-source-text-wrapping.md)
+- stored subprogram [9.2](plsql-subprograms.md)
+	- unhandled exception in [12.9](plsql-error-handling.md)
+		- wrapping [A](plsql-source-text-wrapping.md)
+- store table [6.4.2](plsql-collections-and-records.md)
+- string [3.2.3](plsql-language-fundamentals.md)
+	- See also: character literal
+	- null [3.2.3](plsql-language-fundamentals.md)
+		- zero-length [3.2.3](plsql-language-fundamentals.md)
+- STRING subtype [4.1.4.3.1](plsql-data-types.md)
+- strong REF CURSOR type
+	- creating [7.4.1](static-sql.md)
+		- FETCH statement and [7.4.3](static-sql.md)
+- subprogram [9](plsql-subprograms.md)
+	- inlining [13.1.1](plsql-optimization-and-tuning.md)
+		- invoked by trigger [10.6](plsql-triggers.md)
+		- remote
+		- See remote subprogram [6](plsql-collections-and-records.md)
+		- unhandled exception in [12.9](plsql-error-handling.md)
+- subprogram invocation
+	- optimization of [13.1.1](plsql-optimization-and-tuning.md)
+		- resolution of [9.8](plsql-subprograms.md)
+		- syntax of [9.3](plsql-subprograms.md)
+		- tuning [13.3.3](plsql-optimization-and-tuning.md)
+- subprogram parameter [9.7](plsql-subprograms.md)
+	- collection as [6.10](plsql-collections-and-records.md)
+		- composite variable as [6](plsql-collections-and-records.md)
+		- CURSOR expression as actual [7.5](static-sql.md)
+		- cursor variable as [7.4.8](static-sql.md)
+		- optional [9.7.5](plsql-subprograms.md)
+		- query result as [7.4.8](static-sql.md)
+		- required [9.7.5](plsql-subprograms.md)
+- subprogram property [9.4](plsql-subprograms.md)
+- subquery
+	- correlated [7.3.4](static-sql.md)
+		- result set processing with [7.3.4](static-sql.md)
+- SUBSCRIPT\_BEYOND\_COUNT exception [12.4](plsql-error-handling.md)
+- SUBSCRIPT\_OUTSIDE\_LIMIT exception [12.4](plsql-error-handling.md)
+- subtype [4](plsql-data-types.md)
+	- See also: data type
+	- constrained [4.4.2](plsql-data-types.md)
+		- subprogram parameter and [9.7.1.1](plsql-subprograms.md)
+		- of BINARY\_DOUBLE data type [4.1.3](plsql-data-types.md)
+		- of BINARY\_FLOAT data type [4.1.3](plsql-data-types.md)
+		- of PLS\_INTEGER data type [4.3.2](plsql-data-types.md)
+		- predefined [E](plsql-predefined-data-types.md)
+		- unconstrained [4.4.1](plsql-data-types.md)
+		- user-defined [4.4](plsql-data-types.md)
+- SUPPRESSES\_WARNING\_6009 pragma [14.67](Supresses-warning-pragma-6009.md)
+- synonym [3.4](plsql-language-fundamentals.md)
+- SYS\_INVALID\_ROWID exception [12.4](plsql-error-handling.md)
+- SYS\_REFCURSOR type [7.4.1](static-sql.md)
+- system trigger [10.5](plsql-triggers.md)
+
+---
+
+## T
+
+- table
+	- hash [6.1](plsql-collections-and-records.md)
+		- index-by
+		- See associative array [6.2](plsql-collections-and-records.md)
+		- mutating [10.10.3](plsql-triggers.md)
+		- nested [6.4](plsql-collections-and-records.md)
+		- characteristics of [6.1](plsql-collections-and-records.md)
+		- parallel DML for large [13.7](plsql-optimization-and-tuning.md)
+		- PL/SQL
+		- See associative array [6.2](plsql-collections-and-records.md)
+		- store [6.4.2](plsql-collections-and-records.md)
+		- unordered [6.1](plsql-collections-and-records.md)
+		- updating large in parallel [13.7](plsql-optimization-and-tuning.md)
+- table alias
+	- for avoiding inner capture [B.6](plsql-name-resolution.md)
+		- for row expression [B.6.2](plsql-name-resolution.md)
+		- for table element attribute or method [B.6.1](plsql-name-resolution.md)
+- table function [13.5.1](plsql-optimization-and-tuning.md)
+	- pipelined
+		- See pipelined table function [13.5](plsql-optimization-and-tuning.md)
+		- weak cursor variable argument to [7.4.1](static-sql.md)
+- TABLE operator [7.4.6](static-sql.md)
+- TCL statement [7.1.1](static-sql.md)
+	- in subprogram invoked by trigger [10.6](plsql-triggers.md)
+		- in trigger [7.7.6](static-sql.md)
+- template object [9.14.2](plsql-subprograms.md)
+- TIMEOUT\_ON\_RESOURCE exception [12.4](plsql-error-handling.md)
+- timing point
+	- of DML trigger
+		- compound [10.3.3.1](plsql-triggers.md)
+				- simple [10.3](plsql-triggers.md)
+		- of system trigger [10.5](plsql-triggers.md)
+		- trigger firing order and [10.11](plsql-triggers.md)
+- TO\_NUMBER function [8.3.4](dynamic-sql.md)
+- TO\_REFCURSOR function [8.3.3](dynamic-sql.md)
+- TOO\_MANY\_ROWS exception [12.4](plsql-error-handling.md)
+- trace file [12](plsql-error-handling.md)
+- tracing and profiling programs [13.9](plsql-optimization-and-tuning.md)
+- transaction
+	- autonomous [7.7](static-sql.md)
+		- pipelined table function in [14.49](PIPE-ROW-statement.md)
+		- context of [7.7.2](static-sql.md)
+		- ending
+		- with COMMIT statement [7.6.1](static-sql.md)
+				- with ROLLBACK statement [7.6.2](static-sql.md)
+		- isolation level of [7.7.3](static-sql.md)
+		- nested [7.7](static-sql.md)
+		- read-only [7.6.5](static-sql.md)
+		- read-write [7.6.5](static-sql.md)
+		- retrying after handling exception [12.12](plsql-error-handling.md)
+		- SQL%ROWCOUNT cursor attribute and [7.2.1.4](static-sql.md)
+		- visibility of [7.7.3](static-sql.md)
+- Transaction Control Language
+	- See: TCL statement
+- TRANSACTIONS initialization parameter [7.7.5.4](static-sql.md)
+- trigger [10](plsql-triggers.md)
+	- as security mechanism [10.2](plsql-triggers.md)
+		- AUTHID property and [9.14](plsql-subprograms.md)
+		- autonomous [7.7.6](static-sql.md)
+		- cascading [10.11](plsql-triggers.md)
+		- DDL statement in [7.7.6](static-sql.md)
+		- hiding implementation details of [A.1](plsql-source-text-wrapping.md)
+		- materialized view and [15.12](CREATE-TRIGGER-statement.md)
+		- recursive [10.9](plsql-triggers.md)
+		- TCL statement in [7.7.6](static-sql.md)
+- TRIM collection method [6.10.2](plsql-collections-and-records.md)
+- tri-state logic [3.7.3](plsql-language-fundamentals.md)
+- tuning PL/SQL code [13](plsql-optimization-and-tuning.md)
+- type
+	- See: data type
+- type-compatible data type
+	- for collection variables [6.7.1](plsql-collections-and-records.md)
+		- for scalar variables [3.6](plsql-language-fundamentals.md)
+- typemark [6.6](plsql-collections-and-records.md)
+
+---
+
+## U
+
+- UDF pragma [14.69](UDF-pragma.md)
+- unconstrained subtype [4.4.1](plsql-data-types.md)
+- underscore (\_) wildcard character [3.7.5.3](plsql-language-fundamentals.md)
+- unhandled exception [12.9](plsql-error-handling.md)
+	- in FORALL statement [13.4.1.2](plsql-optimization-and-tuning.md)
+- unordered table [6.1](plsql-collections-and-records.md)
+- UPDATE statement [14.70](UPDATE-statement-extensions.md)
+	- See also: DML statement
+	- BEFORE statement trigger and [10.9](plsql-triggers.md)
+		- PL/SQL extensions to [14.70](UPDATE-statement-extensions.md)
+		- with values in record [6.16](plsql-collections-and-records.md)
+		- restrictions on [6.17](plsql-collections-and-records.md)
+- UPDATING conditional predicate [10.3.1](plsql-triggers.md)
+- UROWID data type [4.1.6](plsql-data-types.md)
+- user-defined exception [12.5](plsql-error-handling.md)
+	- giving error code to [12.7.2](plsql-error-handling.md)
+		- raising
+		- with RAISE\_APPLICATION\_ERROR procedure [12.7.2](plsql-error-handling.md)
+				- with RAISE statement [12.7.1.1](plsql-error-handling.md)
+- user-defined identifier [3.2.2.3](plsql-language-fundamentals.md)
+	- collecting data about [13.8](plsql-optimization-and-tuning.md)
+- user-defined subtype [4.4](plsql-data-types.md)
+- user-defined type
+	- See: Abstract Data Type (ADT)
+- USING\_NLS\_COMP [14.20](DEFAULT-COLLATION-clause.md)
+- utlrp.sql script [13.10.5](plsql-optimization-and-tuning.md)
+
+---
+
+## V
+
+- V$RESERVED\_WORDS view [D](plsql-reserved-words-keywords.md)
+- V$RESULT\_CACHE\_OBJECTS [9.12](plsql-subprograms.md)
+- validation check for avoiding SQL injection [8.4.2.2](dynamic-sql.md)
+- VALUE\_ERROR exception [12.4](plsql-error-handling.md)
+- values\_of\_control [5.2.2.6](plsql-control-statements.md)
+- VARCHAR2 data type [4.1.4](plsql-data-types.md)
+- VARCHAR2 static expression [3.7.9.3](plsql-language-fundamentals.md)
+- VARCHAR subtype [4.1.4.3.1](plsql-data-types.md)
+- variable
+	- binding of [13.4](plsql-optimization-and-tuning.md)
+		- BOOLEAN [3.6.4](plsql-language-fundamentals.md)
+		- collection
+		- See collection [6](plsql-collections-and-records.md)
+		- composite [6](plsql-collections-and-records.md)
+		- cursor
+		- See cursor variable [7.4](static-sql.md)
+		- host
+		- cursor variable as [7.4.9](static-sql.md)
+				- packages and [11.2](plsql-packages.md)
+		- in cursor variable query [7.4.5](static-sql.md)
+		- in explicit cursor query [7.2.2.4](static-sql.md)
+		- locator [12.2.2](plsql-error-handling.md)
+		- record
+		- See record [6](plsql-collections-and-records.md)
+		- remote public package [11.3.1](plsql-packages.md)
+		- scalar
+		- See scalar variable [3.3.2](plsql-language-fundamentals.md)
+		- with undefined value [7.1.1](static-sql.md)
+- variable-size array
+	- See: varray
+- variadic pseudo-operator [13.6.3.1](plsql-optimization-and-tuning.md)
+- varray [6.3](plsql-collections-and-records.md)
+	- See also: collection
+	- assigning null value to [6.7.2](plsql-collections-and-records.md)
+		- characteristics of [6.1](plsql-collections-and-records.md)
+		- comparing to NULL [6.9.1](plsql-collections-and-records.md)
+		- COUNT method for [6.10.6.1](plsql-collections-and-records.md)
+		- FIRST and LAST methods for [6.10.5.2](plsql-collections-and-records.md)
+		- returned by function [13.5.1](plsql-optimization-and-tuning.md)
+- VERSION constant [3.9.1.5](plsql-language-fundamentals.md)
+- view
+	- AUTHID property and [9.14](plsql-subprograms.md)
+		- INSTEAD OF trigger and [15.12](CREATE-TRIGGER-statement.md)
+		- materialized, trigger and [15.12](CREATE-TRIGGER-statement.md)
+- virtual column
+	- %ROWTYPE attribute and [6.12.4.3](plsql-collections-and-records.md)
+		- explicit cursors and [7.2.2.5](static-sql.md)
+- visibility
+	- of identifier [3.5](plsql-language-fundamentals.md)
+		- of transaction [7.7.3](static-sql.md)
+
+---
+
+## W
+
+- warning, compile-time [12.1](plsql-error-handling.md)
+- weak REF CURSOR type
+	- creating [7.4.1](static-sql.md)
+		- FETCH statement and [7.4.3](static-sql.md)
+- WHILE LOOP statement [5.2.3](plsql-control-statements.md)
+	- syntax diagram [14.71](WHILE-LOOP-statement.md)
+- white list
+	- See: ACCESSIBLE BY clause
+- whitespace character
+	- between lexical units [3.2.6](plsql-language-fundamentals.md)
+		- in character literal [3.2.3](plsql-language-fundamentals.md)
+		- in database character set [3.1.1](plsql-language-fundamentals.md)
+- wildcard character [3.7.5.3](plsql-language-fundamentals.md)
+- WRAP function [A.4](plsql-source-text-wrapping.md)
+- wrapping PL/SQL source text [A](plsql-source-text-wrapping.md)
+	- inquiry directives and [3.9.1.4.3](plsql-language-fundamentals.md)
+- wrap utility
+	- See: PL/SQL Wrapper utility
+
+---
+
+## Z
+
+- ZERO\_DIVIDE exception [12.4](plsql-error-handling.md)
+- zero-length string [3.2.3](plsql-language-fundamentals.md)

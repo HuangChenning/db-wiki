@@ -1,0 +1,19 @@
+---
+title: Database Reference
+book: Database Reference
+doc_id: F31274-35
+version: "21c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/21/refrn/DBA_DEPENDENCIES.html
+tags:
+  - oracle
+  - 21c
+  - reference
+---
+
+## 5.282 DBA\_DEPENDENCIES
+
+`DBA_DEPENDENCIES` describes all dependencies in the database between procedures, packages, functions, package bodies, and triggers, including dependencies on views created without any database links. Its columns are the same as those in `ALL_DEPENDENCIES`.
+
+See Also:
+
+" [ALL\_DEPENDENCIES](ALL_DEPENDENCIES.md) "

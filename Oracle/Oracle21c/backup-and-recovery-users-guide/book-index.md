@@ -1,0 +1,1789 @@
+---
+title: "Backup and Recovery User's Guide"
+book: "Database Backup and Recovery User's Guide"
+doc_id: F31836-11
+version: "21c"
+source: https://docs.oracle.com/en/database/oracle/oracle-database/21/bradv/book-index.html
+tags:
+  - oracle
+  - 21c
+  - backup-and-recovery-users-guide
+---
+
+Symbols A B C D E F G H I J K L M N O P Q R S T U V W Z
+
+---
+
+## Symbols
+
+- %d substitution variable
+	- BACKUP FORMAT [2.4.1](getting-started-rman.md)
+- %p substitution variable
+	- BACKUP FORMAT [2.4.1](getting-started-rman.md)
+- %s substitution variable
+	- BACKUP FORMAT [2.4.1](getting-started-rman.md)
+- %t substitution variable
+	- BACKUP FORMAT [2.4.1](getting-started-rman.md)
+- %U substitution variable [9.2.3.1](backing-up-database.md)
+	- BACKUP FORMAT [2.4.1](getting-started-rman.md)
+
+---
+
+## A
+
+- ABORT option
+	- SHUTDOWN statement [30.5](user-managed-flashback-dbpitr.md), [31.1.1](user-managed-recovery-advanced.md), [31.1.2](user-managed-recovery-advanced.md)
+- about
+	- backing up CDBs [4.2.4](starting-interacting-with-rman-client.md)
+		- backing up PDBs [4.2.4](starting-interacting-with-rman-client.md)
+- about, flashback database for PDBs [18.1.4.1.1](rman-performing-flashback-dbpitr.md)
+- active database duplication [4.2.7](starting-interacting-with-rman-client.md)
+- Advanced Security Option [8.3.5](rman-backup-concepts.md)
+- ADVISE FAILURE command [15.1.2.4](diagnosing-repairing-failures-dra.md), [15.5](diagnosing-repairing-failures-dra.md)
+- alert log [12.2.2](maintaining-rman-backups.md)
+- ALLOCATE CHANNEL command [5.5.1](configuring-rman-client-basic.md), [6.1.1](configuring-rman-client-advanced.md), [9.2.3.1](backing-up-database.md)
+	- MAXPIECESIZE option [6.2.2](configuring-rman-client-advanced.md)
+- ALLOW... CORRUPTION clause, RECOVER command [30.6.5](user-managed-flashback-dbpitr.md)
+- ALTER DATABASE statement
+	- CLEAR LOGFILE clause [31.7.2.1.3](user-managed-recovery-advanced.md)
+		- END BACKUP clause [29.3.2.3.1](user-managed-database-backups.md)
+		- OPEN RESETLOGS clause [13.8.5](managing-recovery-catalog.md)
+		- RECOVER clause [30.2.4.2](user-managed-flashback-dbpitr.md), [30.3.1](user-managed-flashback-dbpitr.md), [30.3.2](user-managed-flashback-dbpitr.md)
+		- RESETLOGS option [30.5](user-managed-flashback-dbpitr.md)
+- ALTER SYSTEM statement
+	- KILL SESSION clause [24.4.1](troubleshooting-rman-operations.md)
+		- RESUME clause [29.6.2](user-managed-database-backups.md)
+		- SUSPEND clause [29.6.2](user-managed-database-backups.md)
+- ALTER TABLESPACE statement
+	- BEGIN BACKUP clause [29.3.2.1](user-managed-database-backups.md), [29.3.2.2.2](user-managed-database-backups.md)
+		- END BACKUP option [29.3.2.2.2](user-managed-database-backups.md)
+- application containers
+	- about backing up [9.4.1](backing-up-database.md)
+		- backing up [9.4](backing-up-database.md), [9.4.3](backing-up-database.md)
+		- complete recovery [17.5.2](rman-complete-database-recovery.md)
+- application errors [1.1.2](introduction-backup-recovery.md)
+- application PDBs
+	- backing up [9.4.4](backing-up-database.md)
+		- complete recovery [17.5.3](rman-complete-database-recovery.md)
+		- point-in-time recovery [18.6](rman-performing-flashback-dbpitr.md)
+- application root
+	- backing up [9.4.2](backing-up-database.md)
+		- complete recovery [17.5.1](rman-complete-database-recovery.md)
+- archival backups [1.1.3](introduction-backup-recovery.md), [9.8.1](backing-up-database.md), [12.4.2.2](maintaining-rman-backups.md)
+- archived redo log deletion policies [5.13.1](configuring-rman-client-basic.md), [5.13.2](configuring-rman-client-basic.md), [9.6.3](backing-up-database.md)
+- archived redo log files
+	- applying during media recovery [30.2.1](user-managed-flashback-dbpitr.md), [30.2.3](user-managed-flashback-dbpitr.md), [30.2.4.2](user-managed-flashback-dbpitr.md)
+		- backing up [9.6.2](backing-up-database.md)
+		- using RMAN [9.6](backing-up-database.md)
+				- with other backups [9.6.1.2](backing-up-database.md)
+		- cataloging [12.4.3](maintaining-rman-backups.md)
+		- changing default location [30.2.4.1](user-managed-flashback-dbpitr.md)
+		- corrupted [30.6.1](user-managed-flashback-dbpitr.md)
+		- delete after backups [9.6.4](backing-up-database.md)
+		- deleting [14.3.1](rman-data-repair-concepts.md), [30.3.1](user-managed-flashback-dbpitr.md)
+		- deletion after backup [9.6.1](backing-up-database.md)
+		- failover [9.6.1.1](backing-up-database.md)
+		- incompatible format [30.6.1](user-managed-flashback-dbpitr.md)
+		- location during recovery [30.2.1](user-managed-flashback-dbpitr.md)
+		- loss of [30.4](user-managed-flashback-dbpitr.md)
+		- restoring using RMAN [17.2.5](rman-complete-database-recovery.md)
+- ARCHIVELOG mode
+	- backups in [2.4.2](getting-started-rman.md)
+- AS SELECT clause
+	- CREATE TABLE statement [31.5](user-managed-recovery-advanced.md)
+- autobackups, control file [8.8](rman-backup-concepts.md), [9.3.8](backing-up-database.md), [9.8.2](backing-up-database.md)
+	- configuring [5.6](configuring-rman-client-basic.md)
+		- format [5.6.1](configuring-rman-client-basic.md)
+- automated repairs
+	- Data Recovery Advisor [1.5](introduction-backup-recovery.md)
+- automatic channel allocation [6.1.1](configuring-rman-client-advanced.md)
+- automatic channels [3.3](rman-architecture.md), [3.3.2](rman-architecture.md)
+	- configuring [6.1.2](configuring-rman-client-advanced.md)
+		- naming conventions [3.3.2](rman-architecture.md)
+		- overriding [6.1](configuring-rman-client-advanced.md)
+- Automatic Diagnostic Repository (ADR) [5.7.4.1](configuring-rman-client-basic.md), [8.8.2](rman-backup-concepts.md), [12.2.1](maintaining-rman-backups.md), [15.1.2.2](diagnosing-repairing-failures-dra.md), [16.1.2.2](validating-database-files-backups.md), [16.1.2.4](validating-database-files-backups.md), [24.1.1](troubleshooting-rman-operations.md)
+- Automatic Storage Management (ASM)
+	- backups to [9.2.3](backing-up-database.md)
+- Automatic Workload Repository (AWR) [7.5.4](using-flasback-database-restore-points.md)
+- AUTORECOVERY option
+	- SET statement [30.2.2](user-managed-flashback-dbpitr.md)
+- auxiliary instance parameter file
+	- with TRANSPORT TABLESPACE [27.2](creating-transportable-tablespace-sets.md)
+- availability
+	- of RMAN backups [12.4.2.1](maintaining-rman-backups.md)
+- AVAILABLE option
+	- of CHANGE command [12.4.2.1](maintaining-rman-backups.md)
+
+---
+
+## B
+
+- backing up
+	- application containers [9.4.3](backing-up-database.md)
+		- application PDBs [9.4.4](backing-up-database.md)
+		- application root [9.4.2](backing-up-database.md)
+		- database [9](backing-up-database.md)
+		- data files in PDBs [9.3.7](backing-up-database.md)
+		- sparse PDBs [9.5.3](backing-up-database.md)
+		- tablespaces in PDBs [9.3.7](backing-up-database.md)
+		- with Oracle Enterprise Manager Cloud Control [1.6.3](introduction-backup-recovery.md)
+- backup
+	- to Recovery Appliance [3.8.1](rman-architecture.md)
+- backup and recovery
+	- definition [1.1](introduction-backup-recovery.md)
+		- introduction [1](introduction-backup-recovery.md)
+		- solutions [1.2](introduction-backup-recovery.md)
+		- strategy [1.1.1](introduction-backup-recovery.md)
+		- user-managed [1.2](introduction-backup-recovery.md)
+- backup-based duplication
+	- configuring channels [25.3.1.1](rman-duplicating-databases.md)
+- BACKUP command [2.4](getting-started-rman.md), [2.4.2](getting-started-rman.md), [2.4.3](getting-started-rman.md), [3.3.2](rman-architecture.md), [3.7.2.3](rman-architecture.md), [5.10.4](configuring-rman-client-basic.md), [5.12.1](configuring-rman-client-basic.md), [6.1.1](configuring-rman-client-advanced.md), [6.2.1](configuring-rman-client-advanced.md), [6.2.4](configuring-rman-client-advanced.md), [8.1](rman-backup-concepts.md), [8.3](rman-backup-concepts.md), [9.1.2](backing-up-database.md), [9.6.3](backing-up-database.md)
+	- ALLOW INCONSISTENT option [28.8.2.3.1](rman-transporting-data-across-platforms.md)
+		- ARCHIVELOG option [9.6.1.2](backing-up-database.md), [9.6.2](backing-up-database.md)
+		- AS COMPRESSION BACKUPSET option [9.2.5](backing-up-database.md)
+		- AS COPY option [2.4](getting-started-rman.md), [8.4.1](rman-backup-concepts.md)
+		- BACKUPSET option [6.2.6.1](configuring-rman-client-advanced.md), [8.7](rman-backup-concepts.md), [8.7.2.1](rman-backup-concepts.md), [9.9.1](backing-up-database.md), [9.9.2](backing-up-database.md)
+		- CHANNEL option [5.5.3](configuring-rman-client-basic.md)
+		- COMPRESSED BACKUPSET option [9.2.5](backing-up-database.md)
+		- COPIES parameter [8.7](rman-backup-concepts.md), [8.7.1](rman-backup-concepts.md)
+		- COPY OF option [8.7](rman-backup-concepts.md), [8.7.2.2](rman-backup-concepts.md), [9.9.1](backing-up-database.md), [9.9.3](backing-up-database.md)
+		- CURRENT CONTROLFILE option [9.3.8](backing-up-database.md), [9.3.8.2](backing-up-database.md)
+		- DATABASE option [9.3.1](backing-up-database.md)
+		- DATAFILE option [9.3.6](backing-up-database.md)
+		- DATAPUMP option [28.6.4.2](rman-transporting-data-across-platforms.md), [28.8.1](rman-transporting-data-across-platforms.md), [28.8.2.4](rman-transporting-data-across-platforms.md)
+		- DB\_FILE\_NAME\_CONVERT parameter [8.4.1](rman-backup-concepts.md)
+		- DELETE INPUT option [9.6.4](backing-up-database.md), [12.5.1.1](maintaining-rman-backups.md)
+		- DELETE option [9.6.1](backing-up-database.md)
+		- DEVICE TYPE clause [5.3](configuring-rman-client-basic.md), [5.12.1](configuring-rman-client-basic.md), [9.2.1](backing-up-database.md), [9.3.8.2](backing-up-database.md)
+		- DURATION parameter [10.8.2](backing-up-database-advanced.md)
+		- FILESPERSET parameter [8.3.9](rman-backup-concepts.md)
+		- FORMAT parameter [2.4.1](getting-started-rman.md), [5.7.3](configuring-rman-client-basic.md), [5.7.5.1](configuring-rman-client-basic.md), [8.3.6](rman-backup-concepts.md), [8.7.1](rman-backup-concepts.md), [9.2.3](backing-up-database.md)
+		- FOR RECOVER OF COPY option [9.7.4.1](backing-up-database.md)
+		- FOR TRANSPORT parameter [28.6.4.1](rman-transporting-data-across-platforms.md), [28.7.2](rman-transporting-data-across-platforms.md)
+		- INCREMENTAL LEVEL 1 parameter [28.8.2.3.1](rman-transporting-data-across-platforms.md), [28.8.2.4](rman-transporting-data-across-platforms.md)
+		- INCREMENTAL LEVEL O parameter [28.8.2.3.1](rman-transporting-data-across-platforms.md), [28.8.2.4](rman-transporting-data-across-platforms.md)
+		- INCREMENTAL option [2.4.4](getting-started-rman.md), [2.4.5](getting-started-rman.md), [9.7](backing-up-database.md), [9.7.3](backing-up-database.md), [9.7.3.1](backing-up-database.md)
+		- KEEP option [9.8.1](backing-up-database.md), [9.8.3.1](backing-up-database.md), [9.8.4](backing-up-database.md)
+		- MAXSETSIZE parameter [10.1](backing-up-database-advanced.md)
+		- NOT BACKED UP clause [9.6.3](backing-up-database.md)
+		- PLUS ARCHIVELOG option [9.6.1.2](backing-up-database.md)
+		- PROXY ONLY option [8.3.10](rman-backup-concepts.md)
+		- PROXY option [8.3.10](rman-backup-concepts.md)
+		- RECOVERY AREA option [9.9.1](backing-up-database.md)
+		- SECTION SIZE parameter [8.3.1](rman-backup-concepts.md), [9.2.6](backing-up-database.md), [10.1.3](backing-up-database-advanced.md)
+		- SPFILE option [9.3.9](backing-up-database.md)
+		- TABLESPACE option [9.3.6](backing-up-database.md)
+		- TAG parameter [2.4.1](getting-started-rman.md), [9.2.4.1](backing-up-database.md)
+		- TO PLATFORM parameter [28.6.4.1](rman-transporting-data-across-platforms.md)
+		- VALIDATE option [2.4.6](getting-started-rman.md), [15.1.2.2](diagnosing-repairing-failures-dra.md), [15.4](diagnosing-repairing-failures-dra.md), [16.2](validating-database-files-backups.md)
+- BACKUP CONTROLFILE clause
+	- ALTER DATABASE statement [29.1.1](user-managed-database-backups.md)
+- BACKUP COPIES parameter
+	- CONFIGURE command [6.2.3](configuring-rman-client-advanced.md)
+- backup encryption [6.2.6.1](configuring-rman-client-advanced.md), [8.3.5](rman-backup-concepts.md), [14.2.3](rman-data-repair-concepts.md)
+	- decrypting backups [17.2.6](rman-complete-database-recovery.md)
+		- default algorithm [6.2.6](configuring-rman-client-advanced.md)
+		- dual-mode [6.2.6.1.3](configuring-rman-client-advanced.md), [10.6.4](backing-up-database-advanced.md)
+		- overview [10.6](backing-up-database-advanced.md)
+		- password [6.2.6.1.2](configuring-rman-client-advanced.md), [10.6.3](backing-up-database-advanced.md)
+		- transparent [6.2.6.1.1](configuring-rman-client-advanced.md), [10.6.2](backing-up-database-advanced.md)
+- backup mode [8.4.2](rman-backup-concepts.md)
+	- ending with ALTER DATABASE END BACKUP [29.3.2.3.1](user-managed-database-backups.md)
+		- for online user-managed backups [29.3.2.1](user-managed-database-backups.md), [29.8](user-managed-database-backups.md)
+		- instance failure [29.3.2.3](user-managed-database-backups.md)
+- backup optimization [9.6.3](backing-up-database.md)
+	- configuring [5.12](configuring-rman-client-basic.md), [10.2](backing-up-database-advanced.md)
+		- definition [5.12.1](configuring-rman-client-basic.md), [9.6.3](backing-up-database.md)
+		- disabling [5.12.1](configuring-rman-client-basic.md), [5.12.3](configuring-rman-client-basic.md)
+		- enabling [5.12.1](configuring-rman-client-basic.md), [5.12.3](configuring-rman-client-basic.md)
+		- redundancy and [5.12.2.2](configuring-rman-client-basic.md)
+		- retention policies and [5.12.2](configuring-rman-client-basic.md)
+- backup pieces [8.3.1](rman-backup-concepts.md)
+	- definition [2.4](getting-started-rman.md)
+		- maximum size [6.2.2](configuring-rman-client-advanced.md)
+		- names [8.3.6](rman-backup-concepts.md)
+		- names on tape [5.7.5.1](configuring-rman-client-basic.md)
+- backup retention policies [1.1.3](introduction-backup-recovery.md), [3.6](rman-architecture.md), [5.10.1](configuring-rman-client-basic.md)
+	- affect on backup optimization [5.12.2](configuring-rman-client-basic.md)
+		- configuring [5.11](configuring-rman-client-basic.md)
+		- configuring for redundancy [5.11.1](configuring-rman-client-basic.md)
+		- definition [8.10](rman-backup-concepts.md)
+		- disabling [5.11.3](configuring-rman-client-basic.md)
+		- exempt backups [9.8.1](backing-up-database.md), [12.4.2.2](maintaining-rman-backups.md)
+		- recovery window [8.10](rman-backup-concepts.md)
+		- recovery windows [5.11.2](configuring-rman-client-basic.md)
+		- redundancy [8.10](rman-backup-concepts.md), [8.10.2](rman-backup-concepts.md)
+- backups
+	- archival [1.1.3](introduction-backup-recovery.md), [9.8.1](backing-up-database.md)
+		- archived redo logs
+		- using RMAN [9.6](backing-up-database.md)
+		- availability [12.4.2.1](maintaining-rman-backups.md)
+		- backup sets [9.9.1](backing-up-database.md)
+		- consistent
+		- making using RMAN [8.1.1](rman-backup-concepts.md)
+		- control file [9.3.8](backing-up-database.md), [29.4](user-managed-database-backups.md)
+		- control files [29.4](user-managed-database-backups.md)
+		- binary [29.4.1](user-managed-database-backups.md)
+		- correlating RMAN channels with [24.2.2.2.1](troubleshooting-rman-operations.md), [24.2.2.2.2](troubleshooting-rman-operations.md)
+		- crosschecking [12.4.1](maintaining-rman-backups.md)
+		- cumulative incremental [8.9.1.2](rman-backup-concepts.md)
+		- data file
+		- using RMAN [9.9.2](backing-up-database.md), [9.9.3](backing-up-database.md)
+		- DBVERIFY utility [29.9](user-managed-database-backups.md)
+		- default type for RMAN [5.4](configuring-rman-client-basic.md)
+		- determining data file status [29.1.2](user-managed-database-backups.md)
+		- duplexing [6.2.3](configuring-rman-client-advanced.md), [10.4](backing-up-database-advanced.md)
+		- excluding tablespaces from backups [6.2.4](configuring-rman-client-advanced.md)
+		- exempt from retention policy [12.4.2.2](maintaining-rman-backups.md)
+		- expired, deleting [12.5.4](maintaining-rman-backups.md)
+		- generating reports for [11.1.2](reporting-rman-operations.md), [11.3.1](reporting-rman-operations.md)
+		- image copies [8.4](rman-backup-concepts.md)
+		- inconsistent
+		- making using RMAN [8.1.1](rman-backup-concepts.md)
+		- incremental [8.9.1.1](rman-backup-concepts.md), [9.7](backing-up-database.md), [10.4.1](backing-up-database-advanced.md), [10.4.2](backing-up-database-advanced.md)
+		- incrementally updated [9.7.4](backing-up-database.md)
+		- listing files needed [29.1](user-managed-database-backups.md)
+		- logical [1.1.1](introduction-backup-recovery.md)
+		- long-term [1.1.3](introduction-backup-recovery.md)
+		- managing [12.1.1](maintaining-rman-backups.md)
+		- multisection [3.3.2](rman-architecture.md), [8.3.1](rman-backup-concepts.md), [16.2](validating-database-files-backups.md)
+		- NOARCHIVELOG mode [9.3.10](backing-up-database.md)
+		- obsolete [8.10.3](rman-backup-concepts.md), [12.5.5](maintaining-rman-backups.md)
+		- offline [29.3.1](user-managed-database-backups.md)
+		- offsite [17.2.3.1](rman-complete-database-recovery.md)
+		- optimizing [5.12.1](configuring-rman-client-basic.md), [9.6.3](backing-up-database.md)
+		- orphaned [14.3.2.4](rman-data-repair-concepts.md)
+		- PDBs, using Oracle Enterprise Manager Cloud Control [9.3.5](backing-up-database.md)
+		- PDBs, using RMAN [9.3.4](backing-up-database.md)
+		- physical [1.1.1](introduction-backup-recovery.md)
+		- previewing [17.2.3](rman-complete-database-recovery.md)
+		- read-only tablespaces [29.3.2.4](user-managed-database-backups.md)
+		- recovering pre-RESETLOGS [18.8.3](rman-performing-flashback-dbpitr.md)
+		- recovery catalog [13.6.1](managing-recovery-catalog.md)
+		- Recovery Manager [9.1.2](backing-up-database.md)
+		- reporting objects needing backups [11.3.2](reporting-rman-operations.md)
+		- restartable [10.7.1](backing-up-database-advanced.md)
+		- restoring user-managed [30.2.1](user-managed-flashback-dbpitr.md)
+		- root
+		- using Oracle Enterprise Manager Cloud Control [9.3.3](backing-up-database.md)
+				- using RMAN [9.3.2](backing-up-database.md)
+		- server parameter files [9.3.9](backing-up-database.md)
+		- skipping files during [10.3](backing-up-database-advanced.md)
+		- split mirror [8.4.2](rman-backup-concepts.md)
+		- using RMAN [10.5](backing-up-database-advanced.md)
+		- stored scripts [13.1.2.4](managing-recovery-catalog.md), [13.7.1](managing-recovery-catalog.md)
+		- tablespace [29.3.2.2](user-managed-database-backups.md)
+		- using RMAN [9.3.6](backing-up-database.md), [9.9.2](backing-up-database.md), [9.9.3](backing-up-database.md)
+		- testing RMAN [16.1.2.4](validating-database-files-backups.md), [16.2](validating-database-files-backups.md), [16.3](validating-database-files-backups.md)
+		- using media manager [5.7.4.2](configuring-rman-client-basic.md)
+		- user-managed [29](user-managed-database-backups.md)
+		- using storage snapshots [29.8](user-managed-database-backups.md)
+		- validating [16.2](validating-database-files-backups.md), [16.3](validating-database-files-backups.md)
+		- verifying [29.9](user-managed-database-backups.md)
+		- whole CDB [9.3.1](backing-up-database.md)
+		- whole database [9.3.1](backing-up-database.md)
+- backup sets [2.4](getting-started-rman.md), [8.1](rman-backup-concepts.md)
+	- backing up [8.7.2.1](rman-backup-concepts.md), [9.9.1](backing-up-database.md)
+		- backups
+		- backups of [8.7.2.1](rman-backup-concepts.md)
+		- compressed [5.4](configuring-rman-client-basic.md), [6.2.5](configuring-rman-client-advanced.md), [9.2.5](backing-up-database.md)
+		- configuring as default [5.4](configuring-rman-client-basic.md)
+		- configuring maximum size [6.2.1](configuring-rman-client-advanced.md)
+		- crosschecking [12.4.1.1](maintaining-rman-backups.md)
+		- duplexing [10.4](backing-up-database-advanced.md)
+		- how RMAN generates [8.3.8](rman-backup-concepts.md)
+		- limiting size [8.3.8](rman-backup-concepts.md)
+		- maximum size [6.2.1](configuring-rman-client-advanced.md), [10.1](backing-up-database-advanced.md)
+		- multiplexed [2.4](getting-started-rman.md), [6.2.1](configuring-rman-client-advanced.md), [8.3.9](rman-backup-concepts.md), [9.2.4.2](backing-up-database.md), [23.2.1.1](tuning-rman-performance.md)
+		- naming [8.3.6](rman-backup-concepts.md)
+		- overview [8.3](rman-backup-concepts.md)
+		- Recovery Manager
+		- backups
+			- backing up [8.7.2.1](rman-backup-concepts.md)
+		- specifying maximum size [8.3.7](rman-backup-concepts.md)
+		- specifying number [8.3.8](rman-backup-concepts.md)
+		- testing restore of [17.2.4](rman-complete-database-recovery.md)
+- Backup Solutions Program (BSP) [3.5.3](rman-architecture.md)
+- backup strategy
+	- fast recovery area [5.10](configuring-rman-client-basic.md)
+- backup tags, RMAN [9.2.4](backing-up-database.md)
+- backup techniques, comparison [1.2](introduction-backup-recovery.md)
+- backup windows [10.8.1](backing-up-database-advanced.md)
+- BEGIN BACKUP clause
+	- ALTER TABLESPACE statement [29.3.2.1](user-managed-database-backups.md)
+- binary compression for backups [9.2.5](backing-up-database.md)
+- block change tracking [1.1.1](introduction-backup-recovery.md), [8.9.2](rman-backup-concepts.md), [9.7.6](backing-up-database.md)
+	- disk space used for [9.7.6.1.3](backing-up-database.md)
+		- enabling and disabling [9.7.6.2](backing-up-database.md), [9.7.6.3](backing-up-database.md)
+		- moving the change tracking file [9.7.6.5](backing-up-database.md)
+- block corruptions [1.1.2](introduction-backup-recovery.md)
+	- stored in V$DATABASE\_BLOCK\_CORRUPTION [16.2](validating-database-files-backups.md)
+- block media recovery [1.1.2](introduction-backup-recovery.md), [16.1.2.4](validating-database-files-backups.md)
+	- automatic [19.1.2](rman-block-media-recovery.md)
+- BSP [3.5.3](rman-architecture.md)
+
+---
+
+## C
+
+- cancel-based media recovery [30.4.2](user-managed-flashback-dbpitr.md)
+- canceling RMAN commands [24.4](troubleshooting-rman-operations.md)
+- CATALOG command [12.4.3](maintaining-rman-backups.md)
+	- START WITH parameter [13.4](managing-recovery-catalog.md)
+- CDB, rewinding [18.4.2](rman-performing-flashback-dbpitr.md)
+- CDB restore point [7.1.6.1](using-flasback-database-restore-points.md)
+- CDB restore points, creating [7.4.1](using-flasback-database-restore-points.md)
+- CDB restore points, viewing [7.4.4](using-flasback-database-restore-points.md)
+- CDBs
+	- about backup and recovery of [4.2.4](starting-interacting-with-rman-client.md)
+		- backing up [9.3.1](backing-up-database.md)
+		- complete recovery [17.3.2](rman-complete-database-recovery.md)
+		- using Oracle Enterprise Manager Cloud Control [17.3.6](rman-complete-database-recovery.md)
+		- complete restore [17.3](rman-complete-database-recovery.md)
+		- connecting to [4.2](starting-interacting-with-rman-client.md)
+		- crash recovery [30.3.3](user-managed-flashback-dbpitr.md)
+		- instance recovery [30.3.3](user-managed-flashback-dbpitr.md)
+		- performing point-in-time recovery [18.5.2](rman-performing-flashback-dbpitr.md)
+		- user-managed backups [29.2](user-managed-database-backups.md)
+- CDBs, restore points [7.1.6.1](using-flasback-database-restore-points.md)
+- CHANGE command
+	- AVAILABLE option [12.4.2.1](maintaining-rman-backups.md)
+		- DB\_UNIQUE\_NAME parameter [13.8.3](managing-recovery-catalog.md)
+		- RESET DB\_UNIQUE\_NAME option [3.7.2.2](rman-architecture.md)
+		- UNCATALOG option [12.4.4.1](maintaining-rman-backups.md)
+- CHANGE FAILURE command [15.7](diagnosing-repairing-failures-dra.md)
+- channels, RMAN [3.3](rman-architecture.md)
+	- configuring [5.5](configuring-rman-client-basic.md)
+		- configuring advanced options [6.1](configuring-rman-client-advanced.md)
+		- definition [3.3](rman-architecture.md)
+		- generic [5.5.1](configuring-rman-client-basic.md)
+		- naming conventions [3.3.2](rman-architecture.md)
+		- Oracle RAC environment [6.1.2](configuring-rman-client-advanced.md)
+		- parallel [5.5.3](configuring-rman-client-basic.md)
+- character sets
+	- setting for use with RMAN [4.5](starting-interacting-with-rman-client.md)
+- circular reuse records [12.2.1](maintaining-rman-backups.md)
+- clean PDB restore points [7.1.6.2](using-flasback-database-restore-points.md)
+- CLEAR LOGFILE clause
+	- of ALTER DATABASE [31.7.2.1.3](user-managed-recovery-advanced.md)
+- client, RMAN [2.1](getting-started-rman.md), [3.1](rman-architecture.md), [3.5](rman-architecture.md)
+- command files, RMAN [2.4.7](getting-started-rman.md)
+- command interface
+	- RMAN [3.2](rman-architecture.md)
+- commands, Recovery Manager
+	- ADVISE FAILURE [15.1.2.4](diagnosing-repairing-failures-dra.md), [15.5](diagnosing-repairing-failures-dra.md)
+		- ALLOCATE CHANNEL [5.5.1](configuring-rman-client-basic.md), [6.1.1](configuring-rman-client-advanced.md), [6.2.2](configuring-rman-client-advanced.md), [9.2.3.1](backing-up-database.md)
+		- BACKUP [2.4](getting-started-rman.md), [2.4.1](getting-started-rman.md), [2.4.2](getting-started-rman.md), [2.4.3](getting-started-rman.md), [2.4.4](getting-started-rman.md), [9.2.4.1](backing-up-database.md), [2.4.5](getting-started-rman.md), [2.4.6](getting-started-rman.md), [3.3.2](rman-architecture.md), [3.7.2.3](rman-architecture.md), [5.3](configuring-rman-client-basic.md), [5.5.3](configuring-rman-client-basic.md), [5.7.3](configuring-rman-client-basic.md), [5.7.5.1](configuring-rman-client-basic.md), [5.10.4](configuring-rman-client-basic.md), [5.12.1](configuring-rman-client-basic.md), [6.1.1](configuring-rman-client-advanced.md), [6.2.1](configuring-rman-client-advanced.md), [6.2.4](configuring-rman-client-advanced.md), [6.2.6.1](configuring-rman-client-advanced.md), [8.1](rman-backup-concepts.md), [8.3](rman-backup-concepts.md), [8.3.1](rman-backup-concepts.md), [8.3.9](rman-backup-concepts.md), [8.3.10](rman-backup-concepts.md), [8.4.1](rman-backup-concepts.md), [8.7](rman-backup-concepts.md), [8.7.1](rman-backup-concepts.md), [8.7.2.1](rman-backup-concepts.md), [8.7.2.2](rman-backup-concepts.md), [9.1.2](backing-up-database.md), [9.2.1](backing-up-database.md), [9.2.5](backing-up-database.md), [9.3.1](backing-up-database.md), [9.3.6](backing-up-database.md), [9.3.8](backing-up-database.md), [9.3.8.2](backing-up-database.md), [9.3.9](backing-up-database.md), [9.6.1](backing-up-database.md), [9.6.1.2](backing-up-database.md), [9.6.3](backing-up-database.md), [9.6.4](backing-up-database.md), [9.7](backing-up-database.md), [9.7.3](backing-up-database.md), [9.7.3.1](backing-up-database.md), [9.7.4.1](backing-up-database.md), [9.8.1](backing-up-database.md), [9.8.3.1](backing-up-database.md), [9.8.4](backing-up-database.md), [9.9.1](backing-up-database.md), [9.9.2](backing-up-database.md), [9.9.3](backing-up-database.md)
+		- PROXY ONLY option [8.3.10](rman-backup-concepts.md)
+				- PROXY option [8.3.10](rman-backup-concepts.md)
+		- BACKUP CURRENT CONTROLFILE [9.3.8.2](backing-up-database.md)
+		- canceling [24.4](troubleshooting-rman-operations.md)
+		- CATALOG [12.4.3](maintaining-rman-backups.md)
+		- CHANGE [3.7.2.2](rman-architecture.md), [12.4.1](maintaining-rman-backups.md)
+		- CHANGE FAILURE [15.7](diagnosing-repairing-failures-dra.md)
+		- CONFIGURE [3.7.1](rman-architecture.md), [5.5.1](configuring-rman-client-basic.md), [5.11](configuring-rman-client-basic.md), [5.14](configuring-rman-client-basic.md), [6.1.1](configuring-rman-client-advanced.md), [6.2.2](configuring-rman-client-advanced.md), [6.2.6.2](configuring-rman-client-advanced.md), [6.3](configuring-rman-client-advanced.md)
+		- CREATE CATALOG [13.2.3](managing-recovery-catalog.md)
+		- CREATE SCRIPT [13.7.2](managing-recovery-catalog.md)
+		- CROSSCHECK [12.4.1](maintaining-rman-backups.md)
+		- DELETE [12.4.1.1](maintaining-rman-backups.md), [12.4.3.1](maintaining-rman-backups.md), [12.5](maintaining-rman-backups.md)
+		- DROP CATALOG [13.9](managing-recovery-catalog.md)
+		- DROP DATABASE [12.6](maintaining-rman-backups.md)
+		- EXECUTE SCRIPT [13.7.1](managing-recovery-catalog.md), [13.7.4](managing-recovery-catalog.md)
+		- EXIT [2.2](getting-started-rman.md)
+		- FLASHBACK DATABASE [13.8.5](managing-recovery-catalog.md)
+		- how RMAN interprets [3.2](rman-architecture.md)
+		- IMPORT CATALOG [13.8.7](managing-recovery-catalog.md)
+		- LIST [2.5.1](getting-started-rman.md), [11.1.2](reporting-rman-operations.md), [11.2](reporting-rman-operations.md), [11.2.1](reporting-rman-operations.md), [13.8.5](managing-recovery-catalog.md), [15.3](diagnosing-repairing-failures-dra.md)
+		- INCARNATION option [11.2.6](reporting-rman-operations.md), [13.8.5](managing-recovery-catalog.md)
+		- MAXSETSIZE [6.2.1](configuring-rman-client-advanced.md)
+		- piping [4.8](starting-interacting-with-rman-client.md)
+		- PRINT SCRIPT [13.7.6](managing-recovery-catalog.md)
+		- RECOVER [14.3](rman-data-repair-concepts.md)
+		- REPAIR FAILURE [15.6.1](diagnosing-repairing-failures-dra.md), [15.7](diagnosing-repairing-failures-dra.md)
+		- REPLACE SCRIPT [13.7.3](managing-recovery-catalog.md)
+		- REPORT [2.5.2](getting-started-rman.md), [11.3.1](reporting-rman-operations.md), [11.3.2](reporting-rman-operations.md)
+		- NEED BACKUP option [11.3.2](reporting-rman-operations.md)
+		- RESET DATABASE
+		- INCARNATION option [13.8.5](managing-recovery-catalog.md)
+		- RESTORE [17.2.1.2](rman-complete-database-recovery.md)
+		- RESYNC CATALOG [13.6.2](managing-recovery-catalog.md), [13.8.2](managing-recovery-catalog.md), [13.8.2.3](managing-recovery-catalog.md)
+		- FROM CONTROLFILECOPY option [13.6.2](managing-recovery-catalog.md)
+		- REVOKE [13.5.5](managing-recovery-catalog.md)
+		- SET [6.2.6.1.2](configuring-rman-client-advanced.md)
+		- SHOW [2.3](getting-started-rman.md), [5.2](configuring-rman-client-basic.md)
+		- SPOOL [15.6.1](diagnosing-repairing-failures-dra.md)
+		- SWITCH [17.3.9](rman-complete-database-recovery.md)
+		- terminating [24.4](troubleshooting-rman-operations.md)
+		- UNREGISTER DATABASE [13.8.4](managing-recovery-catalog.md)
+		- UPGRADE CATALOG [13.8.6.1](managing-recovery-catalog.md)
+		- VALIDATE [15.1.2.2](diagnosing-repairing-failures-dra.md), [15.4](diagnosing-repairing-failures-dra.md), [16.2](validating-database-files-backups.md)
+- commands, SQL\*Plus
+	- RECOVER
+		- UNTIL TIME option [30.4.2](user-managed-flashback-dbpitr.md)
+		- SET [30.2.2](user-managed-flashback-dbpitr.md), [30.2.4.2](user-managed-flashback-dbpitr.md), [30.3.1](user-managed-flashback-dbpitr.md), [30.3.2](user-managed-flashback-dbpitr.md)
+- comments in RMAN syntax [4.4.3](starting-interacting-with-rman-client.md)
+- COMPATIBLE initialization parameter [6.2.6.1](configuring-rman-client-advanced.md)
+- complete recovery
+	- application containers [17.5.2](rman-complete-database-recovery.md)
+		- application PDBs [17.5.3](rman-complete-database-recovery.md)
+		- application root [17.5.1](rman-complete-database-recovery.md)
+		- overview [17.1](rman-complete-database-recovery.md)
+		- procedures [30.3](user-managed-flashback-dbpitr.md)
+		- sparse databases [17.6.2](rman-complete-database-recovery.md)
+		- using preplugin backups [17.4.2](rman-complete-database-recovery.md)
+- compressed backups [5.4](configuring-rman-client-basic.md), [9.2.5](backing-up-database.md)
+	- algorithms [6.2.5](configuring-rman-client-advanced.md)
+- CONFIGURE command
+	- AUXNAME option [6.3](configuring-rman-client-advanced.md)
+		- BACKUP OPTIMIZATION option [5.12.3](configuring-rman-client-basic.md)
+		- CHANNEL option [5.5.1](configuring-rman-client-basic.md), [6.1.1](configuring-rman-client-advanced.md)
+		- CONTROLFILE AUTOBACKUP option [8.8.1](rman-backup-concepts.md), [9.8.2](backing-up-database.md)
+		- DB\_UNIQUE\_NAME option [5.14](configuring-rman-client-basic.md)
+		- ENCRYPTION option [6.2.6.2](configuring-rman-client-advanced.md)
+		- EXCLUDE option [6.2.4](configuring-rman-client-advanced.md)
+		- FOR DB\_UNIQUE\_NAME option [3.7.1](rman-architecture.md)
+		- MAXPIECESIZE option [6.2.2](configuring-rman-client-advanced.md)
+		- MAXSETSIZE option [6.2.1](configuring-rman-client-advanced.md)
+		- RETENTION POLICY clause [8.10](rman-backup-concepts.md)
+		- RETENTION POLICY option [5.11](configuring-rman-client-basic.md)
+- configuring media managers [5.7.3](configuring-rman-client-basic.md)
+	- installing [5.7.1](configuring-rman-client-basic.md)
+		- prerequisites [5.7.1](configuring-rman-client-basic.md)
+- configuring Recovery Manager
+	- autobackups [5.6](configuring-rman-client-basic.md), [5.6.1](configuring-rman-client-basic.md), [8.8](rman-backup-concepts.md)
+		- backup optimization [5.12](configuring-rman-client-basic.md)
+		- backup retention policies [5.11](configuring-rman-client-basic.md)
+		- backup set size [6.2.1](configuring-rman-client-advanced.md)
+		- default backup type [5.4](configuring-rman-client-basic.md)
+		- default devices [5.3](configuring-rman-client-basic.md)
+		- overview [5.1](configuring-rman-client-basic.md)
+		- shared server [6.5](configuring-rman-client-advanced.md)
+		- snapshot control file location [6.4](configuring-rman-client-advanced.md)
+		- specific channels [6.1.2](configuring-rman-client-advanced.md)
+		- tablespace exclusion for backups [6.2.4](configuring-rman-client-advanced.md)
+- connecting
+	- to CDBs [4.2](starting-interacting-with-rman-client.md)
+		- to PDBs [4.2](starting-interacting-with-rman-client.md)
+- consistent backups [8.1.1](rman-backup-concepts.md)
+	- using RMAN [8.1.1](rman-backup-concepts.md)
+- CONTROL\_FILE\_RECORD\_KEEP\_TIME initialization parameter [12.2.1](maintaining-rman-backups.md), [12.2.2](maintaining-rman-backups.md)
+- CONTROL\_FILES initialization parameter [20.3.1.1](rman-recovery-advanced.md), [21.6.1.2](performing-rman-tspitr.md), [31.1.2](user-managed-recovery-advanced.md)
+- control file autobackups [12.2.3](maintaining-rman-backups.md)
+	- after structural changes to database [8.8](rman-backup-concepts.md)
+		- configuring [5.6](configuring-rman-client-basic.md), [5.6.1](configuring-rman-client-basic.md), [8.8](rman-backup-concepts.md)
+		- default format [8.8.2](rman-backup-concepts.md)
+		- format [5.6.1](configuring-rman-client-basic.md)
+- control files
+	- backups [29.1.1](user-managed-database-backups.md), [29.4](user-managed-database-backups.md)
+		- binary [29.4.1](user-managed-database-backups.md)
+				- including within database backup [9.3.8.1](backing-up-database.md)
+				- manual [9.3.8.2](backing-up-database.md)
+				- recovery using [20.3.1](rman-recovery-advanced.md)
+				- using RMAN [9.3.8](backing-up-database.md)
+		- circular reuse records [12.2.1](maintaining-rman-backups.md)
+		- configuring location [5.9](configuring-rman-client-basic.md)
+		- creating after loss of all copies [31.3](user-managed-recovery-advanced.md)
+		- finding file names [29.1.1](user-managed-database-backups.md)
+		- multiplexed [5.9](configuring-rman-client-basic.md), [5.10.1](configuring-rman-client-basic.md), [12.2.3](maintaining-rman-backups.md), [17.2.1.1](rman-complete-database-recovery.md), [29.1.1](user-managed-database-backups.md), [30.2.1](user-managed-flashback-dbpitr.md), [31.1.1](user-managed-recovery-advanced.md)
+		- loss of [31.1](user-managed-recovery-advanced.md)
+		- multiplexing [12.2.3](maintaining-rman-backups.md)
+		- re-created [31.3](user-managed-recovery-advanced.md)
+		- restoring [20.3.1.1](rman-recovery-advanced.md), [31.1.1](user-managed-recovery-advanced.md), [31.1.2](user-managed-recovery-advanced.md)
+		- snapshot [13.8.2.1](managing-recovery-catalog.md)
+		- specifying location of [6.4](configuring-rman-client-advanced.md)
+		- user-managed restore after loss of all copies [31.3](user-managed-recovery-advanced.md)
+- CONVERT command
+	- ALLOW INCONSISTENT option [28.8.2.3.1](rman-transporting-data-across-platforms.md)
+- COPIES option
+	- BACKUP command [10.4.2](backing-up-database-advanced.md)
+- corrupt blocks [16.1.2.1](validating-database-files-backups.md), [30.6.1](user-managed-flashback-dbpitr.md)
+	- recovering [19.1.2.2](rman-block-media-recovery.md)
+		- RMAN and [10.7.1](backing-up-database-advanced.md)
+- crash recovery
+	- of CDBs [30.3.3](user-managed-flashback-dbpitr.md)
+- CREATE CATALOG command [13.2.3](managing-recovery-catalog.md)
+- CREATE DATAFILE clause, ALTER DATABASE statement [31.4](user-managed-recovery-advanced.md)
+- CREATE SCRIPT command [13.7.2](managing-recovery-catalog.md)
+- CREATE TABLESPACE statement [31.2.3](user-managed-recovery-advanced.md)
+- CREATE TABLE statement
+	- AS SELECT clause [31.5](user-managed-recovery-advanced.md)
+- creating
+	- virtual private catalogs [13.5.3](managing-recovery-catalog.md)
+- creating, PDB restore points [7.4.2](using-flasback-database-restore-points.md)
+- CROSSCHECK command [12.4.1](maintaining-rman-backups.md)
+- crosschecking, RMAN [2.6](getting-started-rman.md), [12.1.2.2.1](maintaining-rman-backups.md), [12.4.1](maintaining-rman-backups.md)
+	- definition [12.4.1.1](maintaining-rman-backups.md)
+		- recovery catalog with the media manager [12.4.1.1](maintaining-rman-backups.md)
+- cross-platform data transport
+	- data pump destination [28.6.1](rman-transporting-data-across-platforms.md)
+- cross-platform transport
+	- databases
+		- using backup sets [28.7.2](rman-transporting-data-across-platforms.md)
+				- using image copies [28.5](rman-transporting-data-across-platforms.md)
+		- data files, using image copies [28.4](rman-transporting-data-across-platforms.md)
+		- inconsistent tablespaces [28.8.2](rman-transporting-data-across-platforms.md)
+		- about [28.8.2.1](rman-transporting-data-across-platforms.md)
+				- example [28.8.2.4](rman-transporting-data-across-platforms.md)
+				- steps [28.8.2.3](rman-transporting-data-across-platforms.md)
+		- methods [28.1.2](rman-transporting-data-across-platforms.md)
+		- using backup sets [28.6](rman-transporting-data-across-platforms.md)
+				- using image copies [28.2](rman-transporting-data-across-platforms.md)
+		- of PDBs [28.7.1](rman-transporting-data-across-platforms.md)
+		- over the network [28.9](rman-transporting-data-across-platforms.md)
+		- PDB to a new CDB [28.7.3](rman-transporting-data-across-platforms.md), [28.7.4](rman-transporting-data-across-platforms.md)
+		- read-only tablespaces
+		- using backup sets [28.8.1](rman-transporting-data-across-platforms.md)
+				- using image copies [28.3](rman-transporting-data-across-platforms.md)
+		- tablespaces, DataPump export dump file [28.6.4.2](rman-transporting-data-across-platforms.md)
+		- tablespaces in PDBs [28.8.3](rman-transporting-data-across-platforms.md)
+- cross-platform transportable tablespace [28](rman-transporting-data-across-platforms.md)
+- cumulative incremental backups [2.4.4](getting-started-rman.md), [2.4.5](getting-started-rman.md), [8.9.1](rman-backup-concepts.md), [8.9.1.2](rman-backup-concepts.md)
+
+---
+
+## D
+
+- database connections
+	- Recovery Manager
+		- auxiliary database [4.2.7](starting-interacting-with-rman-client.md)
+				- hiding passwords [4.2.8](starting-interacting-with-rman-client.md)
+				- without a catalog [4.2](starting-interacting-with-rman-client.md)
+		- SYSBACKUP required for RMAN [4.2.2](starting-interacting-with-rman-client.md)
+		- types in RMAN [4.2.1](starting-interacting-with-rman-client.md)
+- Database Home page, accessing [1.6.2](introduction-backup-recovery.md)
+- database point-in-time recovery [18](rman-performing-flashback-dbpitr.md), [18.5](rman-performing-flashback-dbpitr.md)
+	- definition [18.1.3](rman-performing-flashback-dbpitr.md)
+		- Flashback Database and [7.1.1](using-flasback-database-restore-points.md)
+		- prerequisites [18.5.1](rman-performing-flashback-dbpitr.md)
+		- user-managed [30.4](user-managed-flashback-dbpitr.md)
+- databases
+	- listing for backups [29.1](user-managed-database-backups.md)
+		- media recovery procedures, user-managed [30](user-managed-flashback-dbpitr.md)
+		- media recovery scenarios [31](user-managed-recovery-advanced.md)
+		- recovery
+		- after control file damage [31.1.1](user-managed-recovery-advanced.md), [31.1.2](user-managed-recovery-advanced.md)
+		- registering in recovery catalog [13.3.2](managing-recovery-catalog.md)
+		- reporting on schemas [11.3.5](reporting-rman-operations.md)
+		- suspending [29.6.1](user-managed-database-backups.md)
+		- transporting across platforms
+		- using backup sets [28.7.2](rman-transporting-data-across-platforms.md)
+				- using image copies [28.5](rman-transporting-data-across-platforms.md)
+		- unregistering from recovery catalog [13.8.4](managing-recovery-catalog.md)
+- data blocks, corrupted [1.1.1](introduction-backup-recovery.md), [1.1.2](introduction-backup-recovery.md), [2.7.1](getting-started-rman.md), [2.9.4](getting-started-rman.md), [15.4](diagnosing-repairing-failures-dra.md), [15.7](diagnosing-repairing-failures-dra.md), [16.2](validating-database-files-backups.md), [19.1.1](rman-block-media-recovery.md), [30.6.1](user-managed-flashback-dbpitr.md)
+- data dictionary views [29.3.2.1](user-managed-database-backups.md), [29.3.2.4](user-managed-database-backups.md)
+- data files
+	- backing up [9.3.6](backing-up-database.md), [9.9.2](backing-up-database.md), [9.9.3](backing-up-database.md), [29.3.1](user-managed-database-backups.md)
+		- backing up, in PDBs [9.3.7](backing-up-database.md)
+		- determining status [29.1.2](user-managed-database-backups.md)
+		- listing [29.1](user-managed-database-backups.md)
+		- losing [30.2.1](user-managed-flashback-dbpitr.md)
+		- restoring [14.2](rman-data-repair-concepts.md)
+		- transporting across platforms [28.4](rman-transporting-data-across-platforms.md)
+- Data Guard environment
+	- archived log deletion policies [5.13.1.2](configuring-rman-client-basic.md)
+		- changing a DB\_UNIQUE\_NAME [13.8.3](managing-recovery-catalog.md)
+		- configuring RMAN [5.14](configuring-rman-client-basic.md)
+		- reporting in a [11.1.3](reporting-rman-operations.md)
+		- RMAN backups [9.1.2](backing-up-database.md)
+		- RMAN backups, accessibility of [3.7.2.3](rman-architecture.md)
+		- RMAN backups, association of [3.7.2.2](rman-architecture.md)
+		- RMAN backups, interchangeability of [3.7.2.1](rman-architecture.md), [9.3.8](backing-up-database.md)
+		- RMAN usage [3.7](rman-architecture.md)
+- data integrity checks [1.5](introduction-backup-recovery.md), [15.1.2.2](diagnosing-repairing-failures-dra.md), [15.4](diagnosing-repairing-failures-dra.md)
+- data preservation, definition of [1.1.3](introduction-backup-recovery.md)
+- data protection, definition [1.1.1](introduction-backup-recovery.md)
+- data pump destination [28.6.1](rman-transporting-data-across-platforms.md)
+- Data Recovery Advisor [2.7](getting-started-rman.md), [11.2.1](reporting-rman-operations.md), [14.1.2](rman-data-repair-concepts.md)
+	- automated repairs [1.5](introduction-backup-recovery.md)
+		- data integrity checks [15.1.2.2](diagnosing-repairing-failures-dra.md), [15.4](diagnosing-repairing-failures-dra.md)
+		- failure consolidation [15.1.2.3.3](diagnosing-repairing-failures-dra.md)
+		- failure priority [15.1.2.3.2](diagnosing-repairing-failures-dra.md)
+		- failures [15.1.2.1](diagnosing-repairing-failures-dra.md), [15.1.2.3](diagnosing-repairing-failures-dra.md)
+		- feasibility checks [15.1.2.4](diagnosing-repairing-failures-dra.md)
+		- overview [1.5](introduction-backup-recovery.md)
+		- purpose [15.1.1](diagnosing-repairing-failures-dra.md)
+		- repairing failures [15.6.1](diagnosing-repairing-failures-dra.md)
+		- repair options [15.5](diagnosing-repairing-failures-dra.md)
+		- repairs [15.1.2.1](diagnosing-repairing-failures-dra.md), [15.1.2.4](diagnosing-repairing-failures-dra.md), [15.1.2.4.1](diagnosing-repairing-failures-dra.md)
+		- user interfaces [15.1.2.1](diagnosing-repairing-failures-dra.md)
+- data repair
+	- overview [14.1.1](rman-data-repair-concepts.md)
+		- techniques [14.1.2](rman-data-repair-concepts.md)
+- data transfer, RMAN [1.1.4](introduction-backup-recovery.md)
+- DB\_BLOCK\_CHECKSUM initialization parameter [16.1.2.1](validating-database-files-backups.md)
+- DB\_CREATE\_FILE\_DEST initialization parameter [9.7.6.2](backing-up-database.md)
+- DB\_FILE\_NAME\_CONVERT initialization parameter [21.6.1.2](performing-rman-tspitr.md)
+- DB\_FLASHBACK\_RETENTION\_TARGET initialization parameter [5.10.2.1](configuring-rman-client-basic.md)
+- DB\_LOST\_WRITE\_PROTECT initialization parameter [6.6](configuring-rman-client-advanced.md)
+- DB\_NAME initialization parameter [21.6.1.2](performing-rman-tspitr.md)
+- DB\_RECOVERY\_FILE\_DEST\_SIZE initialization parameter [2.1](getting-started-rman.md)
+- DB\_RECOVERY\_FILE\_DEST initialization parameter [2.1](getting-started-rman.md)
+- DB\_UNIQUE\_NAME initialization parameter [3.7](rman-architecture.md), [3.7.2.2](rman-architecture.md), [5.14](configuring-rman-client-basic.md), [11.1.3](reporting-rman-operations.md)
+- DBA\_DATA\_FILES view [29.3.2.1](user-managed-database-backups.md), [29.3.2.4](user-managed-database-backups.md)
+- DBID
+	- determining [17.2.2](rman-complete-database-recovery.md)
+		- problems registering copied database [13.1.2.1](managing-recovery-catalog.md)
+- DBMS\_PIPE package [4.8](starting-interacting-with-rman-client.md)
+- DBPITR [18.5](rman-performing-flashback-dbpitr.md)
+- DBVERIFY utility [29.9](user-managed-database-backups.md)
+- DELETE command [12.4.3.1](maintaining-rman-backups.md), [12.5](maintaining-rman-backups.md), [12.5.3](maintaining-rman-backups.md)
+	- EXPIRED option [12.4.1.1](maintaining-rman-backups.md), [12.5.4](maintaining-rman-backups.md)
+		- OBSOLETE option [8.10.3](rman-backup-concepts.md), [12.5.5](maintaining-rman-backups.md)
+- deleting
+	- archived redo log files [9.6.4](backing-up-database.md)
+		- dropped PDB backups [12.5.6](maintaining-rman-backups.md)
+- deleting backups [2.6.2](getting-started-rman.md), [12.5](maintaining-rman-backups.md), [12.5.1.1](maintaining-rman-backups.md), [12.5.3](maintaining-rman-backups.md)
+- deletion policies, archived redo log [5.13.1](configuring-rman-client-basic.md)
+	- enabling [5.13.2](configuring-rman-client-basic.md)
+- devices, configuring default [5.3](configuring-rman-client-basic.md)
+- differential incremental backups [2.4.4](getting-started-rman.md), [8.9.1](rman-backup-concepts.md), [8.9.1.1](rman-backup-concepts.md)
+- direct ancestral path [14.3.2.2](rman-data-repair-concepts.md), [18.8.2](rman-performing-flashback-dbpitr.md)
+- disabling
+	- Flashback Database [7.5.2](using-flasback-database-restore-points.md)
+- disaster recovery [1.1.3](introduction-backup-recovery.md)
+	- definition [1.1.2](introduction-backup-recovery.md)
+- disconnecting
+	- from Recovery Manager [2.2](getting-started-rman.md)
+- disk API [5.7.4](configuring-rman-client-basic.md)
+- disk failures [1.1.2](introduction-backup-recovery.md)
+- disk usage
+	- monitoring [12.3.2](maintaining-rman-backups.md)
+- DROP DATABASE command [12.6](maintaining-rman-backups.md)
+- dropped tables, retrieving [18.3.1](rman-performing-flashback-dbpitr.md)
+- dropping a database [12.6](maintaining-rman-backups.md)
+- dropping the recovery catalog [13.9](managing-recovery-catalog.md)
+- dual mode backup encryption [6.2.6.1.3](configuring-rman-client-advanced.md)
+- dual-mode backup encryption [10.6.4](backing-up-database-advanced.md)
+- duplexing backup sets [6.2.3](configuring-rman-client-advanced.md), [8.7.1](rman-backup-concepts.md), [10.4](backing-up-database-advanced.md)
+- Duplicate
+	- Using Cloud Backups [25.3.2.1](rman-duplicating-databases.md)
+- duplicate databases
+	- active database duplication [4.2.7](starting-interacting-with-rman-client.md)
+- duplicating
+	- Cloud database to on-premises [25.6](rman-duplicating-databases.md)
+		- configuring channels [25.3.1](rman-duplicating-databases.md)
+		- PDBs [25.8.7](rman-duplicating-databases.md)
+		- preparing auxiliary instance [25.3.3](rman-duplicating-databases.md)
+		- sparse CDBs [25.4.6.1](rman-duplicating-databases.md)
+		- sparse PDBs [25.4.6.2](rman-duplicating-databases.md)
+		- tablespaces [25.4.2](rman-duplicating-databases.md)
+- duplicating a PDB
+	- to existing CDBs [25.4.3.3](rman-duplicating-databases.md)
+- duplicating databases
+	- initialization file [25.3.3.2](rman-duplicating-databases.md)
+		- Oracle keystore [25.3.3.6](rman-duplicating-databases.md)
+		- preparing [25.3](rman-duplicating-databases.md)
+- duplicatingOracle Cloud
+	- to [25.5](rman-duplicating-databases.md)
+- duplicating PDBs
+	- to new CDB [25.4.3.4](rman-duplicating-databases.md)
+- duplication
+	- SET NEWNAME [26.1.1.1](rman-duplicating-databases-advanced.md)
+		- using encrypted backups [25.8.9](rman-duplicating-databases.md)
+- DURATION parameter, BACKUP command [10.8.2](backing-up-database-advanced.md)
+
+---
+
+## E
+
+- enabling
+	- Flashback Database [7.5.1](using-flasback-database-restore-points.md)
+		- lost write protection [6.7](configuring-rman-client-advanced.md)
+- encrypted backups [10.6](backing-up-database-advanced.md), [14.2.3](rman-data-repair-concepts.md)
+	- backup-based duplication [25.8.9](rman-duplicating-databases.md)
+		- decrypting [17.2.6](rman-complete-database-recovery.md)
+- environment variables
+	- NLS\_DATE\_FORMAT [4.5](starting-interacting-with-rman-client.md)
+		- NLS\_LANG [4.5](starting-interacting-with-rman-client.md)
+- error codes
+	- media manager [24.1.4.2](troubleshooting-rman-operations.md)
+		- RMAN [24.1](troubleshooting-rman-operations.md), [24.1.4](troubleshooting-rman-operations.md), [24.1.4.1](troubleshooting-rman-operations.md)
+- error messages, RMAN
+	- interpreting [24.1.5](troubleshooting-rman-operations.md)
+- error stacks, RMAN
+	- interpreting [24.1.5](troubleshooting-rman-operations.md)
+- example
+	- duplicating databases [25.9](rman-duplicating-databases.md)
+		- multisection incremental backups [9.2.6](backing-up-database.md)
+		- recovering tables into new schema [22.5.3](rman-recovering-tables-partitions.md)
+		- recovery using preplugin backups [17.4.3](rman-complete-database-recovery.md)
+- examples
+	- preplugin backups [9.3.12.1](backing-up-database.md)
+		- recovering using third-party snapshots [30.2.5](user-managed-flashback-dbpitr.md)
+		- rolling forward a physical standby [20.7.5](rman-recovery-advanced.md)
+- EXECUTE SCRIPT command [13.7.4](managing-recovery-catalog.md)
+- EXIT command [2.2](getting-started-rman.md)
+- exiting RMAN [2.2](getting-started-rman.md)
+- expired backups [8.10](rman-backup-concepts.md), [12.4.1.1](maintaining-rman-backups.md)
+	- deleting [12.5.4](maintaining-rman-backups.md)
+- EXPIRED option
+	- DELETE command [12.5.4](maintaining-rman-backups.md)
+
+---
+
+## F
+
+- failover, when restoring files [14.2.2](rman-data-repair-concepts.md)
+- failures
+	- definition [1.1.2](introduction-backup-recovery.md)
+		- media [1.1.2](introduction-backup-recovery.md)
+- failures, Data Recovery Advisor [15.1.2.1](diagnosing-repairing-failures-dra.md), [15.1.2.3](diagnosing-repairing-failures-dra.md)
+	- consolidation [15.1.2.3.3](diagnosing-repairing-failures-dra.md)
+		- priority [15.1.2.3.2](diagnosing-repairing-failures-dra.md)
+- fast recovery area [3.1](rman-architecture.md), [3.6](rman-architecture.md), [18.1.4.1](rman-performing-flashback-dbpitr.md)
+	- autobackups [5.6.1](configuring-rman-client-basic.md)
+		- changing locations [12.3.5](maintaining-rman-backups.md)
+		- configuring [5.10](configuring-rman-client-basic.md)
+		- definition [2.1](getting-started-rman.md)
+		- disabling [12.3.6](maintaining-rman-backups.md)
+		- effect of retention policy [8.10.4](rman-backup-concepts.md)
+		- enabling [5.10.2](configuring-rman-client-basic.md)
+		- flashback database window [7.1.2](using-flasback-database-restore-points.md)
+		- maintaining [12.3](maintaining-rman-backups.md)
+		- monitoring disk usage [12.3.2](maintaining-rman-backups.md)
+		- monitoring usage [12.3.2](maintaining-rman-backups.md)
+		- Oracle Managed Files [5.10.1.1](configuring-rman-client-basic.md)
+		- permanent and impermanent files [5.10.1](configuring-rman-client-basic.md)
+		- RMAN files in [5.10.4](configuring-rman-client-basic.md)
+		- setting location [5.10.2.2](configuring-rman-client-basic.md)
+		- setting size [5.10.2.1](configuring-rman-client-basic.md)
+		- snapshot control files [6.4](configuring-rman-client-advanced.md)
+		- space management [5.10.1.2](configuring-rman-client-basic.md)
+- feasibility checks, Data Recovery Advisor [15.1.2.4](diagnosing-repairing-failures-dra.md)
+- file names, listing for backup [29.1](user-managed-database-backups.md)
+- file sections [8.3.7](rman-backup-concepts.md), [8.3.9](rman-backup-concepts.md), [10.1.3](backing-up-database-advanced.md), [16.2](validating-database-files-backups.md)
+- flashback CDB [18.4.2](rman-performing-flashback-dbpitr.md)
+- flashback CDB, using SQL\*Plus [30.1.1](user-managed-flashback-dbpitr.md)
+- flashback data archive
+	- definition [1.4.1](introduction-backup-recovery.md)
+- Flashback Database [1.4.2](introduction-backup-recovery.md), [2.8](getting-started-rman.md), [14.1.2](rman-data-repair-concepts.md), [18](rman-performing-flashback-dbpitr.md)
+	- disabling [7.5.2](using-flasback-database-restore-points.md)
+		- enabling [7.5.1](using-flasback-database-restore-points.md)
+		- flashback logs [1.4.2](introduction-backup-recovery.md), [7.2.1](using-flasback-database-restore-points.md)
+		- limitations [7.1.3](using-flasback-database-restore-points.md)
+		- monitoring [7.5.4](using-flasback-database-restore-points.md)
+		- overview [1.4.2](introduction-backup-recovery.md)
+		- prerequisites [18.4.1](rman-performing-flashback-dbpitr.md)
+		- purpose [18.1.1](rman-performing-flashback-dbpitr.md)
+		- requirements [7.3](using-flasback-database-restore-points.md)
+		- space management [12.3.3](maintaining-rman-backups.md)
+		- estimating disk space requirement [5.10.2.3](configuring-rman-client-basic.md)
+		- tuning performance [7.5.3](using-flasback-database-restore-points.md)
+- flashback database, and PITR for PDBs [18.1.2.1](rman-performing-flashback-dbpitr.md)
+- flashback database, PDBs [18.4.3](rman-performing-flashback-dbpitr.md)
+- flashback database window [7.1.2](using-flasback-database-restore-points.md)
+- Flashback Drop [18.1.4.2](rman-performing-flashback-dbpitr.md), [18.3.1](rman-performing-flashback-dbpitr.md)
+- flashback logs [1.4.2](introduction-backup-recovery.md), [2.8](getting-started-rman.md), [7.1.1](using-flasback-database-restore-points.md), [12.3.3](maintaining-rman-backups.md), [18.1.4.1](rman-performing-flashback-dbpitr.md)
+	- guaranteed restore points and [7.1.5](using-flasback-database-restore-points.md)
+- flashback PDB, local undo [18.1.4.3](rman-performing-flashback-dbpitr.md)
+- flashback PDB, shared undo [18.1.4.3](rman-performing-flashback-dbpitr.md)
+- flashback PDB, using SQL\*Plus [30.1.2](user-managed-flashback-dbpitr.md)
+- flashback retention target [7.1.1](using-flasback-database-restore-points.md)
+- Flashback Table [18.1.4.2](rman-performing-flashback-dbpitr.md)
+	- using [18.2.1](rman-performing-flashback-dbpitr.md), [18.2.2](rman-performing-flashback-dbpitr.md)
+- FLASHBACK TABLE statement [18.2.1](rman-performing-flashback-dbpitr.md), [18.2.2](rman-performing-flashback-dbpitr.md)
+- Flashback Technology [18.1.2](rman-performing-flashback-dbpitr.md)
+	- logical features [18.1.4.2](rman-performing-flashback-dbpitr.md)
+		- overview [1.4](introduction-backup-recovery.md)
+- flashback undrop
+	- restoring objects [18.3.3](rman-performing-flashback-dbpitr.md)
+- foreign data file [28.6.1](rman-transporting-data-across-platforms.md)
+- foreign data file copy [28.6.1](rman-transporting-data-across-platforms.md)
+- foreign tablespace [28.6.1](rman-transporting-data-across-platforms.md)
+- formats, for RMAN backups [9.2.3](backing-up-database.md)
+- fractured blocks [8.2](rman-backup-concepts.md)
+	- detection [8.2](rman-backup-concepts.md)
+- full backups [8.9](rman-backup-concepts.md)
+	- incremental backups and [2.4.4](getting-started-rman.md)
+
+---
+
+## G
+
+- generic channels
+	- definition [5.5.1](configuring-rman-client-basic.md)
+- groups, redo log [31.7.1](user-managed-recovery-advanced.md), [31.7.2](user-managed-recovery-advanced.md)
+- guaranteed restore points [1.4.2](introduction-backup-recovery.md), [5.10.2.1](configuring-rman-client-basic.md)
+	- alternative to storage snapshots [7.1.5.1](using-flasback-database-restore-points.md)
+		- compared to storage snapshots [7.1.5.1](using-flasback-database-restore-points.md)
+		- flashback logs and [7.1.5](using-flasback-database-restore-points.md)
+		- requirements [7.3](using-flasback-database-restore-points.md)
+		- space usage in fast recovery area [7.4.4](using-flasback-database-restore-points.md)
+
+---
+
+## H
+
+- Health Monitor [15.1.2.2](diagnosing-repairing-failures-dra.md)
+- hot backup mode
+	- failed backups [29.3.2.3](user-managed-database-backups.md), [29.3.2.3.1](user-managed-database-backups.md)
+		- for online user-managed backups [29.3.2.1](user-managed-database-backups.md)
+
+---
+
+## I
+
+- I/O errors
+	- effect on backups [10.7.1](backing-up-database-advanced.md)
+- image copies [2.4](getting-started-rman.md), [8.1](rman-backup-concepts.md), [8.4](rman-backup-concepts.md)
+	- definition [8.4](rman-backup-concepts.md)
+		- testing restore of [17.2.4](rman-complete-database-recovery.md)
+- IMPORT CATALOG command [13.8.7](managing-recovery-catalog.md)
+- INCARNATION option
+	- LIST command [11.2.6](reporting-rman-operations.md), [13.8.5](managing-recovery-catalog.md)
+		- RESET DATABASE command [13.8.5](managing-recovery-catalog.md)
+- incarnations
+	- database [11.2.6](reporting-rman-operations.md), [14.3.2](rman-data-repair-concepts.md), [18.8.2](rman-performing-flashback-dbpitr.md)
+- INCLUDE CURRENT CONTROLFILE option
+	- BACKUP command [9.3.8.1](backing-up-database.md)
+- incomplete media recovery [30.4](user-managed-flashback-dbpitr.md)
+- incomplete recovery
+	- defined [18.5](rman-performing-flashback-dbpitr.md)
+		- in Oracle Real Application Clusters configuration [30.2.2.2](user-managed-flashback-dbpitr.md)
+		- overview [14.3](rman-data-repair-concepts.md)
+		- time-based [30.4.2](user-managed-flashback-dbpitr.md)
+		- with backup control file [30.2.2.2](user-managed-flashback-dbpitr.md)
+- inconsistent backups [8.1.2](rman-backup-concepts.md)
+	- using RMAN [2.4.2](getting-started-rman.md), [8.1.1](rman-backup-concepts.md)
+- inconsistent tablespaces
+	- transporting across platforms [28.8.2](rman-transporting-data-across-platforms.md)
+- incremental backups [2.4.4](getting-started-rman.md), [9.7](backing-up-database.md)
+	- block change tracking [9.7.6](backing-up-database.md)
+		- differential [8.9.1.1](rman-backup-concepts.md)
+		- how RMAN applies [14.3.1](rman-data-repair-concepts.md)
+		- making [9.7](backing-up-database.md)
+		- multisection incremental backups [9.2.6](backing-up-database.md)
+		- using RMAN [10.4.1](backing-up-database-advanced.md), [10.4.2](backing-up-database-advanced.md)
+- initialization parameter file [14.3](rman-data-repair-concepts.md)
+- initialization parameters
+	- CONTROL\_FILES [20.3.1.1](rman-recovery-advanced.md), [31.1.2](user-managed-recovery-advanced.md)
+		- DB\_FILE\_NAME\_CONVERT [21.6.1.2](performing-rman-tspitr.md)
+		- DB\_NAME [21.6.1.2](performing-rman-tspitr.md)
+		- LOG\_ARCHIVE\_DEST\_n [30.2.3](user-managed-flashback-dbpitr.md)
+		- LOG\_ARCHIVE\_FORMAT [30.2.3](user-managed-flashback-dbpitr.md)
+		- LOG\_FILE\_NAME\_CONVERT [21.6.1.2](performing-rman-tspitr.md)
+- instance failures
+	- backup mode and [29.3.2.3](user-managed-database-backups.md)
+- instance recovery
+	- of CDBs [30.3.3](user-managed-flashback-dbpitr.md)
+- integrity checks [16.1.2](validating-database-files-backups.md)
+- interpreting RMAN error stacks [24.1.5](troubleshooting-rman-operations.md)
+- interrupting media recovery [30.2.6](user-managed-flashback-dbpitr.md)
+
+---
+
+## J
+
+- jobs, RMAN
+	- monitoring progress [23.3.1](tuning-rman-performance.md)
+		- querying details about [11.4.1](reporting-rman-operations.md)
+
+---
+
+## K
+
+- KEEP option
+	- BACKUP command [12.4.2.2](maintaining-rman-backups.md)
+
+---
+
+## L
+
+- level 0 incremental backups [2.4.4](getting-started-rman.md), [8.9.1](rman-backup-concepts.md), [8.9.2](rman-backup-concepts.md)
+- level 1 incremental backups [8.9.1.1](rman-backup-concepts.md), [8.9.1.2](rman-backup-concepts.md)
+- LIST command [2.5.1](getting-started-rman.md), [11.1.2](reporting-rman-operations.md), [11.2](reporting-rman-operations.md), [11.2.1](reporting-rman-operations.md)
+	- FAILURE option [15.3](diagnosing-repairing-failures-dra.md)
+		- INCARNATION option [13.8.5](managing-recovery-catalog.md)
+- listing
+	- dropped PDB backups [11.2.4](reporting-rman-operations.md)
+		- preplugin backups [11.2.5](reporting-rman-operations.md)
+- local undo, flashback PDB operations [18.1.4.3](rman-performing-flashback-dbpitr.md)
+- LOG\_ARCHIVE\_DEST\_n initialization parameter [5.9.3](configuring-rman-client-basic.md), [5.10.4](configuring-rman-client-basic.md), [17.2.5](rman-complete-database-recovery.md), [30.2.2](user-managed-flashback-dbpitr.md), [30.2.3](user-managed-flashback-dbpitr.md), [30.3.1](user-managed-flashback-dbpitr.md), [30.4.1](user-managed-flashback-dbpitr.md), [30.4.2](user-managed-flashback-dbpitr.md)
+- LOG\_ARCHIVE\_FORMAT initialization parameter [30.2.3](user-managed-flashback-dbpitr.md)
+- LOG\_FILE\_NAME\_CONVERT initialization parameter [21.6.1.2](performing-rman-tspitr.md)
+- logical backups [1.1.1](introduction-backup-recovery.md)
+- logical block corruption [16.1.2.2](validating-database-files-backups.md)
+- log sequence numbers [30.2.1](user-managed-flashback-dbpitr.md)
+- LOGSOURCE variable
+	- SET statement [30.2.4.2](user-managed-flashback-dbpitr.md), [30.3.1](user-managed-flashback-dbpitr.md), [30.3.2](user-managed-flashback-dbpitr.md)
+- long waits [23.3.2.2](tuning-rman-performance.md)
+- loss of
+	- inactive log group [31.7.2.1](user-managed-recovery-advanced.md)
+- lost write protection
+	- enabling [6.7](configuring-rman-client-advanced.md)
+- lost writes, detecting [6.6](configuring-rman-client-advanced.md)
+
+---
+
+## M
+
+- maintenance commands, RMAN [2.6](getting-started-rman.md), [12.1.2](maintaining-rman-backups.md)
+	- Data Guard environment [12.1.2.2](maintaining-rman-backups.md)
+- managing RMAN metadata [11](reporting-rman-operations.md), [12](maintaining-rman-backups.md)
+- MAXPIECESIZE parameter
+	- SET command [5.7.5.1](configuring-rman-client-basic.md)
+- MAXSETSIZE parameter
+	- BACKUP command [6.2.1](configuring-rman-client-advanced.md), [10.1](backing-up-database-advanced.md)
+		- CONFIGURE command [6.2.1](configuring-rman-client-advanced.md)
+- media failures [1.1.2](introduction-backup-recovery.md)
+	- archived redo log file loss [30.4](user-managed-flashback-dbpitr.md)
+		- complete recovery [30.3](user-managed-flashback-dbpitr.md)
+		- complete recovery, user-managed [30.3](user-managed-flashback-dbpitr.md)
+		- control file loss [31.3](user-managed-recovery-advanced.md)
+		- datafile loss [30.2.1](user-managed-flashback-dbpitr.md)
+		- definition [1.1.2](introduction-backup-recovery.md)
+		- NOARCHIVELOG mode [30.5](user-managed-flashback-dbpitr.md)
+		- online redo log group loss [31.7.2](user-managed-recovery-advanced.md)
+		- recovery [30.3](user-managed-flashback-dbpitr.md)
+		- recovery procedures
+		- examples [30.2.1](user-managed-flashback-dbpitr.md)
+- Media Management Layer (MML) API [3.5](rman-architecture.md), [6.2.2](configuring-rman-client-advanced.md)
+- media managers [3.1](rman-architecture.md), [3.3.1](rman-architecture.md), [3.5](rman-architecture.md), [3.5.2](rman-architecture.md)
+	- backing up files [3.5.1](rman-architecture.md)
+		- backup piece names [5.7.5.1](configuring-rman-client-basic.md)
+		- Backup Solutions Program [3.5.3](rman-architecture.md)
+		- catalog [3.1](rman-architecture.md)
+		- configuring for use with RMAN [5.7.3](configuring-rman-client-basic.md)
+		- crosschecking [12.4.1.1](maintaining-rman-backups.md)
+		- definition [2.1](getting-started-rman.md)
+		- error codes [24.1.4.2](troubleshooting-rman-operations.md)
+		- file restrictions [5.7.5.1](configuring-rman-client-basic.md)
+		- installing [5.7.1](configuring-rman-client-basic.md)
+		- library location [5.7.2](configuring-rman-client-basic.md)
+		- linking
+		- testing [5.7.4](configuring-rman-client-basic.md)
+		- linking to software [3.5.2](rman-architecture.md), [5.7.2](configuring-rman-client-basic.md)
+		- multiplexing backups [8.3.9](rman-backup-concepts.md)
+		- prerequisites for configuring [5.7.1](configuring-rman-client-basic.md)
+		- sbttest program [24.3.1](troubleshooting-rman-operations.md)
+		- testing [5.7.4.1](configuring-rman-client-basic.md), [5.7.4.2](configuring-rman-client-basic.md)
+		- testing backups [5.7.4.2](configuring-rman-client-basic.md)
+		- testing the API [24.3](troubleshooting-rman-operations.md)
+		- third-party [5.7](configuring-rman-client-basic.md)
+		- troubleshooting [5.7.4.2](configuring-rman-client-basic.md)
+- media recovery [8.9.4](rman-backup-concepts.md)
+	- ADD DATAFILE operation [31.2.3](user-managed-recovery-advanced.md)
+		- after control file damage [31.1.1](user-managed-recovery-advanced.md), [31.1.2](user-managed-recovery-advanced.md)
+		- applying archived redo logs [30.2.1](user-managed-flashback-dbpitr.md)
+		- cancel-based [30.4](user-managed-flashback-dbpitr.md), [30.4.2](user-managed-flashback-dbpitr.md)
+		- complete [30.3](user-managed-flashback-dbpitr.md)
+		- closed database [30.3.1](user-managed-flashback-dbpitr.md)
+		- complete, user-managed [30.3](user-managed-flashback-dbpitr.md)
+		- corruption
+		- allowing to occur [30.6.4](user-managed-flashback-dbpitr.md)
+		- errors [30.6.1](user-managed-flashback-dbpitr.md)
+		- incomplete [30.4](user-managed-flashback-dbpitr.md)
+		- interrupting [30.2.6](user-managed-flashback-dbpitr.md)
+		- lost files
+		- lost archived redo log files [30.4](user-managed-flashback-dbpitr.md)
+				- lost data files [30.2.1](user-managed-flashback-dbpitr.md)
+				- lost mirrored control files [31.1](user-managed-recovery-advanced.md)
+		- NOARCHIVELOG mode [30.5](user-managed-flashback-dbpitr.md)
+		- offline tablespaces in open database [30.3.2](user-managed-flashback-dbpitr.md)
+		- online redo log files [31.7](user-managed-recovery-advanced.md)
+		- parallel [30.2.7](user-managed-flashback-dbpitr.md)
+		- problems [30.6.1](user-managed-flashback-dbpitr.md), [30.6.2](user-managed-flashback-dbpitr.md), [30.6.3](user-managed-flashback-dbpitr.md)
+		- restarting [30.2.6](user-managed-flashback-dbpitr.md)
+		- restoring
+		- whole database backups [30.5](user-managed-flashback-dbpitr.md)
+		- resuming after interruption [30.2.6](user-managed-flashback-dbpitr.md)
+		- roll forward phase [30.2.1](user-managed-flashback-dbpitr.md)
+		- scenarios [31](user-managed-recovery-advanced.md)
+		- time-based [30.4](user-managed-flashback-dbpitr.md)
+		- transportable tablespaces [31.6](user-managed-recovery-advanced.md)
+		- trial [30.6.6](user-managed-flashback-dbpitr.md), [30.6.6.1](user-managed-flashback-dbpitr.md)
+		- troubleshooting [30.6.1](user-managed-flashback-dbpitr.md)
+		- user-managed [30](user-managed-flashback-dbpitr.md)
+		- using Recovery Manager [14.3](rman-data-repair-concepts.md)
+- metadata, RMAN [3.4](rman-architecture.md), [11](reporting-rman-operations.md), [12](maintaining-rman-backups.md), [13](managing-recovery-catalog.md)
+- mirrored files
+	- backups using [10.5](backing-up-database-advanced.md)
+		- splitting [29.6.1](user-managed-database-backups.md)
+		- suspend/resume mode [29.6.1](user-managed-database-backups.md)
+				- using RMAN [10.5](backing-up-database-advanced.md)
+- monitoring fast recovery area usage [12.3.2](maintaining-rman-backups.md)
+- monitoring RMAN [24.2](troubleshooting-rman-operations.md)
+- MTTR [15.1.1](diagnosing-repairing-failures-dra.md)
+- multiplexed backup sets [6.2.1](configuring-rman-client-advanced.md), [8.3.9](rman-backup-concepts.md), [9.2.4.2](backing-up-database.md), [23.2.1.1](tuning-rman-performance.md)
+- multiplexed control files [5.9](configuring-rman-client-basic.md), [5.10.1](configuring-rman-client-basic.md), [12.2.3](maintaining-rman-backups.md), [17.2.1.1](rman-complete-database-recovery.md), [29.1.1](user-managed-database-backups.md), [30.2.1](user-managed-flashback-dbpitr.md), [31.1.1](user-managed-recovery-advanced.md)
+- multisection backups [3.3.2](rman-architecture.md), [8.3.1](rman-backup-concepts.md), [8.3.7](rman-backup-concepts.md), [8.3.9](rman-backup-concepts.md), [10.1.3](backing-up-database-advanced.md), [16.2](validating-database-files-backups.md)
+	- views [9.2.6](backing-up-database.md)
+- multisection incremental backups [9.2.6](backing-up-database.md)
+	- example [9.2.6](backing-up-database.md)
+- multitenant container databases [4.2](starting-interacting-with-rman-client.md)
+
+---
+
+## N
+
+- naming
+	- duplicate database files [26.1.1.1](rman-duplicating-databases-advanced.md)
+- naming backup sets [8.3.6](rman-backup-concepts.md)
+- NLS\_DATE\_FORMAT environment variable [4.5](starting-interacting-with-rman-client.md)
+- NLS\_LANG environment variable [4.5](starting-interacting-with-rman-client.md)
+- NOARCHIVELOG mode
+	- backing up [9.3.10](backing-up-database.md)
+		- disadvantages [30.5](user-managed-flashback-dbpitr.md)
+		- recovery [30.5](user-managed-flashback-dbpitr.md)
+- non-CDBs
+	- preplugin backups [9.3.11](backing-up-database.md)
+
+---
+
+## O
+
+- obsolete backups [8.10](rman-backup-concepts.md)
+	- definition [8.10](rman-backup-concepts.md)
+		- deleting [2.6.2](getting-started-rman.md), [8.10.3](rman-backup-concepts.md), [12.5.5](maintaining-rman-backups.md)
+- off-site backups [17.2.3.1](rman-complete-database-recovery.md)
+- online redo logs [31.7.2.1](user-managed-recovery-advanced.md)
+	- active group [31.7.1](user-managed-recovery-advanced.md), [31.7.2](user-managed-recovery-advanced.md)
+		- applying during media recovery [30.2.1](user-managed-flashback-dbpitr.md)
+		- archived group [31.7.1](user-managed-recovery-advanced.md), [31.7.2](user-managed-recovery-advanced.md)
+		- clearing
+		- failure [31.7.2.1.3](user-managed-recovery-advanced.md)
+		- clearing inactive logs
+		- archived [31.7.2.1.1](user-managed-recovery-advanced.md)
+				- unarchived [31.7.2.1.2](user-managed-recovery-advanced.md)
+		- configuring location [5.9](configuring-rman-client-basic.md)
+		- current group [31.7.1](user-managed-recovery-advanced.md), [31.7.2](user-managed-recovery-advanced.md)
+		- inactive group [31.7.1](user-managed-recovery-advanced.md), [31.7.2](user-managed-recovery-advanced.md)
+		- loss of [31.7.2.1](user-managed-recovery-advanced.md)
+		- active group [31.7.2.2.1](user-managed-recovery-advanced.md)
+				- all members [31.7.2](user-managed-recovery-advanced.md)
+				- group [31.7.2](user-managed-recovery-advanced.md)
+				- recovery [31.7](user-managed-recovery-advanced.md)
+		- loss of group [31.7.2.2.1](user-managed-recovery-advanced.md)
+		- multiple group loss [31.7.2.3](user-managed-recovery-advanced.md)
+		- replacing damaged member [31.7.1](user-managed-recovery-advanced.md)
+		- status of members [31.7.1](user-managed-recovery-advanced.md), [31.7.2](user-managed-recovery-advanced.md)
+- OPEN RESETLOGS clause
+	- ALTER DATABASE statement [13.8.5](managing-recovery-catalog.md), [14.3.2.1](rman-data-repair-concepts.md), [18.8.1](rman-performing-flashback-dbpitr.md)
+- ORA-01578 error message [31.5](user-managed-recovery-advanced.md)
+- Oracle Advanced Compression option [6.2.5.2.2](configuring-rman-client-advanced.md)
+- Oracle Backup Solutions Program (BSP) [3.5.3](rman-architecture.md)
+- Oracle Cloud
+	- duplicating to [25.5](rman-duplicating-databases.md)
+- Oracle Data Pump [1.1.1](introduction-backup-recovery.md)
+- Oracle Enterprise Manager Cloud Control
+	- about [1.6.1](introduction-backup-recovery.md)
+		- accessing the Database Home page [1.6.2](introduction-backup-recovery.md)
+- Oracle Flashback Database [1.4.2](introduction-backup-recovery.md)
+- Oracle Flashback Drop [1.4.1](introduction-backup-recovery.md)
+- Oracle Flashback Query [1.4.1](introduction-backup-recovery.md)
+- Oracle Flashback Table [1.4.1](introduction-backup-recovery.md)
+- Oracle Flashback Transaction [1.4.1](introduction-backup-recovery.md)
+- Oracle Flashback Transaction Query [1.4.1](introduction-backup-recovery.md)
+- Oracle Flashback Version Query [1.4.1](introduction-backup-recovery.md)
+- Oracle keystore [6.2.6.1.1](configuring-rman-client-advanced.md)
+- Oracle Managed Files
+	- fast recovery [5.10.1.1](configuring-rman-client-basic.md)
+- Oracle Real Application Clusters (Oracle RAC)
+	- RMAN channels and [6.1.2](configuring-rman-client-advanced.md)
+- Oracle Secure Backup [3.5.2](rman-architecture.md), [5.7](configuring-rman-client-basic.md)
+- Oracle software keystore
+	- and backups [6.2.6.1.1](configuring-rman-client-advanced.md)
+- Oracle VSS writer [5.10.1](configuring-rman-client-basic.md)
+- orphaned backups [14.3.2.4](rman-data-repair-concepts.md)
+
+---
+
+## P
+
+- packages
+	- DBMS\_PIPE [4.8](starting-interacting-with-rman-client.md)
+- password backup encryption [6.2.6.1.2](configuring-rman-client-advanced.md)
+- password-mode encryption [10.6.3](backing-up-database-advanced.md)
+- passwords
+	- connecting to RMAN [4.2.8](starting-interacting-with-rman-client.md)
+- PDB restore points [7.1.6.2](using-flasback-database-restore-points.md)
+- PDB restore points, creating [7.4.2](using-flasback-database-restore-points.md)
+- PDB restore points, namespace [7.1.6.3](using-flasback-database-restore-points.md)
+- PDB restore points, viewing [7.4.4](using-flasback-database-restore-points.md)
+- PDBs [4.2](starting-interacting-with-rman-client.md)
+	- about backup and recovery of [4.2.4](starting-interacting-with-rman-client.md)
+		- about duplicating [25.4.3.1](rman-duplicating-databases.md)
+		- backing up, using Oracle Enterprise Manager Cloud Control [9.3.5](backing-up-database.md)
+		- backing up, using RMAN [9.3.4](backing-up-database.md)
+		- complete recovery
+		- data files [17.3.7](rman-complete-database-recovery.md)
+				- tablespaces [17.3.7](rman-complete-database-recovery.md)
+				- using RMAN [17.3.5](rman-complete-database-recovery.md)
+		- complete restore [17.3](rman-complete-database-recovery.md)
+		- connecting to [4.2](starting-interacting-with-rman-client.md)
+		- orphaned backups [14.3.2.5](rman-data-repair-concepts.md)
+		- performing point-in-time recovery [18.5.3](rman-performing-flashback-dbpitr.md)
+		- preplugin backups [9.3.12](backing-up-database.md)
+		- recovering table partitions [22.4](rman-recovering-tables-partitions.md)
+		- recovering tables [22.4](rman-recovering-tables-partitions.md)
+		- restrictions when connected to [4.2.6.1](starting-interacting-with-rman-client.md)
+		- transporting across platforms [28.7.1](rman-transporting-data-across-platforms.md)
+		- user-managed backups [29.2](user-managed-database-backups.md)
+		- validating [16.2.1](validating-database-files-backups.md)
+- PDBs, clean PDB restore point [7.1.6.2](using-flasback-database-restore-points.md)
+- PDBs, flashback database and PITR [18.1.2.1](rman-performing-flashback-dbpitr.md)
+- PDBs, flashback database operation [18.4.3](rman-performing-flashback-dbpitr.md)
+- PDBs, restore points [7.1.6.2](using-flasback-database-restore-points.md)
+- PDBs, rewinding [18.4.3](rman-performing-flashback-dbpitr.md)
+- performance tuning
+	- short waits
+		- definition of [23.3.2.2](tuning-rman-performance.md)
+- performance tuning, RMAN
+	- backup performance [23.4](tuning-rman-performance.md)
+		- long waits [23.3.2.2](tuning-rman-performance.md)
+- physical backups [1.1.1](introduction-backup-recovery.md)
+- physical block corruption [16.1.2.2](validating-database-files-backups.md)
+- pipe interface, RMAN [4.8](starting-interacting-with-rman-client.md)
+- PITR, for PDBs [18.1.2.1](rman-performing-flashback-dbpitr.md)
+- pluggable databases [4.2](starting-interacting-with-rman-client.md)
+- point-in-time recovery [18.1.2](rman-performing-flashback-dbpitr.md), [30.4](user-managed-flashback-dbpitr.md)
+	- application PDBs [18.6](rman-performing-flashback-dbpitr.md)
+		- of CDBs [18.5.2](rman-performing-flashback-dbpitr.md)
+		- of PDBs [18.5.3](rman-performing-flashback-dbpitr.md)
+- point of recoverability
+	- recovery window [8.10.1](rman-backup-concepts.md)
+- preplugin backups
+	- about [8.6](rman-backup-concepts.md)
+		- example [9.3.12.1](backing-up-database.md)
+		- non-CDB [9.3.11](backing-up-database.md)
+		- PDBs [9.3.12](backing-up-database.md)
+- previewing backups [17.2.3](rman-complete-database-recovery.md)
+- PREVIEW option, RESTORE command [11.1.2](reporting-rman-operations.md)
+- PRINT SCRIPT command [13.7.6](managing-recovery-catalog.md)
+- proxy copies [3.5.1](rman-architecture.md), [8.3.10](rman-backup-concepts.md)
+- PROXY option
+	- BACKUP command [8.3.10](rman-backup-concepts.md)
+
+---
+
+## Q
+
+- QUIT command [2.2](getting-started-rman.md)
+- quitting RMAN [2.2](getting-started-rman.md)
+
+---
+
+## R
+
+- raw devices
+	- backing up to [29.7](user-managed-database-backups.md)
+		- UNIX backups [29.7.1](user-managed-database-backups.md)
+		- Windows backups [29.7.2](user-managed-database-backups.md)
+- RC\_ARCHIVED\_LOG view [11.5.1.1](reporting-rman-operations.md)
+- RC\_BACKUP\_FILES view [11.5.3](reporting-rman-operations.md)
+- RC\_BACKUP\_PIECE view [11.5.1](reporting-rman-operations.md)
+- RC\_BACKUP\_SET view [12.5.1](maintaining-rman-backups.md)
+- read-only tablespaces
+	- backups [29.3.2.4](user-managed-database-backups.md)
+		- transporting across platforms
+		- using backup sets [28.8.1](rman-transporting-data-across-platforms.md)
+				- using image copies [28.3](rman-transporting-data-across-platforms.md)
+- RECOVER clause
+	- ALTER DATABASE statement [30.2.4.2](user-managed-flashback-dbpitr.md), [30.3.1](user-managed-flashback-dbpitr.md), [30.3.2](user-managed-flashback-dbpitr.md)
+- RECOVER command [14.3](rman-data-repair-concepts.md)
+	- COPY option [9.7.4](backing-up-database.md)
+		- FOREIGN DATAFILECOPY clause [28.8.2.3.3](rman-transporting-data-across-platforms.md), [28.8.2.4](rman-transporting-data-across-platforms.md)
+		- PARALLEL and NOPARALLEL options [30.2.7](user-managed-flashback-dbpitr.md)
+		- TEST option [16.4](validating-database-files-backups.md)
+		- unrecoverable objects and standby databases [31.5](user-managed-recovery-advanced.md)
+		- UNTIL TIME option [30.4.2](user-managed-flashback-dbpitr.md)
+		- USING BACKUP CONTROLFILE clause [31.2.4](user-managed-recovery-advanced.md)
+- recovering
+	- dropped PDBs [18.5.5](rman-performing-flashback-dbpitr.md)
+		- table partitions in PDBs [22.4](rman-recovering-tables-partitions.md)
+		- tables in PDBs [22.4](rman-recovering-tables-partitions.md)
+- recovering database file
+	- over the network [20.7.2](rman-recovery-advanced.md)
+- recovering database files
+	- over the network, example [20.7.5](rman-recovery-advanced.md)
+		- using physical standby [20.7.2](rman-recovery-advanced.md)
+- recovering files over the network
+	- scenarios [20.7.3](rman-recovery-advanced.md)
+- recovering table partitions
+	- example [22.5.2](rman-recovering-tables-partitions.md)
+		- limitations [22.1.4](rman-recovering-tables-partitions.md)
+		- overview [22.1](rman-recovering-tables-partitions.md)
+		- prerequisites [22.2.1](rman-recovering-tables-partitions.md)
+		- steps [22.3](rman-recovering-tables-partitions.md)
+- recovering tables
+	- example [22.5.1](rman-recovering-tables-partitions.md)
+		- limitations [22.1.4](rman-recovering-tables-partitions.md)
+		- new schema [22.1.3.5](rman-recovering-tables-partitions.md)
+		- overview [22.1](rman-recovering-tables-partitions.md)
+		- prerequisites [22.2.1](rman-recovering-tables-partitions.md)
+		- steps [22.3](rman-recovering-tables-partitions.md)
+- recovery
+	- ADD DATAFILE operation [31.2.3](user-managed-recovery-advanced.md)
+		- automatically applying archived logs [30.2.2](user-managed-flashback-dbpitr.md)
+		- cancel-based [30.4.2](user-managed-flashback-dbpitr.md)
+		- complete [17.1](rman-complete-database-recovery.md), [30.3](user-managed-flashback-dbpitr.md)
+		- CDBs [17.3.2](rman-complete-database-recovery.md)
+				- CDBs using Oracle Enterprise Manager Cloud Control [17.3.6](rman-complete-database-recovery.md)
+				- closed database [30.3.1](user-managed-flashback-dbpitr.md)
+				- data files in PDBs [17.3.7](rman-complete-database-recovery.md)
+				- offline tablespaces [30.3.2](user-managed-flashback-dbpitr.md)
+				- PDBs [17.3.5](rman-complete-database-recovery.md)
+				- root [17.3.3](rman-complete-database-recovery.md)
+				- tablespaces in PDBs [17.3.7](rman-complete-database-recovery.md)
+				- tablespaces in PDBs using Cloud Control [17.3.8](rman-complete-database-recovery.md)
+		- corruption
+		- intentionally allowing [30.6.4](user-managed-flashback-dbpitr.md)
+		- database
+		- complete [17](rman-complete-database-recovery.md)
+				- in NOARCHIVELOG mode [20.1](rman-recovery-advanced.md)
+		- database, point-in-time [18](rman-performing-flashback-dbpitr.md), [18.5](rman-performing-flashback-dbpitr.md)
+		- database files
+		- how RMAN applies changes [14.3.1](rman-data-repair-concepts.md)
+				- overview [14.3](rman-data-repair-concepts.md)
+		- data files [30.2.1](user-managed-flashback-dbpitr.md)
+		- disaster using RMAN [20.4](rman-recovery-advanced.md)
+		- dropped table [31.8](user-managed-recovery-advanced.md)
+		- errors [30.6.1](user-managed-flashback-dbpitr.md)
+		- failures requiring [1.1.2](introduction-backup-recovery.md)
+		- interrupting [30.2.6](user-managed-flashback-dbpitr.md)
+		- media [30.6](user-managed-flashback-dbpitr.md), [31](user-managed-recovery-advanced.md)
+		- multiple redo threads [30.2.2.2](user-managed-flashback-dbpitr.md)
+		- of lost or damaged recovery catalog [13.6.2](managing-recovery-catalog.md)
+		- online redo logs [31.7](user-managed-recovery-advanced.md)
+		- loss of group [31.7.2](user-managed-recovery-advanced.md)
+		- parallel [30.2.7](user-managed-flashback-dbpitr.md)
+		- preparing for [17.2.1.2](rman-complete-database-recovery.md)
+		- problems [30.6.1](user-managed-flashback-dbpitr.md)
+		- fixing [30.6.3](user-managed-flashback-dbpitr.md)
+				- investigating [30.6.2](user-managed-flashback-dbpitr.md)
+		- stuck [30.6.1](user-managed-flashback-dbpitr.md)
+		- third-party snapshots
+		- example [30.2.5](user-managed-flashback-dbpitr.md)
+		- time-based [30.4.2](user-managed-flashback-dbpitr.md)
+		- transportable tablespaces [31.6](user-managed-recovery-advanced.md)
+		- trial [30.6.6](user-managed-flashback-dbpitr.md)
+		- explanation [30.6.6.1](user-managed-flashback-dbpitr.md)
+				- overview [30.6.6](user-managed-flashback-dbpitr.md)
+		- troubleshooting [30.6.1](user-managed-flashback-dbpitr.md)
+		- user errors [31.8](user-managed-recovery-advanced.md)
+		- user-managed [30.6](user-managed-flashback-dbpitr.md), [31](user-managed-recovery-advanced.md)
+		- using backup control file [20.3.1](rman-recovery-advanced.md)
+		- without recovery catalog [20.3.2](rman-recovery-advanced.md)
+		- using logs in a nondefault location [30.2.4.1](user-managed-flashback-dbpitr.md)
+		- using logs in default location [30.2.3](user-managed-flashback-dbpitr.md)
+		- using logs in nondefault location [30.2.4.2](user-managed-flashback-dbpitr.md)
+		- using storage snapshots [30.2.5](user-managed-flashback-dbpitr.md)
+		- using third-party snapshots [30.2.5](user-managed-flashback-dbpitr.md)
+		- with Oracle Enterprise Manager Cloud Control [1.6.3](introduction-backup-recovery.md)
+		- without a recovery catalog [12.2.3](maintaining-rman-backups.md)
+- RECOVERY\_CATALOG\_OWNER role [13.5.3](managing-recovery-catalog.md)
+- Recovery Appliance
+	- backing up to [3.8.1](rman-architecture.md)
+- recovery catalog [3.4](rman-architecture.md), [13.1](managing-recovery-catalog.md)
+	- backing up [13.6.1](managing-recovery-catalog.md)
+		- cataloging backups [12.4.3](maintaining-rman-backups.md), [13.4](managing-recovery-catalog.md)
+		- centralization of metadata [13.1.2.2](managing-recovery-catalog.md)
+		- creating [13.2](managing-recovery-catalog.md)
+		- crosschecking [12.4.1.1](maintaining-rman-backups.md)
+		- DBID problems [13.1.2.1](managing-recovery-catalog.md)
+		- definition [2.1](getting-started-rman.md), [3.1](rman-architecture.md)
+		- deleting backups [12.5](maintaining-rman-backups.md)
+		- deleting records [12.5.3](maintaining-rman-backups.md)
+		- dropping [13.9](managing-recovery-catalog.md)
+		- log switch record [12.4.3](maintaining-rman-backups.md)
+		- managing size of [13.8.2.2.4](managing-recovery-catalog.md)
+		- operating with [3.4](rman-architecture.md)
+		- purpose of [13.1.1](managing-recovery-catalog.md)
+		- recovery of [13.6.2](managing-recovery-catalog.md)
+		- refreshing [13.8.2](managing-recovery-catalog.md)
+		- registering databases [13.1.2.1](managing-recovery-catalog.md), [13.3.1](managing-recovery-catalog.md), [13.3.2](managing-recovery-catalog.md)
+		- resynchronizing [13.8.2](managing-recovery-catalog.md), [13.8.2.1](managing-recovery-catalog.md)
+		- space requirements [13.2.1.2](managing-recovery-catalog.md)
+		- stored scripts [13.7.1](managing-recovery-catalog.md)
+		- creating [13.7.2](managing-recovery-catalog.md)
+		- synchronization [13.8.2.1](managing-recovery-catalog.md)
+		- unregistering databases [13.8.4](managing-recovery-catalog.md)
+		- updating
+		- after operating system deletions [12.4.4.2](maintaining-rman-backups.md)
+		- upgrading [13.8.6](managing-recovery-catalog.md), [13.8.6.1](managing-recovery-catalog.md)
+		- views, querying [11.5](reporting-rman-operations.md)
+		- virtual private catalogs [3.4](rman-architecture.md)
+- recovery catalogs
+	- backing up [13.6.1](managing-recovery-catalog.md)
+		- dropping [13.9](managing-recovery-catalog.md)
+		- importing [13.8.7](managing-recovery-catalog.md)
+		- moving [13.8.7.5](managing-recovery-catalog.md)
+- Recovery Manager
+	- allocating tape buffers [23.2.3.1.1](tuning-rman-performance.md)
+		- archived redo logs
+		- backups [9.6](backing-up-database.md)
+		- backups [9.1.2](backing-up-database.md)
+		- archived redo logs [9.6.1](backing-up-database.md)
+				- backing up [9.9.1](backing-up-database.md)
+				- batch deletion of obsolete [8.10.3](rman-backup-concepts.md)
+				- control files [9.3.8](backing-up-database.md)
+				- data file [9.3.6](backing-up-database.md), [9.9.2](backing-up-database.md), [9.9.3](backing-up-database.md)
+				- duplexed [8.7.1](rman-backup-concepts.md)
+				- image copy [8.4](rman-backup-concepts.md)
+				- incremental [9.7](backing-up-database.md), [10.4.1](backing-up-database-advanced.md), [10.4.2](backing-up-database-advanced.md)
+				- optimization [5.12.1](configuring-rman-client-basic.md), [9.6.3](backing-up-database.md)
+				- tablespace [9.9.2](backing-up-database.md), [9.9.3](backing-up-database.md)
+				- testing [16.1.2.4](validating-database-files-backups.md), [16.2](validating-database-files-backups.md), [16.3](validating-database-files-backups.md)
+				- validating [16.2](validating-database-files-backups.md), [16.3](validating-database-files-backups.md)
+				- whole database [9.3.1](backing-up-database.md)
+		- channels [3.3](rman-architecture.md)
+		- naming conventions [3.3.2](rman-architecture.md)
+		- client [2.1](getting-started-rman.md)
+		- connecting to databases [2.2](getting-started-rman.md)
+		- corrupt data file blocks
+		- handling I/O errors and [10.7.1](backing-up-database-advanced.md)
+		- crosschecking recovery catalog [12.4.1.1](maintaining-rman-backups.md)
+		- database character set [4.5](starting-interacting-with-rman-client.md)
+		- database connections [4.2.1](starting-interacting-with-rman-client.md)
+		- auxiliary database [4.2.7](starting-interacting-with-rman-client.md)
+				- duplicate database [4.2.7](starting-interacting-with-rman-client.md)
+				- hiding passwords [4.2.8](starting-interacting-with-rman-client.md)
+				- SYSBACKUP or SYSDBA required for target [4.2.2](starting-interacting-with-rman-client.md)
+				- without a catalog [4.2](starting-interacting-with-rman-client.md)
+		- DBMS\_PIPE package [4.8](starting-interacting-with-rman-client.md)
+		- definition [2.1](getting-started-rman.md)
+		- disconnecting from [2.2](getting-started-rman.md)
+		- error codes
+		- message numbers [24.1.4.1](troubleshooting-rman-operations.md)
+		- errors [24.1](troubleshooting-rman-operations.md), [24.1.4](troubleshooting-rman-operations.md)
+		- interpreting [24.1.5](troubleshooting-rman-operations.md)
+		- file deletion [12.5.1.1](maintaining-rman-backups.md)
+		- fractured block detection in [8.2](rman-backup-concepts.md)
+		- image copy backups [8.4](rman-backup-concepts.md)
+		- incremental backups
+		- cumulative [8.9.1.2](rman-backup-concepts.md)
+				- differential [8.9.1.1](rman-backup-concepts.md)
+				- level 0 [8.9.1](rman-backup-concepts.md)
+		- integrity checking [16.1.2](validating-database-files-backups.md)
+		- jobs, monitoring progress [23.3.1](tuning-rman-performance.md)
+		- jobs, querying details of [11.4.1](reporting-rman-operations.md)
+		- lists [11.2](reporting-rman-operations.md)
+		- maintenance commands [2.6](getting-started-rman.md)
+		- media management
+		- backing up files [3.5.1](rman-architecture.md)
+				- Backup Solutions Program (BSP) [3.5.3](rman-architecture.md)
+				- crosschecking [12.4.1.1](maintaining-rman-backups.md)
+				- media manager, linking with a [5.7.2](configuring-rman-client-basic.md)
+		- metadata [3.4](rman-architecture.md), [11](reporting-rman-operations.md), [12](maintaining-rman-backups.md), [13](managing-recovery-catalog.md)
+		- monitoring [24.2](troubleshooting-rman-operations.md)
+		- overview [2.1](getting-started-rman.md), [3.2](rman-architecture.md)
+		- performance
+		- monitoring [24.2](troubleshooting-rman-operations.md)
+		- pipe interface [4.8](starting-interacting-with-rman-client.md)
+		- proxy copy [3.5.1](rman-architecture.md)
+		- recovery
+		- after total media failure [20.4](rman-recovery-advanced.md)
+		- recovery catalog [13.1](managing-recovery-catalog.md)
+		- backing up [13.6.1](managing-recovery-catalog.md)
+				- crosschecking [12.4.1.1](maintaining-rman-backups.md)
+				- managing the size of [13.8.2.2.4](managing-recovery-catalog.md)
+				- operating with [3.4](rman-architecture.md)
+				- recovering [13.6.2](managing-recovery-catalog.md)
+				- registration of target databases [13.1.2.1](managing-recovery-catalog.md), [13.3.1](managing-recovery-catalog.md), [13.3.2](managing-recovery-catalog.md)
+				- resynchronizing [13.8.2](managing-recovery-catalog.md)
+				- synchronization [13.8.2.1](managing-recovery-catalog.md)
+				- upgrading [13.8.6.1](managing-recovery-catalog.md)
+		- reports [11.3.1](reporting-rman-operations.md)
+		- database schema [11.3.5](reporting-rman-operations.md)
+				- objects needing a backup [11.3.2](reporting-rman-operations.md)
+				- obsolete backups [11.3.4](reporting-rman-operations.md)
+		- repository [3.4](rman-architecture.md)
+		- restoring
+		- archived redo logs [17.2.5](rman-complete-database-recovery.md)
+		- retention policies
+		- configuring [5.11](configuring-rman-client-basic.md)
+		- return codes [24.1.6](troubleshooting-rman-operations.md)
+		- setting time parameters [4.5](starting-interacting-with-rman-client.md)
+		- snapshot control file location [6.4](configuring-rman-client-advanced.md)
+		- starting [2.2](getting-started-rman.md)
+		- synchronous and asynchronous I/O [23.2.1.2](tuning-rman-performance.md), [23.2.1.3](tuning-rman-performance.md), [23.2.3.1.3](tuning-rman-performance.md)
+		- terminating commands [24.4](troubleshooting-rman-operations.md)
+		- test disk API [5.7.4](configuring-rman-client-basic.md)
+		- types of backups [8.4](rman-backup-concepts.md)
+		- using RMAN commands [3.2](rman-architecture.md)
+- recovery window [5.11](configuring-rman-client-basic.md)
+	- point of recoverability [8.10.1](rman-backup-concepts.md)
+- RECOVERY WINDOW parameter
+	- CONFIGURE command [5.11.2](configuring-rman-client-basic.md)
+- recovery windows
+	- configuring for retention policy [5.11.2](configuring-rman-client-basic.md)
+		- definition [8.10.1](rman-backup-concepts.md)
+- recycle bin [18.1.4.2](rman-performing-flashback-dbpitr.md), [18.3.2](rman-performing-flashback-dbpitr.md)
+	- restoring objects from [18.3.3](rman-performing-flashback-dbpitr.md)
+- redo logs
+	- incompatible format [30.6.1](user-managed-flashback-dbpitr.md)
+		- naming [30.2.3](user-managed-flashback-dbpitr.md)
+		- parallel redo [30.6.1](user-managed-flashback-dbpitr.md)
+- redo records
+	- problems when applying [30.6.1](user-managed-flashback-dbpitr.md)
+- REGISTER command [13.3.2](managing-recovery-catalog.md)
+- REPAIR FAILURE command [15.6.1](diagnosing-repairing-failures-dra.md), [15.7](diagnosing-repairing-failures-dra.md)
+- repair options, Data Recovery Advisor [15.5](diagnosing-repairing-failures-dra.md)
+- repairs, Data Recovery Advisor [15.1.2.1](diagnosing-repairing-failures-dra.md)
+	- consolidation of [15.1.2.4.1](diagnosing-repairing-failures-dra.md)
+		- manual and automatic [15.1.2.4](diagnosing-repairing-failures-dra.md)
+- REPLACE SCRIPT command [13.7.3](managing-recovery-catalog.md)
+- REPORT command [2.5.2](getting-started-rman.md), [11.1.2](reporting-rman-operations.md), [11.3.1](reporting-rman-operations.md)
+	- NEED BACKUP option [11.3.2](reporting-rman-operations.md)
+		- OBSOLETE option [8.10.3](rman-backup-concepts.md)
+- reports, RMAN [2.5](getting-started-rman.md), [11.1.2](reporting-rman-operations.md), [11.3.1](reporting-rman-operations.md)
+	- backup jobs [11.4.1](reporting-rman-operations.md)
+		- database schema [11.3.5](reporting-rman-operations.md)
+		- files needing backups [11.3.2](reporting-rman-operations.md)
+		- obsolete backups [11.3.4](reporting-rman-operations.md)
+		- unrecoverable backups [11.3.4](reporting-rman-operations.md)
+- repository, RMAN [3.4](rman-architecture.md)
+- RESET DATABASE command
+	- INCARNATION option [13.8.5](managing-recovery-catalog.md)
+- RESETLOGS operation
+	- when necessary [14.3.2.1](rman-data-repair-concepts.md)
+- RESETLOGS option
+	- of ALTER DATABASE [30.5](user-managed-flashback-dbpitr.md)
+- restartable backups [10.7.1](backing-up-database-advanced.md)
+- RESTORE command [14.2](rman-data-repair-concepts.md), [17.2.1.2](rman-complete-database-recovery.md)
+	- ALL FOREIGN DATAFILES clause [28.6.4.4](rman-transporting-data-across-platforms.md)
+		- BACKUPSET clause [28.6.4.3](rman-transporting-data-across-platforms.md)
+		- DATAPUMP DESTINATION clause [28.8.2.3.3](rman-transporting-data-across-platforms.md), [28.8.2.4](rman-transporting-data-across-platforms.md)
+		- DUMPFILE clause [28.6.4.3](rman-transporting-data-across-platforms.md), [28.8.2.3.3](rman-transporting-data-across-platforms.md), [28.8.2.4](rman-transporting-data-across-platforms.md)
+		- FORCE option [14.2.5](rman-data-repair-concepts.md)
+		- FOREIGN DATABASE clause [28.6.4.4](rman-transporting-data-across-platforms.md), [28.7.2](rman-transporting-data-across-platforms.md)
+		- FOREIGN DATAFILE clause [28.6.4.4](rman-transporting-data-across-platforms.md), [28.8.2.4](rman-transporting-data-across-platforms.md)
+		- FOREIGN TABLESPACE clause [28.6.4.4](rman-transporting-data-across-platforms.md)
+		- FROM BACKUPSET clause [28.8.2.3.3](rman-transporting-data-across-platforms.md)
+		- FROM PLATFORM parameter [28.6.4.3](rman-transporting-data-across-platforms.md)
+		- FROM SERVICE parameter [20.7.4](rman-recovery-advanced.md)
+		- PREVIEW option [11.1.2](reporting-rman-operations.md), [17.2.3](rman-complete-database-recovery.md)
+		- VALIDATE HEADER option [11.1.2](reporting-rman-operations.md), [17.2.3](rman-complete-database-recovery.md)
+- restore optimization [14.2.5](rman-data-repair-concepts.md)
+- restore points [1.4.2](introduction-backup-recovery.md), [2.8](getting-started-rman.md)
+	- dropping [7.4.5](using-flasback-database-restore-points.md)
+		- flashing back to [18.8.2](rman-performing-flashback-dbpitr.md)
+		- guaranteed [1.4.2](introduction-backup-recovery.md), [7.1.5](using-flasback-database-restore-points.md)
+		- compared to storage snapshots [7.1.5.1](using-flasback-database-restore-points.md)
+		- listing [7.4.3](using-flasback-database-restore-points.md)
+		- multitenant environment [7.1.6](using-flasback-database-restore-points.md)
+		- requirements [7.3](using-flasback-database-restore-points.md)
+- restore points, creating in CDBs [7.4.1](using-flasback-database-restore-points.md)
+- restore points, creating in PDBs [7.4.2](using-flasback-database-restore-points.md)
+- restore points, in CDBs [7.1.6.1](using-flasback-database-restore-points.md)
+- restore validation [17.2.4](rman-complete-database-recovery.md)
+- restoring
+	- control files [20.3.1.1](rman-recovery-advanced.md)
+		- to default location [31.1.1](user-managed-recovery-advanced.md)
+				- to nondefault location [31.1.2](user-managed-recovery-advanced.md)
+		- database
+		- to default location [30.5](user-managed-flashback-dbpitr.md)
+		- database files [14.2](rman-data-repair-concepts.md), [14.2.1](rman-data-repair-concepts.md), [14.2.5](rman-data-repair-concepts.md)
+		- encrypted backups [14.2.3](rman-data-repair-concepts.md)
+		- server parameter files [20.2](rman-recovery-advanced.md)
+		- testing [16.4](validating-database-files-backups.md), [17.2.4](rman-complete-database-recovery.md)
+		- user-managed backups [30.2.1](user-managed-flashback-dbpitr.md)
+- restoring database file
+	- over the network [20.7.1](rman-recovery-advanced.md)
+- restoring database files
+	- over the network, example [20.7.4](rman-recovery-advanced.md)
+- restoring files over the network
+	- scenarios [20.7.3](rman-recovery-advanced.md)
+- restrictions
+	- PDBs [4.2.6.1](starting-interacting-with-rman-client.md)
+- RESUME clause
+	- ALTER SYSTEM statement [29.6.2](user-managed-database-backups.md)
+- resuming recovery after interruption [30.2.6](user-managed-flashback-dbpitr.md)
+- RESYNC CATALOG command [13.8.2](managing-recovery-catalog.md), [13.8.2.3](managing-recovery-catalog.md)
+	- FROM CONTROLFILECOPY option [13.6.2](managing-recovery-catalog.md)
+- resynchronizing the recovery catalog [13.8.2](managing-recovery-catalog.md), [13.8.2.3](managing-recovery-catalog.md)
+	- SET command
+		- DBID option [3.7.1](rman-architecture.md)
+- return codes
+	- RMAN [24.1.6](troubleshooting-rman-operations.md)
+- REVOKE command [13.5.5](managing-recovery-catalog.md)
+- rewinding
+	- CDBs [18.4.2](rman-performing-flashback-dbpitr.md)
+- RMAN repository [1.2](introduction-backup-recovery.md), [2.1](getting-started-rman.md)
+- RMAN sessions [2.7.2](getting-started-rman.md), [3.3](rman-architecture.md)
+- root
+	- backing up
+		- using Oracle Enterprise Manager Cloud Control [9.3.3](backing-up-database.md)
+				- using RMAN [9.3.2](backing-up-database.md)
+		- complete recovery [17.3.3](rman-complete-database-recovery.md)
+		- complete restore [17.3](rman-complete-database-recovery.md)
+
+---
+
+## S
+
+- SBT [3.3.1](rman-architecture.md), [3.5.2](rman-architecture.md), [5.7.5.2](configuring-rman-client-basic.md)
+- sbttest program [24.3.1](troubleshooting-rman-operations.md)
+- scenarios, Recovery Manager
+	- NOARCHIVELOG backups [9.3.10](backing-up-database.md)
+		- recovering pre-resetlogs backup [18.8.3](rman-performing-flashback-dbpitr.md), [20.1](rman-recovery-advanced.md)
+		- recovery after total media failure [20.4](rman-recovery-advanced.md)
+- scripts, RMAN [2.4.7](getting-started-rman.md)
+	- substitution variables in [9.8.3](backing-up-database.md)
+- server parameter files
+	- autobackups [8.8](rman-backup-concepts.md)
+		- backups [9.3.9](backing-up-database.md)
+		- configuring autobackups [5.6](configuring-rman-client-basic.md), [5.6.1](configuring-rman-client-basic.md), [8.8](rman-backup-concepts.md)
+		- restoring [20.2](rman-recovery-advanced.md)
+- server sessions, Recovery Manager [3.3](rman-architecture.md)
+- session architecture, Recovery Manager [3.3](rman-architecture.md)
+- SET command
+	- ENCRYPTION option [6.2.6.1.2](configuring-rman-client-advanced.md)
+		- MAXCORRUPT option [16.1.2.3](validating-database-files-backups.md)
+- SET statement
+	- AUTORECOVERY option [30.2.2](user-managed-flashback-dbpitr.md)
+		- LOGSOURCE variable [30.2.4.2](user-managed-flashback-dbpitr.md), [30.3.1](user-managed-flashback-dbpitr.md), [30.3.2](user-managed-flashback-dbpitr.md)
+- shadow copies [9.7.3.1](backing-up-database.md)
+- shared server
+	- configuring for use with RMAN [6.5](configuring-rman-client-advanced.md)
+		- configuring RMAN [6.5](configuring-rman-client-advanced.md)
+- shared undo, flashback PDB operations [18.1.4.3](rman-performing-flashback-dbpitr.md)
+- short waits
+	- definition [23.3.2.2](tuning-rman-performance.md)
+- SHOW command [2.3](getting-started-rman.md), [5.2](configuring-rman-client-basic.md)
+- SHUTDOWN statement
+	- ABORT option [30.5](user-managed-flashback-dbpitr.md), [31.1.1](user-managed-recovery-advanced.md), [31.1.2](user-managed-recovery-advanced.md)
+- size of backup sets, setting [8.3.7](rman-backup-concepts.md)
+- skipping files in RMAN backups [10.3](backing-up-database-advanced.md)
+- snapshot control file
+	- specifying location [6.4](configuring-rman-client-advanced.md)
+		- specifying location in Oracle Real Application Clusters environment [6.4.2](configuring-rman-client-advanced.md)
+- snapshot control files [6.4](configuring-rman-client-advanced.md), [13.8.2.1](managing-recovery-catalog.md)
+- snapshots
+	- backing up using third-party technologies [29.8](user-managed-database-backups.md)
+		- using Storage Snapshot Optimization [29.8](user-managed-database-backups.md)
+- sparse backups [8.5](rman-backup-concepts.md)
+- sparse CDBs
+	- duplicating [25.4.6.1](rman-duplicating-databases.md)
+- sparse data files
+	- backing up [9.5.2](backing-up-database.md)
+- sparse PDBs
+	- backing up [9.5.3](backing-up-database.md)
+		- duplicating [25.4.6.2](rman-duplicating-databases.md)
+- sparse tablespaces
+	- backing up [9.5.2](backing-up-database.md)
+- split mirrors
+	- suspend/resume mode [29.6.1](user-managed-database-backups.md)
+		- using as backups [10.5](backing-up-database-advanced.md)
+- SPOOL command [15.6.1](diagnosing-repairing-failures-dra.md)
+- standby databases [3.1](rman-architecture.md)
+- statements, SQL
+	- ALTER DATABASE [30.2.4.2](user-managed-flashback-dbpitr.md), [30.3.1](user-managed-flashback-dbpitr.md), [30.3.2](user-managed-flashback-dbpitr.md)
+- status
+	- dropped PDB backups [12.4.2.3](maintaining-rman-backups.md)
+- Storage Snapshot Optimization [29.8](user-managed-database-backups.md)
+- storage snapshots [7.1.5.1](using-flasback-database-restore-points.md), [29.8](user-managed-database-backups.md), [30.2.5](user-managed-flashback-dbpitr.md)
+	- recovering [30.2.5](user-managed-flashback-dbpitr.md)
+- stored scripts [3.4](rman-architecture.md), [9.8.3](backing-up-database.md), [13.1.2.4](managing-recovery-catalog.md), [13.7.1](managing-recovery-catalog.md), [13.8.7.1](managing-recovery-catalog.md)
+	- creating RMAN [13.7.2](managing-recovery-catalog.md)
+		- deleting [13.7.8](managing-recovery-catalog.md)
+		- dynamic [13.7.5](managing-recovery-catalog.md)
+		- executing [13.7.9](managing-recovery-catalog.md)
+		- listing names of [13.7.7](managing-recovery-catalog.md)
+		- managing [13.7.1](managing-recovery-catalog.md)
+		- printing [13.7.6](managing-recovery-catalog.md)
+		- substitution variables in [13.7.5](managing-recovery-catalog.md)
+- stuck recovery [30.6.1](user-managed-flashback-dbpitr.md)
+- substitution variables, FORMAT parameter [5.7.5.1](configuring-rman-client-basic.md), [8.3.6](rman-backup-concepts.md), [8.4.1](rman-backup-concepts.md)
+- substitution variables, stored scripts [13.7.5](managing-recovery-catalog.md)
+- suspend/resume mode [29.6.1](user-managed-database-backups.md)
+- SUSPEND clause
+	- ALTER SYSTEM statement [29.6.2](user-managed-database-backups.md)
+- suspending a database [29.6.1](user-managed-database-backups.md)
+- SWITCH command [17.3.9](rman-complete-database-recovery.md)
+- SYSBACKUP privilege [4.2.2.2](starting-interacting-with-rman-client.md)
+- system backup to tape [3.5.2](rman-architecture.md)
+- system time
+	- changing
+		- effect on recovery [30.4.2](user-managed-flashback-dbpitr.md)
+
+---
+
+## T
+
+- tables, recovery of dropped [31.8](user-managed-recovery-advanced.md)
+- tablespace point-in-time recovery [18.1.2](rman-performing-flashback-dbpitr.md)
+	- performing on dropped tablespaces [21.1.1](performing-rman-tspitr.md)
+		- planning [21.3](performing-rman-tspitr.md)
+		- preparing the auxiliary instance [21.6.1](performing-rman-tspitr.md)
+		- restrictions [21.2.2](performing-rman-tspitr.md)
+		- why perform [21.1.1](performing-rman-tspitr.md)
+- tablespaces
+	- backups [9.9.2](backing-up-database.md), [9.9.3](backing-up-database.md), [29.3.2.2](user-managed-database-backups.md)
+		- offline [29.3.1](user-managed-database-backups.md)
+				- online [29.3.2.2](user-managed-database-backups.md)
+		- backups, in PDBs [9.3.7](backing-up-database.md)
+		- backups using RMAN [9.3.6](backing-up-database.md)
+		- excluding from backups [6.2.4](configuring-rman-client-advanced.md)
+		- excluding from RMAN backups [6.2.4](configuring-rman-client-advanced.md)
+		- read/write
+		- backing up [29.3.2.1](user-managed-database-backups.md)
+		- read-only
+		- backing up [29.3.2.4](user-managed-database-backups.md)
+		- recovering accessible
+		- when database is open [17.3.4](rman-complete-database-recovery.md)
+		- recovering in PDBs
+		- using Cloud Control [17.3.8](rman-complete-database-recovery.md)
+		- recovering offline in open database [30.3.2](user-managed-flashback-dbpitr.md)
+		- transporting across platforms, in PDBs [28.8.3](rman-transporting-data-across-platforms.md)
+		- transporting with RMAN [27](creating-transportable-tablespace-sets.md)
+- tape devices [3.5.2](rman-architecture.md)
+- target database
+	- connecting to [2.2](getting-started-rman.md)
+		- definition [2.1](getting-started-rman.md), [3.1](rman-architecture.md)
+- terminating RMAN commands [24.4](troubleshooting-rman-operations.md)
+- test disk API [5.7.4](configuring-rman-client-basic.md)
+- testing RMAN
+	- backups [16.1.2.4](validating-database-files-backups.md), [16.2](validating-database-files-backups.md), [16.3](validating-database-files-backups.md)
+		- with media management API [24.3](troubleshooting-rman-operations.md)
+- third-party snapshots
+	- specifying recovery time [30.2.5](user-managed-flashback-dbpitr.md)
+- time-based recovery [30.4.2](user-managed-flashback-dbpitr.md)
+- time format
+	- RECOVER DATABASE UNTIL TIME statement [30.4.2](user-managed-flashback-dbpitr.md)
+- time parameters
+	- setting for Recovery Manager use [4.5](starting-interacting-with-rman-client.md)
+- trace files, RMAN [24.1.1](troubleshooting-rman-operations.md)
+- transparent backup encryption [6.2.6.1.1](configuring-rman-client-advanced.md)
+- transparent-mode backup encryption [10.6.2](backing-up-database-advanced.md)
+- transportable tablespaces
+	- creating with RMAN [27.1.1](creating-transportable-tablespace-sets.md)
+		- and Data Pump Export [27.5.2](creating-transportable-tablespace-sets.md)
+				- and past points in time [27.5.1](creating-transportable-tablespace-sets.md)
+				- auxiliary destination [27.1.2](creating-transportable-tablespace-sets.md)
+				- auxiliary instance parameter file [27.2](creating-transportable-tablespace-sets.md), [27.2.2](creating-transportable-tablespace-sets.md)
+				- file locations [27.5.3](creating-transportable-tablespace-sets.md)
+				- initialization parameters [27.2.1](creating-transportable-tablespace-sets.md)
+		- cross-platform [28](rman-transporting-data-across-platforms.md)
+		- recovery [31.6](user-managed-recovery-advanced.md)
+- transporting tablespaces [27](creating-transportable-tablespace-sets.md)
+- trial recovery [16.4](validating-database-files-backups.md), [30.6.6](user-managed-flashback-dbpitr.md), [30.6.6.1](user-managed-flashback-dbpitr.md)
+- tuning Recovery Manager
+	- V$ views [24.2](troubleshooting-rman-operations.md)
+
+---
+
+## U
+
+- UNAVAILABLE option
+	- of CHANGE [12.4.2.1](maintaining-rman-backups.md)
+- UNCATALOG option
+	- CHANGE command [12.4.4.1](maintaining-rman-backups.md)
+		- deleting repository records [12.4.4.1](maintaining-rman-backups.md)
+- undo optimization, backup [5.12.1](configuring-rman-client-basic.md), [8.3.4](rman-backup-concepts.md)
+- unrecoverable objects
+	- recovery [31.5](user-managed-recovery-advanced.md)
+- UNREGISTER DATABASE command [13.8.4](managing-recovery-catalog.md)
+- unregistering databases [13.8.4](managing-recovery-catalog.md)
+- UNTIL TIME option
+	- RECOVER command [30.4.2](user-managed-flashback-dbpitr.md)
+- upgrading
+	- virtual private catalog [13.5.6](managing-recovery-catalog.md)
+- upgrading the recovery catalog [13.8.6.1](managing-recovery-catalog.md)
+- user errors
+	- definition [1.1.2](introduction-backup-recovery.md)
+		- recovery from [31.8](user-managed-recovery-advanced.md)
+- user-managed backups [29](user-managed-database-backups.md)
+	- backup mode [29.3.2.1](user-managed-database-backups.md), [29.3.2.3](user-managed-database-backups.md)
+		- control files [29.4](user-managed-database-backups.md)
+		- definition [8.4.2](rman-backup-concepts.md)
+		- determining data file status [29.1.2](user-managed-database-backups.md)
+		- hot backups [8.2](rman-backup-concepts.md), [29.3.2.3.1](user-managed-database-backups.md)
+		- listing files before [29.1](user-managed-database-backups.md)
+		- of CDBs [29.2](user-managed-database-backups.md)
+		- offline tablespaces [29.3.1](user-managed-database-backups.md)
+		- of PDBs [29.2](user-managed-database-backups.md)
+		- read-only tablespaces [29.3.2.4](user-managed-database-backups.md)
+		- tablespaces [29.3.2.2](user-managed-database-backups.md)
+		- verifying [29.9](user-managed-database-backups.md)
+- user-managed recovery [30.4](user-managed-flashback-dbpitr.md)
+	- ADD DATAFILE operation [31.2.3](user-managed-recovery-advanced.md)
+		- complete [30.3](user-managed-flashback-dbpitr.md)
+		- incomplete [30.4](user-managed-flashback-dbpitr.md)
+		- interrupting [30.2.6](user-managed-flashback-dbpitr.md)
+		- scenarios [31](user-managed-recovery-advanced.md)
+- user-managed restore operations [30.2.1](user-managed-flashback-dbpitr.md)
+
+---
+
+## V
+
+- V$ARCHIVED\_LOG view [5.10.2.3](configuring-rman-client-basic.md), [11.5.1.1](reporting-rman-operations.md), [18.7](rman-performing-flashback-dbpitr.md)
+	- listing all archived logs [29.5](user-managed-database-backups.md)
+- V$BACKUP\_ASYNC\_IO view [23.3.2](tuning-rman-performance.md)
+- V$BACKUP\_DATAFILE view [9.7.2](backing-up-database.md), [12.4.3.3](maintaining-rman-backups.md)
+- V$BACKUP\_FILES view [5.11.2](configuring-rman-client-basic.md), [12.4.1.1](maintaining-rman-backups.md), [12.4.3.2](maintaining-rman-backups.md)
+- V$BACKUP\_PIECE view [11.5.1](reporting-rman-operations.md), [12.4.3.3](maintaining-rman-backups.md)
+- V$BACKUP\_REDOLOG view [12.4.3.3](maintaining-rman-backups.md)
+- V$BACKUP\_SET view [12.4.3.3](maintaining-rman-backups.md), [12.5.1](maintaining-rman-backups.md)
+- V$BACKUP\_SPFILE view [12.4.3.3](maintaining-rman-backups.md)
+- V$BACKUP\_SYNC\_IO view [23.3.2](tuning-rman-performance.md)
+- V$BACKUP view [29.1.2](user-managed-database-backups.md)
+- V$BLOCK\_CHANGE\_TRACKING view [9.7.6.4](backing-up-database.md)
+- V$CONTROLFILE view [9.3.8](backing-up-database.md)
+- V$DATABASE\_BLOCK\_CORRUPTION view [1.3](introduction-backup-recovery.md), [2.9.4](getting-started-rman.md), [16.1.2.4](validating-database-files-backups.md), [16.2](validating-database-files-backups.md), [19](rman-block-media-recovery.md), [19.1.2](rman-block-media-recovery.md), [19.1.2.2](rman-block-media-recovery.md), [19.4](rman-block-media-recovery.md)
+- V$DATABASE\_INCARNATION view [13.8.5](managing-recovery-catalog.md)
+- V$DATABASE view [11.5.2](reporting-rman-operations.md), [18.2.2](rman-performing-flashback-dbpitr.md), [18.8.1](rman-performing-flashback-dbpitr.md)
+- V$DATAFILE\_HEADER view [11.1.2](reporting-rman-operations.md), [17.2.1.2.2](rman-complete-database-recovery.md)
+- V$DATAFILE view [17.2.1.2.2](rman-complete-database-recovery.md), [21.6.1.2](performing-rman-tspitr.md), [29.1.1](user-managed-database-backups.md)
+	- listing files for backups [29.1](user-managed-database-backups.md)
+- V$DIAG\_INFO view [19.3.1](rman-block-media-recovery.md)
+- V$EVENT\_NAME view [24.2.1](troubleshooting-rman-operations.md)
+- V$FLASHBACK\_DATABASE\_LOG view [5.10.2.3](configuring-rman-client-basic.md), [18.8.1](rman-performing-flashback-dbpitr.md)
+- V$FLASHBACK\_DATABASE\_STAT view [7.5.4](using-flasback-database-restore-points.md)
+- V$INSTANCE view [17.2.1.2.2](rman-complete-database-recovery.md)
+- V$LOG\_HISTORY view
+	- listing all archived logs [30.3.1](user-managed-flashback-dbpitr.md)
+- V$LOGFILE view [21.6.1.2](performing-rman-tspitr.md), [31.7.1](user-managed-recovery-advanced.md), [31.7.2](user-managed-recovery-advanced.md)
+- V$PARAMETER view [18.2.2](rman-performing-flashback-dbpitr.md)
+- V$PROCESS view [11.1.2](reporting-rman-operations.md), [24.2.2](troubleshooting-rman-operations.md)
+- V$RECOVER\_FILE view [17.2.1.2.2](rman-complete-database-recovery.md), [30.3.1](user-managed-flashback-dbpitr.md)
+- V$RECOVERY\_AREA\_USAGE view [12.3.2](maintaining-rman-backups.md)
+- V$RECOVERY\_FILE\_DEST [12.3.2](maintaining-rman-backups.md)
+- V$RECOVERY\_FILE\_DEST view [12.3.2](maintaining-rman-backups.md)
+- V$RECOVERY\_LOG view
+	- listing logs needed for recovery [30.3.1](user-managed-flashback-dbpitr.md)
+- V$RESTORE\_POINT [7.4.4](using-flasback-database-restore-points.md)
+- V$RESTORE\_POINT view [18.2.2](rman-performing-flashback-dbpitr.md)
+- V$RMAN\_BACKUP\_JOB\_DETAILS view [11.4.1](reporting-rman-operations.md)
+- V$RMAN\_BACKUP\_SUBJOB\_DETAILS view [11.4.1](reporting-rman-operations.md)
+- V$RMAN\_ENCRYPTION\_ALGORITHMS view [6.2.6.1](configuring-rman-client-advanced.md), [6.2.6.3](configuring-rman-client-advanced.md), [23.2.2](tuning-rman-performance.md)
+- V$RMAN\_OUTPUT view [11.5.2](reporting-rman-operations.md)
+- V$RMAN\_STATUS view [24.1.1](troubleshooting-rman-operations.md)
+- V$SESSION\_LONGOPS view [23.3.1](tuning-rman-performance.md)
+- V$SESSION\_WAIT view [24.2.1](troubleshooting-rman-operations.md)
+- V$SESSION view [6.5](configuring-rman-client-advanced.md), [11.1.2](reporting-rman-operations.md), [24.2.2](troubleshooting-rman-operations.md)
+- V$SGASTAT view [23.4.3](tuning-rman-performance.md)
+- V$SYSSTAT view [7.5.4](using-flasback-database-restore-points.md)
+- V$TABLESPACE view [17.2.1.2.2](rman-complete-database-recovery.md), [29.1.1](user-managed-database-backups.md)
+- VALIDATE command [15.1.2.2](diagnosing-repairing-failures-dra.md), [15.4](diagnosing-repairing-failures-dra.md), [16.2](validating-database-files-backups.md)
+	- SECTION SIZE parameter [16.2](validating-database-files-backups.md)
+- VALIDATE HEADER option, RESTORE command [11.1.2](reporting-rman-operations.md)
+- validating
+	- PDBs [16.2.1](validating-database-files-backups.md)
+- validation, RMAN [15.4](diagnosing-repairing-failures-dra.md)
+	- backups [2.4.6](getting-started-rman.md), [16.2](validating-database-files-backups.md), [16.3](validating-database-files-backups.md)
+		- database files [2.4.6](getting-started-rman.md), [16.2](validating-database-files-backups.md)
+		- restore operations [17.2.4](rman-complete-database-recovery.md)
+- viewing, CDB restore points [7.4.4](using-flasback-database-restore-points.md)
+- viewing, PDB restore points [7.4.4](using-flasback-database-restore-points.md)
+- views
+	- for multisection backups [9.2.6](backing-up-database.md)
+- views, recovery catalog [11.1.2](reporting-rman-operations.md), [11.5](reporting-rman-operations.md)
+- virtual private catalogs [3.4](rman-architecture.md)
+	- creating [13.5.3](managing-recovery-catalog.md)
+		- upgrading [13.5.6](managing-recovery-catalog.md)
+- Volume Shadow Copy Service (VSS) [5.10.1](configuring-rman-client-basic.md), [9.7.3.1](backing-up-database.md)
+
+---
+
+## W
+
+- whole database backups
+	- using RMAN [9.3.1](backing-up-database.md)
+
+---
+
+## Z
+
+- Zero Data Loss Recovery Appliance [1.7](introduction-backup-recovery.md)
