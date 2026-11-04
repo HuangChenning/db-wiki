@@ -1,0 +1,37 @@
+---
+title: "8.14.7 Replication Replica SQL Thread States"
+book: MySQL 5.7 Reference Manual
+version: "5.7"
+source: "https://dev.mysql.com/doc/refman/5.7/en/replica-sql-thread-states.html"
+tags:
+  - mysql
+  - mysql-5.7
+  - reference-manual
+---
+
+MySQL 5.7 Reference Manual Including MySQL NDB Cluster 7.5 and NDB Cluster 7.6
+
+### 8.14.7 Replication Replica SQL Thread States
+
+The following list shows the most common states you may see in the `State` column for a replica server SQL thread:
+
+- `Making temporary file (append) before replaying             LOAD DATA INFILE`
+	The thread is executing a [`LOAD             DATA`](load-data.md) statement and is appending the data to a temporary file containing the data from which the replica reads rows.
+- `Making temporary file (create) before replaying             LOAD DATA INFILE`
+	The thread is executing a [`LOAD             DATA`](load-data.md) statement and is creating a temporary file containing the data from which the replica reads rows. This state can only be encountered if the original [`LOAD DATA`](load-data.md) statement was logged by a source running a version of MySQL lower than MySQL 5.0.3.
+- `Reading event from the relay log`
+	The thread has read an event from the relay log so that the event can be processed.
+- `Slave has read all relay log; waiting for more             updates`
+	The thread has processed all events in the relay log files, and is now waiting for the I/O thread to write new events to the relay log.
+- `Waiting for an event from Coordinator`
+	Using the multithreaded replica ([`slave_parallel_workers`](replication-options-replica.md) is greater than 1), one of the replica worker threads is waiting for an event from the coordinator thread.
+- `Waiting for slave mutex on exit`
+	A very brief state that occurs as the thread is stopping.
+- `Waiting for Slave Workers to free pending             events`
+	This waiting action occurs when the total size of events being processed by Workers exceeds the size of the [`slave_pending_jobs_size_max`](replication-options-replica.md) system variable. The Coordinator resumes scheduling when the size drops below this limit. This state occurs only when [`slave_parallel_workers`](replication-options-replica.md) is set greater than 0.
+- `Waiting for the next event in relay log`
+	The initial state before `Reading event from the             relay log`.
+- `Waiting until MASTER_DELAY seconds after master             executed event`
+	The SQL thread has read an event but is waiting for the replica delay to lapse. This delay is set with the `MASTER_DELAY` option of [`CHANGE MASTER TO`](change-master-to.md).
+
+The `Info` column for the SQL thread may also show the text of a statement. This indicates that the thread has read an event from the relay log, extracted the statement from it, and may be executing it.

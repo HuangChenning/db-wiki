@@ -1,0 +1,14 @@
+---
+title: "Chapter 21 MySQL NDB Cluster 7.5 and NDB Cluster 7.6"
+book: MySQL 5.7 Reference Manual
+version: "5.7"
+source: "https://dev.mysql.com/doc/refman/5.7/en/mysql-cluster.html"
+tags:
+  - mysql
+  - mysql-5.7
+  - reference-manual
+---
+
+MySQL 5.7 Reference Manual Including MySQL NDB Cluster 7.5 and NDB Cluster 7.6
+
+This chapter provides information about MySQL NDB Cluster, a high-availability, high-redundancy version of MySQL adapted for the distributed computing environment which enables running several computers with MySQL servers and other software in a cluster. This chapter also provides information specific to NDB Cluster 7.5 releases through 5.7.44-ndb-7.5.36 and NDB Cluster 7.6 releases through 5.7.44-ndb-7.6.36, both of which are previous General Availability (GA) releases still supported in production. The latest available releases of these are 5.7.44-ndb-7.5.36 and 5.7.44-ndb-7.6.35, respectively. A more recent NDB Cluster stable release series uses version 8.0 of the `NDB` storage engine (also known as `NDBCLUSTER`). NDB Cluster 8.0, now available as a General Availability (GA) release beginning with version 8.0.19, incorporates version 8.0 of the `NDB` storage engine; see [MySQL NDB Cluster 8.0](https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/mysql-cluster.html), for more information about NDB 8.0. NDB Cluster 8.4 (NDB 8.4.7), based on version 8.4 of the NDB storage engine, is also available as an LTS release. See [What is New in MySQL NDB Cluster 8.4](https://docs.oracle.com/cd/E17952_01/mysql-8.4-en/mysql-cluster-what-is-new.html), for information about differences in NDB 8.4 as compared to earlier releases. Previous GA releases NDB Cluster 7.4 and NDB Cluster 7.3 incorporated `NDB` versions 7.4 and 7.3, respectively. *NDB 7.4 and older release series are no longer supported or maintained*. Both NDB 8.0 and NDB 8.1 are supported in production, and are recommended for new deployments.

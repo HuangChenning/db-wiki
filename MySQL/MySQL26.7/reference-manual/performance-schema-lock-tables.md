@@ -1,0 +1,21 @@
+---
+title: "MySQL :: MySQL 26.7 Reference Manual :: 29.12.13 Performance Schema Lock Tables"
+book: MySQL 26.7 Reference Manual
+version: "26.7"
+source: "https://dev.mysql.com/doc/refman/26.7/en/performance-schema-lock-tables.html"
+tags:
+  - mysql
+  - mysql-26.7
+  - reference-manual
+---
+
+### 29.12.13 Performance Schema Lock Tables
+
+The Performance Schema exposes lock information through these tables:
+
+- [`data_locks`](performance-schema-data-locks-table.md): Data locks held and requested
+- [`data_lock_waits`](performance-schema-data-lock-waits-table.md): Relationships between data lock owners and data lock requestors blocked by those owners
+- [`metadata_locks`](performance-schema-metadata-locks-table.md): Metadata locks held and requested
+- [`table_handles`](performance-schema-table-handles-table.md): Table locks held and requested
+
+The following sections describe these tables in more detail.

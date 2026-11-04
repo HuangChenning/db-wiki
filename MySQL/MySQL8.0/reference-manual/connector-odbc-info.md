@@ -1,0 +1,21 @@
+---
+title: "31.4 MySQL Connector/ODBC"
+book: MySQL 8.0 Reference Manual
+version: "8.0"
+source: "https://dev.mysql.com/doc/refman/8.0/en/connector-odbc-info.html"
+tags:
+  - mysql
+  - mysql-8.0
+  - reference-manual
+---
+
+Skip to Main Content
+
+MySQL 8.0 Reference Manual Including MySQL NDB Cluster 8.0
+
+The MySQL Connector/ODBC manual is published in standalone form, not as part of the MySQL Reference Manual. For information, see these documents:
+
+- Main manual: [MySQL Connector/ODBC Developer Guide](https://docs.oracle.com/cd/E17952_01/connector-odbc-en/)
+- Release notes: [MySQL Connector/ODBC Release Notes](https://docs.oracle.com/cd/E17952_01/connector-odbc-relnotes-en/)
+
+[MySQL Documentation Library](https://docs.oracle.com/cd/E17952_01/index.html "Go to MySQL Doc Library")

@@ -1,0 +1,16 @@
+---
+title: "8.7 Optimizing for MEMORY Tables"
+book: MySQL 5.7 Reference Manual
+version: "5.7"
+source: "https://dev.mysql.com/doc/refman/5.7/en/optimizing-memory-tables.html"
+tags:
+  - mysql
+  - mysql-5.7
+  - reference-manual
+---
+
+MySQL 5.7 Reference Manual Including MySQL NDB Cluster 7.5 and NDB Cluster 7.6
+
+Consider using `MEMORY` tables for noncritical data that is accessed often, and is read-only or rarely updated. Benchmark your application against equivalent `InnoDB` or `MyISAM` tables under a realistic workload, to confirm that any additional performance is worth the risk of losing data, or the overhead of copying data from a disk-based table at application start.
+
+For best performance with `MEMORY` tables, examine the kinds of queries against each table, and specify the type to use for each associated index, either a B-tree index or a hash index. On the [`CREATE INDEX`](create-index.md) statement, use the clause `USING BTREE` or `USING HASH`. B-tree indexes are fast for queries that do greater-than or less-than comparisons through operators such as `>` or `BETWEEN`. Hash indexes are only fast for queries that look up single values through the `=` operator, or a restricted set of values through the `IN` operator. For why `USING BTREE` is often a better choice than the default `USING HASH`, see [Section 8.2.1.20, “Avoiding Full Table Scans”](table-scan-avoidance.md). For implementation details of the different types of `MEMORY` indexes, see [Section 8.3.8, “Comparison of B-Tree and Hash Indexes”](index-btree-hash.md).

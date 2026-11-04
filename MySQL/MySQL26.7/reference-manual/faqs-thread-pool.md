@@ -1,0 +1,34 @@
+---
+title: "MySQL :: MySQL 26.7 Reference Manual :: A.15 MySQL 26.7 FAQ: MySQL Enterprise Thread Pool"
+book: MySQL 26.7 Reference Manual
+version: "26.7"
+source: "https://dev.mysql.com/doc/refman/26.7/en/faqs-thread-pool.html"
+tags:
+  - mysql
+  - mysql-26.7
+  - reference-manual
+---
+
+## A.15 MySQL 26.7 FAQ: MySQL Enterprise Thread Pool
+
+A.15.1. What is the Thread Pool and what problem does it solve?
+
+A.15.2. How does the Thread Pool limit and manage concurrent sessions and transactions for optimal performance and throughput?
+
+A.15.3. How is the Thread Pool different from the client side Connection Pool?
+
+A.15.4. When should I use the Thread Pool?
+
+A.15.5. Are there recommended Thread Pool configurations?
+
+| **A.15.1.** | What is the Thread Pool and what problem does it solve? |
+| --- | --- |
+|  | The MySQL Thread Pool is a MySQL server plugin that extends the default connection-handling capabilities of the MySQL server to limit the number of concurrently executing statements/queries and transactions to ensure that each has sufficient CPU and memory resources to fulfill its task. For MySQL 26.7, the Thread Pool plugin is included in MySQL Enterprise Edition, a commercial product.  The default thread-handling model in MySQL Server executes statements using one thread per client connection. As more clients connect to the server and execute statements, overall performance degrades. The Thread Pool plugin provides an alternative thread-handling model designed to reduce overhead and improve performance. The Thread Pool plugin increases server performance by efficiently managing statement execution threads for large numbers of client connections, especially on modern multi-CPU/Core systems.  For more information, see [Section 7.6.3, “MySQL Thread Pool”](thread-pool.md). |
+| **A.15.2.** | How does the Thread Pool limit and manage concurrent sessions and transactions for optimal performance and throughput? |
+|  | The Thread Pool uses a “divide and conquer” approach to limiting and balancing concurrency. Unlike the default connection handling of the MySQL Server, the Thread Pool separates connections and threads, so there is no fixed relationship between connections and the threads that execute statements received from those connections. The Thread Pool then manages client connections within configurable thread groups, where they are prioritized and queued based on the nature of the work they were submitted to accomplish.  For more information, see [Section 7.6.3.3, “Thread Pool Operation”](thread-pool-operation.md). |
+| **A.15.3.** | How is the Thread Pool different from the client side Connection Pool? |
+|  | The MySQL Connection Pool operates on the client side to ensure that a MySQL client does not constantly connect to and disconnect from the MySQL server. It is designed to cache idle connections in the MySQL client for use by other users as they are needed. This minimizes the overhead and expense of establishing and tearing down connections as queries are submitted to the MySQL server. The MySQL Connection Pool has no visibility as to the query handling capabilities or load of the back-end MySQL server. By contrast, the Thread Pool operates on the MySQL server side and is designed to manage the execution of inbound concurrent connections and queries as they are received from the client connections accessing the back-end MySQL database. Because of the separation of duties, the MySQL Connection Pool and Thread Pool are orthogonal and can be used independent of each other.  MySQL Connection Pooling via the MySQL Connectors is covered in [Chapter 31, *Connectors and APIs*](connectors-apis.md). |
+| **A.15.4.** | When should I use the Thread Pool? |
+|  | There are a few rules of thumb to consider for optimal Thread Pool use cases:  The MySQL [`Threads_running`](server-status-variables.md) variable keeps track of the number of concurrent statements currently executing in the MySQL Server. If this variable consistently exceeds a region where the server won't operate optimally (usually going beyond 40 for InnoDB workloads), the Thread Pool should be beneficial, especially in extreme parallel overload situations.  If you are using the [`innodb_thread_concurrency`](innodb-parameters.md) to limit the number of concurrently executing statements, you should find that the Thread Pool solves the same problem, only better, by assigning connections to thread groups, then queuing executions based on transactional content, user defined designations, and so forth.  Lastly, if your workload comprises mainly short queries, the Thread Pool should be beneficial.  To learn more, see [Section 7.6.3.4, “Thread Pool Tuning”](thread-pool-tuning.md). |
+| **A.15.5.** | Are there recommended Thread Pool configurations? |
+|  | The Thread Pool has a number of user case driven configuration parameters that affect its performance. To learn about these and tips on tuning, see [Section 7.6.3.4, “Thread Pool Tuning”](thread-pool-tuning.md). |

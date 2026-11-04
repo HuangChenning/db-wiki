@@ -1,0 +1,103 @@
+---
+title: "25.5.24 ndb_secretsfile_reader — Obtain Key Information from an Encrypted NDB Data File"
+book: MySQL 8.0 Reference Manual
+version: "8.0"
+source: "https://dev.mysql.com/doc/refman/8.0/en/mysql-cluster-programs-ndb-secretsfile-reader.html"
+tags:
+  - mysql
+  - mysql-8.0
+  - reference-manual
+---
+
+MySQL 8.0 Reference Manual Including MySQL NDB Cluster 8.0
+
+### 25.5.24 ndb\_secretsfile\_reader — Obtain Key Information from an Encrypted NDB Data File
+
+**ndb\_secretsfile\_reader** gets the encryption key from an `NDB` encryption secrets file, given the password.
+
+#### Usage
+
+```
+ndb_secretsfile_reader options file
+```
+
+The *`options`* must include one of `--filesystem-password` or `--filesystem-password-from-stdin`, and the encryption password must be supplied, as shown here:
+
+```
+> ndb_secretsfile_reader --filesystem-password=54kl14 ndb_5_fs/D1/NDBCNTR/S0.sysfile
+ndb_secretsfile_reader: [Warning] Using a password on the command line interface can be insecure.
+cac256e18b2ddf6b5ef82d99a72f18e864b78453cc7fa40bfaf0c40b91122d18
+```
+
+These and other options that can be used with **ndb\_secretsfile\_reader** are shown in the following table. Additional descriptions follow the table.
+
+**Table 25.45 Command-line options used with the program ndb\_secretsfile\_reader**
+
+| Format | Description | Added, Deprecated, or Removed |
+| --- | --- | --- |
+| `                  --defaults-extra-file=path                  ` | Read given file after global files are read | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --defaults-file=path                  ` | Read default options from given file only | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --defaults-group-suffix=string                  ` | Also read groups with concat(group, suffix) | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --filesystem-password=password                  ` | Password for node file system encryption; can be passed from stdin, tty, or my.cnf file | ADDED: 8.0.31 |
+| `                  --filesystem-password-from-stdin={TRUE\|FALSE}                  ` | Get encryption password from stdin | ADDED: 8.0.31 |
+| `--help`,  `                  -?                  ` | Display help text and exit | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --login-path=path                  ` | Read given path from login file | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --no-defaults                  ` | Do not read default options from any option file other than login file | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --print-defaults                  ` | Print program argument list and exit | (Supported in all NDB releases based on MySQL 8.0) |
+| `--usage`,  `                  -?                  ` | Display help text and exit; same as --help | (Supported in all NDB releases based on MySQL 8.0) |
+| `--version`,  `                  -V                  ` | Display version information and exit | (Supported in all NDB releases based on MySQL 8.0) |
+
+- `--defaults-extra-file`
+	| Command-Line Format | `--defaults-extra-file=path` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `[none]` |
+	Read given file after global files are read.
+- `--defaults-file`
+	| Command-Line Format | `--defaults-file=path` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `[none]` |
+	Read default options from given file only.
+- `--defaults-group-suffix`
+	| Command-Line Format | `--defaults-group-suffix=string` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `[none]` |
+	Also read groups with concat(group, suffix).
+- `--filesystem-password`
+	| Command-Line Format | `--filesystem-password=password` |
+	| --- | --- |
+	Pass the filesystem encryption and decryption password to **ndb\_secretsfile\_reader** using `stdin`, `tty`, or the `my.cnf` file.
+- `--filesystem-password-from-stdin`
+	| Command-Line Format | `--filesystem-password-from-stdin={TRUE\|FALSE}` |
+	| --- | --- |
+	Pass the filesystem encryption and decryption password to **ndb\_secretsfile\_reader** from `stdin` (only).
+- `--help`
+	| Command-Line Format | `--help` |
+	| --- | --- |
+	Display help text and exit.
+- `--login-path`
+	| Command-Line Format | `--login-path=path` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `[none]` |
+	Read given path from login file.
+- `--no-defaults`
+	| Command-Line Format | `--no-defaults` |
+	| --- | --- |
+	Do not read default options from any option file other than login file.
+- `--print-defaults`
+	| Command-Line Format | `--print-defaults` |
+	| --- | --- |
+	Print program argument list and exit.
+- `--usage`
+	| Command-Line Format | `--usage` |
+	| --- | --- |
+	Display help text and exit; same as --help.
+- `--version`
+	| Command-Line Format | `--version` |
+	| --- | --- |
+	Display version information and exit.
+
+**ndb\_secretsfile\_reader** was added in NDB 8.0.31.

@@ -1,0 +1,24 @@
+---
+title: "15.1.25 DROP EVENT Statement"
+book: MySQL 8.0 Reference Manual
+version: "8.0"
+source: "https://dev.mysql.com/doc/refman/8.0/en/drop-event.html"
+tags:
+  - mysql
+  - mysql-8.0
+  - reference-manual
+---
+
+MySQL 8.0 Reference Manual Including MySQL NDB Cluster 8.0
+
+### 15.1.25 DROP EVENT Statement
+
+```
+DROP EVENT [IF EXISTS] event_name
+```
+
+This statement drops the event named *`event_name`*. The event immediately ceases being active, and is deleted completely from the server.
+
+If the event does not exist, the error ERROR 1517 (HY000): Unknown event ' *`event_name`* ' results. You can override this and cause the statement to generate a warning for nonexistent events instead using `IF EXISTS`.
+
+This statement requires the [`EVENT`](privileges-provided.md) privilege for the schema to which the event to be dropped belongs.

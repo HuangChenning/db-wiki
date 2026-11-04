@@ -1,0 +1,14 @@
+---
+title: "MySQL :: MySQL 26.10 Reference Manual :: 22.5.6 X Plugin Options and Variables"
+book: MySQL 26.10 Reference Manual
+version: "26.10"
+source: "https://dev.mysql.com/doc/refman/26.10/en/x-plugin-options-variables.html"
+tags:
+  - mysql
+  - mysql-26.10
+  - reference-manual
+---
+
+### 22.5.6 X Plugin Options and Variables
+
+This section describes the command options and system variables that configure X Plugin, as well as the status variables available for monitoring purposes. If configuration values specified at startup time are incorrect, X Plugin could fail to initialize properly and the server does not load it. In this case, the server could also produce error messages for other X Plugin settings because it cannot recognize them.

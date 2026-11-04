@@ -1,0 +1,311 @@
+---
+title: "12.4.2 Comparison Functions and Operators"
+book: MySQL 5.7 Reference Manual
+version: "5.7"
+source: "https://dev.mysql.com/doc/refman/5.7/en/comparison-operators.html"
+tags:
+  - mysql
+  - mysql-5.7
+  - reference-manual
+---
+
+MySQL 5.7 Reference Manual Including MySQL NDB Cluster 7.5 and NDB Cluster 7.6
+
+### 12.4.2 Comparison Functions and Operators
+
+**Table 12.4 Comparison Operators**
+
+| Name | Description |
+| --- | --- |
+| `>` | Greater than operator |
+| `>=` | Greater than or equal operator |
+| `<` | Less than operator |
+| `<>`, `!=` | Not equal operator |
+| `<=` | Less than or equal operator |
+| `<=>` | NULL-safe equal to operator |
+| `=` | Equal operator |
+| `BETWEEN ... AND ...` | Whether a value is within a range of values |
+| `COALESCE()` | Return the first non-NULL argument |
+| `EXISTS()` | Whether the result of a query contains any rows |
+| `GREATEST()` | Return the largest argument |
+| `IN()` | Whether a value is within a set of values |
+| `INTERVAL()` | Return the index of the argument that is less than the first argument |
+| `IS` | Test a value against a boolean |
+| `IS NOT` | Test a value against a boolean |
+| `IS NOT NULL` | NOT NULL value test |
+| `IS NULL` | NULL value test |
+| `ISNULL()` | Test whether the argument is NULL |
+| `LEAST()` | Return the smallest argument |
+| [`LIKE`](string-comparison-functions.md) | Simple pattern matching |
+| `NOT BETWEEN ... AND ...` | Whether a value is not within a range of values |
+| `NOT EXISTS()` | Whether the result of a query contains no rows |
+| `NOT IN()` | Whether a value is not within a set of values |
+| [`NOT LIKE`](string-comparison-functions.md) | Negation of simple pattern matching |
+| [`STRCMP()`](string-comparison-functions.md) | Compare two strings |
+
+Comparison operations result in a value of `1` (`TRUE`), `0` (`FALSE`), or `NULL`. These operations work for both numbers and strings. Strings are automatically converted to numbers and numbers to strings as necessary.
+
+The following relational comparison operators can be used to compare not only scalar operands, but row operands:
+
+```
+=  >  <  >=  <=  <>  !=
+```
+
+The descriptions for those operators later in this section detail how they work with row operands. For additional examples of row comparisons in the context of row subqueries, see [Section 13.2.10.5, “Row Subqueries”](row-subqueries.md).
+
+Some of the functions in this section return values other than `1` (`TRUE`), `0` (`FALSE`), or `NULL`. `LEAST()` and `GREATEST()` are examples of such functions; [Section 12.3, “Type Conversion in Expression Evaluation”](type-conversion.md), describes the rules for comparison operations performed by these and similar functions for determining their return values.
+
+To convert a value to a specific type for comparison purposes, you can use the [`CAST()`](cast-functions.md) function. String values can be converted to a different character set using [`CONVERT()`](cast-functions.md). See [Section 12.10, “Cast Functions and Operators”](cast-functions.md).
+
+By default, string comparisons are not case-sensitive and use the current character set. The default is `latin1` (cp1252 West European), which also works well for English.
+
+- `=`
+	Equal:
+	```
+	mysql> SELECT 1 = 0;
+	        -> 0
+	mysql> SELECT '0' = 0;
+	        -> 1
+	mysql> SELECT '0.0' = 0;
+	        -> 1
+	mysql> SELECT '0.01' = 0;
+	        -> 0
+	mysql> SELECT '.01' = 0.01;
+	        -> 1
+	```
+	For row comparisons, `(a, b) = (x, y)` is equivalent to:
+	```
+	(a = x) AND (b = y)
+	```
+- `<=>`
+	`NULL` -safe equal. This operator performs an equality comparison like the `=` operator, but returns `1` rather than `NULL` if both operands are `NULL`, and `0` rather than `NULL` if one operand is `NULL`.
+	The `<=>` operator is equivalent to the standard SQL `IS NOT             DISTINCT FROM` operator.
+	```
+	mysql> SELECT 1 <=> 1, NULL <=> NULL, 1 <=> NULL;
+	        -> 1, 1, 0
+	mysql> SELECT 1 = 1, NULL = NULL, 1 = NULL;
+	        -> 1, NULL, NULL
+	```
+	For row comparisons, `(a, b) <=> (x,             y)` is equivalent to:
+	```
+	(a <=> x) AND (b <=> y)
+	```
+- `<>`, `!=`
+	Not equal:
+	```
+	mysql> SELECT '.01' <> '0.01';
+	        -> 1
+	mysql> SELECT .01 <> '0.01';
+	        -> 0
+	mysql> SELECT 'zapp' <> 'zappp';
+	        -> 1
+	```
+	For row comparisons, `(a, b) <> (x,             y)` and `(a, b) != (x, y)` are equivalent to:
+	```
+	(a <> x) OR (b <> y)
+	```
+- `<=`
+	Less than or equal:
+	```
+	mysql> SELECT 0.1 <= 2;
+	        -> 1
+	```
+	For row comparisons, `(a, b) <= (x, y)` is equivalent to:
+	```
+	(a < x) OR ((a = x) AND (b <= y))
+	```
+- `<`
+	Less than:
+	```
+	mysql> SELECT 2 < 2;
+	        -> 0
+	```
+	For row comparisons, `(a, b) < (x, y)` is equivalent to:
+	```
+	(a < x) OR ((a = x) AND (b < y))
+	```
+- `>=`
+	Greater than or equal:
+	```
+	mysql> SELECT 2 >= 2;
+	        -> 1
+	```
+	For row comparisons, `(a, b) >= (x, y)` is equivalent to:
+	```
+	(a > x) OR ((a = x) AND (b >= y))
+	```
+- `>`
+	Greater than:
+	```
+	mysql> SELECT 2 > 2;
+	        -> 0
+	```
+	For row comparisons, `(a, b) > (x, y)` is equivalent to:
+	```
+	(a > x) OR ((a = x) AND (b > y))
+	```
+- ``*`expr`*             BETWEEN *`min`* AND             *`max`*``
+	If *`expr`* is greater than or equal to *`min`* and *`expr`* is less than or equal to *`max`*, `BETWEEN` returns `1`, otherwise it returns `0`. This is equivalent to the expression ``(*`min`* <=             *`expr`* AND             *`expr`* <=             *`max`*)`` if all the arguments are of the same type. Otherwise type conversion takes place according to the rules described in [Section 12.3, “Type Conversion in Expression Evaluation”](type-conversion.md), but applied to all the three arguments.
+	```
+	mysql> SELECT 2 BETWEEN 1 AND 3, 2 BETWEEN 3 and 1;
+	        -> 1, 0
+	mysql> SELECT 1 BETWEEN 2 AND 3;
+	        -> 0
+	mysql> SELECT 'b' BETWEEN 'a' AND 'c';
+	        -> 1
+	mysql> SELECT 2 BETWEEN 2 AND '3';
+	        -> 1
+	mysql> SELECT 2 BETWEEN 2 AND 'x-3';
+	        -> 0
+	```
+	For best results when using `BETWEEN` with date or time values, use [`CAST()`](cast-functions.md) to explicitly convert the values to the desired data type. Examples: If you compare a [`DATETIME`](datetime.md) to two [`DATE`](datetime.md) values, convert the [`DATE`](datetime.md) values to [`DATETIME`](datetime.md) values. If you use a string constant such as `'2001-1-1'` in a comparison to a [`DATE`](datetime.md), cast the string to a [`DATE`](datetime.md).
+- ``*`expr`*             NOT BETWEEN *`min`* AND             *`max`*``
+	This is the same as ``NOT             (*`expr`* BETWEEN             *`min`* AND             *`max`*)``.
+- ``COALESCE(*`value`*,...)``
+	Returns the first non- `NULL` value in the list, or `NULL` if there are no non- `NULL` values.
+	The return type of `COALESCE()` is the aggregated type of the argument types.
+	```
+	mysql> SELECT COALESCE(NULL,1);
+	        -> 1
+	mysql> SELECT COALESCE(NULL,NULL,NULL);
+	        -> NULL
+	```
+- ``EXISTS(*`query`*)``
+	Whether the result of a query contains any rows.
+	```
+	CREATE TABLE t (col VARCHAR(3));
+	INSERT INTO t VALUES ('aaa', 'bbb', 'ccc', 'eee');
+	SELECT EXISTS (SELECT * FROM t WHERE col LIKE 'c%');
+	        -> 1
+	SELECT EXISTS (SELECT * FROM t WHERE col LIKE 'd%');
+	        -> 0
+	```
+- ``NOT             EXISTS(*`query`*)``
+	Whether the result of a query contains no rows:
+	```
+	SELECT NOT EXISTS (SELECT * FROM t WHERE col LIKE 'c%');
+	        -> 0
+	SELECT NOT EXISTS (SELECT * FROM t WHERE col LIKE 'd%');
+	        -> 1
+	```
+- ``GREATEST(*`value1`*,*`value2`*,...)``
+	With two or more arguments, returns the largest (maximum-valued) argument. The arguments are compared using the same rules as for `LEAST()`.
+	```
+	mysql> SELECT GREATEST(2,0);
+	        -> 2
+	mysql> SELECT GREATEST(34.0,3.0,5.0,767.0);
+	        -> 767.0
+	mysql> SELECT GREATEST('B','A','C');
+	        -> 'C'
+	```
+	`GREATEST()` returns `NULL` if any argument is `NULL`.
+- ``*`expr`*             IN (*`value`*,...)``
+	Returns `1` (true) if *`expr`* is equal to any of the values in the `IN()` list, else returns `0` (false).
+	Type conversion takes place according to the rules described in [Section 12.3, “Type Conversion in Expression Evaluation”](type-conversion.md), applied to all the arguments. If no type conversion is needed for the values in the `IN()` list, they are all constants of the same type, and *`expr`* can be compared to each of them as a value of the same type (possibly after type conversion), an optimization takes place. The values the list are sorted and the search for *`expr`* is done using a binary search, which makes the `IN()` operation very quick.
+	```
+	mysql> SELECT 2 IN (0,3,5,7);
+	        -> 0
+	mysql> SELECT 'wefwf' IN ('wee','wefwf','weg');
+	        -> 1
+	```
+	`IN()` can be used to compare row constructors:
+	```
+	mysql> SELECT (3,4) IN ((1,2), (3,4));
+	        -> 1
+	mysql> SELECT (3,4) IN ((1,2), (3,5));
+	        -> 0
+	```
+	You should never mix quoted and unquoted values in an `IN()` list because the comparison rules for quoted values (such as strings) and unquoted values (such as numbers) differ. Mixing types may therefore lead to inconsistent results. For example, do not write an `IN()` expression like this:
+	```
+	SELECT val1 FROM tbl1 WHERE val1 IN (1,2,'a');
+	```
+	Instead, write it like this:
+	```
+	SELECT val1 FROM tbl1 WHERE val1 IN ('1','2','a');
+	```
+	Implicit type conversion may produce nonintuitive results:
+	```
+	mysql> SELECT 'a' IN (0), 0 IN ('b');
+	        -> 1, 1
+	```
+	In both cases, the comparison values are converted to floating-point values, yielding 0.0 in each case, and a comparison result of 1 (true).
+	The number of values in the `IN()` list is only limited by the [`max_allowed_packet`](server-system-variables.md) value.
+	To comply with the SQL standard, `IN()` returns `NULL` not only if the expression on the left hand side is `NULL`, but also if no match is found in the list and one of the expressions in the list is `NULL`.
+	`IN()` syntax can also be used to write certain types of subqueries. See [Section 13.2.10.3, “Subqueries with ANY, IN, or SOME”](any-in-some-subqueries.md).
+- ``*`expr`*             NOT IN (*`value`*,...)``
+	This is the same as ``NOT             (*`expr`* IN             (*`value`*,...))``.
+- ``INTERVAL(*`N`*,*`N1`*,*`N2`*,*`N3`*,...)``
+	Returns `0` if *`N`* ≤ *`N1`*, `1` if *`N`* ≤ *`N2`* and so on, or `-1` if *`N`* is `NULL`. All arguments are treated as integers. It is required that *`N1`* ≤ *`N2`* ≤ *`N3`* ≤ `...` ≤ *`Nn`* for this function to work correctly. This is because a binary search is used (very fast).
+	```
+	mysql> SELECT INTERVAL(23, 1, 15, 17, 30, 44, 200);
+	        -> 3
+	mysql> SELECT INTERVAL(10, 1, 10, 100, 1000);
+	        -> 2
+	mysql> SELECT INTERVAL(22, 23, 30, 44, 200);
+	        -> 0
+	```
+- ``IS             *`boolean_value`*``
+	Tests a value against a boolean value, where *`boolean_value`* can be `TRUE`, `FALSE`, or `UNKNOWN`.
+	```
+	mysql> SELECT 1 IS TRUE, 0 IS FALSE, NULL IS UNKNOWN;
+	        -> 1, 1, 1
+	```
+- ``IS NOT             *`boolean_value`*``
+	Tests a value against a boolean value, where *`boolean_value`* can be `TRUE`, `FALSE`, or `UNKNOWN`.
+	```
+	mysql> SELECT 1 IS NOT UNKNOWN, 0 IS NOT UNKNOWN, NULL IS NOT UNKNOWN;
+	        -> 1, 1, 0
+	```
+- `IS NULL`
+	Tests whether a value is `NULL`.
+	```
+	mysql> SELECT 1 IS NULL, 0 IS NULL, NULL IS NULL;
+	        -> 0, 0, 1
+	```
+	To work well with ODBC programs, MySQL supports the following extra features when using `IS             NULL`:
+	- If [`sql_auto_is_null`](server-system-variables.md) variable is set to 1, then after a statement that successfully inserts an automatically generated `AUTO_INCREMENT` value, you can find that value by issuing a statement of the following form:
+		```
+		SELECT * FROM tbl_name WHERE auto_col IS NULL
+		```
+		If the statement returns a row, the value returned is the same as if you invoked the [`LAST_INSERT_ID()`](information-functions.md) function. For details, including the return value after a multiple-row insert, see [Section 12.15, “Information Functions”](information-functions.md). If no `AUTO_INCREMENT` value was successfully inserted, the [`SELECT`](select.md) statement returns no row.
+		The behavior of retrieving an `AUTO_INCREMENT` value by using an `IS NULL` comparison can be disabled by setting [`sql_auto_is_null = 0`](server-system-variables.md). See [Section 5.1.7, “Server System Variables”](server-system-variables.md).
+		The default value of [`sql_auto_is_null`](server-system-variables.md) is 0.
+	- For [`DATE`](datetime.md) and [`DATETIME`](datetime.md) columns that are declared as `NOT NULL`, you can find the special date `'0000-00-00'` by using a statement like this:
+		```
+		SELECT * FROM tbl_name WHERE date_column IS NULL
+		```
+		This is needed to get some ODBC applications to work because ODBC does not support a `'0000-00-00'` date value.
+		See [Obtaining Auto-Increment Values](https://docs.oracle.com/cd/E17952_01/connector-odbc-en/connector-odbc-usagenotes-functionality-last-insert-id.html), and the description for the `FLAG_AUTO_IS_NULL` option at [Connector/ODBC Connection Parameters](https://docs.oracle.com/cd/E17952_01/connector-odbc-en/connector-odbc-configuration-connection-parameters.html).
+- `IS NOT NULL`
+	Tests whether a value is not `NULL`.
+	```
+	mysql> SELECT 1 IS NOT NULL, 0 IS NOT NULL, NULL IS NOT NULL;
+	        -> 1, 1, 0
+	```
+- ``ISNULL(*`expr`*)``
+	If *`expr`* is `NULL`, `ISNULL()` returns `1`, otherwise it returns `0`.
+	```
+	mysql> SELECT ISNULL(1+1);
+	        -> 0
+	mysql> SELECT ISNULL(1/0);
+	        -> 1
+	```
+	`ISNULL()` can be used instead of `=` to test whether a value is `NULL`. (Comparing a value to `NULL` using `=` always yields `NULL`.)
+	The `ISNULL()` function shares some special behaviors with the `IS NULL` comparison operator. See the description of `IS NULL`.
+- ``LEAST(*`value1`*,*`value2`*,...)``
+	With two or more arguments, returns the smallest (minimum-valued) argument. The arguments are compared using the following rules:
+	- If any argument is `NULL`, the result is `NULL`. No comparison is needed.
+	- If all arguments are integer-valued, they are compared as integers.
+	- If at least one argument is double precision, they are compared as double-precision values. Otherwise, if at least one argument is a [`DECIMAL`](fixed-point-types.md) value, they are compared as [`DECIMAL`](fixed-point-types.md) values.
+	- If the arguments comprise a mix of numbers and strings, they are compared as numbers.
+	- If any argument is a nonbinary (character) string, the arguments are compared as nonbinary strings.
+	- In all other cases, the arguments are compared as binary strings.
+	The return type of `LEAST()` is the aggregated type of the comparison argument types.
+	```
+	mysql> SELECT LEAST(2,0);
+	        -> 0
+	mysql> SELECT LEAST(34.0,3.0,5.0,767.0);
+	        -> 3.0
+	mysql> SELECT LEAST('B','A','C');
+	        -> 'A'
+	```

@@ -1,0 +1,25 @@
+---
+title: "28.2 MySQL Enterprise Security Overview"
+book: MySQL 5.7 Reference Manual
+version: "5.7"
+source: "https://dev.mysql.com/doc/refman/5.7/en/mysql-enterprise-security.html"
+tags:
+  - mysql
+  - mysql-5.7
+  - reference-manual
+---
+
+MySQL 5.7 Reference Manual Including MySQL NDB Cluster 7.5 and NDB Cluster 7.6
+
+MySQL Enterprise Edition provides plugins that implement security features using external services:
+
+- MySQL Enterprise Edition includes an authentication plugin that enables MySQL Server to use LDAP (Lightweight Directory Access Protocol) to authenticate MySQL users. LDAP Authentications supports user name and password, SASL, and GSSAPI/Kerberos authentication methods to LDAP services. For more information, see [Section 6.4.1.9, “LDAP Pluggable Authentication”](ldap-pluggable-authentication.md).
+- MySQL Enterprise Edition includes an authentication plugin that enables MySQL Server to use Native Kerberos to authenticate MySQL users using there Kerberos Principals. For more information, see [Kerberos Pluggable Authentication](https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/kerberos-pluggable-authentication.html).
+- MySQL Enterprise Edition includes an authentication plugin that enables MySQL Server to use PAM (Pluggable Authentication Modules) to authenticate MySQL users. PAM enables a system to use a standard interface to access various kinds of authentication methods, such as Unix passwords or an LDAP directory. For more information, see [Section 6.4.1.7, “PAM Pluggable Authentication”](pam-pluggable-authentication.md).
+- MySQL Enterprise Edition includes an authentication plugin that performs external authentication on Windows, enabling MySQL Server to use native Windows services to authenticate client connections. Users who have logged in to Windows can connect from MySQL client programs to the server based on the information in their environment without specifying an additional password. For more information, see [Section 6.4.1.8, “Windows Pluggable Authentication”](windows-pluggable-authentication.md).
+- MySQL Enterprise Edition includes a suite of masking and de-identification functions that perform subsetting, random generation, and dictionary replacement to de-identify strings, numerics, phone numbers, emails and more. These functions enable masking existing data using several methods such as obfuscation (removing identifying characteristics), generation of formatted random data, and data replacement or substitution. For more information, see [Section 6.5, “MySQL Enterprise Data Masking and De-Identification”](data-masking.md).
+- MySQL Enterprise Edition includes a set of encryption functions based on the OpenSSL library that expose OpenSSL capabilities at the SQL level. For more information, see [Section 28.3, “MySQL Enterprise Encryption Overview”](mysql-enterprise-encryption.md).
+- MySQL Enterprise Edition 5.7 and higher includes a keyring plugin that uses Oracle Key Vault as a backend for keyring storage. For more information, see [Section 6.4.4, “The MySQL Keyring”](keyring.md).
+- MySQL Transparent Data Encryption (TDE) provides at-rest encryption for MySQL Server for all files that might contain sensitive data. For more information, see [Section 14.14, “InnoDB Data-at-Rest Encryption”](innodb-data-encryption.md), [Encrypting Binary Log Files and Relay Log Files](https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/replication-binlog-encryption.html), and [Encrypting Audit Log Files](audit-log-logging-configuration.md).
+
+For other related Enterprise security features, see [Section 28.3, “MySQL Enterprise Encryption Overview”](mysql-enterprise-encryption.md).
