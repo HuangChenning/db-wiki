@@ -18,8 +18,13 @@ For database administrators and developers, this collection covers database conc
 | Oracle 12c | 12 | [Version catalog](Oracle/Oracle12c/catalog.md) · [Database Concepts](Oracle/Oracle12c/concepts/contents.md) |
 | Oracle 19c | 17 | [Version catalog](Oracle/Oracle19c/catalog.md) · [Database Concepts](Oracle/Oracle19c/concepts/contents.md) |
 | Oracle 21c | 23 | [Version catalog](Oracle/Oracle21c/catalog.md) · [Database Concepts](Oracle/Oracle21c/concepts/contents.md) |
+| MySQL 5.6 | 2 | [Version catalog](MySQL/MySQL5.6/catalog.md) · [Reference Manual](MySQL/MySQL5.6/reference-manual/contents.md) |
+| MySQL 5.7 | 2 | [Version catalog](MySQL/MySQL5.7/catalog.md) · [Reference Manual](MySQL/MySQL5.7/reference-manual/contents.md) |
+| MySQL 8.0 | 2 | [Version catalog](MySQL/MySQL8.0/catalog.md) · [Reference Manual](MySQL/MySQL8.0/reference-manual/contents.md) |
 | MySQL 8.4 | 1 | [Version catalog](MySQL/MySQL8.4/catalog.md) · [Reference Manual](MySQL/MySQL8.4/reference-manual/contents.md) |
-| MySQL 9.7 | 1 | [Version catalog](MySQL/MySQL9.7/catalog.md) · [Reference Manual](MySQL/MySQL9.7/reference-manual/contents.md) |
+| MySQL 9.7 | 2 | [Version catalog](MySQL/MySQL9.7/catalog.md) · [Reference Manual](MySQL/MySQL9.7/reference-manual/contents.md) |
+| MySQL 26.7 | 1 | [Version catalog](MySQL/MySQL26.7/catalog.md) · [Reference Manual](MySQL/MySQL26.7/reference-manual/contents.md) |
+| MySQL 26.10 | 1 | [Version catalog](MySQL/MySQL26.10/catalog.md) · [Reference Manual](MySQL/MySQL26.10/reference-manual/contents.md) |
 | Dameng DM7 | 21 | [Version catalog](dameng/dm7/catalog.md) · [System Administrator's Manual](dameng/dm7/administrator/contents.md) |
 | Dameng DM8 | 56 | [Version catalog](dameng/dm8/catalog.md) · [System Administration](dameng/dm8/administrator/contents.md) |
 | HighGo V4.5 | 23 | [Version catalog](highgo/highgov45/catalog.md) · [Installation Manual](highgo/highgov45/develop-installation-manual/contents.md) |

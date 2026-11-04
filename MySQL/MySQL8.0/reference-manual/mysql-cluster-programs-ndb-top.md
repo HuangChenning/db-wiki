@@ -1,0 +1,192 @@
+---
+title: "25.5.29 ndb_top — View CPU usage information for NDB threads"
+book: MySQL 8.0 Reference Manual
+version: "8.0"
+source: "https://dev.mysql.com/doc/refman/8.0/en/mysql-cluster-programs-ndb-top.html"
+tags:
+  - mysql
+  - mysql-8.0
+  - reference-manual
+---
+
+MySQL 8.0 Reference Manual Including MySQL NDB Cluster 8.0
+
+### 25.5.29 ndb\_top — View CPU usage information for NDB threads
+
+**ndb\_top** displays running information in the terminal about CPU usage by NDB threads on an NDB Cluster data node. Each thread is represented by two rows in the output, the first showing system statistics, the second showing the measured statistics for the thread.
+
+**ndb\_top** is available beginning with MySQL NDB Cluster 7.6.3.
+
+#### Usage
+
+```
+ndb_top [-h hostname] [-t port] [-u user] [-p pass] [-n node_id]
+```
+
+**ndb\_top** connects to a MySQL Server running as an SQL node of the cluster. By default, it attempts to connect to a [**mysqld**](mysqld.md) running on `localhost` and port 3306, as the MySQL `root` user with no password specified. You can override the default host and port using, respectively, `--host` (`-h`) and `--port` (`-t`). To specify a MySQL user and password, use the `--user` (`-u`) and [`--passwd`](https://docs.oracle.com/cd/E17952_01/mysql-5.7-en/mysql-cluster-programs-ndb-top.html#option_ndb_top_passwd) (`-p`) options. This user must be able to read tables in the [`ndbinfo`](mysql-cluster-ndbinfo.md) database (**ndb\_top** uses information from [`ndbinfo.cpustat`](mysql-cluster-ndbinfo-cpustat.md) and related tables).
+
+For more information about MySQL user accounts and passwords, see [Section 8.2, “Access Control and Account Management”](access-control.md).
+
+Output is available as plain text or an ASCII graph; you can specify this using the `--text` (`-x`) and `--graph` (`-g`) options, respectively. These two display modes provide the same information; they can be used concurrently. At least one display mode must be in use.
+
+Color display of the graph is supported and enabled by default (`--color` or `-c` option). With color support enabled, the graph display shows OS user time in blue, OS system time in green, and idle time as blank. For measured load, blue is used for execution time, yellow for send time, red for time spent in send buffer full waits, and blank spaces for idle time. The percentage shown in the graph display is the sum of percentages for all threads which are not idle. Colors are not currently configurable; you can use grayscale instead by using `--skip-color`.
+
+The sorted view (`--sort`, `-r`) is based on the maximum of the measured load and the load reported by the OS. Display of these can be enabled and disabled using the `--measured-load` (`-m`) and `--os-load` (`-o`) options. Display of at least one of these loads must be enabled.
+
+The program tries to obtain statistics from a data node having the node ID given by the `--node-id` (`-n`) option; if unspecified, this is 1. **ndb\_top** cannot provide information about other types of nodes.
+
+The view adjusts itself to the height and width of the terminal window; the minimum supported width is 76 characters.
+
+Once started, **ndb\_top** runs continuously until forced to exit; you can quit the program using `Ctrl-C`. The display updates once per second; to set a different delay interval, use `--sleep-time` (`-s`).
+
+Note
+
+**ndb\_top** is available on macOS, Linux, and Solaris. It is not currently supported on Windows platforms.
+
+The following table includes all options that are specific to the NDB Cluster program **ndb\_top**. Additional descriptions follow the table.
+
+**Table 25.50 Command-line options used with the program ndb\_top**
+
+| Format | Description | Added, Deprecated, or Removed |
+| --- | --- | --- |
+| `--color`,  `  -c                  ` | Show ASCII graphs in color; use --skip-colors to disable | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --defaults-extra-file=path                  ` | Read given file after global files are read | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --defaults-file=path                  ` | Read default options from given file only | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --defaults-group-suffix=string                  ` | Also read groups with concat(group, suffix) | (Supported in all NDB releases based on MySQL 8.0) |
+| `--graph`,  `  -g                  ` | Display data using graphs; use --skip-graphs to disable | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --help                  ` | Show program usage information | (Supported in all NDB releases based on MySQL 8.0) |
+| `--host=string`,  `  -h                 string  ` | Host name or IP address of MySQL Server to connect to | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --login-path=path                  ` | Read given path from login file | (Supported in all NDB releases based on MySQL 8.0) |
+| `--measured-load`,  `                  -m                  ` | Show measured load by thread | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --no-defaults                  ` | Do not read default options from any option file other than login file | (Supported in all NDB releases based on MySQL 8.0) |
+| `--node-id=#`,  `  -n                 #  ` | Watch node having this node ID | (Supported in all NDB releases based on MySQL 8.0) |
+| `--os-load`,  `                  -o                  ` | Show load measured by operating system | (Supported in all NDB releases based on MySQL 8.0) |
+| `--password=password`,  `  -p                 password  ` | Connect using this password | (Supported in all NDB releases based on MySQL 8.0) |
+| `--port=#`,  `-P                 #` (>=7.6.6) | Port number to use when connecting to MySQL Server | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --print-defaults                  ` | Print program argument list and exit | (Supported in all NDB releases based on MySQL 8.0) |
+| `--sleep-time=#`,  `  -s                 #  ` | Time to wait between display refreshes, in seconds | (Supported in all NDB releases based on MySQL 8.0) |
+| `--socket=path`,  `  -S                 path  ` | Socket file to use for connection | (Supported in all NDB releases based on MySQL 8.0) |
+| `--sort`,  `  -r                  ` | Sort threads by usage; use --skip-sort to disable | (Supported in all NDB releases based on MySQL 8.0) |
+| `--text`,  `-t` (>=7.6.6) | Display data using text | (Supported in all NDB releases based on MySQL 8.0) |
+| `                  --usage                  ` | Show program usage information; same as --help | (Supported in all NDB releases based on MySQL 8.0) |
+| `--user=name`,  `  -u                 name  ` | Connect as this MySQL user | (Supported in all NDB releases based on MySQL 8.0) |
+
+#### Additional Options
+
+- `--color`, `-c`
+	| Command-Line Format | `--color` |
+	| --- | --- |
+	Show ASCII graphs in color; use `--skip-colors` to disable.
+- `--defaults-extra-file`
+	| Command-Line Format | `--defaults-extra-file=path` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `[none]` |
+	Read given file after global files are read.
+- `--defaults-file`
+	| Command-Line Format | `--defaults-file=path` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `[none]` |
+	Read default options from given file only.
+- `--defaults-group-suffix`
+	| Command-Line Format | `--defaults-group-suffix=string` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `[none]` |
+	Also read groups with concat(group, suffix).
+- `--graph`, `-g`
+	| Command-Line Format | `--graph` |
+	| --- | --- |
+	Display data using graphs; use `--skip-graphs` to disable. This option or `--text` must be true; both options may be true.
+- `--help`, `-?`
+	| Command-Line Format | `--help` |
+	| --- | --- |
+	Show program usage information.
+- `--host[`\= *`name]`*, `-h`
+	| Command-Line Format | `--host=string` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `localhost` |
+	Host name or IP address of MySQL Server to connect to.
+- `--login-path`
+	| Command-Line Format | `--login-path=path` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `[none]` |
+	Read given path from login file.
+- `--measured-load`, `-m`
+	| Command-Line Format | `--measured-load` |
+	| --- | --- |
+	Show measured load by thread. This option or `--os-load` must be true; both options may be true.
+- `--no-defaults`
+	| Command-Line Format | `--no-defaults` |
+	| --- | --- |
+	Do not read default options from any option file other than login file.
+- `--node-id[`\= *`#]`*, `-n`
+	| Command-Line Format | `--node-id=#` |
+	| --- | --- |
+	| Type | Integer |
+	| Default Value | `1` |
+	Watch the data node having this node ID.
+- `--os-load`, `-o`
+	| Command-Line Format | `--os-load` |
+	| --- | --- |
+	Show load measured by operating system. This option or `--measured-load` must be true; both options may be true.
+- `--password[`\= *`password]`*, `-p`
+	| Command-Line Format | `--password=password` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `NULL` |
+	Connect to a MySQL Server using this password and the MySQL user specified by `--user`.
+	This password is associated with a MySQL user account only, and is not related in any way to the password used with encrypted `NDB` backups.
+- `--port[`\= *`#]`*, `-P`
+	| Command-Line Format | `--port=#` |
+	| --- | --- |
+	| Type | Integer |
+	| Default Value | `3306` |
+	Port number to use when connecting to MySQL Server.
+	(Formerly, the short form for this option was `-t`, which was repurposed as the short form of `--text`.)
+- `--print-defaults`
+	| Command-Line Format | `--print-defaults` |
+	| --- | --- |
+	Print program argument list and exit.
+- `--sleep-time[`\= *`seconds]`*, `-s`
+	| Command-Line Format | `--sleep-time=#` |
+	| --- | --- |
+	| Type | Integer |
+	| Default Value | `1` |
+	Time to wait between display refreshes, in seconds.
+- ``--socket=*`path/to/file`*``, `-S`
+	| Command-Line Format | `--socket=path` |
+	| --- | --- |
+	| Type | Path name |
+	| Default Value | `[none]` |
+	Use the specified socket file for the connection.
+- `--sort`, `-r`
+	| Command-Line Format | `--sort` |
+	| --- | --- |
+	Sort threads by usage; use `--skip-sort` to disable.
+- `--text`, `-t`
+	| Command-Line Format | `--text` |
+	| --- | --- |
+	Display data using text. This option or `--graph` must be true; both options may be true.
+	(The short form for this option was `-x` in previous versions of NDB Cluster, but this is no longer supported.)
+- `--usage`
+	| Command-Line Format | `--usage` |
+	| --- | --- |
+	Display help text and exit; same as `--help`.
+- `--user[`\= *`name]`*, `-u`
+	| Command-Line Format | `--user=name` |
+	| --- | --- |
+	| Type | String |
+	| Default Value | `root` |
+	Connect as this MySQL user. Normally requires a password supplied by the `--password` option.
+
+**Sample Output.** The next figure shows **ndb\_top** running in a terminal window on a Linux system with an [**ndbmtd**](mysql-cluster-programs-ndbmtd.md) data node under a moderate load. Here, the program has been invoked using **ndb\_top** `-n8` `-x` to provide both text and graph output:
+
+**Figure 25.5 ndb\_top Running in Terminal**
+
+![Display from ndb_top, running in a terminal window. Shows information for each node, including the utilized resources.](img/ndb-top-1.png)  
+
+Beginning with NDB 8.0.20, **ndb\_top** also shows spin times for threads, displayed in green.

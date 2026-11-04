@@ -18,8 +18,13 @@ Oracle、MySQL、达梦与瀚高数据库文档的 Markdown 阅读库，按版�
 | Oracle 12c | 12 | [版本总目录](Oracle/Oracle12c/catalog.md) · [数据库概念](Oracle/Oracle12c/concepts/contents.md) |
 | Oracle 19c | 17 | [版本总目录](Oracle/Oracle19c/catalog.md) · [数据库概念](Oracle/Oracle19c/concepts/contents.md) |
 | Oracle 21c | 23 | [版本总目录](Oracle/Oracle21c/catalog.md) · [数据库概念](Oracle/Oracle21c/concepts/contents.md) |
+| MySQL 5.6 | 2 | [版本总目录](MySQL/MySQL5.6/catalog.md) · [参考手册](MySQL/MySQL5.6/reference-manual/contents.md) |
+| MySQL 5.7 | 2 | [版本总目录](MySQL/MySQL5.7/catalog.md) · [参考手册](MySQL/MySQL5.7/reference-manual/contents.md) |
+| MySQL 8.0 | 2 | [版本总目录](MySQL/MySQL8.0/catalog.md) · [参考手册](MySQL/MySQL8.0/reference-manual/contents.md) |
 | MySQL 8.4 | 1 | [版本总目录](MySQL/MySQL8.4/catalog.md) · [参考手册](MySQL/MySQL8.4/reference-manual/contents.md) |
-| MySQL 9.7 | 1 | [版本总目录](MySQL/MySQL9.7/catalog.md) · [参考手册](MySQL/MySQL9.7/reference-manual/contents.md) |
+| MySQL 9.7 | 2 | [版本总目录](MySQL/MySQL9.7/catalog.md) · [参考手册](MySQL/MySQL9.7/reference-manual/contents.md) |
+| MySQL 26.7 | 1 | [版本总目录](MySQL/MySQL26.7/catalog.md) · [参考手册](MySQL/MySQL26.7/reference-manual/contents.md) |
+| MySQL 26.10 | 1 | [版本总目录](MySQL/MySQL26.10/catalog.md) · [参考手册](MySQL/MySQL26.10/reference-manual/contents.md) |
 | 达梦 DM7 | 21 | [版本总目录](dameng/dm7/catalog.md) · [系统管理员手册](dameng/dm7/administrator/contents.md) |
 | 达梦 DM8 | 56 | [版本总目录](dameng/dm8/catalog.md) · [系统管理](dameng/dm8/administrator/contents.md) |
 | 瀚高 V4.5 | 23 | [版本总目录](highgo/highgov45/catalog.md) · [安装手册](highgo/highgov45/develop-installation-manual/contents.md) |

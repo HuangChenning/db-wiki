@@ -1,0 +1,25 @@
+---
+title: "8.15.13 Displaying Traces in Other Applications"
+book: MySQL 5.7 Reference Manual
+version: "5.7"
+source: "https://dev.mysql.com/doc/refman/5.7/en/displaying-traces.html"
+tags:
+  - mysql
+  - mysql-5.7
+  - reference-manual
+---
+
+MySQL 5.7 Reference Manual Including MySQL NDB Cluster 7.5 and NDB Cluster 7.6
+
+### 8.15.13 Displaying Traces in Other Applications
+
+Examining a trace in the [**mysql**](mysql.md) command-line client can be made less difficult using the `pager       less` command (or your operating platform's equivalent). An alternative can be to send the trace to a file, similarly to what is shown here:
+
+```
+SELECT TRACE INTO DUMPFILE file
+FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE;
+```
+
+You can then pass this file to a JSON-aware text editor or other viewer, such as the [JsonView add-on for Firefox and Chrome](https://jsonview.com/), which shows objects in color and allows objects to be expanded or collapsed.
+
+`INTO DUMPFILE` is preferable to `INTO       OUTFILE` for this purpose, since the latter escapes newlines. As noted previously, you should ensure that [`end_markers_in_json`](server-system-variables.md) is `OFF` when executing the `SELECT       INTO` statement, so that the output is valid JSON.

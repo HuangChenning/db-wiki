@@ -1,0 +1,18 @@
+---
+title: "MySQL :: MySQL 26.7 Reference Manual :: 20.1.3 Multi-Primary and Single-Primary Modes"
+book: MySQL 26.7 Reference Manual
+version: "26.7"
+source: "https://dev.mysql.com/doc/refman/26.7/en/group-replication-deploying-in-multi-primary-or-single-primary-mode.html"
+tags:
+  - mysql
+  - mysql-26.7
+  - reference-manual
+---
+
+### 20.1.3 Multi-Primary and Single-Primary Modes
+
+Group Replication operates either in single-primary mode or in multi-primary mode. The group's mode is a group-wide configuration setting, specified by the [`group_replication_single_primary_mode`](group-replication-system-variables.md) system variable, which must be the same on all members. `ON` means single-primary mode, which is the default mode, and `OFF` means multi-primary mode. It is not possible to have members of the group deployed in different modes, for example one member configured in multi-primary mode while another member is in single-primary mode.
+
+You cannot change the value of [`group_replication_single_primary_mode`](group-replication-system-variables.md) manually while Group Replication is running. You can use the [`group_replication_switch_to_single_primary_mode()`](group-replication-functions-for-mode.md) and [`group_replication_switch_to_multi_primary_mode()`](group-replication-functions-for-mode.md) functions to move a group from one mode to another while Group Replication is still running. These functions manage the process of changing the group's mode and ensure the safety and consistency of your data. In earlier releases, to change the group's mode you must stop Group Replication and change the value of [`group_replication_single_primary_mode`](group-replication-system-variables.md) on all members. Then carry out a full reboot of the group (a bootstrap by a server with [`group_replication_bootstrap_group=ON`](group-replication-system-variables.md)) to implement the change to the new operating configuration. You do not need to restart the servers.
+
+Regardless of the deployed mode, Group Replication does not handle client-side failover. That must be handled by a middleware framework such as [MySQL Router 26.7](https://dev.mysql.com/doc/mysql-router/26.7/en/), a proxy, a connector, or the application itself.

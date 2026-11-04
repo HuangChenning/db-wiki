@@ -1,0 +1,20 @@
+---
+title: "MySQL :: MySQL 26.10 Reference Manual :: 15.5.3 DEALLOCATE PREPARE Statement"
+book: MySQL 26.10 Reference Manual
+version: "26.10"
+source: "https://dev.mysql.com/doc/refman/26.10/en/deallocate-prepare.html"
+tags:
+  - mysql
+  - mysql-26.10
+  - reference-manual
+---
+
+### 15.5.3 DEALLOCATE PREPARE Statement
+
+```sql
+{DEALLOCATE | DROP} PREPARE stmt_name
+```
+
+To deallocate a prepared statement produced with [`PREPARE`](prepare.md), use a `DEALLOCATE PREPARE` statement that refers to the prepared statement name. Attempting to execute a prepared statement after deallocating it results in an error. If too many prepared statements are created and not deallocated by either the `DEALLOCATE PREPARE` statement or the end of the session, you might encounter the upper limit enforced by the [`max_prepared_stmt_count`](server-system-variables.md) system variable.
+
+For examples, see [Section 15.5, “Prepared Statements”](sql-prepared-statements.md).

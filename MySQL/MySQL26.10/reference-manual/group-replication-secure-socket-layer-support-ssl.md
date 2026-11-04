@@ -1,0 +1,77 @@
+---
+title: "MySQL :: MySQL 26.10 Reference Manual :: 20.6.2 Securing Group Communication Connections with Secure Socket Layer (SSL)"
+book: MySQL 26.10 Reference Manual
+version: "26.10"
+source: "https://dev.mysql.com/doc/refman/26.10/en/group-replication-secure-socket-layer-support-ssl.html"
+tags:
+  - mysql
+  - mysql-26.10
+  - reference-manual
+---
+
+### 20.6.2 Securing Group Communication Connections with Secure Socket Layer (SSL)
+
+Secure sockets can be used for group communication connections between members of a group.
+
+The Group Replication system variable [`group_replication_ssl_mode`](group-replication-system-variables.md) is used to activate the use of SSL for group communication connections and specify the security mode for the connections. This value should be the same on all group members; if it differs, some members may not be able to join the group. The default setting means that SSL is not used. This variable has the following possible values:
+
+**Table 20.1 group\_replication\_ssl\_mode configuration values**
+
+| Value | Description |
+| --- | --- |
+| `DISABLED` | Establish an unencrypted connection (the default). |
+| `REQUIRED` | Establish a secure connection if the server supports secure connections. |
+| `VERIFY_CA` | Like `REQUIRED`, but additionally verify the server TLS certificate against the configured Certificate Authority (CA) certificates. |
+| `VERIFY_IDENTITY` | Like `VERIFY_CA`, but additionally verify that the server certificate matches the host to which the connection is attempted. |
+
+If SSL is used, the means for configuring the secure connection depends on whether the XCom or the MySQL communication stack is used for group communication.
+
+**When using the XCom communication stack (`group_replication_communication_stack=XCOM`):** The remainder of the configuration for Group Replication's group communication connections is taken from the server's SSL configuration. For more information on the options for configuring the server SSL, see [Command Options for Encrypted Connections](connection-options.md). The server SSL options that are applied to Group Replication's group communication connections are as follows:
+
+**Table 20.2 SSL Options**
+
+| Server Configuration | Description |
+| --- | --- |
+| [`ssl_key`](server-system-variables.md) | The path name of the SSL private key file in PEM format. On the client side, this is the client private key. On the server side, this is the server private key. |
+| [`ssl_cert`](server-system-variables.md) | The path name of the SSL public key certificate file in PEM format. On the client side, this is the client public key certificate. On the server side, this is the server public key certificate. |
+| [`ssl_ca`](server-system-variables.md) | The path name of the Certificate Authority (CA) certificate file in PEM format. |
+| [`ssl_capath`](server-system-variables.md) | The path name of the directory that contains trusted SSL certificate authority (CA) certificate files in PEM format. |
+| [`ssl_crl`](server-system-variables.md) | The path name of the file containing certificate revocation lists in PEM format. |
+| [`ssl_crlpath`](server-system-variables.md) | The path name of the directory that contains certificate revocation list files in PEM format. |
+| [`ssl_cipher`](server-system-variables.md) | A list of permissible ciphers for encrypted connections. |
+| [`tls_version`](server-system-variables.md) | A list of the TLS protocols the server permits for encrypted connections. |
+| [`tls_ciphersuites`](server-system-variables.md) | Which TLSv1.3 ciphersuites the server permits for encrypted connections. |
+
+Important
+
+- Support for the TLSv1 and TLSv1.1 connection protocols was removed in MySQL 8.0. MySQL clients, including Group Replication server instances acting as clients, do not return warnings to the user if a deprecated TLS protocol version is used. See [Removal of Support for the TLSv1 and TLSv1.1 Protocols](https://dev.mysql.com/doc/refman/8.4/en/encrypted-connection-protocols-ciphers.html#encrypted-connection-deprecated-protocols) for more information.
+- MySQL 26.10 supports the TLSv1.3 protocol, provided that the MySQL Server was compiled using OpenSSL 1.1.1. The server checks the version of OpenSSL at startup; if it is lower than 1.1.1, TLSv1.3 is removed from the default values for all server system variables relating to TLS versions, including [`group_replication_recovery_tls_version`](group-replication-system-variables.md).
+- MySQL 26.10 Group Replication supports TLSv1.3.
+- Use [`group_replication_recovery_tls_version`](group-replication-system-variables.md) and [`group_replication_recovery_tls_ciphersuites`](group-replication-system-variables.md) to configure client support for any selection of ciphersuites, including only non-default ciphersuites if desired.
+- In the list of TLS protocols specified in the [`tls_version`](server-system-variables.md) system variable, ensure the specified versions are contiguous (for example, `TLSv1.2,TLSv1.3`). If there are any gaps in the list of protocols (for example, if you specified `TLSv1,TLSv1.2`, omitting TLS 1.1) Group Replication might be unable to make group communication connections.
+
+In a replication group, OpenSSL negotiates the use of the highest TLS protocol that is supported by all members. A joining member that is configured to use only TLSv1.3 ([`tls_version=TLSv1.3`](server-system-variables.md)) cannot join a replication group where any existing member does not support TLSv1.3, because the group members in that case are using a lower TLS protocol version. To join the member to the group, you must configure the joining member to also permit the use of lower TLS protocol versions supported by the existing group members. Conversely, if a joining member does not support TLSv1.3, but the existing group members all do and are using that version for connections to each other, the member can join if the existing group members already permit the use of a suitable lower TLS protocol version, or if you configure them to do so. In that situation, OpenSSL uses a lower TLS protocol version for the connections from each member to the joining member. Each member's connections to other existing members continue to use the highest available protocol that both members support.
+
+You can change the [`tls_version`](server-system-variables.md) system variable at runtime to alter the list of permitted TLS protocol versions for the server. For Group Replication, the [`ALTER INSTANCE RELOAD TLS`](alter-instance.md) statement, which reconfigures the server's TLS context from the current values of the system variables that define the context, does not change the TLS context for Group Replication's group communication connection while Group Replication is running. To apply the reconfiguration to these connections, you must execute [`STOP GROUP_REPLICATION`](stop-group-replication.md) followed by [`START GROUP_REPLICATION`](start-group-replication.md) to restart Group Replication on the member or members where you changed the [`tls_version`](server-system-variables.md) system variable. Similarly, if you want to make all members of a group change to using a higher or lower TLS protocol version, you must carry out a rolling restart of Group Replication on the members after changing the list of permitted TLS protocol versions, so that OpenSSL negotiates the use of the higher TLS protocol version when the rolling restart is completed. For instructions to change the list of permitted TLS protocol versions at runtime, see [Section 8.3.2, “Encrypted Connection TLS Protocols and Ciphers”](encrypted-connection-protocols-ciphers.md) and [Server-Side Runtime Configuration and Monitoring for Encrypted Connections](using-encrypted-connections.md).
+
+The following example shows a section from a `my.cnf` file that configures SSL on a server, and activates SSL for Group Replication group communication connections:
+
+```svg
+[mysqld]
+ssl_ca = "cacert.pem"
+ssl_capath = "/.../ca_directory"
+ssl_cert = "server-cert.pem"
+ssl_cipher = "DHE-RSA-AEs256-SHA"
+ssl_crl = "crl-server-revoked.crl"
+ssl_crlpath = "/.../crl_directory"
+ssl_key = "server-key.pem"
+group_replication_ssl_mode= REQUIRED
+```
+
+Important
+
+The [`ALTER INSTANCE RELOAD TLS`](alter-instance.md) statement, which reconfigures the server's TLS context from the current values of the system variables that define the context, does not change the TLS context for Group Replication's group communication connections while Group Replication is running. To apply the reconfiguration to these connections, you must execute [`STOP GROUP_REPLICATION`](stop-group-replication.md) followed by [`START GROUP_REPLICATION`](start-group-replication.md) to restart Group Replication.
+
+Connections made between a joining member and an existing member for distributed recovery are not covered by the options described above. These connections use Group Replication's dedicated distributed recovery SSL options, which are described in [Section 20.6.3.2, “Secure Socket Layer (SSL) Connections for Distributed Recovery”](group-replication-configuring-ssl-for-recovery.md).
+
+**When using the MySQL communication stack (group\_replication\_communication\_stack=MYSQL):** The security settings for distributed recovery of the group are applied to the normal communications between group members. See [Section 20.6.3, “Securing Distributed Recovery Connections”](group-replication-distributed-recovery-securing.md) on how to configure the security settings.

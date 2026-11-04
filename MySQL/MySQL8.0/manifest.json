@@ -1,0 +1,5783 @@
+{
+  "product": "MySQL 8.0",
+  "version": "8.0",
+  "tags": [
+    "mysql",
+    "mysql-8.0"
+  ],
+  "out": "/Users/huangcn/github/db-wiki/MySQL/MySQL8.0",
+  "books": [
+    {
+      "slug": "reference-manual",
+      "title": "MySQL 8.0 Reference Manual",
+      "summary": "MySQL 8.0 与 NDB Cluster 8.0 的安装、管理、SQL、存储引擎、复制、性能、安全和 API 参考。",
+      "group": "参考手册",
+      "base_url": "https://dev.mysql.com/doc/refman/8.0/en/",
+      "fetch_base_url": "https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/",
+      "chapters": [
+        {
+          "href": "preface.html",
+          "title": "Preface and Legal Notices"
+        },
+        {
+          "href": "introduction.html",
+          "title": "1 General Information"
+        },
+        {
+          "href": "manual-info.html",
+          "title": "1.1 About This Manual"
+        },
+        {
+          "href": "what-is.html",
+          "title": "1.2 Overview of the MySQL Database Management System"
+        },
+        {
+          "href": "what-is-mysql.html",
+          "title": "1.2.1 What is MySQL?"
+        },
+        {
+          "href": "features.html",
+          "title": "1.2.2 The Main Features of MySQL"
+        },
+        {
+          "href": "history.html",
+          "title": "1.2.3 History of MySQL"
+        },
+        {
+          "href": "mysql-nutshell.html",
+          "title": "1.3 What Is New in MySQL 8.0"
+        },
+        {
+          "href": "added-deprecated-removed.html",
+          "title": "1.4 Server and Status Variables and Options Added, Deprecated, or Removed in MySQL 8.0"
+        },
+        {
+          "href": "bug-reports.html",
+          "title": "1.5 How to Report Bugs or Problems"
+        },
+        {
+          "href": "compatibility.html",
+          "title": "1.6 MySQL Standards Compliance"
+        },
+        {
+          "href": "extensions-to-ansi.html",
+          "title": "1.6.1 MySQL Extensions to Standard SQL"
+        },
+        {
+          "href": "differences-from-ansi.html",
+          "title": "1.6.2 MySQL Differences from Standard SQL"
+        },
+        {
+          "href": "constraints.html",
+          "title": "1.6.3 How MySQL Deals with Constraints"
+        },
+        {
+          "href": "installing.html",
+          "title": "2 Installing MySQL"
+        },
+        {
+          "href": "general-installation-issues.html",
+          "title": "2.1 General Installation Guidance"
+        },
+        {
+          "href": "platform-support.html",
+          "title": "2.1.1 Supported Platforms"
+        },
+        {
+          "href": "which-version.html",
+          "title": "2.1.2 Which MySQL Version and Distribution to Install"
+        },
+        {
+          "href": "getting-mysql.html",
+          "title": "2.1.3 How to Get MySQL"
+        },
+        {
+          "href": "verifying-package-integrity.html",
+          "title": "2.1.4 Verifying Package Integrity Using MD5 Checksums or GnuPG"
+        },
+        {
+          "href": "installation-layouts.html",
+          "title": "2.1.5 Installation Layouts"
+        },
+        {
+          "href": "compiler-characteristics.html",
+          "title": "2.1.6 Compiler-Specific Build Characteristics"
+        },
+        {
+          "href": "binary-installation.html",
+          "title": "2.2 Installing MySQL on Unix/Linux Using Generic Binaries"
+        },
+        {
+          "href": "windows-installation.html",
+          "title": "2.3 Installing MySQL on Microsoft Windows"
+        },
+        {
+          "href": "windows-installation-layout.html",
+          "title": "2.3.1 MySQL Installation Layout on Microsoft Windows"
+        },
+        {
+          "href": "windows-choosing-package.html",
+          "title": "2.3.2 Choosing an Installation Package"
+        },
+        {
+          "href": "mysql-installer.html",
+          "title": "2.3.3 MySQL Installer for Windows"
+        },
+        {
+          "href": "windows-install-archive.html",
+          "title": "2.3.4 Installing MySQL on Microsoft Windows Using a noinstall ZIP Archive"
+        },
+        {
+          "href": "windows-troubleshooting.html",
+          "title": "2.3.5 Troubleshooting a Microsoft Windows MySQL Server Installation"
+        },
+        {
+          "href": "windows-postinstallation.html",
+          "title": "2.3.6 Windows Postinstallation Procedures"
+        },
+        {
+          "href": "windows-restrictions.html",
+          "title": "2.3.7 Windows Platform Restrictions"
+        },
+        {
+          "href": "macos-installation.html",
+          "title": "2.4 Installing MySQL on macOS"
+        },
+        {
+          "href": "macos-installation-notes.html",
+          "title": "2.4.1 General Notes on Installing MySQL on macOS"
+        },
+        {
+          "href": "macos-installation-pkg.html",
+          "title": "2.4.2 Installing MySQL on macOS Using Native Packages"
+        },
+        {
+          "href": "macos-installation-launchd.html",
+          "title": "2.4.3 Installing and Using the MySQL Launch Daemon"
+        },
+        {
+          "href": "macos-installation-prefpane.html",
+          "title": "2.4.4 Installing and Using the MySQL Preference Pane"
+        },
+        {
+          "href": "linux-installation.html",
+          "title": "2.5 Installing MySQL on Linux"
+        },
+        {
+          "href": "linux-installation-yum-repo.html",
+          "title": "2.5.1 Installing MySQL on Linux Using the MySQL Yum Repository"
+        },
+        {
+          "href": "linux-installation-apt-repo.html",
+          "title": "2.5.2 Installing MySQL on Linux Using the MySQL APT Repository"
+        },
+        {
+          "href": "linux-installation-sles-repo.html",
+          "title": "2.5.3 Installing MySQL on Linux Using the MySQL SLES Repository"
+        },
+        {
+          "href": "linux-installation-rpm.html",
+          "title": "2.5.4 Installing MySQL on Linux Using RPM Packages from Oracle"
+        },
+        {
+          "href": "linux-installation-debian.html",
+          "title": "2.5.5 Installing MySQL on Linux Using Debian Packages from Oracle"
+        },
+        {
+          "href": "linux-installation-docker.html",
+          "title": "2.5.6 Deploying MySQL on Linux with Docker Containers"
+        },
+        {
+          "href": "linux-installation-native.html",
+          "title": "2.5.7 Installing MySQL on Linux from the Native Software Repositories"
+        },
+        {
+          "href": "linux-installation-juju.html",
+          "title": "2.5.8 Installing MySQL on Linux with Juju"
+        },
+        {
+          "href": "using-systemd.html",
+          "title": "2.5.9 Managing MySQL Server with systemd"
+        },
+        {
+          "href": "uln-installation.html",
+          "title": "2.6 Installing MySQL Using Unbreakable Linux Network (ULN)"
+        },
+        {
+          "href": "solaris-installation.html",
+          "title": "2.7 Installing MySQL on Solaris"
+        },
+        {
+          "href": "solaris-installation-pkg.html",
+          "title": "2.7.1 Installing MySQL on Solaris Using a Solaris PKG"
+        },
+        {
+          "href": "source-installation.html",
+          "title": "2.8 Installing MySQL from Source"
+        },
+        {
+          "href": "source-installation-methods.html",
+          "title": "2.8.1 Source Installation Methods"
+        },
+        {
+          "href": "source-installation-prerequisites.html",
+          "title": "2.8.2 Source Installation Prerequisites"
+        },
+        {
+          "href": "source-installation-layout.html",
+          "title": "2.8.3 MySQL Layout for Source Installation"
+        },
+        {
+          "href": "installing-source-distribution.html",
+          "title": "2.8.4 Installing MySQL Using a Standard Source Distribution"
+        },
+        {
+          "href": "installing-development-tree.html",
+          "title": "2.8.5 Installing MySQL Using a Development Source Tree"
+        },
+        {
+          "href": "source-ssl-library-configuration.html",
+          "title": "2.8.6 Configuring SSL Library Support"
+        },
+        {
+          "href": "source-configuration-options.html",
+          "title": "2.8.7 MySQL Source-Configuration Options"
+        },
+        {
+          "href": "compilation-problems.html",
+          "title": "2.8.8 Dealing with Problems Compiling MySQL"
+        },
+        {
+          "href": "source-configuration-third-party.html",
+          "title": "2.8.9 MySQL Configuration and Third-Party Tools"
+        },
+        {
+          "href": "source-installation-doxygen.html",
+          "title": "2.8.10 Generating MySQL Doxygen Documentation Content"
+        },
+        {
+          "href": "postinstallation.html",
+          "title": "2.9 Postinstallation Setup and Testing"
+        },
+        {
+          "href": "data-directory-initialization.html",
+          "title": "2.9.1 Initializing the Data Directory"
+        },
+        {
+          "href": "starting-server.html",
+          "title": "2.9.2 Starting the Server"
+        },
+        {
+          "href": "testing-server.html",
+          "title": "2.9.3 Testing the Server"
+        },
+        {
+          "href": "default-privileges.html",
+          "title": "2.9.4 Securing the Initial MySQL Account"
+        },
+        {
+          "href": "automatic-start.html",
+          "title": "2.9.5 Starting and Stopping MySQL Automatically"
+        },
+        {
+          "href": "perl-support.html",
+          "title": "2.10 Perl Installation Notes"
+        },
+        {
+          "href": "perl-installation.html",
+          "title": "2.10.1 Installing Perl on Unix"
+        },
+        {
+          "href": "activestate-perl.html",
+          "title": "2.10.2 Installing ActiveState Perl on Windows"
+        },
+        {
+          "href": "perl-support-problems.html",
+          "title": "2.10.3 Problems Using the Perl DBI/DBD Interface"
+        },
+        {
+          "href": "upgrading.html",
+          "title": "3 Upgrading MySQL"
+        },
+        {
+          "href": "upgrade-before-you-begin.html",
+          "title": "3.1 Before You Begin"
+        },
+        {
+          "href": "upgrade-paths.html",
+          "title": "3.2 Upgrade Paths"
+        },
+        {
+          "href": "upgrade-best-practices.html",
+          "title": "3.3 Upgrade Best Practices"
+        },
+        {
+          "href": "upgrading-what-is-upgraded.html",
+          "title": "3.4 What the MySQL Upgrade Process Upgrades"
+        },
+        {
+          "href": "upgrading-from-previous-series.html",
+          "title": "3.5 Changes in MySQL 8.0"
+        },
+        {
+          "href": "upgrade-prerequisites.html",
+          "title": "3.6 Preparing Your Installation for Upgrade"
+        },
+        {
+          "href": "upgrade-binary-package.html",
+          "title": "3.7 Upgrading MySQL Binary or Package-based Installations on Unix/Linux"
+        },
+        {
+          "href": "updating-yum-repo.html",
+          "title": "3.8 Upgrading MySQL with the MySQL Yum Repository"
+        },
+        {
+          "href": "updating-apt-repo.html",
+          "title": "3.9 Upgrading MySQL with the MySQL APT Repository"
+        },
+        {
+          "href": "updating-sles-repo.html",
+          "title": "3.10 Upgrading MySQL with the MySQL SLES Repository"
+        },
+        {
+          "href": "windows-upgrading.html",
+          "title": "3.11 Upgrading MySQL on Windows"
+        },
+        {
+          "href": "upgrade-docker-mysql.html",
+          "title": "3.12 Upgrading a Docker Installation of MySQL"
+        },
+        {
+          "href": "upgrade-troubleshooting.html",
+          "title": "3.13 Upgrade Troubleshooting"
+        },
+        {
+          "href": "rebuilding-tables.html",
+          "title": "3.14 Rebuilding or Repairing Tables or Indexes"
+        },
+        {
+          "href": "copying-databases.html",
+          "title": "3.15 Copying MySQL Databases to Another Machine"
+        },
+        {
+          "href": "downgrading.html",
+          "title": "4 Downgrading MySQL"
+        },
+        {
+          "href": "tutorial.html",
+          "title": "5 Tutorial"
+        },
+        {
+          "href": "connecting-disconnecting.html",
+          "title": "5.1 Connecting to and Disconnecting from the Server"
+        },
+        {
+          "href": "entering-queries.html",
+          "title": "5.2 Entering Queries"
+        },
+        {
+          "href": "database-use.html",
+          "title": "5.3 Creating and Using a Database"
+        },
+        {
+          "href": "creating-database.html",
+          "title": "5.3.1 Creating and Selecting a Database"
+        },
+        {
+          "href": "creating-tables.html",
+          "title": "5.3.2 Creating a Table"
+        },
+        {
+          "href": "loading-tables.html",
+          "title": "5.3.3 Loading Data into a Table"
+        },
+        {
+          "href": "retrieving-data.html",
+          "title": "5.3.4 Retrieving Information from a Table"
+        },
+        {
+          "href": "getting-information.html",
+          "title": "5.4 Getting Information About Databases and Tables"
+        },
+        {
+          "href": "batch-mode.html",
+          "title": "5.5 Using mysql in Batch Mode"
+        },
+        {
+          "href": "examples.html",
+          "title": "5.6 Examples of Common Queries"
+        },
+        {
+          "href": "example-maximum-column.html",
+          "title": "5.6.1 The Maximum Value for a Column"
+        },
+        {
+          "href": "example-maximum-row.html",
+          "title": "5.6.2 The Row Holding the Maximum of a Certain Column"
+        },
+        {
+          "href": "example-maximum-column-group.html",
+          "title": "5.6.3 Maximum of Column per Group"
+        },
+        {
+          "href": "example-maximum-column-group-row.html",
+          "title": "5.6.4 The Rows Holding the Group-wise Maximum of a Certain Column"
+        },
+        {
+          "href": "example-user-variables.html",
+          "title": "5.6.5 Using User-Defined Variables"
+        },
+        {
+          "href": "example-foreign-keys.html",
+          "title": "5.6.6 Using Foreign Keys"
+        },
+        {
+          "href": "searching-on-two-keys.html",
+          "title": "5.6.7 Searching on Two Keys"
+        },
+        {
+          "href": "calculating-days.html",
+          "title": "5.6.8 Calculating Visits Per Day"
+        },
+        {
+          "href": "example-auto-increment.html",
+          "title": "5.6.9 Using AUTO_INCREMENT"
+        },
+        {
+          "href": "apache.html",
+          "title": "5.7 Using MySQL with Apache"
+        },
+        {
+          "href": "programs.html",
+          "title": "6 MySQL Programs"
+        },
+        {
+          "href": "programs-overview.html",
+          "title": "6.1 Overview of MySQL Programs"
+        },
+        {
+          "href": "programs-using.html",
+          "title": "6.2 Using MySQL Programs"
+        },
+        {
+          "href": "invoking-programs.html",
+          "title": "6.2.1 Invoking MySQL Programs"
+        },
+        {
+          "href": "program-options.html",
+          "title": "6.2.2 Specifying Program Options"
+        },
+        {
+          "href": "connection-options.html",
+          "title": "6.2.3 Command Options for Connecting to the Server"
+        },
+        {
+          "href": "connecting.html",
+          "title": "6.2.4 Connecting to the MySQL Server Using Command Options"
+        },
+        {
+          "href": "connecting-using-uri-or-key-value-pairs.html",
+          "title": "6.2.5 Connecting to the Server Using URI-Like Strings or Key-Value Pairs"
+        },
+        {
+          "href": "connecting-using-dns-srv.html",
+          "title": "6.2.6 Connecting to the Server Using DNS SRV Records"
+        },
+        {
+          "href": "transport-protocols.html",
+          "title": "6.2.7 Connection Transport Protocols"
+        },
+        {
+          "href": "connection-compression-control.html",
+          "title": "6.2.8 Connection Compression Control"
+        },
+        {
+          "href": "setting-environment-variables.html",
+          "title": "6.2.9 Setting Environment Variables"
+        },
+        {
+          "href": "programs-server.html",
+          "title": "6.3 Server and Server-Startup Programs"
+        },
+        {
+          "href": "mysqld.html",
+          "title": "6.3.1 mysqld — The MySQL Server"
+        },
+        {
+          "href": "mysqld-safe.html",
+          "title": "6.3.2 mysqld_safe — MySQL Server Startup Script"
+        },
+        {
+          "href": "mysql-server.html",
+          "title": "6.3.3 mysql.server — MySQL Server Startup Script"
+        },
+        {
+          "href": "mysqld-multi.html",
+          "title": "6.3.4 mysqld_multi — Manage Multiple MySQL Servers"
+        },
+        {
+          "href": "programs-installation.html",
+          "title": "6.4 Installation-Related Programs"
+        },
+        {
+          "href": "comp-err.html",
+          "title": "6.4.1 comp_err — Compile MySQL Error Message File"
+        },
+        {
+          "href": "mysql-secure-installation.html",
+          "title": "6.4.2 mysql_secure_installation — Improve MySQL Installation Security"
+        },
+        {
+          "href": "mysql-ssl-rsa-setup.html",
+          "title": "6.4.3 mysql_ssl_rsa_setup — Create SSL/RSA Files"
+        },
+        {
+          "href": "mysql-tzinfo-to-sql.html",
+          "title": "6.4.4 mysql_tzinfo_to_sql — Load the Time Zone Tables"
+        },
+        {
+          "href": "mysql-upgrade.html",
+          "title": "6.4.5 mysql_upgrade — Check and Upgrade MySQL Tables"
+        },
+        {
+          "href": "programs-client.html",
+          "title": "6.5 Client Programs"
+        },
+        {
+          "href": "mysql.html",
+          "title": "6.5.1 mysql — The MySQL Command-Line Client"
+        },
+        {
+          "href": "mysqladmin.html",
+          "title": "6.5.2 mysqladmin — A MySQL Server Administration Program"
+        },
+        {
+          "href": "mysqlcheck.html",
+          "title": "6.5.3 mysqlcheck — A Table Maintenance Program"
+        },
+        {
+          "href": "mysqldump.html",
+          "title": "6.5.4 mysqldump — A Database Backup Program"
+        },
+        {
+          "href": "mysqlimport.html",
+          "title": "6.5.5 mysqlimport — A Data Import Program"
+        },
+        {
+          "href": "mysqlpump.html",
+          "title": "6.5.6 mysqlpump — A Database Backup Program"
+        },
+        {
+          "href": "mysqlshow.html",
+          "title": "6.5.7 mysqlshow — Display Database, Table, and Column Information"
+        },
+        {
+          "href": "mysqlslap.html",
+          "title": "6.5.8 mysqlslap — A Load Emulation Client"
+        },
+        {
+          "href": "programs-admin-utils.html",
+          "title": "6.6 Administrative and Utility Programs"
+        },
+        {
+          "href": "ibd2sdi.html",
+          "title": "6.6.1 ibd2sdi — InnoDB Tablespace SDI Extraction Utility"
+        },
+        {
+          "href": "innochecksum.html",
+          "title": "6.6.2 innochecksum — Offline InnoDB File Checksum Utility"
+        },
+        {
+          "href": "myisam-ftdump.html",
+          "title": "6.6.3 myisam_ftdump — Display Full-Text Index information"
+        },
+        {
+          "href": "myisamchk.html",
+          "title": "6.6.4 myisamchk — MyISAM Table-Maintenance Utility"
+        },
+        {
+          "href": "myisamlog.html",
+          "title": "6.6.5 myisamlog — Display MyISAM Log File Contents"
+        },
+        {
+          "href": "myisampack.html",
+          "title": "6.6.6 myisampack — Generate Compressed, Read-Only MyISAM Tables"
+        },
+        {
+          "href": "mysql-config-editor.html",
+          "title": "6.6.7 mysql_config_editor — MySQL Configuration Utility"
+        },
+        {
+          "href": "mysql-migrate-keyring.html",
+          "title": "6.6.8 mysql_migrate_keyring — Keyring Key Migration Utility"
+        },
+        {
+          "href": "mysqlbinlog.html",
+          "title": "6.6.9 mysqlbinlog — Utility for Processing Binary Log Files"
+        },
+        {
+          "href": "mysqldumpslow.html",
+          "title": "6.6.10 mysqldumpslow — Summarize Slow Query Log Files"
+        },
+        {
+          "href": "programs-development.html",
+          "title": "6.7 Program Development Utilities"
+        },
+        {
+          "href": "mysql-config.html",
+          "title": "6.7.1 mysql_config — Display Options for Compiling Clients"
+        },
+        {
+          "href": "my-print-defaults.html",
+          "title": "6.7.2 my_print_defaults — Display Options from Option Files"
+        },
+        {
+          "href": "programs-miscellaneous.html",
+          "title": "6.8 Miscellaneous Programs"
+        },
+        {
+          "href": "lz4-decompress.html",
+          "title": "6.8.1 lz4_decompress — Decompress mysqlpump LZ4-Compressed Output"
+        },
+        {
+          "href": "perror.html",
+          "title": "6.8.2 perror — Display MySQL Error Message Information"
+        },
+        {
+          "href": "zlib-decompress.html",
+          "title": "6.8.3 zlib_decompress — Decompress mysqlpump ZLIB-Compressed Output"
+        },
+        {
+          "href": "environment-variables.html",
+          "title": "6.9 Environment Variables"
+        },
+        {
+          "href": "unix-signal-response.html",
+          "title": "6.10 Unix Signal Handling in MySQL"
+        },
+        {
+          "href": "server-administration.html",
+          "title": "7 MySQL Server Administration"
+        },
+        {
+          "href": "mysqld-server.html",
+          "title": "7.1 The MySQL Server"
+        },
+        {
+          "href": "server-configuration.html",
+          "title": "7.1.1 Configuring the Server"
+        },
+        {
+          "href": "server-configuration-defaults.html",
+          "title": "7.1.2 Server Configuration Defaults"
+        },
+        {
+          "href": "server-configuration-validation.html",
+          "title": "7.1.3 Server Configuration Validation"
+        },
+        {
+          "href": "server-option-variable-reference.html",
+          "title": "7.1.4 Server Option, System Variable, and Status Variable Reference"
+        },
+        {
+          "href": "server-system-variable-reference.html",
+          "title": "7.1.5 Server System Variable Reference"
+        },
+        {
+          "href": "server-status-variable-reference.html",
+          "title": "7.1.6 Server Status Variable Reference"
+        },
+        {
+          "href": "server-options.html",
+          "title": "7.1.7 Server Command Options"
+        },
+        {
+          "href": "server-system-variables.html",
+          "title": "7.1.8 Server System Variables"
+        },
+        {
+          "href": "using-system-variables.html",
+          "title": "7.1.9 Using System Variables"
+        },
+        {
+          "href": "server-status-variables.html",
+          "title": "7.1.10 Server Status Variables"
+        },
+        {
+          "href": "sql-mode.html",
+          "title": "7.1.11 Server SQL Modes"
+        },
+        {
+          "href": "connection-management.html",
+          "title": "7.1.12 Connection Management"
+        },
+        {
+          "href": "ipv6-support.html",
+          "title": "7.1.13 IPv6 Support"
+        },
+        {
+          "href": "network-namespace-support.html",
+          "title": "7.1.14 Network Namespace Support"
+        },
+        {
+          "href": "time-zone-support.html",
+          "title": "7.1.15 MySQL Server Time Zone Support"
+        },
+        {
+          "href": "resource-groups.html",
+          "title": "7.1.16 Resource Groups"
+        },
+        {
+          "href": "server-side-help-support.html",
+          "title": "7.1.17 Server-Side Help Support"
+        },
+        {
+          "href": "session-state-tracking.html",
+          "title": "7.1.18 Server Tracking of Client Session State"
+        },
+        {
+          "href": "server-shutdown.html",
+          "title": "7.1.19 The Server Shutdown Process"
+        },
+        {
+          "href": "data-directory.html",
+          "title": "7.2 The MySQL Data Directory"
+        },
+        {
+          "href": "system-schema.html",
+          "title": "7.3 The mysql System Schema"
+        },
+        {
+          "href": "server-logs.html",
+          "title": "7.4 MySQL Server Logs"
+        },
+        {
+          "href": "log-destinations.html",
+          "title": "7.4.1 Selecting General Query Log and Slow Query Log Output Destinations"
+        },
+        {
+          "href": "error-log.html",
+          "title": "7.4.2 The Error Log"
+        },
+        {
+          "href": "query-log.html",
+          "title": "7.4.3 The General Query Log"
+        },
+        {
+          "href": "binary-log.html",
+          "title": "7.4.4 The Binary Log"
+        },
+        {
+          "href": "slow-query-log.html",
+          "title": "7.4.5 The Slow Query Log"
+        },
+        {
+          "href": "log-file-maintenance.html",
+          "title": "7.4.6 Server Log Maintenance"
+        },
+        {
+          "href": "components.html",
+          "title": "7.5 MySQL Components"
+        },
+        {
+          "href": "component-loading.html",
+          "title": "7.5.1 Installing and Uninstalling Components"
+        },
+        {
+          "href": "obtaining-component-information.html",
+          "title": "7.5.2 Obtaining Component Information"
+        },
+        {
+          "href": "error-log-components.html",
+          "title": "7.5.3 Error Log Components"
+        },
+        {
+          "href": "query-attribute-components.html",
+          "title": "7.5.4 Query Attribute Components"
+        },
+        {
+          "href": "scheduler-component.html",
+          "title": "7.5.5 Scheduler Component"
+        },
+        {
+          "href": "server-plugins.html",
+          "title": "7.6 MySQL Server Plugins"
+        },
+        {
+          "href": "plugin-loading.html",
+          "title": "7.6.1 Installing and Uninstalling Plugins"
+        },
+        {
+          "href": "obtaining-plugin-information.html",
+          "title": "7.6.2 Obtaining Server Plugin Information"
+        },
+        {
+          "href": "thread-pool.html",
+          "title": "7.6.3 MySQL Enterprise Thread Pool"
+        },
+        {
+          "href": "rewriter-query-rewrite-plugin.html",
+          "title": "7.6.4 The Rewriter Query Rewrite Plugin"
+        },
+        {
+          "href": "ddl-rewriter.html",
+          "title": "7.6.5 The ddl_rewriter Plugin"
+        },
+        {
+          "href": "version-tokens.html",
+          "title": "7.6.6 Version Tokens"
+        },
+        {
+          "href": "clone-plugin.html",
+          "title": "7.6.7 The Clone Plugin"
+        },
+        {
+          "href": "daemon-keyring-proxy-plugin.html",
+          "title": "7.6.8 The Keyring Proxy Bridge Plugin"
+        },
+        {
+          "href": "plugin-services.html",
+          "title": "7.6.9 MySQL Plugin Services"
+        },
+        {
+          "href": "server-loadable-functions.html",
+          "title": "7.7 MySQL Server Loadable Functions"
+        },
+        {
+          "href": "function-loading.html",
+          "title": "7.7.1 Installing and Uninstalling Loadable Functions"
+        },
+        {
+          "href": "obtaining-loadable-function-information.html",
+          "title": "7.7.2 Obtaining Information About Loadable Functions"
+        },
+        {
+          "href": "multiple-servers.html",
+          "title": "7.8 Running Multiple MySQL Instances on One Machine"
+        },
+        {
+          "href": "multiple-data-directories.html",
+          "title": "7.8.1 Setting Up Multiple Data Directories"
+        },
+        {
+          "href": "multiple-windows-servers.html",
+          "title": "7.8.2 Running Multiple MySQL Instances on Windows"
+        },
+        {
+          "href": "multiple-unix-servers.html",
+          "title": "7.8.3 Running Multiple MySQL Instances on Unix"
+        },
+        {
+          "href": "multiple-server-clients.html",
+          "title": "7.8.4 Using Client Programs in a Multiple-Server Environment"
+        },
+        {
+          "href": "debugging-mysql.html",
+          "title": "7.9 Debugging MySQL"
+        },
+        {
+          "href": "debugging-server.html",
+          "title": "7.9.1 Debugging a MySQL Server"
+        },
+        {
+          "href": "debugging-client.html",
+          "title": "7.9.2 Debugging a MySQL Client"
+        },
+        {
+          "href": "lock-order-tool.html",
+          "title": "7.9.3 The LOCK_ORDER Tool"
+        },
+        {
+          "href": "dbug-package.html",
+          "title": "7.9.4 The DBUG Package"
+        },
+        {
+          "href": "security.html",
+          "title": "8 Security"
+        },
+        {
+          "href": "general-security-issues.html",
+          "title": "8.1 General Security Issues"
+        },
+        {
+          "href": "security-guidelines.html",
+          "title": "8.1.1 Security Guidelines"
+        },
+        {
+          "href": "password-security.html",
+          "title": "8.1.2 Keeping Passwords Secure"
+        },
+        {
+          "href": "security-against-attack.html",
+          "title": "8.1.3 Making MySQL Secure Against Attackers"
+        },
+        {
+          "href": "security-options.html",
+          "title": "8.1.4 Security-Related mysqld Options and Variables"
+        },
+        {
+          "href": "changing-mysql-user.html",
+          "title": "8.1.5 How to Run MySQL as a Normal User"
+        },
+        {
+          "href": "load-data-local-security.html",
+          "title": "8.1.6 Security Considerations for LOAD DATA LOCAL"
+        },
+        {
+          "href": "secure-client-programming.html",
+          "title": "8.1.7 Client Programming Security Guidelines"
+        },
+        {
+          "href": "access-control.html",
+          "title": "8.2 Access Control and Account Management"
+        },
+        {
+          "href": "user-names.html",
+          "title": "8.2.1 Account User Names and Passwords"
+        },
+        {
+          "href": "privileges-provided.html",
+          "title": "8.2.2 Privileges Provided by MySQL"
+        },
+        {
+          "href": "grant-tables.html",
+          "title": "8.2.3 Grant Tables"
+        },
+        {
+          "href": "account-names.html",
+          "title": "8.2.4 Specifying Account Names"
+        },
+        {
+          "href": "role-names.html",
+          "title": "8.2.5 Specifying Role Names"
+        },
+        {
+          "href": "connection-access.html",
+          "title": "8.2.6 Access Control, Stage 1: Connection Verification"
+        },
+        {
+          "href": "request-access.html",
+          "title": "8.2.7 Access Control, Stage 2: Request Verification"
+        },
+        {
+          "href": "creating-accounts.html",
+          "title": "8.2.8 Adding Accounts, Assigning Privileges, and Dropping Accounts"
+        },
+        {
+          "href": "reserved-accounts.html",
+          "title": "8.2.9 Reserved Accounts"
+        },
+        {
+          "href": "roles.html",
+          "title": "8.2.10 Using Roles"
+        },
+        {
+          "href": "account-categories.html",
+          "title": "8.2.11 Account Categories"
+        },
+        {
+          "href": "partial-revokes.html",
+          "title": "8.2.12 Privilege Restriction Using Partial Revokes"
+        },
+        {
+          "href": "privilege-changes.html",
+          "title": "8.2.13 When Privilege Changes Take Effect"
+        },
+        {
+          "href": "assigning-passwords.html",
+          "title": "8.2.14 Assigning Account Passwords"
+        },
+        {
+          "href": "password-management.html",
+          "title": "8.2.15 Password Management"
+        },
+        {
+          "href": "expired-password-handling.html",
+          "title": "8.2.16 Server Handling of Expired Passwords"
+        },
+        {
+          "href": "pluggable-authentication.html",
+          "title": "8.2.17 Pluggable Authentication"
+        },
+        {
+          "href": "multifactor-authentication.html",
+          "title": "8.2.18 Multifactor Authentication"
+        },
+        {
+          "href": "proxy-users.html",
+          "title": "8.2.19 Proxy Users"
+        },
+        {
+          "href": "account-locking.html",
+          "title": "8.2.20 Account Locking"
+        },
+        {
+          "href": "user-resources.html",
+          "title": "8.2.21 Setting Account Resource Limits"
+        },
+        {
+          "href": "problems-connecting.html",
+          "title": "8.2.22 Troubleshooting Problems Connecting to MySQL"
+        },
+        {
+          "href": "account-activity-auditing.html",
+          "title": "8.2.23 SQL-Based Account Activity Auditing"
+        },
+        {
+          "href": "encrypted-connections.html",
+          "title": "8.3 Using Encrypted Connections"
+        },
+        {
+          "href": "using-encrypted-connections.html",
+          "title": "8.3.1 Configuring MySQL to Use Encrypted Connections"
+        },
+        {
+          "href": "encrypted-connection-protocols-ciphers.html",
+          "title": "8.3.2 Encrypted Connection TLS Protocols and Ciphers"
+        },
+        {
+          "href": "creating-ssl-rsa-files.html",
+          "title": "8.3.3 Creating SSL and RSA Certificates and Keys"
+        },
+        {
+          "href": "windows-and-ssh.html",
+          "title": "8.3.4 Connecting to MySQL Remotely from Windows with SSH"
+        },
+        {
+          "href": "reusing-ssl-sessions.html",
+          "title": "8.3.5 Reusing SSL Sessions"
+        },
+        {
+          "href": "security-plugins.html",
+          "title": "8.4 Security Components and Plugins"
+        },
+        {
+          "href": "authentication-plugins.html",
+          "title": "8.4.1 Authentication Plugins"
+        },
+        {
+          "href": "connection-control-plugin.html",
+          "title": "8.4.2 Connection Control Plugins"
+        },
+        {
+          "href": "validate-password.html",
+          "title": "8.4.3 The Password Validation Component"
+        },
+        {
+          "href": "keyring.html",
+          "title": "8.4.4 The MySQL Keyring"
+        },
+        {
+          "href": "audit-log.html",
+          "title": "8.4.5 MySQL Enterprise Audit"
+        },
+        {
+          "href": "audit-api-message-emit.html",
+          "title": "8.4.6 The Audit Message Component"
+        },
+        {
+          "href": "firewall.html",
+          "title": "8.4.7 MySQL Enterprise Firewall"
+        },
+        {
+          "href": "data-masking.html",
+          "title": "8.5 MySQL Enterprise Data Masking and De-Identification"
+        },
+        {
+          "href": "data-masking-components-vs-plugin.html",
+          "title": "8.5.1 Data-Masking Components Versus the Data-Masking Plugin"
+        },
+        {
+          "href": "data-masking-components.html",
+          "title": "8.5.2 MySQL Enterprise Data Masking and De-Identification Components"
+        },
+        {
+          "href": "data-masking-plugin.html",
+          "title": "8.5.3 MySQL Enterprise Data Masking and De-Identification Plugin"
+        },
+        {
+          "href": "enterprise-encryption.html",
+          "title": "8.6 MySQL Enterprise Encryption"
+        },
+        {
+          "href": "enterprise-encryption-installation.html",
+          "title": "8.6.1 MySQL Enterprise Encryption Installation and Upgrading"
+        },
+        {
+          "href": "enterprise-encryption-configuring.html",
+          "title": "8.6.2 Configuring MySQL Enterprise Encryption"
+        },
+        {
+          "href": "enterprise-encryption-usage.html",
+          "title": "8.6.3 MySQL Enterprise Encryption Usage and Examples"
+        },
+        {
+          "href": "enterprise-encryption-function-reference.html",
+          "title": "8.6.4 MySQL Enterprise Encryption Function Reference"
+        },
+        {
+          "href": "enterprise-encryption-functions.html",
+          "title": "8.6.5 MySQL Enterprise Encryption Component Function Descriptions"
+        },
+        {
+          "href": "enterprise-encryption-functions-legacy.html",
+          "title": "8.6.6 MySQL Enterprise Encryption Legacy Function Descriptions"
+        },
+        {
+          "href": "selinux.html",
+          "title": "8.7 SELinux"
+        },
+        {
+          "href": "selinux-checking.html",
+          "title": "8.7.1 Check if SELinux is Enabled"
+        },
+        {
+          "href": "selinux-mode.html",
+          "title": "8.7.2 Changing the SELinux Mode"
+        },
+        {
+          "href": "selinux-policies.html",
+          "title": "8.7.3 MySQL Server SELinux Policies"
+        },
+        {
+          "href": "selinux-file-context.html",
+          "title": "8.7.4 SELinux File Context"
+        },
+        {
+          "href": "selinux-context-tcp-port.html",
+          "title": "8.7.5 SELinux TCP Port Context"
+        },
+        {
+          "href": "selinux-troubleshooting.html",
+          "title": "8.7.6 Troubleshooting SELinux"
+        },
+        {
+          "href": "fips-mode.html",
+          "title": "8.8 FIPS Support"
+        },
+        {
+          "href": "backup-and-recovery.html",
+          "title": "9 Backup and Recovery"
+        },
+        {
+          "href": "backup-types.html",
+          "title": "9.1 Backup and Recovery Types"
+        },
+        {
+          "href": "backup-methods.html",
+          "title": "9.2 Database Backup Methods"
+        },
+        {
+          "href": "backup-strategy-example.html",
+          "title": "9.3 Example Backup and Recovery Strategy"
+        },
+        {
+          "href": "backup-policy.html",
+          "title": "9.3.1 Establishing a Backup Policy"
+        },
+        {
+          "href": "recovery-from-backups.html",
+          "title": "9.3.2 Using Backups for Recovery"
+        },
+        {
+          "href": "backup-strategy-summary.html",
+          "title": "9.3.3 Backup Strategy Summary"
+        },
+        {
+          "href": "using-mysqldump.html",
+          "title": "9.4 Using mysqldump for Backups"
+        },
+        {
+          "href": "mysqldump-sql-format.html",
+          "title": "9.4.1 Dumping Data in SQL Format with mysqldump"
+        },
+        {
+          "href": "reloading-sql-format-dumps.html",
+          "title": "9.4.2 Reloading SQL-Format Backups"
+        },
+        {
+          "href": "mysqldump-delimited-text.html",
+          "title": "9.4.3 Dumping Data in Delimited-Text Format with mysqldump"
+        },
+        {
+          "href": "reloading-delimited-text-dumps.html",
+          "title": "9.4.4 Reloading Delimited-Text Format Backups"
+        },
+        {
+          "href": "mysqldump-tips.html",
+          "title": "9.4.5 mysqldump Tips"
+        },
+        {
+          "href": "point-in-time-recovery.html",
+          "title": "9.5 Point-in-Time (Incremental) Recovery"
+        },
+        {
+          "href": "point-in-time-recovery-binlog.html",
+          "title": "9.5.1 Point-in-Time Recovery Using Binary Log"
+        },
+        {
+          "href": "point-in-time-recovery-positions.html",
+          "title": "9.5.2 Point-in-Time Recovery Using Event Positions"
+        },
+        {
+          "href": "myisam-table-maintenance.html",
+          "title": "9.6 MyISAM Table Maintenance and Crash Recovery"
+        },
+        {
+          "href": "myisam-crash-recovery.html",
+          "title": "9.6.1 Using myisamchk for Crash Recovery"
+        },
+        {
+          "href": "myisam-check.html",
+          "title": "9.6.2 How to Check MyISAM Tables for Errors"
+        },
+        {
+          "href": "myisam-repair.html",
+          "title": "9.6.3 How to Repair MyISAM Tables"
+        },
+        {
+          "href": "myisam-optimization.html",
+          "title": "9.6.4 MyISAM Table Optimization"
+        },
+        {
+          "href": "myisam-maintenance-schedule.html",
+          "title": "9.6.5 Setting Up a MyISAM Table Maintenance Schedule"
+        },
+        {
+          "href": "optimization.html",
+          "title": "10 Optimization"
+        },
+        {
+          "href": "optimize-overview.html",
+          "title": "10.1 Optimization Overview"
+        },
+        {
+          "href": "statement-optimization.html",
+          "title": "10.2 Optimizing SQL Statements"
+        },
+        {
+          "href": "select-optimization.html",
+          "title": "10.2.1 Optimizing SELECT Statements"
+        },
+        {
+          "href": "subquery-optimization.html",
+          "title": "10.2.2 Optimizing Subqueries, Derived Tables, View References, and Common Table Expressions"
+        },
+        {
+          "href": "information-schema-optimization.html",
+          "title": "10.2.3 Optimizing INFORMATION_SCHEMA Queries"
+        },
+        {
+          "href": "performance-schema-optimization.html",
+          "title": "10.2.4 Optimizing Performance Schema Queries"
+        },
+        {
+          "href": "data-change-optimization.html",
+          "title": "10.2.5 Optimizing Data Change Statements"
+        },
+        {
+          "href": "permission-optimization.html",
+          "title": "10.2.6 Optimizing Database Privileges"
+        },
+        {
+          "href": "miscellaneous-optimization-tips.html",
+          "title": "10.2.7 Other Optimization Tips"
+        },
+        {
+          "href": "optimization-indexes.html",
+          "title": "10.3 Optimization and Indexes"
+        },
+        {
+          "href": "mysql-indexes.html",
+          "title": "10.3.1 How MySQL Uses Indexes"
+        },
+        {
+          "href": "primary-key-optimization.html",
+          "title": "10.3.2 Primary Key Optimization"
+        },
+        {
+          "href": "spatial-index-optimization.html",
+          "title": "10.3.3 SPATIAL Index Optimization"
+        },
+        {
+          "href": "foreign-key-optimization.html",
+          "title": "10.3.4 Foreign Key Optimization"
+        },
+        {
+          "href": "column-indexes.html",
+          "title": "10.3.5 Column Indexes"
+        },
+        {
+          "href": "multiple-column-indexes.html",
+          "title": "10.3.6 Multiple-Column Indexes"
+        },
+        {
+          "href": "verifying-index-usage.html",
+          "title": "10.3.7 Verifying Index Usage"
+        },
+        {
+          "href": "index-statistics.html",
+          "title": "10.3.8 InnoDB and MyISAM Index Statistics Collection"
+        },
+        {
+          "href": "index-btree-hash.html",
+          "title": "10.3.9 Comparison of B-Tree and Hash Indexes"
+        },
+        {
+          "href": "index-extensions.html",
+          "title": "10.3.10 Use of Index Extensions"
+        },
+        {
+          "href": "generated-column-index-optimizations.html",
+          "title": "10.3.11 Optimizer Use of Generated Column Indexes"
+        },
+        {
+          "href": "invisible-indexes.html",
+          "title": "10.3.12 Invisible Indexes"
+        },
+        {
+          "href": "descending-indexes.html",
+          "title": "10.3.13 Descending Indexes"
+        },
+        {
+          "href": "timestamp-lookups.html",
+          "title": "10.3.14 Indexed Lookups from TIMESTAMP Columns"
+        },
+        {
+          "href": "optimizing-database-structure.html",
+          "title": "10.4 Optimizing Database Structure"
+        },
+        {
+          "href": "data-size.html",
+          "title": "10.4.1 Optimizing Data Size"
+        },
+        {
+          "href": "optimize-data-types.html",
+          "title": "10.4.2 Optimizing MySQL Data Types"
+        },
+        {
+          "href": "optimize-multi-tables.html",
+          "title": "10.4.3 Optimizing for Many Tables"
+        },
+        {
+          "href": "internal-temporary-tables.html",
+          "title": "10.4.4 Internal Temporary Table Use in MySQL"
+        },
+        {
+          "href": "database-count-limit.html",
+          "title": "10.4.5 Limits on Number of Databases and Tables"
+        },
+        {
+          "href": "table-size-limit.html",
+          "title": "10.4.6 Limits on Table Size"
+        },
+        {
+          "href": "column-count-limit.html",
+          "title": "10.4.7 Limits on Table Column Count and Row Size"
+        },
+        {
+          "href": "optimizing-innodb.html",
+          "title": "10.5 Optimizing for InnoDB Tables"
+        },
+        {
+          "href": "optimizing-innodb-storage-layout.html",
+          "title": "10.5.1 Optimizing Storage Layout for InnoDB Tables"
+        },
+        {
+          "href": "optimizing-innodb-transaction-management.html",
+          "title": "10.5.2 Optimizing InnoDB Transaction Management"
+        },
+        {
+          "href": "innodb-performance-ro-txn.html",
+          "title": "10.5.3 Optimizing InnoDB Read-Only Transactions"
+        },
+        {
+          "href": "optimizing-innodb-logging.html",
+          "title": "10.5.4 Optimizing InnoDB Redo Logging"
+        },
+        {
+          "href": "optimizing-innodb-bulk-data-loading.html",
+          "title": "10.5.5 Bulk Data Loading for InnoDB Tables"
+        },
+        {
+          "href": "optimizing-innodb-queries.html",
+          "title": "10.5.6 Optimizing InnoDB Queries"
+        },
+        {
+          "href": "optimizing-innodb-ddl-operations.html",
+          "title": "10.5.7 Optimizing InnoDB DDL Operations"
+        },
+        {
+          "href": "optimizing-innodb-diskio.html",
+          "title": "10.5.8 Optimizing InnoDB Disk I/O"
+        },
+        {
+          "href": "optimizing-innodb-configuration-variables.html",
+          "title": "10.5.9 Optimizing InnoDB Configuration Variables"
+        },
+        {
+          "href": "optimizing-innodb-many-tables.html",
+          "title": "10.5.10 Optimizing InnoDB for Systems with Many Tables"
+        },
+        {
+          "href": "optimizing-myisam.html",
+          "title": "10.6 Optimizing for MyISAM Tables"
+        },
+        {
+          "href": "optimizing-queries-myisam.html",
+          "title": "10.6.1 Optimizing MyISAM Queries"
+        },
+        {
+          "href": "optimizing-myisam-bulk-data-loading.html",
+          "title": "10.6.2 Bulk Data Loading for MyISAM Tables"
+        },
+        {
+          "href": "repair-table-optimization.html",
+          "title": "10.6.3 Optimizing REPAIR TABLE Statements"
+        },
+        {
+          "href": "optimizing-memory-tables.html",
+          "title": "10.7 Optimizing for MEMORY Tables"
+        },
+        {
+          "href": "execution-plan-information.html",
+          "title": "10.8 Understanding the Query Execution Plan"
+        },
+        {
+          "href": "using-explain.html",
+          "title": "10.8.1 Optimizing Queries with EXPLAIN"
+        },
+        {
+          "href": "explain-output.html",
+          "title": "10.8.2 EXPLAIN Output Format"
+        },
+        {
+          "href": "explain-extended.html",
+          "title": "10.8.3 Extended EXPLAIN Output Format"
+        },
+        {
+          "href": "explain-for-connection.html",
+          "title": "10.8.4 Obtaining Execution Plan Information for a Named Connection"
+        },
+        {
+          "href": "estimating-performance.html",
+          "title": "10.8.5 Estimating Query Performance"
+        },
+        {
+          "href": "controlling-optimizer.html",
+          "title": "10.9 Controlling the Query Optimizer"
+        },
+        {
+          "href": "controlling-query-plan-evaluation.html",
+          "title": "10.9.1 Controlling Query Plan Evaluation"
+        },
+        {
+          "href": "switchable-optimizations.html",
+          "title": "10.9.2 Switchable Optimizations"
+        },
+        {
+          "href": "optimizer-hints.html",
+          "title": "10.9.3 Optimizer Hints"
+        },
+        {
+          "href": "index-hints.html",
+          "title": "10.9.4 Index Hints"
+        },
+        {
+          "href": "cost-model.html",
+          "title": "10.9.5 The Optimizer Cost Model"
+        },
+        {
+          "href": "optimizer-statistics.html",
+          "title": "10.9.6 Optimizer Statistics"
+        },
+        {
+          "href": "buffering-caching.html",
+          "title": "10.10 Buffering and Caching"
+        },
+        {
+          "href": "innodb-buffer-pool-optimization.html",
+          "title": "10.10.1 InnoDB Buffer Pool Optimization"
+        },
+        {
+          "href": "myisam-key-cache.html",
+          "title": "10.10.2 The MyISAM Key Cache"
+        },
+        {
+          "href": "statement-caching.html",
+          "title": "10.10.3 Caching of Prepared Statements and Stored Programs"
+        },
+        {
+          "href": "locking-issues.html",
+          "title": "10.11 Optimizing Locking Operations"
+        },
+        {
+          "href": "internal-locking.html",
+          "title": "10.11.1 Internal Locking Methods"
+        },
+        {
+          "href": "table-locking.html",
+          "title": "10.11.2 Table Locking Issues"
+        },
+        {
+          "href": "concurrent-inserts.html",
+          "title": "10.11.3 Concurrent Inserts"
+        },
+        {
+          "href": "metadata-locking.html",
+          "title": "10.11.4 Metadata Locking"
+        },
+        {
+          "href": "external-locking.html",
+          "title": "10.11.5 External Locking"
+        },
+        {
+          "href": "optimizing-server.html",
+          "title": "10.12 Optimizing the MySQL Server"
+        },
+        {
+          "href": "disk-issues.html",
+          "title": "10.12.1 Optimizing Disk I/O"
+        },
+        {
+          "href": "symbolic-links.html",
+          "title": "10.12.2 Using Symbolic Links"
+        },
+        {
+          "href": "optimizing-memory.html",
+          "title": "10.12.3 Optimizing Memory Use"
+        },
+        {
+          "href": "optimize-benchmarking.html",
+          "title": "10.13 Measuring Performance (Benchmarking)"
+        },
+        {
+          "href": "select-benchmarking.html",
+          "title": "10.13.1 Measuring the Speed of Expressions and Functions"
+        },
+        {
+          "href": "custom-benchmarks.html",
+          "title": "10.13.2 Using Your Own Benchmarks"
+        },
+        {
+          "href": "monitoring-performance-schema.html",
+          "title": "10.13.3 Measuring Performance with performance_schema"
+        },
+        {
+          "href": "thread-information.html",
+          "title": "10.14 Examining Server Thread (Process) Information"
+        },
+        {
+          "href": "processlist-access.html",
+          "title": "10.14.1 Accessing the Process List"
+        },
+        {
+          "href": "thread-commands.html",
+          "title": "10.14.2 Thread Command Values"
+        },
+        {
+          "href": "general-thread-states.html",
+          "title": "10.14.3 General Thread States"
+        },
+        {
+          "href": "source-thread-states.html",
+          "title": "10.14.4 Replication Source Thread States"
+        },
+        {
+          "href": "replica-io-thread-states.html",
+          "title": "10.14.5 Replication I/O (Receiver) Thread States"
+        },
+        {
+          "href": "replica-sql-thread-states.html",
+          "title": "10.14.6 Replication SQL Thread States"
+        },
+        {
+          "href": "replica-connection-thread-states.html",
+          "title": "10.14.7 Replication Connection Thread States"
+        },
+        {
+          "href": "mysql-cluster-thread-states.html",
+          "title": "10.14.8 NDB Cluster Thread States"
+        },
+        {
+          "href": "event-scheduler-thread-states.html",
+          "title": "10.14.9 Event Scheduler Thread States"
+        },
+        {
+          "href": "optimizer-tracing.html",
+          "title": "10.15 Tracing the Optimizer"
+        },
+        {
+          "href": "optimizer-tracing-typical-usage.html",
+          "title": "10.15.1 Typical Usage"
+        },
+        {
+          "href": "system-variables-controlling-tracing.html",
+          "title": "10.15.2 System Variables Controlling Tracing"
+        },
+        {
+          "href": "traceable-statements.html",
+          "title": "10.15.3 Traceable Statements"
+        },
+        {
+          "href": "tuning-trace-purging.html",
+          "title": "10.15.4 Tuning Trace Purging"
+        },
+        {
+          "href": "tracing-memory-usage.html",
+          "title": "10.15.5 Tracing Memory Usage"
+        },
+        {
+          "href": "privilege-checking.html",
+          "title": "10.15.6 Privilege Checking"
+        },
+        {
+          "href": "interaction-with-debug-option.html",
+          "title": "10.15.7 Interaction with the --debug Option"
+        },
+        {
+          "href": "optimizer-trace-system-variable.html",
+          "title": "10.15.8 The optimizer_trace System Variable"
+        },
+        {
+          "href": "end-markers-in-json-system-variable.html",
+          "title": "10.15.9 The end_markers_in_json System Variable"
+        },
+        {
+          "href": "optimizer-features-to-trace.html",
+          "title": "10.15.10 Selecting Optimizer Features to Trace"
+        },
+        {
+          "href": "trace-general-structure.html",
+          "title": "10.15.11 Trace General Structure"
+        },
+        {
+          "href": "tracing-example.html",
+          "title": "10.15.12 Example"
+        },
+        {
+          "href": "displaying-traces.html",
+          "title": "10.15.13 Displaying Traces in Other Applications"
+        },
+        {
+          "href": "preventing-use-of-optimizer-trace.html",
+          "title": "10.15.14 Preventing the Use of Optimizer Trace"
+        },
+        {
+          "href": "optimizer-trace-testing.html",
+          "title": "10.15.15 Testing Optimizer Trace"
+        },
+        {
+          "href": "optimizer-trace-implementation.html",
+          "title": "10.15.16 Optimizer Trace Implementation"
+        },
+        {
+          "href": "language-structure.html",
+          "title": "11 Language Structure"
+        },
+        {
+          "href": "literals.html",
+          "title": "11.1 Literal Values"
+        },
+        {
+          "href": "string-literals.html",
+          "title": "11.1.1 String Literals"
+        },
+        {
+          "href": "number-literals.html",
+          "title": "11.1.2 Numeric Literals"
+        },
+        {
+          "href": "date-and-time-literals.html",
+          "title": "11.1.3 Date and Time Literals"
+        },
+        {
+          "href": "hexadecimal-literals.html",
+          "title": "11.1.4 Hexadecimal Literals"
+        },
+        {
+          "href": "bit-value-literals.html",
+          "title": "11.1.5 Bit-Value Literals"
+        },
+        {
+          "href": "boolean-literals.html",
+          "title": "11.1.6 Boolean Literals"
+        },
+        {
+          "href": "null-values.html",
+          "title": "11.1.7 NULL Values"
+        },
+        {
+          "href": "identifiers.html",
+          "title": "11.2 Schema Object Names"
+        },
+        {
+          "href": "identifier-length.html",
+          "title": "11.2.1 Identifier Length Limits"
+        },
+        {
+          "href": "identifier-qualifiers.html",
+          "title": "11.2.2 Identifier Qualifiers"
+        },
+        {
+          "href": "identifier-case-sensitivity.html",
+          "title": "11.2.3 Identifier Case Sensitivity"
+        },
+        {
+          "href": "identifier-mapping.html",
+          "title": "11.2.4 Mapping of Identifiers to File Names"
+        },
+        {
+          "href": "function-resolution.html",
+          "title": "11.2.5 Function Name Parsing and Resolution"
+        },
+        {
+          "href": "keywords.html",
+          "title": "11.3 Keywords and Reserved Words"
+        },
+        {
+          "href": "user-variables.html",
+          "title": "11.4 User-Defined Variables"
+        },
+        {
+          "href": "expressions.html",
+          "title": "11.5 Expressions"
+        },
+        {
+          "href": "query-attributes.html",
+          "title": "11.6 Query Attributes"
+        },
+        {
+          "href": "comments.html",
+          "title": "11.7 Comments"
+        },
+        {
+          "href": "charset.html",
+          "title": "12 Character Sets, Collations, Unicode"
+        },
+        {
+          "href": "charset-general.html",
+          "title": "12.1 Character Sets and Collations in General"
+        },
+        {
+          "href": "charset-mysql.html",
+          "title": "12.2 Character Sets and Collations in MySQL"
+        },
+        {
+          "href": "charset-repertoire.html",
+          "title": "12.2.1 Character Set Repertoire"
+        },
+        {
+          "href": "charset-metadata.html",
+          "title": "12.2.2 UTF-8 for Metadata"
+        },
+        {
+          "href": "charset-syntax.html",
+          "title": "12.3 Specifying Character Sets and Collations"
+        },
+        {
+          "href": "charset-collation-names.html",
+          "title": "12.3.1 Collation Naming Conventions"
+        },
+        {
+          "href": "charset-server.html",
+          "title": "12.3.2 Server Character Set and Collation"
+        },
+        {
+          "href": "charset-database.html",
+          "title": "12.3.3 Database Character Set and Collation"
+        },
+        {
+          "href": "charset-table.html",
+          "title": "12.3.4 Table Character Set and Collation"
+        },
+        {
+          "href": "charset-column.html",
+          "title": "12.3.5 Column Character Set and Collation"
+        },
+        {
+          "href": "charset-literal.html",
+          "title": "12.3.6 Character String Literal Character Set and Collation"
+        },
+        {
+          "href": "charset-national.html",
+          "title": "12.3.7 The National Character Set"
+        },
+        {
+          "href": "charset-introducer.html",
+          "title": "12.3.8 Character Set Introducers"
+        },
+        {
+          "href": "charset-examples.html",
+          "title": "12.3.9 Examples of Character Set and Collation Assignment"
+        },
+        {
+          "href": "charset-compatibility.html",
+          "title": "12.3.10 Compatibility with Other DBMSs"
+        },
+        {
+          "href": "charset-connection.html",
+          "title": "12.4 Connection Character Sets and Collations"
+        },
+        {
+          "href": "charset-applications.html",
+          "title": "12.5 Configuring Application Character Set and Collation"
+        },
+        {
+          "href": "charset-errors.html",
+          "title": "12.6 Error Message Character Set"
+        },
+        {
+          "href": "charset-conversion.html",
+          "title": "12.7 Column Character Set Conversion"
+        },
+        {
+          "href": "charset-collations.html",
+          "title": "12.8 Collation Issues"
+        },
+        {
+          "href": "charset-collate.html",
+          "title": "12.8.1 Using COLLATE in SQL Statements"
+        },
+        {
+          "href": "charset-collate-precedence.html",
+          "title": "12.8.2 COLLATE Clause Precedence"
+        },
+        {
+          "href": "charset-collation-compatibility.html",
+          "title": "12.8.3 Character Set and Collation Compatibility"
+        },
+        {
+          "href": "charset-collation-coercibility.html",
+          "title": "12.8.4 Collation Coercibility in Expressions"
+        },
+        {
+          "href": "charset-binary-collations.html",
+          "title": "12.8.5 The binary Collation Compared to _bin Collations"
+        },
+        {
+          "href": "charset-collation-effect.html",
+          "title": "12.8.6 Examples of the Effect of Collation"
+        },
+        {
+          "href": "charset-collation-information-schema.html",
+          "title": "12.8.7 Using Collation in INFORMATION_SCHEMA Searches"
+        },
+        {
+          "href": "charset-unicode.html",
+          "title": "12.9 Unicode Support"
+        },
+        {
+          "href": "charset-unicode-utf8mb4.html",
+          "title": "12.9.1 The utf8mb4 Character Set (4-Byte UTF-8 Unicode Encoding)"
+        },
+        {
+          "href": "charset-unicode-utf8mb3.html",
+          "title": "12.9.2 The utf8mb3 Character Set (3-Byte UTF-8 Unicode Encoding)"
+        },
+        {
+          "href": "charset-unicode-utf8.html",
+          "title": "12.9.3 The utf8 Character Set (Deprecated alias for utf8mb3)"
+        },
+        {
+          "href": "charset-unicode-ucs2.html",
+          "title": "12.9.4 The ucs2 Character Set (UCS-2 Unicode Encoding)"
+        },
+        {
+          "href": "charset-unicode-utf16.html",
+          "title": "12.9.5 The utf16 Character Set (UTF-16 Unicode Encoding)"
+        },
+        {
+          "href": "charset-unicode-utf16le.html",
+          "title": "12.9.6 The utf16le Character Set (UTF-16LE Unicode Encoding)"
+        },
+        {
+          "href": "charset-unicode-utf32.html",
+          "title": "12.9.7 The utf32 Character Set (UTF-32 Unicode Encoding)"
+        },
+        {
+          "href": "charset-unicode-conversion.html",
+          "title": "12.9.8 Converting Between 3-Byte and 4-Byte Unicode Character Sets"
+        },
+        {
+          "href": "charset-charsets.html",
+          "title": "12.10 Supported Character Sets and Collations"
+        },
+        {
+          "href": "charset-unicode-sets.html",
+          "title": "12.10.1 Unicode Character Sets"
+        },
+        {
+          "href": "charset-we-sets.html",
+          "title": "12.10.2 West European Character Sets"
+        },
+        {
+          "href": "charset-ce-sets.html",
+          "title": "12.10.3 Central European Character Sets"
+        },
+        {
+          "href": "charset-se-me-sets.html",
+          "title": "12.10.4 South European and Middle East Character Sets"
+        },
+        {
+          "href": "charset-baltic-sets.html",
+          "title": "12.10.5 Baltic Character Sets"
+        },
+        {
+          "href": "charset-cyrillic-sets.html",
+          "title": "12.10.6 Cyrillic Character Sets"
+        },
+        {
+          "href": "charset-asian-sets.html",
+          "title": "12.10.7 Asian Character Sets"
+        },
+        {
+          "href": "charset-binary-set.html",
+          "title": "12.10.8 The Binary Character Set"
+        },
+        {
+          "href": "charset-restrictions.html",
+          "title": "12.11 Restrictions on Character Sets"
+        },
+        {
+          "href": "error-message-language.html",
+          "title": "12.12 Setting the Error Message Language"
+        },
+        {
+          "href": "adding-character-set.html",
+          "title": "12.13 Adding a Character Set"
+        },
+        {
+          "href": "character-arrays.html",
+          "title": "12.13.1 Character Definition Arrays"
+        },
+        {
+          "href": "string-collating.html",
+          "title": "12.13.2 String Collating Support for Complex Character Sets"
+        },
+        {
+          "href": "multibyte-characters.html",
+          "title": "12.13.3 Multi-Byte Character Support for Complex Character Sets"
+        },
+        {
+          "href": "adding-collation.html",
+          "title": "12.14 Adding a Collation to a Character Set"
+        },
+        {
+          "href": "charset-collation-implementations.html",
+          "title": "12.14.1 Collation Implementation Types"
+        },
+        {
+          "href": "adding-collation-choosing-id.html",
+          "title": "12.14.2 Choosing a Collation ID"
+        },
+        {
+          "href": "adding-collation-simple-8bit.html",
+          "title": "12.14.3 Adding a Simple Collation to an 8-Bit Character Set"
+        },
+        {
+          "href": "adding-collation-unicode-uca.html",
+          "title": "12.14.4 Adding a UCA Collation to a Unicode Character Set"
+        },
+        {
+          "href": "charset-configuration.html",
+          "title": "12.15 Character Set Configuration"
+        },
+        {
+          "href": "locale-support.html",
+          "title": "12.16 MySQL Server Locale Support"
+        },
+        {
+          "href": "data-types.html",
+          "title": "13 Data Types"
+        },
+        {
+          "href": "numeric-types.html",
+          "title": "13.1 Numeric Data Types"
+        },
+        {
+          "href": "numeric-type-syntax.html",
+          "title": "13.1.1 Numeric Data Type Syntax"
+        },
+        {
+          "href": "integer-types.html",
+          "title": "13.1.2 Integer Types (Exact Value) - INTEGER, INT, SMALLINT, TINYINT, MEDIUMINT, BIGINT"
+        },
+        {
+          "href": "fixed-point-types.html",
+          "title": "13.1.3 Fixed-Point Types (Exact Value) - DECIMAL, NUMERIC"
+        },
+        {
+          "href": "floating-point-types.html",
+          "title": "13.1.4 Floating-Point Types (Approximate Value) - FLOAT, DOUBLE"
+        },
+        {
+          "href": "bit-type.html",
+          "title": "13.1.5 Bit-Value Type - BIT"
+        },
+        {
+          "href": "numeric-type-attributes.html",
+          "title": "13.1.6 Numeric Type Attributes"
+        },
+        {
+          "href": "out-of-range-and-overflow.html",
+          "title": "13.1.7 Out-of-Range and Overflow Handling"
+        },
+        {
+          "href": "date-and-time-types.html",
+          "title": "13.2 Date and Time Data Types"
+        },
+        {
+          "href": "date-and-time-type-syntax.html",
+          "title": "13.2.1 Date and Time Data Type Syntax"
+        },
+        {
+          "href": "datetime.html",
+          "title": "13.2.2 The DATE, DATETIME, and TIMESTAMP Types"
+        },
+        {
+          "href": "time.html",
+          "title": "13.2.3 The TIME Type"
+        },
+        {
+          "href": "year.html",
+          "title": "13.2.4 The YEAR Type"
+        },
+        {
+          "href": "timestamp-initialization.html",
+          "title": "13.2.5 Automatic Initialization and Updating for TIMESTAMP and DATETIME"
+        },
+        {
+          "href": "fractional-seconds.html",
+          "title": "13.2.6 Fractional Seconds in Time Values"
+        },
+        {
+          "href": "mysql-calendar.html",
+          "title": "13.2.7 What Calendar Is Used By MySQL?"
+        },
+        {
+          "href": "date-and-time-type-conversion.html",
+          "title": "13.2.8 Conversion Between Date and Time Types"
+        },
+        {
+          "href": "two-digit-years.html",
+          "title": "13.2.9 2-Digit Years in Dates"
+        },
+        {
+          "href": "string-types.html",
+          "title": "13.3 String Data Types"
+        },
+        {
+          "href": "string-type-syntax.html",
+          "title": "13.3.1 String Data Type Syntax"
+        },
+        {
+          "href": "char.html",
+          "title": "13.3.2 The CHAR and VARCHAR Types"
+        },
+        {
+          "href": "binary-varbinary.html",
+          "title": "13.3.3 The BINARY and VARBINARY Types"
+        },
+        {
+          "href": "blob.html",
+          "title": "13.3.4 The BLOB and TEXT Types"
+        },
+        {
+          "href": "enum.html",
+          "title": "13.3.5 The ENUM Type"
+        },
+        {
+          "href": "set.html",
+          "title": "13.3.6 The SET Type"
+        },
+        {
+          "href": "spatial-types.html",
+          "title": "13.4 Spatial Data Types"
+        },
+        {
+          "href": "spatial-type-overview.html",
+          "title": "13.4.1 Spatial Data Types"
+        },
+        {
+          "href": "opengis-geometry-model.html",
+          "title": "13.4.2 The OpenGIS Geometry Model"
+        },
+        {
+          "href": "gis-data-formats.html",
+          "title": "13.4.3 Supported Spatial Data Formats"
+        },
+        {
+          "href": "geometry-well-formedness-validity.html",
+          "title": "13.4.4 Geometry Well-Formedness and Validity"
+        },
+        {
+          "href": "spatial-reference-systems.html",
+          "title": "13.4.5 Spatial Reference System Support"
+        },
+        {
+          "href": "creating-spatial-columns.html",
+          "title": "13.4.6 Creating Spatial Columns"
+        },
+        {
+          "href": "populating-spatial-columns.html",
+          "title": "13.4.7 Populating Spatial Columns"
+        },
+        {
+          "href": "fetching-spatial-data.html",
+          "title": "13.4.8 Fetching Spatial Data"
+        },
+        {
+          "href": "optimizing-spatial-analysis.html",
+          "title": "13.4.9 Optimizing Spatial Analysis"
+        },
+        {
+          "href": "creating-spatial-indexes.html",
+          "title": "13.4.10 Creating Spatial Indexes"
+        },
+        {
+          "href": "using-spatial-indexes.html",
+          "title": "13.4.11 Using Spatial Indexes"
+        },
+        {
+          "href": "json.html",
+          "title": "13.5 The JSON Data Type"
+        },
+        {
+          "href": "data-type-defaults.html",
+          "title": "13.6 Data Type Default Values"
+        },
+        {
+          "href": "storage-requirements.html",
+          "title": "13.7 Data Type Storage Requirements"
+        },
+        {
+          "href": "choosing-types.html",
+          "title": "13.8 Choosing the Right Type for a Column"
+        },
+        {
+          "href": "other-vendor-data-types.html",
+          "title": "13.9 Using Data Types from Other Database Engines"
+        },
+        {
+          "href": "functions.html",
+          "title": "14 Functions and Operators"
+        },
+        {
+          "href": "built-in-function-reference.html",
+          "title": "14.1 Built-In Function and Operator Reference"
+        },
+        {
+          "href": "loadable-function-reference.html",
+          "title": "14.2 Loadable Function Reference"
+        },
+        {
+          "href": "type-conversion.html",
+          "title": "14.3 Type Conversion in Expression Evaluation"
+        },
+        {
+          "href": "non-typed-operators.html",
+          "title": "14.4 Operators"
+        },
+        {
+          "href": "operator-precedence.html",
+          "title": "14.4.1 Operator Precedence"
+        },
+        {
+          "href": "comparison-operators.html",
+          "title": "14.4.2 Comparison Functions and Operators"
+        },
+        {
+          "href": "logical-operators.html",
+          "title": "14.4.3 Logical Operators"
+        },
+        {
+          "href": "assignment-operators.html",
+          "title": "14.4.4 Assignment Operators"
+        },
+        {
+          "href": "flow-control-functions.html",
+          "title": "14.5 Flow Control Functions"
+        },
+        {
+          "href": "numeric-functions.html",
+          "title": "14.6 Numeric Functions and Operators"
+        },
+        {
+          "href": "arithmetic-functions.html",
+          "title": "14.6.1 Arithmetic Operators"
+        },
+        {
+          "href": "mathematical-functions.html",
+          "title": "14.6.2 Mathematical Functions"
+        },
+        {
+          "href": "date-and-time-functions.html",
+          "title": "14.7 Date and Time Functions"
+        },
+        {
+          "href": "string-functions.html",
+          "title": "14.8 String Functions and Operators"
+        },
+        {
+          "href": "string-comparison-functions.html",
+          "title": "14.8.1 String Comparison Functions and Operators"
+        },
+        {
+          "href": "regexp.html",
+          "title": "14.8.2 Regular Expressions"
+        },
+        {
+          "href": "string-functions-charset.html",
+          "title": "14.8.3 Character Set and Collation of Function Results"
+        },
+        {
+          "href": "fulltext-search.html",
+          "title": "14.9 Full-Text Search Functions"
+        },
+        {
+          "href": "fulltext-natural-language.html",
+          "title": "14.9.1 Natural Language Full-Text Searches"
+        },
+        {
+          "href": "fulltext-boolean.html",
+          "title": "14.9.2 Boolean Full-Text Searches"
+        },
+        {
+          "href": "fulltext-query-expansion.html",
+          "title": "14.9.3 Full-Text Searches with Query Expansion"
+        },
+        {
+          "href": "fulltext-stopwords.html",
+          "title": "14.9.4 Full-Text Stopwords"
+        },
+        {
+          "href": "fulltext-restrictions.html",
+          "title": "14.9.5 Full-Text Restrictions"
+        },
+        {
+          "href": "fulltext-fine-tuning.html",
+          "title": "14.9.6 Fine-Tuning MySQL Full-Text Search"
+        },
+        {
+          "href": "full-text-adding-collation.html",
+          "title": "14.9.7 Adding a User-Defined Collation for Full-Text Indexing"
+        },
+        {
+          "href": "fulltext-search-ngram.html",
+          "title": "14.9.8 ngram Full-Text Parser"
+        },
+        {
+          "href": "fulltext-search-mecab.html",
+          "title": "14.9.9 MeCab Full-Text Parser Plugin"
+        },
+        {
+          "href": "cast-functions.html",
+          "title": "14.10 Cast Functions and Operators"
+        },
+        {
+          "href": "xml-functions.html",
+          "title": "14.11 XML Functions"
+        },
+        {
+          "href": "bit-functions.html",
+          "title": "14.12 Bit Functions and Operators"
+        },
+        {
+          "href": "encryption-functions.html",
+          "title": "14.13 Encryption and Compression Functions"
+        },
+        {
+          "href": "locking-functions.html",
+          "title": "14.14 Locking Functions"
+        },
+        {
+          "href": "information-functions.html",
+          "title": "14.15 Information Functions"
+        },
+        {
+          "href": "spatial-analysis-functions.html",
+          "title": "14.16 Spatial Analysis Functions"
+        },
+        {
+          "href": "spatial-function-reference.html",
+          "title": "14.16.1 Spatial Function Reference"
+        },
+        {
+          "href": "spatial-function-argument-handling.html",
+          "title": "14.16.2 Argument Handling by Spatial Functions"
+        },
+        {
+          "href": "gis-wkt-functions.html",
+          "title": "14.16.3 Functions That Create Geometry Values from WKT Values"
+        },
+        {
+          "href": "gis-wkb-functions.html",
+          "title": "14.16.4 Functions That Create Geometry Values from WKB Values"
+        },
+        {
+          "href": "gis-mysql-specific-functions.html",
+          "title": "14.16.5 MySQL-Specific Functions That Create Geometry Values"
+        },
+        {
+          "href": "gis-format-conversion-functions.html",
+          "title": "14.16.6 Geometry Format Conversion Functions"
+        },
+        {
+          "href": "gis-property-functions.html",
+          "title": "14.16.7 Geometry Property Functions"
+        },
+        {
+          "href": "spatial-operator-functions.html",
+          "title": "14.16.8 Spatial Operator Functions"
+        },
+        {
+          "href": "spatial-relation-functions.html",
+          "title": "14.16.9 Functions That Test Spatial Relations Between Geometry Objects"
+        },
+        {
+          "href": "spatial-geohash-functions.html",
+          "title": "14.16.10 Spatial Geohash Functions"
+        },
+        {
+          "href": "spatial-geojson-functions.html",
+          "title": "14.16.11 Spatial GeoJSON Functions"
+        },
+        {
+          "href": "spatial-aggregate-functions.html",
+          "title": "14.16.12 Spatial Aggregate Functions"
+        },
+        {
+          "href": "spatial-convenience-functions.html",
+          "title": "14.16.13 Spatial Convenience Functions"
+        },
+        {
+          "href": "json-functions.html",
+          "title": "14.17 JSON Functions"
+        },
+        {
+          "href": "json-function-reference.html",
+          "title": "14.17.1 JSON Function Reference"
+        },
+        {
+          "href": "json-creation-functions.html",
+          "title": "14.17.2 Functions That Create JSON Values"
+        },
+        {
+          "href": "json-search-functions.html",
+          "title": "14.17.3 Functions That Search JSON Values"
+        },
+        {
+          "href": "json-modification-functions.html",
+          "title": "14.17.4 Functions That Modify JSON Values"
+        },
+        {
+          "href": "json-attribute-functions.html",
+          "title": "14.17.5 Functions That Return JSON Value Attributes"
+        },
+        {
+          "href": "json-table-functions.html",
+          "title": "14.17.6 JSON Table Functions"
+        },
+        {
+          "href": "json-validation-functions.html",
+          "title": "14.17.7 JSON Schema Validation Functions"
+        },
+        {
+          "href": "json-utility-functions.html",
+          "title": "14.17.8 JSON Utility Functions"
+        },
+        {
+          "href": "replication-functions.html",
+          "title": "14.18 Replication Functions"
+        },
+        {
+          "href": "group-replication-functions.html",
+          "title": "14.18.1 Group Replication Functions"
+        },
+        {
+          "href": "gtid-functions.html",
+          "title": "14.18.2 Functions Used with Global Transaction Identifiers (GTIDs)"
+        },
+        {
+          "href": "replication-functions-async-failover.html",
+          "title": "14.18.3 Asynchronous Replication Channel Failover Functions"
+        },
+        {
+          "href": "replication-functions-synchronization.html",
+          "title": "14.18.4 Position-Based Synchronization Functions"
+        },
+        {
+          "href": "aggregate-functions-and-modifiers.html",
+          "title": "14.19 Aggregate Functions"
+        },
+        {
+          "href": "aggregate-functions.html",
+          "title": "14.19.1 Aggregate Function Descriptions"
+        },
+        {
+          "href": "group-by-modifiers.html",
+          "title": "14.19.2 GROUP BY Modifiers"
+        },
+        {
+          "href": "group-by-handling.html",
+          "title": "14.19.3 MySQL Handling of GROUP BY"
+        },
+        {
+          "href": "group-by-functional-dependence.html",
+          "title": "14.19.4 Detection of Functional Dependence"
+        },
+        {
+          "href": "window-functions.html",
+          "title": "14.20 Window Functions"
+        },
+        {
+          "href": "window-function-descriptions.html",
+          "title": "14.20.1 Window Function Descriptions"
+        },
+        {
+          "href": "window-functions-usage.html",
+          "title": "14.20.2 Window Function Concepts and Syntax"
+        },
+        {
+          "href": "window-functions-frames.html",
+          "title": "14.20.3 Window Function Frame Specification"
+        },
+        {
+          "href": "window-functions-named-windows.html",
+          "title": "14.20.4 Named Windows"
+        },
+        {
+          "href": "window-function-restrictions.html",
+          "title": "14.20.5 Window Function Restrictions"
+        },
+        {
+          "href": "performance-schema-functions.html",
+          "title": "14.21 Performance Schema Functions"
+        },
+        {
+          "href": "internal-functions.html",
+          "title": "14.22 Internal Functions"
+        },
+        {
+          "href": "miscellaneous-functions.html",
+          "title": "14.23 Miscellaneous Functions"
+        },
+        {
+          "href": "precision-math.html",
+          "title": "14.24 Precision Math"
+        },
+        {
+          "href": "precision-math-numbers.html",
+          "title": "14.24.1 Types of Numeric Values"
+        },
+        {
+          "href": "precision-math-decimal-characteristics.html",
+          "title": "14.24.2 DECIMAL Data Type Characteristics"
+        },
+        {
+          "href": "precision-math-expressions.html",
+          "title": "14.24.3 Expression Handling"
+        },
+        {
+          "href": "precision-math-rounding.html",
+          "title": "14.24.4 Rounding Behavior"
+        },
+        {
+          "href": "precision-math-examples.html",
+          "title": "14.24.5 Precision Math Examples"
+        },
+        {
+          "href": "sql-statements.html",
+          "title": "15 SQL Statements"
+        },
+        {
+          "href": "sql-data-definition-statements.html",
+          "title": "15.1 Data Definition Statements"
+        },
+        {
+          "href": "atomic-ddl.html",
+          "title": "15.1.1 Atomic Data Definition Statement Support"
+        },
+        {
+          "href": "alter-database.html",
+          "title": "15.1.2 ALTER DATABASE Statement"
+        },
+        {
+          "href": "alter-event.html",
+          "title": "15.1.3 ALTER EVENT Statement"
+        },
+        {
+          "href": "alter-function.html",
+          "title": "15.1.4 ALTER FUNCTION Statement"
+        },
+        {
+          "href": "alter-instance.html",
+          "title": "15.1.5 ALTER INSTANCE Statement"
+        },
+        {
+          "href": "alter-logfile-group.html",
+          "title": "15.1.6 ALTER LOGFILE GROUP Statement"
+        },
+        {
+          "href": "alter-procedure.html",
+          "title": "15.1.7 ALTER PROCEDURE Statement"
+        },
+        {
+          "href": "alter-server.html",
+          "title": "15.1.8 ALTER SERVER Statement"
+        },
+        {
+          "href": "alter-table.html",
+          "title": "15.1.9 ALTER TABLE Statement"
+        },
+        {
+          "href": "alter-tablespace.html",
+          "title": "15.1.10 ALTER TABLESPACE Statement"
+        },
+        {
+          "href": "alter-view.html",
+          "title": "15.1.11 ALTER VIEW Statement"
+        },
+        {
+          "href": "create-database.html",
+          "title": "15.1.12 CREATE DATABASE Statement"
+        },
+        {
+          "href": "create-event.html",
+          "title": "15.1.13 CREATE EVENT Statement"
+        },
+        {
+          "href": "create-function.html",
+          "title": "15.1.14 CREATE FUNCTION Statement"
+        },
+        {
+          "href": "create-index.html",
+          "title": "15.1.15 CREATE INDEX Statement"
+        },
+        {
+          "href": "create-logfile-group.html",
+          "title": "15.1.16 CREATE LOGFILE GROUP Statement"
+        },
+        {
+          "href": "create-procedure.html",
+          "title": "15.1.17 CREATE PROCEDURE and CREATE FUNCTION Statements"
+        },
+        {
+          "href": "create-server.html",
+          "title": "15.1.18 CREATE SERVER Statement"
+        },
+        {
+          "href": "create-spatial-reference-system.html",
+          "title": "15.1.19 CREATE SPATIAL REFERENCE SYSTEM Statement"
+        },
+        {
+          "href": "create-table.html",
+          "title": "15.1.20 CREATE TABLE Statement"
+        },
+        {
+          "href": "create-tablespace.html",
+          "title": "15.1.21 CREATE TABLESPACE Statement"
+        },
+        {
+          "href": "create-trigger.html",
+          "title": "15.1.22 CREATE TRIGGER Statement"
+        },
+        {
+          "href": "create-view.html",
+          "title": "15.1.23 CREATE VIEW Statement"
+        },
+        {
+          "href": "drop-database.html",
+          "title": "15.1.24 DROP DATABASE Statement"
+        },
+        {
+          "href": "drop-event.html",
+          "title": "15.1.25 DROP EVENT Statement"
+        },
+        {
+          "href": "drop-function.html",
+          "title": "15.1.26 DROP FUNCTION Statement"
+        },
+        {
+          "href": "drop-index.html",
+          "title": "15.1.27 DROP INDEX Statement"
+        },
+        {
+          "href": "drop-logfile-group.html",
+          "title": "15.1.28 DROP LOGFILE GROUP Statement"
+        },
+        {
+          "href": "drop-procedure.html",
+          "title": "15.1.29 DROP PROCEDURE and DROP FUNCTION Statements"
+        },
+        {
+          "href": "drop-server.html",
+          "title": "15.1.30 DROP SERVER Statement"
+        },
+        {
+          "href": "drop-spatial-reference-system.html",
+          "title": "15.1.31 DROP SPATIAL REFERENCE SYSTEM Statement"
+        },
+        {
+          "href": "drop-table.html",
+          "title": "15.1.32 DROP TABLE Statement"
+        },
+        {
+          "href": "drop-tablespace.html",
+          "title": "15.1.33 DROP TABLESPACE Statement"
+        },
+        {
+          "href": "drop-trigger.html",
+          "title": "15.1.34 DROP TRIGGER Statement"
+        },
+        {
+          "href": "drop-view.html",
+          "title": "15.1.35 DROP VIEW Statement"
+        },
+        {
+          "href": "rename-table.html",
+          "title": "15.1.36 RENAME TABLE Statement"
+        },
+        {
+          "href": "truncate-table.html",
+          "title": "15.1.37 TRUNCATE TABLE Statement"
+        },
+        {
+          "href": "sql-data-manipulation-statements.html",
+          "title": "15.2 Data Manipulation Statements"
+        },
+        {
+          "href": "call.html",
+          "title": "15.2.1 CALL Statement"
+        },
+        {
+          "href": "delete.html",
+          "title": "15.2.2 DELETE Statement"
+        },
+        {
+          "href": "do.html",
+          "title": "15.2.3 DO Statement"
+        },
+        {
+          "href": "except.html",
+          "title": "15.2.4 EXCEPT Clause"
+        },
+        {
+          "href": "handler.html",
+          "title": "15.2.5 HANDLER Statement"
+        },
+        {
+          "href": "import-table.html",
+          "title": "15.2.6 IMPORT TABLE Statement"
+        },
+        {
+          "href": "insert.html",
+          "title": "15.2.7 INSERT Statement"
+        },
+        {
+          "href": "intersect.html",
+          "title": "15.2.8 INTERSECT Clause"
+        },
+        {
+          "href": "load-data.html",
+          "title": "15.2.9 LOAD DATA Statement"
+        },
+        {
+          "href": "load-xml.html",
+          "title": "15.2.10 LOAD XML Statement"
+        },
+        {
+          "href": "parenthesized-query-expressions.html",
+          "title": "15.2.11 Parenthesized Query Expressions"
+        },
+        {
+          "href": "replace.html",
+          "title": "15.2.12 REPLACE Statement"
+        },
+        {
+          "href": "select.html",
+          "title": "15.2.13 SELECT Statement"
+        },
+        {
+          "href": "set-operations.html",
+          "title": "15.2.14 Set Operations with UNION, INTERSECT, and EXCEPT"
+        },
+        {
+          "href": "subqueries.html",
+          "title": "15.2.15 Subqueries"
+        },
+        {
+          "href": "table.html",
+          "title": "15.2.16 TABLE Statement"
+        },
+        {
+          "href": "update.html",
+          "title": "15.2.17 UPDATE Statement"
+        },
+        {
+          "href": "union.html",
+          "title": "15.2.18 UNION Clause"
+        },
+        {
+          "href": "values.html",
+          "title": "15.2.19 VALUES Statement"
+        },
+        {
+          "href": "with.html",
+          "title": "15.2.20 WITH (Common Table Expressions)"
+        },
+        {
+          "href": "sql-transactional-statements.html",
+          "title": "15.3 Transactional and Locking Statements"
+        },
+        {
+          "href": "commit.html",
+          "title": "15.3.1 START TRANSACTION, COMMIT, and ROLLBACK Statements"
+        },
+        {
+          "href": "cannot-roll-back.html",
+          "title": "15.3.2 Statements That Cannot Be Rolled Back"
+        },
+        {
+          "href": "implicit-commit.html",
+          "title": "15.3.3 Statements That Cause an Implicit Commit"
+        },
+        {
+          "href": "savepoint.html",
+          "title": "15.3.4 SAVEPOINT, ROLLBACK TO SAVEPOINT, and RELEASE SAVEPOINT Statements"
+        },
+        {
+          "href": "lock-instance-for-backup.html",
+          "title": "15.3.5 LOCK INSTANCE FOR BACKUP and UNLOCK INSTANCE Statements"
+        },
+        {
+          "href": "lock-tables.html",
+          "title": "15.3.6 LOCK TABLES and UNLOCK TABLES Statements"
+        },
+        {
+          "href": "set-transaction.html",
+          "title": "15.3.7 SET TRANSACTION Statement"
+        },
+        {
+          "href": "xa.html",
+          "title": "15.3.8 XA Transactions"
+        },
+        {
+          "href": "sql-replication-statements.html",
+          "title": "15.4 Replication Statements"
+        },
+        {
+          "href": "replication-statements-master.html",
+          "title": "15.4.1 SQL Statements for Controlling Source Servers"
+        },
+        {
+          "href": "replication-statements-replica.html",
+          "title": "15.4.2 SQL Statements for Controlling Replica Servers"
+        },
+        {
+          "href": "replication-statements-group.html",
+          "title": "15.4.3 SQL Statements for Controlling Group Replication"
+        },
+        {
+          "href": "sql-prepared-statements.html",
+          "title": "15.5 Prepared Statements"
+        },
+        {
+          "href": "prepare.html",
+          "title": "15.5.1 PREPARE Statement"
+        },
+        {
+          "href": "execute.html",
+          "title": "15.5.2 EXECUTE Statement"
+        },
+        {
+          "href": "deallocate-prepare.html",
+          "title": "15.5.3 DEALLOCATE PREPARE Statement"
+        },
+        {
+          "href": "sql-compound-statements.html",
+          "title": "15.6 Compound Statement Syntax"
+        },
+        {
+          "href": "begin-end.html",
+          "title": "15.6.1 BEGIN ... END Compound Statement"
+        },
+        {
+          "href": "statement-labels.html",
+          "title": "15.6.2 Statement Labels"
+        },
+        {
+          "href": "declare.html",
+          "title": "15.6.3 DECLARE Statement"
+        },
+        {
+          "href": "stored-program-variables.html",
+          "title": "15.6.4 Variables in Stored Programs"
+        },
+        {
+          "href": "flow-control-statements.html",
+          "title": "15.6.5 Flow Control Statements"
+        },
+        {
+          "href": "cursors.html",
+          "title": "15.6.6 Cursors"
+        },
+        {
+          "href": "condition-handling.html",
+          "title": "15.6.7 Condition Handling"
+        },
+        {
+          "href": "condition-handling-restrictions.html",
+          "title": "15.6.8 Restrictions on Condition Handling"
+        },
+        {
+          "href": "sql-server-administration-statements.html",
+          "title": "15.7 Database Administration Statements"
+        },
+        {
+          "href": "account-management-statements.html",
+          "title": "15.7.1 Account Management Statements"
+        },
+        {
+          "href": "resource-group-statements.html",
+          "title": "15.7.2 Resource Group Management Statements"
+        },
+        {
+          "href": "table-maintenance-statements.html",
+          "title": "15.7.3 Table Maintenance Statements"
+        },
+        {
+          "href": "component-statements.html",
+          "title": "15.7.4 Component, Plugin, and Loadable Function Statements"
+        },
+        {
+          "href": "clone.html",
+          "title": "15.7.5 CLONE Statement"
+        },
+        {
+          "href": "set-statement.html",
+          "title": "15.7.6 SET Statements"
+        },
+        {
+          "href": "show.html",
+          "title": "15.7.7 SHOW Statements"
+        },
+        {
+          "href": "other-administrative-statements.html",
+          "title": "15.7.8 Other Administrative Statements"
+        },
+        {
+          "href": "sql-utility-statements.html",
+          "title": "15.8 Utility Statements"
+        },
+        {
+          "href": "describe.html",
+          "title": "15.8.1 DESCRIBE Statement"
+        },
+        {
+          "href": "explain.html",
+          "title": "15.8.2 EXPLAIN Statement"
+        },
+        {
+          "href": "help.html",
+          "title": "15.8.3 HELP Statement"
+        },
+        {
+          "href": "use.html",
+          "title": "15.8.4 USE Statement"
+        },
+        {
+          "href": "data-dictionary.html",
+          "title": "16 MySQL Data Dictionary"
+        },
+        {
+          "href": "data-dictionary-schema.html",
+          "title": "16.1 Data Dictionary Schema"
+        },
+        {
+          "href": "data-dictionary-file-removal.html",
+          "title": "16.2 Removal of File-based Metadata Storage"
+        },
+        {
+          "href": "data-dictionary-transactional-storage.html",
+          "title": "16.3 Transactional Storage of Dictionary Data"
+        },
+        {
+          "href": "data-dictionary-object-cache.html",
+          "title": "16.4 Dictionary Object Cache"
+        },
+        {
+          "href": "data-dictionary-information-schema.html",
+          "title": "16.5 INFORMATION_SCHEMA and Data Dictionary Integration"
+        },
+        {
+          "href": "serialized-dictionary-information.html",
+          "title": "16.6 Serialized Dictionary Information (SDI)"
+        },
+        {
+          "href": "data-dictionary-usage-differences.html",
+          "title": "16.7 Data Dictionary Usage Differences"
+        },
+        {
+          "href": "data-dictionary-limitations.html",
+          "title": "16.8 Data Dictionary Limitations"
+        },
+        {
+          "href": "innodb-storage-engine.html",
+          "title": "17 The InnoDB Storage Engine"
+        },
+        {
+          "href": "innodb-introduction.html",
+          "title": "17.1 Introduction to InnoDB"
+        },
+        {
+          "href": "innodb-benefits.html",
+          "title": "17.1.1 Benefits of Using InnoDB Tables"
+        },
+        {
+          "href": "innodb-best-practices.html",
+          "title": "17.1.2 Best Practices for InnoDB Tables"
+        },
+        {
+          "href": "innodb-check-availability.html",
+          "title": "17.1.3 Verifying that InnoDB is the Default Storage Engine"
+        },
+        {
+          "href": "innodb-benchmarking.html",
+          "title": "17.1.4 Testing and Benchmarking with InnoDB"
+        },
+        {
+          "href": "mysql-acid.html",
+          "title": "17.2 InnoDB and the ACID Model"
+        },
+        {
+          "href": "innodb-multi-versioning.html",
+          "title": "17.3 InnoDB Multi-Versioning"
+        },
+        {
+          "href": "innodb-architecture.html",
+          "title": "17.4 InnoDB Architecture"
+        },
+        {
+          "href": "innodb-in-memory-structures.html",
+          "title": "17.5 InnoDB In-Memory Structures"
+        },
+        {
+          "href": "innodb-buffer-pool.html",
+          "title": "17.5.1 Buffer Pool"
+        },
+        {
+          "href": "innodb-change-buffer.html",
+          "title": "17.5.2 Change Buffer"
+        },
+        {
+          "href": "innodb-adaptive-hash.html",
+          "title": "17.5.3 Adaptive Hash Index"
+        },
+        {
+          "href": "innodb-redo-log-buffer.html",
+          "title": "17.5.4 Log Buffer"
+        },
+        {
+          "href": "innodb-on-disk-structures.html",
+          "title": "17.6 InnoDB On-Disk Structures"
+        },
+        {
+          "href": "innodb-tables.html",
+          "title": "17.6.1 Tables"
+        },
+        {
+          "href": "innodb-indexes.html",
+          "title": "17.6.2 Indexes"
+        },
+        {
+          "href": "innodb-tablespace.html",
+          "title": "17.6.3 Tablespaces"
+        },
+        {
+          "href": "innodb-doublewrite-buffer.html",
+          "title": "17.6.4 Doublewrite Buffer"
+        },
+        {
+          "href": "innodb-redo-log.html",
+          "title": "17.6.5 Redo Log"
+        },
+        {
+          "href": "innodb-undo-logs.html",
+          "title": "17.6.6 Undo Logs"
+        },
+        {
+          "href": "innodb-locking-transaction-model.html",
+          "title": "17.7 InnoDB Locking and Transaction Model"
+        },
+        {
+          "href": "innodb-locking.html",
+          "title": "17.7.1 InnoDB Locking"
+        },
+        {
+          "href": "innodb-transaction-model.html",
+          "title": "17.7.2 InnoDB Transaction Model"
+        },
+        {
+          "href": "innodb-locks-set.html",
+          "title": "17.7.3 Locks Set by Different SQL Statements in InnoDB"
+        },
+        {
+          "href": "innodb-next-key-locking.html",
+          "title": "17.7.4 Phantom Rows"
+        },
+        {
+          "href": "innodb-deadlocks.html",
+          "title": "17.7.5 Deadlocks in InnoDB"
+        },
+        {
+          "href": "innodb-transaction-scheduling.html",
+          "title": "17.7.6 Transaction Scheduling"
+        },
+        {
+          "href": "innodb-configuration.html",
+          "title": "17.8 InnoDB Configuration"
+        },
+        {
+          "href": "innodb-init-startup-configuration.html",
+          "title": "17.8.1 InnoDB Startup Configuration"
+        },
+        {
+          "href": "innodb-read-only-instance.html",
+          "title": "17.8.2 Configuring InnoDB for Read-Only Operation"
+        },
+        {
+          "href": "innodb-performance-buffer-pool.html",
+          "title": "17.8.3 InnoDB Buffer Pool Configuration"
+        },
+        {
+          "href": "innodb-performance-thread_concurrency.html",
+          "title": "17.8.4 Configuring Thread Concurrency for InnoDB"
+        },
+        {
+          "href": "innodb-performance-multiple_io_threads.html",
+          "title": "17.8.5 Configuring the Number of Background InnoDB I/O Threads"
+        },
+        {
+          "href": "innodb-linux-native-aio.html",
+          "title": "17.8.6 Using Asynchronous I/O on Linux"
+        },
+        {
+          "href": "innodb-configuring-io-capacity.html",
+          "title": "17.8.7 Configuring InnoDB I/O Capacity"
+        },
+        {
+          "href": "innodb-performance-spin_lock_polling.html",
+          "title": "17.8.8 Configuring Spin Lock Polling"
+        },
+        {
+          "href": "innodb-purge-configuration.html",
+          "title": "17.8.9 Purge Configuration"
+        },
+        {
+          "href": "innodb-performance-optimizer-statistics.html",
+          "title": "17.8.10 Configuring Optimizer Statistics for InnoDB"
+        },
+        {
+          "href": "index-page-merge-threshold.html",
+          "title": "17.8.11 Configuring the Merge Threshold for Index Pages"
+        },
+        {
+          "href": "innodb-dedicated-server.html",
+          "title": "17.8.12 Enabling Automatic InnoDB Configuration for a Dedicated MySQL Server"
+        },
+        {
+          "href": "innodb-compression.html",
+          "title": "17.9 InnoDB Table and Page Compression"
+        },
+        {
+          "href": "innodb-table-compression.html",
+          "title": "17.9.1 InnoDB Table Compression"
+        },
+        {
+          "href": "innodb-page-compression.html",
+          "title": "17.9.2 InnoDB Page Compression"
+        },
+        {
+          "href": "innodb-row-format.html",
+          "title": "17.10 InnoDB Row Formats"
+        },
+        {
+          "href": "innodb-disk-management.html",
+          "title": "17.11 InnoDB Disk I/O and File Space Management"
+        },
+        {
+          "href": "innodb-disk-io.html",
+          "title": "17.11.1 InnoDB Disk I/O"
+        },
+        {
+          "href": "innodb-file-space.html",
+          "title": "17.11.2 File Space Management"
+        },
+        {
+          "href": "innodb-checkpoints.html",
+          "title": "17.11.3 InnoDB Checkpoints"
+        },
+        {
+          "href": "innodb-file-defragmenting.html",
+          "title": "17.11.4 Defragmenting a Table"
+        },
+        {
+          "href": "innodb-truncate-table-reclaim-space.html",
+          "title": "17.11.5 Reclaiming Disk Space with TRUNCATE TABLE"
+        },
+        {
+          "href": "innodb-online-ddl.html",
+          "title": "17.12 InnoDB and Online DDL"
+        },
+        {
+          "href": "innodb-online-ddl-operations.html",
+          "title": "17.12.1 Online DDL Operations"
+        },
+        {
+          "href": "innodb-online-ddl-performance.html",
+          "title": "17.12.2 Online DDL Performance and Concurrency"
+        },
+        {
+          "href": "innodb-online-ddl-space-requirements.html",
+          "title": "17.12.3 Online DDL Space Requirements"
+        },
+        {
+          "href": "online-ddl-memory-management.html",
+          "title": "17.12.4 Online DDL Memory Management"
+        },
+        {
+          "href": "online-ddl-parallel-thread-configuration.html",
+          "title": "17.12.5 Configuring Parallel Threads for Online DDL Operations"
+        },
+        {
+          "href": "innodb-online-ddl-single-multi.html",
+          "title": "17.12.6 Simplifying DDL Statements with Online DDL"
+        },
+        {
+          "href": "innodb-online-ddl-failure-conditions.html",
+          "title": "17.12.7 Online DDL Failure Conditions"
+        },
+        {
+          "href": "innodb-online-ddl-limitations.html",
+          "title": "17.12.8 Online DDL Limitations"
+        },
+        {
+          "href": "innodb-data-encryption.html",
+          "title": "17.13 InnoDB Data-at-Rest Encryption"
+        },
+        {
+          "href": "innodb-parameters.html",
+          "title": "17.14 InnoDB Startup Options and System Variables"
+        },
+        {
+          "href": "innodb-information-schema.html",
+          "title": "17.15 InnoDB INFORMATION_SCHEMA Tables"
+        },
+        {
+          "href": "innodb-information-schema-compression-tables.html",
+          "title": "17.15.1 InnoDB INFORMATION_SCHEMA Tables about Compression"
+        },
+        {
+          "href": "innodb-information-schema-transactions.html",
+          "title": "17.15.2 InnoDB INFORMATION_SCHEMA Transaction and Locking Information"
+        },
+        {
+          "href": "innodb-information-schema-system-tables.html",
+          "title": "17.15.3 InnoDB INFORMATION_SCHEMA Schema Object Tables"
+        },
+        {
+          "href": "innodb-information-schema-fulltext_index-tables.html",
+          "title": "17.15.4 InnoDB INFORMATION_SCHEMA FULLTEXT Index Tables"
+        },
+        {
+          "href": "innodb-information-schema-buffer-pool-tables.html",
+          "title": "17.15.5 InnoDB INFORMATION_SCHEMA Buffer Pool Tables"
+        },
+        {
+          "href": "innodb-information-schema-metrics-table.html",
+          "title": "17.15.6 InnoDB INFORMATION_SCHEMA Metrics Table"
+        },
+        {
+          "href": "innodb-information-schema-temp-table-info.html",
+          "title": "17.15.7 InnoDB INFORMATION_SCHEMA Temporary Table Info Table"
+        },
+        {
+          "href": "innodb-information-schema-files-table.html",
+          "title": "17.15.8 Retrieving InnoDB Tablespace Metadata from INFORMATION_SCHEMA.FILES"
+        },
+        {
+          "href": "innodb-performance-schema.html",
+          "title": "17.16 InnoDB Integration with MySQL Performance Schema"
+        },
+        {
+          "href": "monitor-alter-table-performance-schema.html",
+          "title": "17.16.1 Monitoring ALTER TABLE Progress for InnoDB Tables Using Performance Schema"
+        },
+        {
+          "href": "monitor-innodb-mutex-waits-performance-schema.html",
+          "title": "17.16.2 Monitoring InnoDB Mutex Waits Using Performance Schema"
+        },
+        {
+          "href": "innodb-monitors.html",
+          "title": "17.17 InnoDB Monitors"
+        },
+        {
+          "href": "innodb-monitor-types.html",
+          "title": "17.17.1 InnoDB Monitor Types"
+        },
+        {
+          "href": "innodb-enabling-monitors.html",
+          "title": "17.17.2 Enabling InnoDB Monitors"
+        },
+        {
+          "href": "innodb-standard-monitor.html",
+          "title": "17.17.3 InnoDB Standard Monitor and Lock Monitor Output"
+        },
+        {
+          "href": "innodb-backup-recovery.html",
+          "title": "17.18 InnoDB Backup and Recovery"
+        },
+        {
+          "href": "innodb-backup.html",
+          "title": "17.18.1 InnoDB Backup"
+        },
+        {
+          "href": "innodb-recovery.html",
+          "title": "17.18.2 InnoDB Recovery"
+        },
+        {
+          "href": "innodb-and-mysql-replication.html",
+          "title": "17.19 InnoDB and MySQL Replication"
+        },
+        {
+          "href": "innodb-memcached.html",
+          "title": "17.20 InnoDB memcached Plugin"
+        },
+        {
+          "href": "innodb-memcached-benefits.html",
+          "title": "17.20.1 Benefits of the InnoDB memcached Plugin"
+        },
+        {
+          "href": "innodb-memcached-intro.html",
+          "title": "17.20.2 InnoDB memcached Architecture"
+        },
+        {
+          "href": "innodb-memcached-setup.html",
+          "title": "17.20.3 Setting Up the InnoDB memcached Plugin"
+        },
+        {
+          "href": "innodb-memcached-multiple-get-range-query.html",
+          "title": "17.20.4 InnoDB memcached Multiple get and Range Query Support"
+        },
+        {
+          "href": "innodb-memcached-security.html",
+          "title": "17.20.5 Security Considerations for the InnoDB memcached Plugin"
+        },
+        {
+          "href": "innodb-memcached-developing.html",
+          "title": "17.20.6 Writing Applications for the InnoDB memcached Plugin"
+        },
+        {
+          "href": "innodb-memcached-replication.html",
+          "title": "17.20.7 The InnoDB memcached Plugin and Replication"
+        },
+        {
+          "href": "innodb-memcached-internals.html",
+          "title": "17.20.8 InnoDB memcached Plugin Internals"
+        },
+        {
+          "href": "innodb-memcached-troubleshoot.html",
+          "title": "17.20.9 Troubleshooting the InnoDB memcached Plugin"
+        },
+        {
+          "href": "innodb-troubleshooting.html",
+          "title": "17.21 InnoDB Troubleshooting"
+        },
+        {
+          "href": "error-creating-innodb.html",
+          "title": "17.21.1 Troubleshooting InnoDB I/O Problems"
+        },
+        {
+          "href": "innodb-troubleshooting-recovery.html",
+          "title": "17.21.2 Troubleshooting Recovery Failures"
+        },
+        {
+          "href": "forcing-innodb-recovery.html",
+          "title": "17.21.3 Forcing InnoDB Recovery"
+        },
+        {
+          "href": "innodb-troubleshooting-datadict.html",
+          "title": "17.21.4 Troubleshooting InnoDB Data Dictionary Operations"
+        },
+        {
+          "href": "innodb-error-handling.html",
+          "title": "17.21.5 InnoDB Error Handling"
+        },
+        {
+          "href": "innodb-limits.html",
+          "title": "17.22 InnoDB Limits"
+        },
+        {
+          "href": "innodb-restrictions-limitations.html",
+          "title": "17.23 InnoDB Restrictions and Limitations"
+        },
+        {
+          "href": "storage-engines.html",
+          "title": "18 Alternative Storage Engines"
+        },
+        {
+          "href": "storage-engine-setting.html",
+          "title": "18.1 Setting the Storage Engine"
+        },
+        {
+          "href": "myisam-storage-engine.html",
+          "title": "18.2 The MyISAM Storage Engine"
+        },
+        {
+          "href": "myisam-start.html",
+          "title": "18.2.1 MyISAM Startup Options"
+        },
+        {
+          "href": "key-space.html",
+          "title": "18.2.2 Space Needed for Keys"
+        },
+        {
+          "href": "myisam-table-formats.html",
+          "title": "18.2.3 MyISAM Table Storage Formats"
+        },
+        {
+          "href": "myisam-table-problems.html",
+          "title": "18.2.4 MyISAM Table Problems"
+        },
+        {
+          "href": "memory-storage-engine.html",
+          "title": "18.3 The MEMORY Storage Engine"
+        },
+        {
+          "href": "csv-storage-engine.html",
+          "title": "18.4 The CSV Storage Engine"
+        },
+        {
+          "href": "se-csv-repair.html",
+          "title": "18.4.1 Repairing and Checking CSV Tables"
+        },
+        {
+          "href": "se-csv-limitations.html",
+          "title": "18.4.2 CSV Limitations"
+        },
+        {
+          "href": "archive-storage-engine.html",
+          "title": "18.5 The ARCHIVE Storage Engine"
+        },
+        {
+          "href": "blackhole-storage-engine.html",
+          "title": "18.6 The BLACKHOLE Storage Engine"
+        },
+        {
+          "href": "merge-storage-engine.html",
+          "title": "18.7 The MERGE Storage Engine"
+        },
+        {
+          "href": "merge-table-advantages.html",
+          "title": "18.7.1 MERGE Table Advantages and Disadvantages"
+        },
+        {
+          "href": "merge-table-problems.html",
+          "title": "18.7.2 MERGE Table Problems"
+        },
+        {
+          "href": "federated-storage-engine.html",
+          "title": "18.8 The FEDERATED Storage Engine"
+        },
+        {
+          "href": "federated-description.html",
+          "title": "18.8.1 FEDERATED Storage Engine Overview"
+        },
+        {
+          "href": "federated-create.html",
+          "title": "18.8.2 How to Create FEDERATED Tables"
+        },
+        {
+          "href": "federated-usagenotes.html",
+          "title": "18.8.3 FEDERATED Storage Engine Notes and Tips"
+        },
+        {
+          "href": "federated-storage-engine-resources.html",
+          "title": "18.8.4 FEDERATED Storage Engine Resources"
+        },
+        {
+          "href": "example-storage-engine.html",
+          "title": "18.9 The EXAMPLE Storage Engine"
+        },
+        {
+          "href": "storage-engines-other.html",
+          "title": "18.10 Other Storage Engines"
+        },
+        {
+          "href": "pluggable-storage-overview.html",
+          "title": "18.11 Overview of MySQL Storage Engine Architecture"
+        },
+        {
+          "href": "pluggable-storage.html",
+          "title": "18.11.1 Pluggable Storage Engine Architecture"
+        },
+        {
+          "href": "pluggable-storage-common-layer.html",
+          "title": "18.11.2 The Common Database Server Layer"
+        },
+        {
+          "href": "replication.html",
+          "title": "19 Replication"
+        },
+        {
+          "href": "replication-configuration.html",
+          "title": "19.1 Configuring Replication"
+        },
+        {
+          "href": "binlog-replication-configuration-overview.html",
+          "title": "19.1.1 Binary Log File Position Based Replication Configuration Overview"
+        },
+        {
+          "href": "replication-howto.html",
+          "title": "19.1.2 Setting Up Binary Log File Position Based Replication"
+        },
+        {
+          "href": "replication-gtids.html",
+          "title": "19.1.3 Replication with Global Transaction Identifiers"
+        },
+        {
+          "href": "replication-mode-change-online.html",
+          "title": "19.1.4 Changing GTID Mode on Online Servers"
+        },
+        {
+          "href": "replication-multi-source.html",
+          "title": "19.1.5 MySQL Multi-Source Replication"
+        },
+        {
+          "href": "replication-options.html",
+          "title": "19.1.6 Replication and Binary Logging Options and Variables"
+        },
+        {
+          "href": "replication-administration.html",
+          "title": "19.1.7 Common Replication Administration Tasks"
+        },
+        {
+          "href": "replication-implementation.html",
+          "title": "19.2 Replication Implementation"
+        },
+        {
+          "href": "replication-formats.html",
+          "title": "19.2.1 Replication Formats"
+        },
+        {
+          "href": "replication-channels.html",
+          "title": "19.2.2 Replication Channels"
+        },
+        {
+          "href": "replication-threads.html",
+          "title": "19.2.3 Replication Threads"
+        },
+        {
+          "href": "replica-logs.html",
+          "title": "19.2.4 Relay Log and Replication Metadata Repositories"
+        },
+        {
+          "href": "replication-rules.html",
+          "title": "19.2.5 How Servers Evaluate Replication Filtering Rules"
+        },
+        {
+          "href": "replication-security.html",
+          "title": "19.3 Replication Security"
+        },
+        {
+          "href": "replication-encrypted-connections.html",
+          "title": "19.3.1 Setting Up Replication to Use Encrypted Connections"
+        },
+        {
+          "href": "replication-binlog-encryption.html",
+          "title": "19.3.2 Encrypting Binary Log Files and Relay Log Files"
+        },
+        {
+          "href": "replication-privilege-checks.html",
+          "title": "19.3.3 Replication Privilege Checks"
+        },
+        {
+          "href": "replication-solutions.html",
+          "title": "19.4 Replication Solutions"
+        },
+        {
+          "href": "replication-solutions-backups.html",
+          "title": "19.4.1 Using Replication for Backups"
+        },
+        {
+          "href": "replication-solutions-unexpected-replica-halt.html",
+          "title": "19.4.2 Handling an Unexpected Halt of a Replica"
+        },
+        {
+          "href": "replication-solutions-rbr-monitoring.html",
+          "title": "19.4.3 Monitoring Row-based Replication"
+        },
+        {
+          "href": "replication-solutions-diffengines.html",
+          "title": "19.4.4 Using Replication with Different Source and Replica Storage Engines"
+        },
+        {
+          "href": "replication-solutions-scaleout.html",
+          "title": "19.4.5 Using Replication for Scale-Out"
+        },
+        {
+          "href": "replication-solutions-partitioning.html",
+          "title": "19.4.6 Replicating Different Databases to Different Replicas"
+        },
+        {
+          "href": "replication-solutions-performance.html",
+          "title": "19.4.7 Improving Replication Performance"
+        },
+        {
+          "href": "replication-solutions-switch.html",
+          "title": "19.4.8 Switching Sources During Failover"
+        },
+        {
+          "href": "replication-asynchronous-connection-failover.html",
+          "title": "19.4.9 Switching Sources and Replicas with Asynchronous Connection Failover"
+        },
+        {
+          "href": "replication-semisync.html",
+          "title": "19.4.10 Semisynchronous Replication"
+        },
+        {
+          "href": "replication-delayed.html",
+          "title": "19.4.11 Delayed Replication"
+        },
+        {
+          "href": "replication-notes.html",
+          "title": "19.5 Replication Notes and Tips"
+        },
+        {
+          "href": "replication-features.html",
+          "title": "19.5.1 Replication Features and Issues"
+        },
+        {
+          "href": "replication-compatibility.html",
+          "title": "19.5.2 Replication Compatibility Between MySQL Versions"
+        },
+        {
+          "href": "replication-upgrade.html",
+          "title": "19.5.3 Upgrading a Replication Topology"
+        },
+        {
+          "href": "replication-problems.html",
+          "title": "19.5.4 Troubleshooting Replication"
+        },
+        {
+          "href": "replication-bugs.html",
+          "title": "19.5.5 How to Report Replication Bugs or Problems"
+        },
+        {
+          "href": "group-replication.html",
+          "title": "20 Group Replication"
+        },
+        {
+          "href": "group-replication-background.html",
+          "title": "20.1 Group Replication Background"
+        },
+        {
+          "href": "group-replication-replication-technologies.html",
+          "title": "20.1.1 Replication Technologies"
+        },
+        {
+          "href": "group-replication-use-cases.html",
+          "title": "20.1.2 Group Replication Use Cases"
+        },
+        {
+          "href": "group-replication-deploying-in-multi-primary-or-single-primary-mode.html",
+          "title": "20.1.3 Multi-Primary and Single-Primary Modes"
+        },
+        {
+          "href": "group-replication-details.html",
+          "title": "20.1.4 Group Replication Services"
+        },
+        {
+          "href": "group-replication-plugin-architecture.html",
+          "title": "20.1.5 Group Replication Plugin Architecture"
+        },
+        {
+          "href": "group-replication-getting-started.html",
+          "title": "20.2 Getting Started"
+        },
+        {
+          "href": "group-replication-deploying-in-single-primary-mode.html",
+          "title": "20.2.1 Deploying Group Replication in Single-Primary Mode"
+        },
+        {
+          "href": "group-replication-deploying-locally.html",
+          "title": "20.2.2 Deploying Group Replication Locally"
+        },
+        {
+          "href": "group-replication-requirements-and-limitations.html",
+          "title": "20.3 Requirements and Limitations"
+        },
+        {
+          "href": "group-replication-requirements.html",
+          "title": "20.3.1 Group Replication Requirements"
+        },
+        {
+          "href": "group-replication-limitations.html",
+          "title": "20.3.2 Group Replication Limitations"
+        },
+        {
+          "href": "group-replication-monitoring.html",
+          "title": "20.4 Monitoring Group Replication"
+        },
+        {
+          "href": "group-replication-gtids.html",
+          "title": "20.4.1 GTIDs and Group Replication"
+        },
+        {
+          "href": "group-replication-server-states.html",
+          "title": "20.4.2 Group Replication Server States"
+        },
+        {
+          "href": "group-replication-replication-group-members.html",
+          "title": "20.4.3 The replication_group_members Table"
+        },
+        {
+          "href": "group-replication-replication-group-member-stats.html",
+          "title": "20.4.4 The replication_group_member_stats Table"
+        },
+        {
+          "href": "group-replication-operations.html",
+          "title": "20.5 Group Replication Operations"
+        },
+        {
+          "href": "group-replication-configuring-online-group.html",
+          "title": "20.5.1 Configuring an Online Group"
+        },
+        {
+          "href": "group-replication-restarting-group.html",
+          "title": "20.5.2 Restarting a Group"
+        },
+        {
+          "href": "group-replication-consistency-guarantees.html",
+          "title": "20.5.3 Transaction Consistency Guarantees"
+        },
+        {
+          "href": "group-replication-distributed-recovery.html",
+          "title": "20.5.4 Distributed Recovery"
+        },
+        {
+          "href": "group-replication-ipv6.html",
+          "title": "20.5.5 Support For IPv6 And For Mixed IPv6 And IPv4 Groups"
+        },
+        {
+          "href": "group-replication-enterprise-backup.html",
+          "title": "20.5.6 Using MySQL Enterprise Backup with Group Replication"
+        },
+        {
+          "href": "group-replication-security.html",
+          "title": "20.6 Group Replication Security"
+        },
+        {
+          "href": "group-replication-connection-security.html",
+          "title": "20.6.1 Communication Stack for Connection Security Management"
+        },
+        {
+          "href": "group-replication-secure-socket-layer-support-ssl.html",
+          "title": "20.6.2 Securing Group Communication Connections with Secure Socket Layer (SSL)"
+        },
+        {
+          "href": "group-replication-distributed-recovery-securing.html",
+          "title": "20.6.3 Securing Distributed Recovery Connections"
+        },
+        {
+          "href": "group-replication-ip-address-permissions.html",
+          "title": "20.6.4 Group Replication IP Address Permissions"
+        },
+        {
+          "href": "group-replication-performance.html",
+          "title": "20.7 Group Replication Performance and Troubleshooting"
+        },
+        {
+          "href": "group-replication-fine-tuning-the-group-communication-thread.html",
+          "title": "20.7.1 Fine Tuning the Group Communication Thread"
+        },
+        {
+          "href": "group-replication-flow-control.html",
+          "title": "20.7.2 Flow Control"
+        },
+        {
+          "href": "group-replication-single-consensus-leader.html",
+          "title": "20.7.3 Single Consensus Leader"
+        },
+        {
+          "href": "group-replication-message-compression.html",
+          "title": "20.7.4 Message Compression"
+        },
+        {
+          "href": "group-replication-performance-message-fragmentation.html",
+          "title": "20.7.5 Message Fragmentation"
+        },
+        {
+          "href": "group-replication-performance-xcom-cache.html",
+          "title": "20.7.6 XCom Cache Management"
+        },
+        {
+          "href": "group-replication-responses-failure.html",
+          "title": "20.7.7 Responses to Failure Detection and Network Partitioning"
+        },
+        {
+          "href": "group-replication-network-partitioning.html",
+          "title": "20.7.8 Handling a Network Partition and Loss of Quorum"
+        },
+        {
+          "href": "mysql-gr-memory-monitoring-ps-instruments.html",
+          "title": "20.7.9 Monitoring Group Replication Memory Usage with Performance Schema Memory Instrumentation"
+        },
+        {
+          "href": "group-replication-upgrade.html",
+          "title": "20.8 Upgrading Group Replication"
+        },
+        {
+          "href": "group-replication-online-upgrade-combining-versions.html",
+          "title": "20.8.1 Combining Different Member Versions in a Group"
+        },
+        {
+          "href": "group-replication-offline-upgrade.html",
+          "title": "20.8.2 Group Replication Offline Upgrade"
+        },
+        {
+          "href": "group-replication-online-upgrade.html",
+          "title": "20.8.3 Group Replication Online Upgrade"
+        },
+        {
+          "href": "group-replication-options.html",
+          "title": "20.9 Group Replication Variables"
+        },
+        {
+          "href": "group-replication-system-variables.html",
+          "title": "20.9.1 Group Replication System Variables"
+        },
+        {
+          "href": "group-replication-status-variables.html",
+          "title": "20.9.2 Group Replication Status Variables"
+        },
+        {
+          "href": "group-replication-frequently-asked-questions.html",
+          "title": "20.10 Frequently Asked Questions"
+        },
+        {
+          "href": "mysql-shell-userguide.html",
+          "title": "21 MySQL Shell"
+        },
+        {
+          "href": "document-store.html",
+          "title": "22 Using MySQL as a Document Store"
+        },
+        {
+          "href": "document-store-interfaces.html",
+          "title": "22.1 Interfaces to a MySQL Document Store"
+        },
+        {
+          "href": "document-store-concepts.html",
+          "title": "22.2 Document Store Concepts"
+        },
+        {
+          "href": "mysql-shell-tutorial-javascript.html",
+          "title": "22.3 JavaScript Quick-Start Guide: MySQL Shell for Document Store"
+        },
+        {
+          "href": "mysql-shell-tutorial-javascript-shell.html",
+          "title": "22.3.1 MySQL Shell"
+        },
+        {
+          "href": "mysql-shell-tutorial-javascript-download.html",
+          "title": "22.3.2 Download and Import world_x Database"
+        },
+        {
+          "href": "mysql-shell-tutorial-javascript-documents-collections.html",
+          "title": "22.3.3 Documents and Collections"
+        },
+        {
+          "href": "mysql-shell-tutorial-javascript-relational-tables.html",
+          "title": "22.3.4 Relational Tables"
+        },
+        {
+          "href": "mysql-shell-tutorial-javascript-documents-in-tables.html",
+          "title": "22.3.5 Documents in Tables"
+        },
+        {
+          "href": "mysql-shell-tutorial-python.html",
+          "title": "22.4 Python Quick-Start Guide: MySQL Shell for Document Store"
+        },
+        {
+          "href": "mysql-shell-tutorial-python-shell.html",
+          "title": "22.4.1 MySQL Shell"
+        },
+        {
+          "href": "mysql-shell-tutorial-python-download.html",
+          "title": "22.4.2 Download and Import world_x Database"
+        },
+        {
+          "href": "mysql-shell-tutorial-python-documents-collections.html",
+          "title": "22.4.3 Documents and Collections"
+        },
+        {
+          "href": "mysql-shell-tutorial-python-relational-tables.html",
+          "title": "22.4.4 Relational Tables"
+        },
+        {
+          "href": "mysql-shell-tutorial-python-documents-in-tables.html",
+          "title": "22.4.5 Documents in Tables"
+        },
+        {
+          "href": "x-plugin.html",
+          "title": "22.5 X Plugin"
+        },
+        {
+          "href": "x-plugin-checking-installation.html",
+          "title": "22.5.1 Checking X Plugin Installation"
+        },
+        {
+          "href": "x-plugin-disabling.html",
+          "title": "22.5.2 Disabling X Plugin"
+        },
+        {
+          "href": "x-plugin-encrypted-connections.html",
+          "title": "22.5.3 Using Encrypted Connections with X Plugin"
+        },
+        {
+          "href": "x-plugin-sha2-cache-plugin.html",
+          "title": "22.5.4 Using X Plugin with the Caching SHA-2 Authentication Plugin"
+        },
+        {
+          "href": "x-plugin-connection-compression.html",
+          "title": "22.5.5 Connection Compression with X Plugin"
+        },
+        {
+          "href": "x-plugin-options-variables.html",
+          "title": "22.5.6 X Plugin Options and Variables"
+        },
+        {
+          "href": "x-plugin-system-monitoring.html",
+          "title": "22.5.7 Monitoring X Plugin"
+        },
+        {
+          "href": "mysql-innodb-cluster-introduction.html",
+          "title": "23 InnoDB Cluster"
+        },
+        {
+          "href": "mysql-innodb-replicaset-introduction.html",
+          "title": "24 InnoDB ReplicaSet"
+        },
+        {
+          "href": "mysql-cluster.html",
+          "title": "25 MySQL NDB Cluster 8.0"
+        },
+        {
+          "href": "mysql-cluster-general-info.html",
+          "title": "25.1 General Information"
+        },
+        {
+          "href": "mysql-cluster-overview.html",
+          "title": "25.2 NDB Cluster Overview"
+        },
+        {
+          "href": "mysql-cluster-basics.html",
+          "title": "25.2.1 NDB Cluster Core Concepts"
+        },
+        {
+          "href": "mysql-cluster-nodes-groups.html",
+          "title": "25.2.2 NDB Cluster Nodes, Node Groups, Fragment Replicas, and Partitions"
+        },
+        {
+          "href": "mysql-cluster-overview-requirements.html",
+          "title": "25.2.3 NDB Cluster Hardware, Software, and Networking Requirements"
+        },
+        {
+          "href": "mysql-cluster-what-is-new.html",
+          "title": "25.2.4 What is New in MySQL NDB Cluster 8.0"
+        },
+        {
+          "href": "mysql-cluster-added-deprecated-removed.html",
+          "title": "25.2.5 Options, Variables, and Parameters Added, Deprecated or Removed in NDB 8.0"
+        },
+        {
+          "href": "mysql-cluster-compared.html",
+          "title": "25.2.6 MySQL Server Using InnoDB Compared with NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-limitations.html",
+          "title": "25.2.7 Known Limitations of NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-installation.html",
+          "title": "25.3 NDB Cluster Installation"
+        },
+        {
+          "href": "mysql-cluster-install-linux.html",
+          "title": "25.3.1 Installation of NDB Cluster on Linux"
+        },
+        {
+          "href": "mysql-cluster-install-windows.html",
+          "title": "25.3.2 Installing NDB Cluster on Windows"
+        },
+        {
+          "href": "mysql-cluster-install-configuration.html",
+          "title": "25.3.3 Initial Configuration of NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-install-first-start.html",
+          "title": "25.3.4 Initial Startup of NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-install-example-data.html",
+          "title": "25.3.5 NDB Cluster Example with Tables and Data"
+        },
+        {
+          "href": "mysql-cluster-install-shutdown-restart.html",
+          "title": "25.3.6 Safe Shutdown and Restart of NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-upgrade-downgrade.html",
+          "title": "25.3.7 Upgrading and Downgrading NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-installer.html",
+          "title": "25.3.8 The NDB Cluster Auto-Installer (NO LONGER SUPPORTED)"
+        },
+        {
+          "href": "mysql-cluster-configuration.html",
+          "title": "25.4 Configuration of NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-quick.html",
+          "title": "25.4.1 Quick Test Setup of NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-configuration-overview.html",
+          "title": "25.4.2 Overview of NDB Cluster Configuration Parameters, Options, and Variables"
+        },
+        {
+          "href": "mysql-cluster-config-file.html",
+          "title": "25.4.3 NDB Cluster Configuration Files"
+        },
+        {
+          "href": "mysql-cluster-interconnects.html",
+          "title": "25.4.4 Using High-Speed Interconnects with NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-programs.html",
+          "title": "25.5 NDB Cluster Programs"
+        },
+        {
+          "href": "mysql-cluster-programs-ndbd.html",
+          "title": "25.5.1 ndbd — The NDB Cluster Data Node Daemon"
+        },
+        {
+          "href": "mysql-cluster-programs-ndbinfo-select-all.html",
+          "title": "25.5.2 ndbinfo_select_all — Select From ndbinfo Tables"
+        },
+        {
+          "href": "mysql-cluster-programs-ndbmtd.html",
+          "title": "25.5.3 ndbmtd — The NDB Cluster Data Node Daemon (Multi-Threaded)"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-mgmd.html",
+          "title": "25.5.4 ndb_mgmd — The NDB Cluster Management Server Daemon"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-mgm.html",
+          "title": "25.5.5 ndb_mgm — The NDB Cluster Management Client"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-blob-tool.html",
+          "title": "25.5.6 ndb_blob_tool — Check and Repair BLOB and TEXT columns of NDB Cluster Tables"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-config.html",
+          "title": "25.5.7 ndb_config — Extract NDB Cluster Configuration Information"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-delete-all.html",
+          "title": "25.5.8 ndb_delete_all — Delete All Rows from an NDB Table"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-desc.html",
+          "title": "25.5.9 ndb_desc — Describe NDB Tables"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-drop-index.html",
+          "title": "25.5.10 ndb_drop_index — Drop Index from an NDB Table"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-drop-table.html",
+          "title": "25.5.11 ndb_drop_table — Drop an NDB Table"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-error-reporter.html",
+          "title": "25.5.12 ndb_error_reporter — NDB Error-Reporting Utility"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-import.html",
+          "title": "25.5.13 ndb_import — Import CSV Data Into NDB"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-index-stat.html",
+          "title": "25.5.14 ndb_index_stat — NDB Index Statistics Utility"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-move-data.html",
+          "title": "25.5.15 ndb_move_data — NDB Data Copy Utility"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-perror.html",
+          "title": "25.5.16 ndb_perror — Obtain NDB Error Message Information"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-print-backup-file.html",
+          "title": "25.5.17 ndb_print_backup_file — Print NDB Backup File Contents"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-print-file.html",
+          "title": "25.5.18 ndb_print_file — Print NDB Disk Data File Contents"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-print-frag-file.html",
+          "title": "25.5.19 ndb_print_frag_file — Print NDB Fragment List File Contents"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-print-schema-file.html",
+          "title": "25.5.20 ndb_print_schema_file — Print NDB Schema File Contents"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-print-sys-file.html",
+          "title": "25.5.21 ndb_print_sys_file — Print NDB System File Contents"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-redo-log-reader.html",
+          "title": "25.5.22 ndb_redo_log_reader — Check and Print Content of Cluster Redo Log"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-restore.html",
+          "title": "25.5.23 ndb_restore — Restore an NDB Cluster Backup"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-secretsfile-reader.html",
+          "title": "25.5.24 ndb_secretsfile_reader — Obtain Key Information from an Encrypted NDB Data File"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-select-all.html",
+          "title": "25.5.25 ndb_select_all — Print Rows from an NDB Table"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-select-count.html",
+          "title": "25.5.26 ndb_select_count — Print Row Counts for NDB Tables"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-show-tables.html",
+          "title": "25.5.27 ndb_show_tables — Display List of NDB Tables"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-size-pl.html",
+          "title": "25.5.28 ndb_size.pl — NDBCLUSTER Size Requirement Estimator"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-top.html",
+          "title": "25.5.29 ndb_top — View CPU usage information for NDB threads"
+        },
+        {
+          "href": "mysql-cluster-programs-ndb-waiter.html",
+          "title": "25.5.30 ndb_waiter — Wait for NDB Cluster to Reach a Given Status"
+        },
+        {
+          "href": "mysql-cluster-programs-ndbxfrm.html",
+          "title": "25.5.31 ndbxfrm — Compress, Decompress, Encrypt, and Decrypt Files Created by NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-management.html",
+          "title": "25.6 Management of NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-mgm-client-commands.html",
+          "title": "25.6.1 Commands in the NDB Cluster Management Client"
+        },
+        {
+          "href": "mysql-cluster-logs-ndb-messages.html",
+          "title": "25.6.2 NDB Cluster Log Messages"
+        },
+        {
+          "href": "mysql-cluster-event-reports.html",
+          "title": "25.6.3 Event Reports Generated in NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-start-phases.html",
+          "title": "25.6.4 Summary of NDB Cluster Start Phases"
+        },
+        {
+          "href": "mysql-cluster-rolling-restart.html",
+          "title": "25.6.5 Performing a Rolling Restart of an NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-single-user-mode.html",
+          "title": "25.6.6 NDB Cluster Single User Mode"
+        },
+        {
+          "href": "mysql-cluster-online-add-node.html",
+          "title": "25.6.7 Adding NDB Cluster Data Nodes Online"
+        },
+        {
+          "href": "mysql-cluster-backup.html",
+          "title": "25.6.8 Online Backup of NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-importing-data.html",
+          "title": "25.6.9 Importing Data Into MySQL Cluster"
+        },
+        {
+          "href": "mysql-cluster-mysqld.html",
+          "title": "25.6.10 MySQL Server Usage for NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-disk-data.html",
+          "title": "25.6.11 NDB Cluster Disk Data Tables"
+        },
+        {
+          "href": "mysql-cluster-online-operations.html",
+          "title": "25.6.12 Online Operations with ALTER TABLE in NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-privilege-synchronization.html",
+          "title": "25.6.13 Privilege Synchronization and NDB_STORED_USER"
+        },
+        {
+          "href": "mysql-cluster-tde.html",
+          "title": "25.6.14 File System Encryption for NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-ndb-api-statistics.html",
+          "title": "25.6.15 NDB API Statistics Counters and Variables"
+        },
+        {
+          "href": "mysql-cluster-ndbinfo.html",
+          "title": "25.6.16 ndbinfo: The NDB Cluster Information Database"
+        },
+        {
+          "href": "mysql-cluster-information-schema-tables.html",
+          "title": "25.6.17 INFORMATION_SCHEMA Tables for NDB Cluster"
+        },
+        {
+          "href": "mysql-cluster-ps-tables.html",
+          "title": "25.6.18 NDB Cluster and the Performance Schema"
+        },
+        {
+          "href": "mysql-cluster-sql-statements.html",
+          "title": "25.6.19 Quick Reference: NDB Cluster SQL Statements"
+        },
+        {
+          "href": "mysql-cluster-security.html",
+          "title": "25.6.20 NDB Cluster Security Issues"
+        },
+        {
+          "href": "mysql-cluster-replication.html",
+          "title": "25.7 NDB Cluster Replication"
+        },
+        {
+          "href": "mysql-cluster-replication-abbreviations.html",
+          "title": "25.7.1 NDB Cluster Replication: Abbreviations and Symbols"
+        },
+        {
+          "href": "mysql-cluster-replication-general.html",
+          "title": "25.7.2 General Requirements for NDB Cluster Replication"
+        },
+        {
+          "href": "mysql-cluster-replication-issues.html",
+          "title": "25.7.3 Known Issues in NDB Cluster Replication"
+        },
+        {
+          "href": "mysql-cluster-replication-schema.html",
+          "title": "25.7.4 NDB Cluster Replication Schema and Tables"
+        },
+        {
+          "href": "mysql-cluster-replication-preparation.html",
+          "title": "25.7.5 Preparing the NDB Cluster for Replication"
+        },
+        {
+          "href": "mysql-cluster-replication-starting.html",
+          "title": "25.7.6 Starting NDB Cluster Replication (Single Replication Channel)"
+        },
+        {
+          "href": "mysql-cluster-replication-two-channels.html",
+          "title": "25.7.7 Using Two Replication Channels for NDB Cluster Replication"
+        },
+        {
+          "href": "mysql-cluster-replication-failover.html",
+          "title": "25.7.8 Implementing Failover with NDB Cluster Replication"
+        },
+        {
+          "href": "mysql-cluster-replication-backups.html",
+          "title": "25.7.9 NDB Cluster Backups With NDB Cluster Replication"
+        },
+        {
+          "href": "mysql-cluster-replication-multi-source.html",
+          "title": "25.7.10 NDB Cluster Replication: Bidirectional and Circular Replication"
+        },
+        {
+          "href": "mysql-cluster-replication-mta.html",
+          "title": "25.7.11 NDB Cluster Replication Using the Multithreaded Applier"
+        },
+        {
+          "href": "mysql-cluster-replication-conflict-resolution.html",
+          "title": "25.7.12 NDB Cluster Replication Conflict Resolution"
+        },
+        {
+          "href": "mysql-cluster-news.html",
+          "title": "25.8 NDB Cluster Release Notes"
+        },
+        {
+          "href": "partitioning.html",
+          "title": "26 Partitioning"
+        },
+        {
+          "href": "partitioning-overview.html",
+          "title": "26.1 Overview of Partitioning in MySQL"
+        },
+        {
+          "href": "partitioning-types.html",
+          "title": "26.2 Partitioning Types"
+        },
+        {
+          "href": "partitioning-range.html",
+          "title": "26.2.1 RANGE Partitioning"
+        },
+        {
+          "href": "partitioning-list.html",
+          "title": "26.2.2 LIST Partitioning"
+        },
+        {
+          "href": "partitioning-columns.html",
+          "title": "26.2.3 COLUMNS Partitioning"
+        },
+        {
+          "href": "partitioning-hash.html",
+          "title": "26.2.4 HASH Partitioning"
+        },
+        {
+          "href": "partitioning-key.html",
+          "title": "26.2.5 KEY Partitioning"
+        },
+        {
+          "href": "partitioning-subpartitions.html",
+          "title": "26.2.6 Subpartitioning"
+        },
+        {
+          "href": "partitioning-handling-nulls.html",
+          "title": "26.2.7 How MySQL Partitioning Handles NULL"
+        },
+        {
+          "href": "partitioning-management.html",
+          "title": "26.3 Partition Management"
+        },
+        {
+          "href": "partitioning-management-range-list.html",
+          "title": "26.3.1 Management of RANGE and LIST Partitions"
+        },
+        {
+          "href": "partitioning-management-hash-key.html",
+          "title": "26.3.2 Management of HASH and KEY Partitions"
+        },
+        {
+          "href": "partitioning-management-exchange.html",
+          "title": "26.3.3 Exchanging Partitions and Subpartitions with Tables"
+        },
+        {
+          "href": "partitioning-maintenance.html",
+          "title": "26.3.4 Maintenance of Partitions"
+        },
+        {
+          "href": "partitioning-info.html",
+          "title": "26.3.5 Obtaining Information About Partitions"
+        },
+        {
+          "href": "partitioning-pruning.html",
+          "title": "26.4 Partition Pruning"
+        },
+        {
+          "href": "partitioning-selection.html",
+          "title": "26.5 Partition Selection"
+        },
+        {
+          "href": "partitioning-limitations.html",
+          "title": "26.6 Restrictions and Limitations on Partitioning"
+        },
+        {
+          "href": "partitioning-limitations-partitioning-keys-unique-keys.html",
+          "title": "26.6.1 Partitioning Keys, Primary Keys, and Unique Keys"
+        },
+        {
+          "href": "partitioning-limitations-storage-engines.html",
+          "title": "26.6.2 Partitioning Limitations Relating to Storage Engines"
+        },
+        {
+          "href": "partitioning-limitations-functions.html",
+          "title": "26.6.3 Partitioning Limitations Relating to Functions"
+        },
+        {
+          "href": "stored-objects.html",
+          "title": "27 Stored Objects"
+        },
+        {
+          "href": "stored-programs-defining.html",
+          "title": "27.1 Defining Stored Programs"
+        },
+        {
+          "href": "stored-routines.html",
+          "title": "27.2 Using Stored Routines"
+        },
+        {
+          "href": "stored-routines-syntax.html",
+          "title": "27.2.1 Stored Routine Syntax"
+        },
+        {
+          "href": "stored-routines-privileges.html",
+          "title": "27.2.2 Stored Routines and MySQL Privileges"
+        },
+        {
+          "href": "stored-routines-metadata.html",
+          "title": "27.2.3 Stored Routine Metadata"
+        },
+        {
+          "href": "stored-routines-last-insert-id.html",
+          "title": "27.2.4 Stored Procedures, Functions, Triggers, and LAST_INSERT_ID()"
+        },
+        {
+          "href": "triggers.html",
+          "title": "27.3 Using Triggers"
+        },
+        {
+          "href": "trigger-syntax.html",
+          "title": "27.3.1 Trigger Syntax and Examples"
+        },
+        {
+          "href": "trigger-metadata.html",
+          "title": "27.3.2 Trigger Metadata"
+        },
+        {
+          "href": "event-scheduler.html",
+          "title": "27.4 Using the Event Scheduler"
+        },
+        {
+          "href": "events-overview.html",
+          "title": "27.4.1 Event Scheduler Overview"
+        },
+        {
+          "href": "events-configuration.html",
+          "title": "27.4.2 Event Scheduler Configuration"
+        },
+        {
+          "href": "events-syntax.html",
+          "title": "27.4.3 Event Syntax"
+        },
+        {
+          "href": "events-metadata.html",
+          "title": "27.4.4 Event Metadata"
+        },
+        {
+          "href": "events-status-info.html",
+          "title": "27.4.5 Event Scheduler Status"
+        },
+        {
+          "href": "events-privileges.html",
+          "title": "27.4.6 The Event Scheduler and MySQL Privileges"
+        },
+        {
+          "href": "views.html",
+          "title": "27.5 Using Views"
+        },
+        {
+          "href": "view-syntax.html",
+          "title": "27.5.1 View Syntax"
+        },
+        {
+          "href": "view-algorithms.html",
+          "title": "27.5.2 View Processing Algorithms"
+        },
+        {
+          "href": "view-updatability.html",
+          "title": "27.5.3 Updatable and Insertable Views"
+        },
+        {
+          "href": "view-check-option.html",
+          "title": "27.5.4 The View WITH CHECK OPTION Clause"
+        },
+        {
+          "href": "view-metadata.html",
+          "title": "27.5.5 View Metadata"
+        },
+        {
+          "href": "stored-objects-security.html",
+          "title": "27.6 Stored Object Access Control"
+        },
+        {
+          "href": "stored-programs-logging.html",
+          "title": "27.7 Stored Program Binary Logging"
+        },
+        {
+          "href": "stored-program-restrictions.html",
+          "title": "27.8 Restrictions on Stored Programs"
+        },
+        {
+          "href": "view-restrictions.html",
+          "title": "27.9 Restrictions on Views"
+        },
+        {
+          "href": "information-schema.html",
+          "title": "28 INFORMATION_SCHEMA Tables"
+        },
+        {
+          "href": "information-schema-introduction.html",
+          "title": "28.1 Introduction"
+        },
+        {
+          "href": "information-schema-table-reference.html",
+          "title": "28.2 INFORMATION_SCHEMA Table Reference"
+        },
+        {
+          "href": "general-information-schema-tables.html",
+          "title": "28.3 INFORMATION_SCHEMA General Tables"
+        },
+        {
+          "href": "information-schema-general-table-reference.html",
+          "title": "28.3.1 INFORMATION_SCHEMA General Table Reference"
+        },
+        {
+          "href": "information-schema-administrable-role-authorizations-table.html",
+          "title": "28.3.2 The INFORMATION_SCHEMA ADMINISTRABLE_ROLE_AUTHORIZATIONS Table"
+        },
+        {
+          "href": "information-schema-applicable-roles-table.html",
+          "title": "28.3.3 The INFORMATION_SCHEMA APPLICABLE_ROLES Table"
+        },
+        {
+          "href": "information-schema-character-sets-table.html",
+          "title": "28.3.4 The INFORMATION_SCHEMA CHARACTER_SETS Table"
+        },
+        {
+          "href": "information-schema-check-constraints-table.html",
+          "title": "28.3.5 The INFORMATION_SCHEMA CHECK_CONSTRAINTS Table"
+        },
+        {
+          "href": "information-schema-collations-table.html",
+          "title": "28.3.6 The INFORMATION_SCHEMA COLLATIONS Table"
+        },
+        {
+          "href": "information-schema-collation-character-set-applicability-table.html",
+          "title": "28.3.7 The INFORMATION_SCHEMA COLLATION_CHARACTER_SET_APPLICABILITY Table"
+        },
+        {
+          "href": "information-schema-columns-table.html",
+          "title": "28.3.8 The INFORMATION_SCHEMA COLUMNS Table"
+        },
+        {
+          "href": "information-schema-columns-extensions-table.html",
+          "title": "28.3.9 The INFORMATION_SCHEMA COLUMNS_EXTENSIONS Table"
+        },
+        {
+          "href": "information-schema-column-privileges-table.html",
+          "title": "28.3.10 The INFORMATION_SCHEMA COLUMN_PRIVILEGES Table"
+        },
+        {
+          "href": "information-schema-column-statistics-table.html",
+          "title": "28.3.11 The INFORMATION_SCHEMA COLUMN_STATISTICS Table"
+        },
+        {
+          "href": "information-schema-enabled-roles-table.html",
+          "title": "28.3.12 The INFORMATION_SCHEMA ENABLED_ROLES Table"
+        },
+        {
+          "href": "information-schema-engines-table.html",
+          "title": "28.3.13 The INFORMATION_SCHEMA ENGINES Table"
+        },
+        {
+          "href": "information-schema-events-table.html",
+          "title": "28.3.14 The INFORMATION_SCHEMA EVENTS Table"
+        },
+        {
+          "href": "information-schema-files-table.html",
+          "title": "28.3.15 The INFORMATION_SCHEMA FILES Table"
+        },
+        {
+          "href": "information-schema-key-column-usage-table.html",
+          "title": "28.3.16 The INFORMATION_SCHEMA KEY_COLUMN_USAGE Table"
+        },
+        {
+          "href": "information-schema-keywords-table.html",
+          "title": "28.3.17 The INFORMATION_SCHEMA KEYWORDS Table"
+        },
+        {
+          "href": "information-schema-ndb-transid-mysql-connection-map-table.html",
+          "title": "28.3.18 The INFORMATION_SCHEMA ndb_transid_mysql_connection_map Table"
+        },
+        {
+          "href": "information-schema-optimizer-trace-table.html",
+          "title": "28.3.19 The INFORMATION_SCHEMA OPTIMIZER_TRACE Table"
+        },
+        {
+          "href": "information-schema-parameters-table.html",
+          "title": "28.3.20 The INFORMATION_SCHEMA PARAMETERS Table"
+        },
+        {
+          "href": "information-schema-partitions-table.html",
+          "title": "28.3.21 The INFORMATION_SCHEMA PARTITIONS Table"
+        },
+        {
+          "href": "information-schema-plugins-table.html",
+          "title": "28.3.22 The INFORMATION_SCHEMA PLUGINS Table"
+        },
+        {
+          "href": "information-schema-processlist-table.html",
+          "title": "28.3.23 The INFORMATION_SCHEMA PROCESSLIST Table"
+        },
+        {
+          "href": "information-schema-profiling-table.html",
+          "title": "28.3.24 The INFORMATION_SCHEMA PROFILING Table"
+        },
+        {
+          "href": "information-schema-referential-constraints-table.html",
+          "title": "28.3.25 The INFORMATION_SCHEMA REFERENTIAL_CONSTRAINTS Table"
+        },
+        {
+          "href": "information-schema-resource-groups-table.html",
+          "title": "28.3.26 The INFORMATION_SCHEMA RESOURCE_GROUPS Table"
+        },
+        {
+          "href": "information-schema-role-column-grants-table.html",
+          "title": "28.3.27 The INFORMATION_SCHEMA ROLE_COLUMN_GRANTS Table"
+        },
+        {
+          "href": "information-schema-role-routine-grants-table.html",
+          "title": "28.3.28 The INFORMATION_SCHEMA ROLE_ROUTINE_GRANTS Table"
+        },
+        {
+          "href": "information-schema-role-table-grants-table.html",
+          "title": "28.3.29 The INFORMATION_SCHEMA ROLE_TABLE_GRANTS Table"
+        },
+        {
+          "href": "information-schema-routines-table.html",
+          "title": "28.3.30 The INFORMATION_SCHEMA ROUTINES Table"
+        },
+        {
+          "href": "information-schema-schemata-table.html",
+          "title": "28.3.31 The INFORMATION_SCHEMA SCHEMATA Table"
+        },
+        {
+          "href": "information-schema-schemata-extensions-table.html",
+          "title": "28.3.32 The INFORMATION_SCHEMA SCHEMATA_EXTENSIONS Table"
+        },
+        {
+          "href": "information-schema-schema-privileges-table.html",
+          "title": "28.3.33 The INFORMATION_SCHEMA SCHEMA_PRIVILEGES Table"
+        },
+        {
+          "href": "information-schema-statistics-table.html",
+          "title": "28.3.34 The INFORMATION_SCHEMA STATISTICS Table"
+        },
+        {
+          "href": "information-schema-st-geometry-columns-table.html",
+          "title": "28.3.35 The INFORMATION_SCHEMA ST_GEOMETRY_COLUMNS Table"
+        },
+        {
+          "href": "information-schema-st-spatial-reference-systems-table.html",
+          "title": "28.3.36 The INFORMATION_SCHEMA ST_SPATIAL_REFERENCE_SYSTEMS Table"
+        },
+        {
+          "href": "information-schema-st-units-of-measure-table.html",
+          "title": "28.3.37 The INFORMATION_SCHEMA ST_UNITS_OF_MEASURE Table"
+        },
+        {
+          "href": "information-schema-tables-table.html",
+          "title": "28.3.38 The INFORMATION_SCHEMA TABLES Table"
+        },
+        {
+          "href": "information-schema-tables-extensions-table.html",
+          "title": "28.3.39 The INFORMATION_SCHEMA TABLES_EXTENSIONS Table"
+        },
+        {
+          "href": "information-schema-tablespaces-table.html",
+          "title": "28.3.40 The INFORMATION_SCHEMA TABLESPACES Table"
+        },
+        {
+          "href": "information-schema-tablespaces-extensions-table.html",
+          "title": "28.3.41 The INFORMATION_SCHEMA TABLESPACES_EXTENSIONS Table"
+        },
+        {
+          "href": "information-schema-table-constraints-table.html",
+          "title": "28.3.42 The INFORMATION_SCHEMA TABLE_CONSTRAINTS Table"
+        },
+        {
+          "href": "information-schema-table-constraints-extensions-table.html",
+          "title": "28.3.43 The INFORMATION_SCHEMA TABLE_CONSTRAINTS_EXTENSIONS Table"
+        },
+        {
+          "href": "information-schema-table-privileges-table.html",
+          "title": "28.3.44 The INFORMATION_SCHEMA TABLE_PRIVILEGES Table"
+        },
+        {
+          "href": "information-schema-triggers-table.html",
+          "title": "28.3.45 The INFORMATION_SCHEMA TRIGGERS Table"
+        },
+        {
+          "href": "information-schema-user-attributes-table.html",
+          "title": "28.3.46 The INFORMATION_SCHEMA USER_ATTRIBUTES Table"
+        },
+        {
+          "href": "information-schema-user-privileges-table.html",
+          "title": "28.3.47 The INFORMATION_SCHEMA USER_PRIVILEGES Table"
+        },
+        {
+          "href": "information-schema-views-table.html",
+          "title": "28.3.48 The INFORMATION_SCHEMA VIEWS Table"
+        },
+        {
+          "href": "information-schema-view-routine-usage-table.html",
+          "title": "28.3.49 The INFORMATION_SCHEMA VIEW_ROUTINE_USAGE Table"
+        },
+        {
+          "href": "information-schema-view-table-usage-table.html",
+          "title": "28.3.50 The INFORMATION_SCHEMA VIEW_TABLE_USAGE Table"
+        },
+        {
+          "href": "innodb-information-schema-tables.html",
+          "title": "28.4 INFORMATION_SCHEMA InnoDB Tables"
+        },
+        {
+          "href": "information-schema-innodb-table-reference.html",
+          "title": "28.4.1 INFORMATION_SCHEMA InnoDB Table Reference"
+        },
+        {
+          "href": "information-schema-innodb-buffer-page-table.html",
+          "title": "28.4.2 The INFORMATION_SCHEMA INNODB_BUFFER_PAGE Table"
+        },
+        {
+          "href": "information-schema-innodb-buffer-page-lru-table.html",
+          "title": "28.4.3 The INFORMATION_SCHEMA INNODB_BUFFER_PAGE_LRU Table"
+        },
+        {
+          "href": "information-schema-innodb-buffer-pool-stats-table.html",
+          "title": "28.4.4 The INFORMATION_SCHEMA INNODB_BUFFER_POOL_STATS Table"
+        },
+        {
+          "href": "information-schema-innodb-cached-indexes-table.html",
+          "title": "28.4.5 The INFORMATION_SCHEMA INNODB_CACHED_INDEXES Table"
+        },
+        {
+          "href": "information-schema-innodb-cmp-table.html",
+          "title": "28.4.6 The INFORMATION_SCHEMA INNODB_CMP and INNODB_CMP_RESET Tables"
+        },
+        {
+          "href": "information-schema-innodb-cmpmem-table.html",
+          "title": "28.4.7 The INFORMATION_SCHEMA INNODB_CMPMEM and INNODB_CMPMEM_RESET Tables"
+        },
+        {
+          "href": "information-schema-innodb-cmp-per-index-table.html",
+          "title": "28.4.8 The INFORMATION_SCHEMA INNODB_CMP_PER_INDEX and INNODB_CMP_PER_INDEX_RESET Tables"
+        },
+        {
+          "href": "information-schema-innodb-columns-table.html",
+          "title": "28.4.9 The INFORMATION_SCHEMA INNODB_COLUMNS Table"
+        },
+        {
+          "href": "information-schema-innodb-datafiles-table.html",
+          "title": "28.4.10 The INFORMATION_SCHEMA INNODB_DATAFILES Table"
+        },
+        {
+          "href": "information-schema-innodb-fields-table.html",
+          "title": "28.4.11 The INFORMATION_SCHEMA INNODB_FIELDS Table"
+        },
+        {
+          "href": "information-schema-innodb-foreign-table.html",
+          "title": "28.4.12 The INFORMATION_SCHEMA INNODB_FOREIGN Table"
+        },
+        {
+          "href": "information-schema-innodb-foreign-cols-table.html",
+          "title": "28.4.13 The INFORMATION_SCHEMA INNODB_FOREIGN_COLS Table"
+        },
+        {
+          "href": "information-schema-innodb-ft-being-deleted-table.html",
+          "title": "28.4.14 The INFORMATION_SCHEMA INNODB_FT_BEING_DELETED Table"
+        },
+        {
+          "href": "information-schema-innodb-ft-config-table.html",
+          "title": "28.4.15 The INFORMATION_SCHEMA INNODB_FT_CONFIG Table"
+        },
+        {
+          "href": "information-schema-innodb-ft-default-stopword-table.html",
+          "title": "28.4.16 The INFORMATION_SCHEMA INNODB_FT_DEFAULT_STOPWORD Table"
+        },
+        {
+          "href": "information-schema-innodb-ft-deleted-table.html",
+          "title": "28.4.17 The INFORMATION_SCHEMA INNODB_FT_DELETED Table"
+        },
+        {
+          "href": "information-schema-innodb-ft-index-cache-table.html",
+          "title": "28.4.18 The INFORMATION_SCHEMA INNODB_FT_INDEX_CACHE Table"
+        },
+        {
+          "href": "information-schema-innodb-ft-index-table-table.html",
+          "title": "28.4.19 The INFORMATION_SCHEMA INNODB_FT_INDEX_TABLE Table"
+        },
+        {
+          "href": "information-schema-innodb-indexes-table.html",
+          "title": "28.4.20 The INFORMATION_SCHEMA INNODB_INDEXES Table"
+        },
+        {
+          "href": "information-schema-innodb-metrics-table.html",
+          "title": "28.4.21 The INFORMATION_SCHEMA INNODB_METRICS Table"
+        },
+        {
+          "href": "information-schema-innodb-session-temp-tablespaces-table.html",
+          "title": "28.4.22 The INFORMATION_SCHEMA INNODB_SESSION_TEMP_TABLESPACES Table"
+        },
+        {
+          "href": "information-schema-innodb-tables-table.html",
+          "title": "28.4.23 The INFORMATION_SCHEMA INNODB_TABLES Table"
+        },
+        {
+          "href": "information-schema-innodb-tablespaces-table.html",
+          "title": "28.4.24 The INFORMATION_SCHEMA INNODB_TABLESPACES Table"
+        },
+        {
+          "href": "information-schema-innodb-tablespaces-brief-table.html",
+          "title": "28.4.25 The INFORMATION_SCHEMA INNODB_TABLESPACES_BRIEF Table"
+        },
+        {
+          "href": "information-schema-innodb-tablestats-table.html",
+          "title": "28.4.26 The INFORMATION_SCHEMA INNODB_TABLESTATS View"
+        },
+        {
+          "href": "information-schema-innodb-temp-table-info-table.html",
+          "title": "28.4.27 The INFORMATION_SCHEMA INNODB_TEMP_TABLE_INFO Table"
+        },
+        {
+          "href": "information-schema-innodb-trx-table.html",
+          "title": "28.4.28 The INFORMATION_SCHEMA INNODB_TRX Table"
+        },
+        {
+          "href": "information-schema-innodb-virtual-table.html",
+          "title": "28.4.29 The INFORMATION_SCHEMA INNODB_VIRTUAL Table"
+        },
+        {
+          "href": "thread-pool-information-schema-tables.html",
+          "title": "28.5 INFORMATION_SCHEMA Thread Pool Tables"
+        },
+        {
+          "href": "information-schema-thread-pool-table-reference.html",
+          "title": "28.5.1 INFORMATION_SCHEMA Thread Pool Table Reference"
+        },
+        {
+          "href": "information-schema-tp-thread-group-state-table.html",
+          "title": "28.5.2 The INFORMATION_SCHEMA TP_THREAD_GROUP_STATE Table"
+        },
+        {
+          "href": "information-schema-tp-thread-group-stats-table.html",
+          "title": "28.5.3 The INFORMATION_SCHEMA TP_THREAD_GROUP_STATS Table"
+        },
+        {
+          "href": "information-schema-tp-thread-state-table.html",
+          "title": "28.5.4 The INFORMATION_SCHEMA TP_THREAD_STATE Table"
+        },
+        {
+          "href": "connection-control-information-schema-tables.html",
+          "title": "28.6 INFORMATION_SCHEMA Connection Control Tables"
+        },
+        {
+          "href": "information-schema-connection-control-table-reference.html",
+          "title": "28.6.1 INFORMATION_SCHEMA Connection Control Table Reference"
+        },
+        {
+          "href": "information-schema-connection-control-failed-login-attempts-table.html",
+          "title": "28.6.2 The INFORMATION_SCHEMA CONNECTION_CONTROL_FAILED_LOGIN_ATTEMPTS Table"
+        },
+        {
+          "href": "firewall-information-schema-tables.html",
+          "title": "28.7 INFORMATION_SCHEMA MySQL Enterprise Firewall Tables"
+        },
+        {
+          "href": "information-schema-firewall-table-reference.html",
+          "title": "28.7.1 INFORMATION_SCHEMA Firewall Table Reference"
+        },
+        {
+          "href": "information-schema-mysql-firewall-users-table.html",
+          "title": "28.7.2 The INFORMATION_SCHEMA MYSQL_FIREWALL_USERS Table"
+        },
+        {
+          "href": "information-schema-mysql-firewall-whitelist-table.html",
+          "title": "28.7.3 The INFORMATION_SCHEMA MYSQL_FIREWALL_WHITELIST Table"
+        },
+        {
+          "href": "extended-show.html",
+          "title": "28.8 Extensions to SHOW Statements"
+        },
+        {
+          "href": "performance-schema.html",
+          "title": "29 MySQL Performance Schema"
+        },
+        {
+          "href": "performance-schema-quick-start.html",
+          "title": "29.1 Performance Schema Quick Start"
+        },
+        {
+          "href": "performance-schema-build-configuration.html",
+          "title": "29.2 Performance Schema Build Configuration"
+        },
+        {
+          "href": "performance-schema-startup-configuration.html",
+          "title": "29.3 Performance Schema Startup Configuration"
+        },
+        {
+          "href": "performance-schema-runtime-configuration.html",
+          "title": "29.4 Performance Schema Runtime Configuration"
+        },
+        {
+          "href": "performance-schema-timing.html",
+          "title": "29.4.1 Performance Schema Event Timing"
+        },
+        {
+          "href": "performance-schema-filtering.html",
+          "title": "29.4.2 Performance Schema Event Filtering"
+        },
+        {
+          "href": "performance-schema-pre-filtering.html",
+          "title": "29.4.3 Event Pre-Filtering"
+        },
+        {
+          "href": "performance-schema-instrument-filtering.html",
+          "title": "29.4.4 Pre-Filtering by Instrument"
+        },
+        {
+          "href": "performance-schema-object-filtering.html",
+          "title": "29.4.5 Pre-Filtering by Object"
+        },
+        {
+          "href": "performance-schema-thread-filtering.html",
+          "title": "29.4.6 Pre-Filtering by Thread"
+        },
+        {
+          "href": "performance-schema-consumer-filtering.html",
+          "title": "29.4.7 Pre-Filtering by Consumer"
+        },
+        {
+          "href": "performance-schema-consumer-configurations.html",
+          "title": "29.4.8 Example Consumer Configurations"
+        },
+        {
+          "href": "performance-schema-filtering-names.html",
+          "title": "29.4.9 Naming Instruments or Consumers for Filtering Operations"
+        },
+        {
+          "href": "performance-schema-instrumentation-checking.html",
+          "title": "29.4.10 Determining What Is Instrumented"
+        },
+        {
+          "href": "performance-schema-queries.html",
+          "title": "29.5 Performance Schema Queries"
+        },
+        {
+          "href": "performance-schema-instrument-naming.html",
+          "title": "29.6 Performance Schema Instrument Naming Conventions"
+        },
+        {
+          "href": "performance-schema-status-monitoring.html",
+          "title": "29.7 Performance Schema Status Monitoring"
+        },
+        {
+          "href": "performance-schema-atom-molecule-events.html",
+          "title": "29.8 Performance Schema Atom and Molecule Events"
+        },
+        {
+          "href": "performance-schema-event-tables.html",
+          "title": "29.9 Performance Schema Tables for Current and Historical Events"
+        },
+        {
+          "href": "performance-schema-statement-digests.html",
+          "title": "29.10 Performance Schema Statement Digests and Sampling"
+        },
+        {
+          "href": "performance-schema-table-characteristics.html",
+          "title": "29.11 Performance Schema General Table Characteristics"
+        },
+        {
+          "href": "performance-schema-table-descriptions.html",
+          "title": "29.12 Performance Schema Table Descriptions"
+        },
+        {
+          "href": "performance-schema-table-reference.html",
+          "title": "29.12.1 Performance Schema Table Reference"
+        },
+        {
+          "href": "performance-schema-setup-tables.html",
+          "title": "29.12.2 Performance Schema Setup Tables"
+        },
+        {
+          "href": "performance-schema-instance-tables.html",
+          "title": "29.12.3 Performance Schema Instance Tables"
+        },
+        {
+          "href": "performance-schema-wait-tables.html",
+          "title": "29.12.4 Performance Schema Wait Event Tables"
+        },
+        {
+          "href": "performance-schema-stage-tables.html",
+          "title": "29.12.5 Performance Schema Stage Event Tables"
+        },
+        {
+          "href": "performance-schema-statement-tables.html",
+          "title": "29.12.6 Performance Schema Statement Event Tables"
+        },
+        {
+          "href": "performance-schema-transaction-tables.html",
+          "title": "29.12.7 Performance Schema Transaction Tables"
+        },
+        {
+          "href": "performance-schema-connection-tables.html",
+          "title": "29.12.8 Performance Schema Connection Tables"
+        },
+        {
+          "href": "performance-schema-connection-attribute-tables.html",
+          "title": "29.12.9 Performance Schema Connection Attribute Tables"
+        },
+        {
+          "href": "performance-schema-user-variable-tables.html",
+          "title": "29.12.10 Performance Schema User-Defined Variable Tables"
+        },
+        {
+          "href": "performance-schema-replication-tables.html",
+          "title": "29.12.11 Performance Schema Replication Tables"
+        },
+        {
+          "href": "performance-schema-ndb-cluster-tables.html",
+          "title": "29.12.12 Performance Schema NDB Cluster Tables"
+        },
+        {
+          "href": "performance-schema-lock-tables.html",
+          "title": "29.12.13 Performance Schema Lock Tables"
+        },
+        {
+          "href": "performance-schema-system-variable-tables.html",
+          "title": "29.12.14 Performance Schema System Variable Tables"
+        },
+        {
+          "href": "performance-schema-status-variable-tables.html",
+          "title": "29.12.15 Performance Schema Status Variable Tables"
+        },
+        {
+          "href": "performance-schema-thread-pool-tables.html",
+          "title": "29.12.16 Performance Schema Thread Pool Tables"
+        },
+        {
+          "href": "performance-schema-firewall-tables.html",
+          "title": "29.12.17 Performance Schema Firewall Tables"
+        },
+        {
+          "href": "performance-schema-keyring-tables.html",
+          "title": "29.12.18 Performance Schema Keyring Tables"
+        },
+        {
+          "href": "performance-schema-clone-tables.html",
+          "title": "29.12.19 Performance Schema Clone Tables"
+        },
+        {
+          "href": "performance-schema-summary-tables.html",
+          "title": "29.12.20 Performance Schema Summary Tables"
+        },
+        {
+          "href": "performance-schema-miscellaneous-tables.html",
+          "title": "29.12.21 Performance Schema Miscellaneous Tables"
+        },
+        {
+          "href": "performance-schema-option-variable-reference.html",
+          "title": "29.13 Performance Schema Option and Variable Reference"
+        },
+        {
+          "href": "performance-schema-options.html",
+          "title": "29.14 Performance Schema Command Options"
+        },
+        {
+          "href": "performance-schema-system-variables.html",
+          "title": "29.15 Performance Schema System Variables"
+        },
+        {
+          "href": "performance-schema-status-variables.html",
+          "title": "29.16 Performance Schema Status Variables"
+        },
+        {
+          "href": "performance-schema-memory-model.html",
+          "title": "29.17 The Performance Schema Memory-Allocation Model"
+        },
+        {
+          "href": "performance-schema-and-plugins.html",
+          "title": "29.18 Performance Schema and Plugins"
+        },
+        {
+          "href": "performance-schema-examples.html",
+          "title": "29.19 Using the Performance Schema to Diagnose Problems"
+        },
+        {
+          "href": "performance-schema-query-profiling.html",
+          "title": "29.19.1 Query Profiling Using Performance Schema"
+        },
+        {
+          "href": "performance-schema-obtaining-parent-events.html",
+          "title": "29.19.2 Obtaining Parent Event Information"
+        },
+        {
+          "href": "performance-schema-restrictions.html",
+          "title": "29.20 Restrictions on Performance Schema"
+        },
+        {
+          "href": "sys-schema.html",
+          "title": "30 MySQL sys Schema"
+        },
+        {
+          "href": "sys-schema-prerequisites.html",
+          "title": "30.1 Prerequisites for Using the sys Schema"
+        },
+        {
+          "href": "sys-schema-usage.html",
+          "title": "30.2 Using the sys Schema"
+        },
+        {
+          "href": "sys-schema-progress-reporting.html",
+          "title": "30.3 sys Schema Progress Reporting"
+        },
+        {
+          "href": "sys-schema-reference.html",
+          "title": "30.4 sys Schema Object Reference"
+        },
+        {
+          "href": "sys-schema-object-index.html",
+          "title": "30.4.1 sys Schema Object Index"
+        },
+        {
+          "href": "sys-schema-tables.html",
+          "title": "30.4.2 sys Schema Tables and Triggers"
+        },
+        {
+          "href": "sys-schema-views.html",
+          "title": "30.4.3 sys Schema Views"
+        },
+        {
+          "href": "sys-schema-procedures.html",
+          "title": "30.4.4 sys Schema Stored Procedures"
+        },
+        {
+          "href": "sys-schema-functions.html",
+          "title": "30.4.5 sys Schema Stored Functions"
+        },
+        {
+          "href": "connectors-apis.html",
+          "title": "31 Connectors and APIs"
+        },
+        {
+          "href": "connector-cpp-info.html",
+          "title": "31.1 MySQL Connector/C++"
+        },
+        {
+          "href": "connector-j-info.html",
+          "title": "31.2 MySQL Connector/J"
+        },
+        {
+          "href": "connector-net-info.html",
+          "title": "31.3 MySQL Connector/NET"
+        },
+        {
+          "href": "connector-odbc-info.html",
+          "title": "31.4 MySQL Connector/ODBC"
+        },
+        {
+          "href": "connector-python-info.html",
+          "title": "31.5 MySQL Connector/Python"
+        },
+        {
+          "href": "connector-nodejs-info.html",
+          "title": "31.6 MySQL Connector/Node.js"
+        },
+        {
+          "href": "c-api-info.html",
+          "title": "31.7 MySQL C API"
+        },
+        {
+          "href": "apis-php-info.html",
+          "title": "31.8 MySQL PHP API"
+        },
+        {
+          "href": "apis-perl.html",
+          "title": "31.9 MySQL Perl API"
+        },
+        {
+          "href": "apis-python.html",
+          "title": "31.10 MySQL Python API"
+        },
+        {
+          "href": "apis-ruby.html",
+          "title": "31.11 MySQL Ruby APIs"
+        },
+        {
+          "href": "apis-ruby-mysqlruby.html",
+          "title": "31.11.1 The MySQL/Ruby API"
+        },
+        {
+          "href": "apis-ruby-rubymysql.html",
+          "title": "31.11.2 The Ruby/MySQL API"
+        },
+        {
+          "href": "apis-tcl.html",
+          "title": "31.12 MySQL Tcl API"
+        },
+        {
+          "href": "apis-eiffel.html",
+          "title": "31.13 MySQL Eiffel Wrapper"
+        },
+        {
+          "href": "mysql-enterprise.html",
+          "title": "32 MySQL Enterprise Edition"
+        },
+        {
+          "href": "mysql-enterprise-backup.html",
+          "title": "32.1 MySQL Enterprise Backup Overview"
+        },
+        {
+          "href": "mysql-enterprise-security.html",
+          "title": "32.2 MySQL Enterprise Security Overview"
+        },
+        {
+          "href": "mysql-enterprise-encryption.html",
+          "title": "32.3 MySQL Enterprise Encryption Overview"
+        },
+        {
+          "href": "mysql-enterprise-audit.html",
+          "title": "32.4 MySQL Enterprise Audit Overview"
+        },
+        {
+          "href": "mysql-enterprise-firewall.html",
+          "title": "32.5 MySQL Enterprise Firewall Overview"
+        },
+        {
+          "href": "mysql-enterprise-thread-pool.html",
+          "title": "32.6 MySQL Enterprise Thread Pool Overview"
+        },
+        {
+          "href": "mysql-enterprise-data-masking.html",
+          "title": "32.7 MySQL Enterprise Data Masking and De-Identification Overview"
+        },
+        {
+          "href": "mysql-enterprise-telemetry.html",
+          "title": "32.8 MySQL Telemetry"
+        },
+        {
+          "href": "workbench.html",
+          "title": "33 MySQL Workbench"
+        },
+        {
+          "href": "mysql-oci-marketplace.html",
+          "title": "34 MySQL on OCI Marketplace"
+        },
+        {
+          "href": "mysql-oci-marketplace-prereqs.html",
+          "title": "34.1 Prerequisites to Deploying MySQL EE on Oracle Cloud Infrastructure"
+        },
+        {
+          "href": "mysql-oci-marketplace-deploy.html",
+          "title": "34.2 Deploying MySQL EE on Oracle Cloud Infrastructure"
+        },
+        {
+          "href": "mysql-oci-marketplace-network-configuration.html",
+          "title": "34.3 Configuring Network Access"
+        },
+        {
+          "href": "mysql-oci-marketplace-connecting.html",
+          "title": "34.4 Connecting"
+        },
+        {
+          "href": "mysql-oci-marketplace-maintenance.html",
+          "title": "34.5 Maintenance"
+        },
+        {
+          "href": "faqs.html",
+          "title": "A MySQL 8.0 Frequently Asked Questions"
+        },
+        {
+          "href": "faqs-general.html",
+          "title": "A.1 MySQL 8.0 FAQ: General"
+        },
+        {
+          "href": "faqs-storage-engines.html",
+          "title": "A.2 MySQL 8.0 FAQ: Storage Engines"
+        },
+        {
+          "href": "faqs-sql-modes.html",
+          "title": "A.3 MySQL 8.0 FAQ: Server SQL Mode"
+        },
+        {
+          "href": "faqs-stored-procs.html",
+          "title": "A.4 MySQL 8.0 FAQ: Stored Procedures and Functions"
+        },
+        {
+          "href": "faqs-triggers.html",
+          "title": "A.5 MySQL 8.0 FAQ: Triggers"
+        },
+        {
+          "href": "faqs-views.html",
+          "title": "A.6 MySQL 8.0 FAQ: Views"
+        },
+        {
+          "href": "faqs-information-schema.html",
+          "title": "A.7 MySQL 8.0 FAQ: INFORMATION_SCHEMA"
+        },
+        {
+          "href": "faqs-migration.html",
+          "title": "A.8 MySQL 8.0 FAQ: Migration"
+        },
+        {
+          "href": "faqs-security.html",
+          "title": "A.9 MySQL 8.0 FAQ: Security"
+        },
+        {
+          "href": "faqs-mysql-cluster.html",
+          "title": "A.10 MySQL 8.0 FAQ: NDB Cluster"
+        },
+        {
+          "href": "faqs-cjk.html",
+          "title": "A.11 MySQL 8.0 FAQ: MySQL Chinese, Japanese, and Korean Character Sets"
+        },
+        {
+          "href": "faqs-connectors-apis.html",
+          "title": "A.12 MySQL 8.0 FAQ: Connectors & APIs"
+        },
+        {
+          "href": "faqs-c-api.html",
+          "title": "A.13 MySQL 8.0 FAQ: C API, libmysql"
+        },
+        {
+          "href": "faqs-replication.html",
+          "title": "A.14 MySQL 8.0 FAQ: Replication"
+        },
+        {
+          "href": "faqs-thread-pool.html",
+          "title": "A.15 MySQL 8.0 FAQ: MySQL Enterprise Thread Pool"
+        },
+        {
+          "href": "faqs-innodb-change-buffer.html",
+          "title": "A.16 MySQL 8.0 FAQ: InnoDB Change Buffer"
+        },
+        {
+          "href": "faqs-tablespace-encryption.html",
+          "title": "A.17 MySQL 8.0 FAQ: InnoDB Data-at-Rest Encryption"
+        },
+        {
+          "href": "faqs-virtualization.html",
+          "title": "A.18 MySQL 8.0 FAQ: Virtualization Support"
+        },
+        {
+          "href": "error-handling.html",
+          "title": "B Error Messages and Common Problems"
+        },
+        {
+          "href": "error-message-elements.html",
+          "title": "B.1 Error Message Sources and Elements"
+        },
+        {
+          "href": "error-interfaces.html",
+          "title": "B.2 Error Information Interfaces"
+        },
+        {
+          "href": "problems.html",
+          "title": "B.3 Problems and Common Errors"
+        },
+        {
+          "href": "what-is-crashing.html",
+          "title": "B.3.1 How to Determine What Is Causing a Problem"
+        },
+        {
+          "href": "common-errors.html",
+          "title": "B.3.2 Common Errors When Using MySQL Programs"
+        },
+        {
+          "href": "administration-issues.html",
+          "title": "B.3.3 Administration-Related Issues"
+        },
+        {
+          "href": "query-issues.html",
+          "title": "B.3.4 Query-Related Issues"
+        },
+        {
+          "href": "optimizer-issues.html",
+          "title": "B.3.5 Optimizer-Related Issues"
+        },
+        {
+          "href": "table-definition-issues.html",
+          "title": "B.3.6 Table Definition-Related Issues"
+        },
+        {
+          "href": "known-issues.html",
+          "title": "B.3.7 Known Issues in MySQL"
+        },
+        {
+          "href": "indexes.html",
+          "title": "C Indexes"
+        },
+        {
+          "href": "glossary.html",
+          "title": "MySQL Glossary"
+        }
+      ]
+    },
+    {
+      "slug": "enterprise-backup",
+      "title": "MySQL Enterprise Backup User's Guide (Version 8.0.46)",
+      "summary": "MySQL Enterprise Backup 8.0.46 的安装、热备份、恢复、复制、加密和 mysqlbackup 命令。",
+      "group": "企业备份",
+      "base_url": "https://dev.mysql.com/doc/mysql-enterprise-backup/8.0/en/",
+      "fetch_base_url": "https://docs.oracle.com/cd/E17952_01/mysql-enterprise-backup-8.0-en/",
+      "chapters": [
+        {
+          "href": "preface.html",
+          "title": "Preface and Legal Notices"
+        },
+        {
+          "href": "meb-getting-started.html",
+          "title": "I Getting Started with MySQL Enterprise Backup"
+        },
+        {
+          "href": "intro.html",
+          "title": "1 Introduction to MySQL Enterprise Backup"
+        },
+        {
+          "href": "meb-commands-overview.html",
+          "title": "1.1 The mysqlbackup Client"
+        },
+        {
+          "href": "meb-performance-space-overview.html",
+          "title": "1.2 Overview of Backup Types"
+        },
+        {
+          "href": "meb-files-overview.html",
+          "title": "1.3 Files that Are Backed Up"
+        },
+        {
+          "href": "meb-files-backed-up-summary.html",
+          "title": "1.3.1 Types of Files Contained in a Backup"
+        },
+        {
+          "href": "meb-files-backed-up-innodb.html",
+          "title": "1.3.2 Files Backed up for InnoDB Data"
+        },
+        {
+          "href": "meb-files-backed-up-myisam.html",
+          "title": "1.3.3 Files Backed up for Data Stored with MyISAM and Other Storage Engines"
+        },
+        {
+          "href": "meb-files-backed-up-generated.html",
+          "title": "1.3.4 Files Generated by mysqlbackup"
+        },
+        {
+          "href": "meb-backup-process.html",
+          "title": "1.4 The Backup Process"
+        },
+        {
+          "href": "installing.html",
+          "title": "2 Installing MySQL Enterprise Backup"
+        },
+        {
+          "href": "what-is-new.html",
+          "title": "3 What's New in MySQL Enterprise Backup 8.0?"
+        },
+        {
+          "href": "meb-using.html",
+          "title": "II Using MySQL Enterprise Backup"
+        },
+        {
+          "href": "backing-up.html",
+          "title": "4 Backing Up a Database Server"
+        },
+        {
+          "href": "backup-prep.html",
+          "title": "4.1 Before the First Backup"
+        },
+        {
+          "href": "backup-prep-gather.html",
+          "title": "4.1.1 Collect Database Information"
+        },
+        {
+          "href": "mysqlbackup.privileges.html",
+          "title": "4.1.2 Grant MySQL Privileges to Backup Administrator"
+        },
+        {
+          "href": "backup-prep-storage.html",
+          "title": "4.1.3 Designate a Location for the Backup Directory"
+        },
+        {
+          "href": "mysqlbackup.cycle.html",
+          "title": "4.2 The Typical Backup / Verify / Restore Cycle"
+        },
+        {
+          "href": "mysqlbackup-os-user.html",
+          "title": "4.2.1 OS User for Running mysqlbackup"
+        },
+        {
+          "href": "mysqlbackup.backup.html",
+          "title": "4.2.2 Backing Up an Entire MySQL Instance"
+        },
+        {
+          "href": "mysqlbackup.verify.html",
+          "title": "4.2.3 Verifying a Backup"
+        },
+        {
+          "href": "mysqlbackup.restore.html",
+          "title": "4.2.4 Restoring a Database"
+        },
+        {
+          "href": "mysqlbackup.tasks.html",
+          "title": "4.3 Backup Scenarios and Examples"
+        },
+        {
+          "href": "meb-backup-single-file.html",
+          "title": "4.3.1 Making a Single-File Backup"
+        },
+        {
+          "href": "mysqlbackup.full.html",
+          "title": "4.3.2 Making a Full Backup"
+        },
+        {
+          "href": "mysqlbackup.incremental.html",
+          "title": "4.3.3 Making a Differential or Incremental Backup"
+        },
+        {
+          "href": "backup.compressed.html",
+          "title": "4.3.4 Making a Compressed Backup"
+        },
+        {
+          "href": "partial.html",
+          "title": "4.3.5 Making a Partial Backup"
+        },
+        {
+          "href": "meb-backup-optimistic.html",
+          "title": "4.3.6 Making an Optimistic Backup"
+        },
+        {
+          "href": "exec-option.html",
+          "title": "4.3.7 Making a Back Up of In-Memory Database Data"
+        },
+        {
+          "href": "meb-scheduled-backups.html",
+          "title": "4.3.8 Making Scheduled Backups"
+        },
+        {
+          "href": "mysqlbackup.dfs-san.html",
+          "title": "4.4 Making Backups with a Distributed File System (DFS) or Storage Access Network (SAN)"
+        },
+        {
+          "href": "restoring.html",
+          "title": "5 Recovering or Restoring a Database Server"
+        },
+        {
+          "href": "restore.html",
+          "title": "5.1 Performing a Restore Operation"
+        },
+        {
+          "href": "restore.compressed-backup.html",
+          "title": "5.1.1 Restoring a Compressed Backup"
+        },
+        {
+          "href": "restore.encrypted.html",
+          "title": "5.1.2 Restoring an Encrypted Backup Image"
+        },
+        {
+          "href": "restore.incremental.html",
+          "title": "5.1.3 Restoring an Incremental Backup"
+        },
+        {
+          "href": "restore.partial.html",
+          "title": "5.1.4 Table-Level Recovery (TLR)"
+        },
+        {
+          "href": "restore-use-tts.html",
+          "title": "5.1.5 Restoring Backups Created with the --use-tts Option"
+        },
+        {
+          "href": "restore.external-tablespaces.html",
+          "title": "5.1.6 Restoring External InnoDB Tablespaces to Different Locations"
+        },
+        {
+          "href": "backup-apply-log.html",
+          "title": "5.1.7 Advanced: Preparing and Restoring a Directory Backup"
+        },
+        {
+          "href": "restore-cloud.html",
+          "title": "5.2 Restoring a Backup from Cloud Storage to a MySQL Server"
+        },
+        {
+          "href": "advanced.point.html",
+          "title": "5.3 Point-in-Time Recovery"
+        },
+        {
+          "href": "restore-upgrade.html",
+          "title": "5.4 Restoring a Backup with a Database Server Upgrade or Downgrade"
+        },
+        {
+          "href": "meb-encrypted-innodb.html",
+          "title": "6 Working with Encrypted InnoDB Tablespaces"
+        },
+        {
+          "href": "meb-redo-log-archiving.html",
+          "title": "7 Backing up Using Redo Log Archiving"
+        },
+        {
+          "href": "meb-replication.html",
+          "title": "8 Using MySQL Enterprise Backup with Replication"
+        },
+        {
+          "href": "advanced.replica.html",
+          "title": "8.1 Setting Up a New replica"
+        },
+        {
+          "href": "advanced.replica-backup-restore.html",
+          "title": "8.2 Backing up and Restoring a Replica Database"
+        },
+        {
+          "href": "advanced.source.html",
+          "title": "8.3 Restoring a Source Database"
+        },
+        {
+          "href": "advanced.encrypted-binlog-relaylog.html",
+          "title": "8.4 Working with Encrypted Binary and Relay Logs"
+        },
+        {
+          "href": "meb-group-replication.html",
+          "title": "9 Using MySQL Enterprise Backup with Group Replication"
+        },
+        {
+          "href": "meb-encryption.html",
+          "title": "10 Encryption for Backups"
+        },
+        {
+          "href": "meb-mms.html",
+          "title": "11 Using MySQL Enterprise Backup with Media Management Software (MMS) Products"
+        },
+        {
+          "href": "meb-backup-osb.html",
+          "title": "11.1 Backing Up to Tape with Oracle Secure Backup"
+        },
+        {
+          "href": "meb-docker.html",
+          "title": "12 Using MySQL Enterprise Backup with Docker"
+        },
+        {
+          "href": "performance.html",
+          "title": "13 Performance Considerations for MySQL Enterprise Backup"
+        },
+        {
+          "href": "backup-performance.html",
+          "title": "13.1 Optimizing Backup Performance"
+        },
+        {
+          "href": "restore-performance.html",
+          "title": "13.2 Optimizing Restore Performance"
+        },
+        {
+          "href": "meb-mem.html",
+          "title": "14 Monitoring Backups with MySQL Enterprise Monitor"
+        },
+        {
+          "href": "meb-enterprise-firewall.html",
+          "title": "15 Using MySQL Enterprise Backup with MySQL Enterprise Firewall"
+        },
+        {
+          "href": "meb-ldap.html",
+          "title": "16 Using LDAP for Server Authentication"
+        },
+        {
+          "href": "meb-troubleshooting.html",
+          "title": "17 Troubleshooting for MySQL Enterprise Backup"
+        },
+        {
+          "href": "meb-exitcodes.html",
+          "title": "17.1 Exit codes of MySQL Enterprise Backup"
+        },
+        {
+          "href": "bugs.corruption.html",
+          "title": "17.2 Working Around Corruption Problems"
+        },
+        {
+          "href": "trouble.logging.html",
+          "title": "17.3 Using the MySQL Enterprise Backup Logs"
+        },
+        {
+          "href": "manifest-usage.html",
+          "title": "17.4 Using the MySQL Enterprise Backup Manifest"
+        },
+        {
+          "href": "meb-command-reference.html",
+          "title": "III mysqlbackup Command Reference"
+        },
+        {
+          "href": "mysqlbackup.html",
+          "title": "18 mysqlbackup"
+        },
+        {
+          "href": "backup-commands.html",
+          "title": "19 mysqlbackup commands"
+        },
+        {
+          "href": "backup-commands-backup.html",
+          "title": "19.1 Backup Operations"
+        },
+        {
+          "href": "backup-commands-update.html",
+          "title": "19.2 Update Operations"
+        },
+        {
+          "href": "backup-commands-restore.html",
+          "title": "19.3 Restore Operations"
+        },
+        {
+          "href": "backup-commands-validate.html",
+          "title": "19.4 Validation Operations"
+        },
+        {
+          "href": "backup-commands-single-file.html",
+          "title": "19.5 Other Single-File Backup Operations"
+        },
+        {
+          "href": "backup-commands-other.html",
+          "title": "19.6 Other Operations"
+        },
+        {
+          "href": "mysqlbackup.usage.html",
+          "title": "20 mysqlbackup Command-Line Options"
+        },
+        {
+          "href": "standard-options.html",
+          "title": "20.1 General Options"
+        },
+        {
+          "href": "connection-options.html",
+          "title": "20.2 Connection Options"
+        },
+        {
+          "href": "server-repository-options.html",
+          "title": "20.3 Server Repository Options"
+        },
+        {
+          "href": "backup-repository-options.html",
+          "title": "20.4 Backup Repository Options"
+        },
+        {
+          "href": "backup-metadata-options.html",
+          "title": "20.5 Metadata Options"
+        },
+        {
+          "href": "backup-compression-options.html",
+          "title": "20.6 Compression Options"
+        },
+        {
+          "href": "backup-incremental-options.html",
+          "title": "20.7 Incremental Backup Options"
+        },
+        {
+          "href": "backup-partial-options.html",
+          "title": "20.8 Partial Backup and Restore Options"
+        },
+        {
+          "href": "backup-single-file-options.html",
+          "title": "20.9 Single-File Backup Options"
+        },
+        {
+          "href": "backup-capacity-options.html",
+          "title": "20.10 Performance / Scalability / Capacity Options"
+        },
+        {
+          "href": "backup-message-logging-options.html",
+          "title": "20.11 Message Logging Options"
+        },
+        {
+          "href": "backup-progress-report-options.html",
+          "title": "20.12 Progress Report Options"
+        },
+        {
+          "href": "backup-encryption-options.html",
+          "title": "20.13 Encryption Options"
+        },
+        {
+          "href": "backup-encrypted-innodb-options.html",
+          "title": "20.14 Options for Working with Encrypted InnoDB Tablespaces and Encrypted Binary/Relay Logs"
+        },
+        {
+          "href": "backup-cloud-options.html",
+          "title": "20.15 Cloud Storage Options"
+        },
+        {
+          "href": "backup-special-options.html",
+          "title": "20.16 Options for Special Backup Types"
+        },
+        {
+          "href": "config-file-parameters.html",
+          "title": "21 Configuration Files and Parameters"
+        },
+        {
+          "href": "meb-supplemental.html",
+          "title": "IV Appendixes"
+        },
+        {
+          "href": "meb-faq.html",
+          "title": "A Frequently Asked Questions for MySQL Enterprise Backup"
+        },
+        {
+          "href": "bugs.backup.html",
+          "title": "B Limitations of MySQL Enterprise Backup"
+        },
+        {
+          "href": "meb-legacy.html",
+          "title": "C Compatibility Information for MySQL Enterprise Backup"
+        },
+        {
+          "href": "platforms.supported.html",
+          "title": "C.1 Supported Platforms"
+        },
+        {
+          "href": "platforms.compatibility.html",
+          "title": "C.2 Cross-Platform Compatibility"
+        },
+        {
+          "href": "bugs.compatibility.html",
+          "title": "C.3 Compatibility with MySQL Versions"
+        },
+        {
+          "href": "meb-meb-compatibility.html",
+          "title": "C.4 Compatibility with Older MySQL Enterprise Backup"
+        },
+        {
+          "href": "backup-history-table-update.html",
+          "title": "D Backup History Table Update"
+        },
+        {
+          "href": "backup-sbt-history-table-update.html",
+          "title": "E SBT Backup History Table Update"
+        },
+        {
+          "href": "backup-progress-table-update.html",
+          "title": "F Backup Progress Table Update"
+        },
+        {
+          "href": "glossary.html",
+          "title": "MySQL Enterprise Backup Glossary"
+        },
+        {
+          "href": "ix01.html",
+          "title": "Index"
+        }
+      ]
+    }
+  ]
+}

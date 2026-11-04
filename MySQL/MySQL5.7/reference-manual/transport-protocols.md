@@ -1,0 +1,63 @@
+---
+title: "4.2.5 Connection Transport Protocols"
+book: MySQL 5.7 Reference Manual
+version: "5.7"
+source: "https://dev.mysql.com/doc/refman/5.7/en/transport-protocols.html"
+tags:
+  - mysql
+  - mysql-5.7
+  - reference-manual
+---
+
+MySQL 5.7 Reference Manual Including MySQL NDB Cluster 7.5 and NDB Cluster 7.6
+
+### 4.2.5 Connection Transport Protocols
+
+For programs that use the MySQL client library (for example, [**mysql**](mysql.md) and [**mysqldump**](mysqldump.md)), MySQL supports connections to the server based on several transport protocols: TCP/IP, Unix socket file, named pipe, and shared memory. This section describes how to select these protocols, and how they are similar and different.
+
+#### Transport Protocol Selection
+
+For a given connection, if the transport protocol is not specified explicitly, it is determined implicitly. For example, connections to `localhost` result in a socket file connection on Unix and Unix-like systems, and a TCP/IP connection to `127.0.0.1` otherwise. For additional information, see [Section 4.2.4, “Connecting to the MySQL Server Using Command Options”](connecting.md).
+
+To specify the protocol explicitly, use the [`--protocol`](connection-options.md) command option. The following table shows the permissible values for [`--protocol`](connection-options.md) and indicates the applicable platforms for each value. The values are not case-sensitive.
+
+| [`--protocol`](connection-options.md) Value | Transport Protocol Used | Applicable Platforms |
+| --- | --- | --- |
+| `TCP` | TCP/IP | All |
+| `SOCKET` | Unix socket file | Unix and Unix-like systems |
+| `PIPE` | Named pipe | Windows |
+| `MEMORY` | Shared memory | Windows |
+
+#### Transport Support for Local and Remote Connections
+
+TCP/IP transport supports connections to local or remote MySQL servers.
+
+Socket-file, named-pipe, and shared-memory transports support connections only to local MySQL servers. (Named-pipe transport does allow for remote connections, but this capability is not implemented in MySQL.)
+
+#### Interpretation of localhost
+
+If the transport protocol is not specified explicitly, `localhost` is interpreted as follows:
+
+- On Unix and Unix-like systems, a connection to `localhost` results in a socket-file connection.
+- Otherwise, a connection to `localhost` results in a TCP/IP connection to `127.0.0.1`.
+
+If the transport protocol is specified explicitly, `localhost` is interpreted with respect to that protocol. For example, with [`--protocol=TCP`](connection-options.md), a connection to `localhost` results in a TCP/IP connection to `127.0.0.1` on all platforms.
+
+#### Encryption and Security Characteristics
+
+TCP/IP and socket-file transports are subject to TLS/SSL encryption, using the options described in [Command Options for Encrypted Connections](connection-options.md). Named-pipe and shared-memory transports are not subject to TLS/SSL encryption.
+
+A connection is secure by default if made over a transport protocol that is secure by default. Otherwise, for protocols that are subject to TLS/SSL encryption, a connection may be made secure using encryption:
+
+- TCP/IP connections are not secure by default, but can be encrypted to make them secure.
+- Socket-file connections are secure by default. They can also be encrypted, but encrypting a socket-file connection makes it no more secure and increases CPU load.
+- Named-pipe connections are not secure by default, and are not subject to encryption to make them secure. However, the [`named_pipe_full_access_group`](server-system-variables.md) system variable is available to control which MySQL users are permitted to use named-pipe connections.
+- Shared-memory connections are secure by default.
+
+If the [`require_secure_transport`](server-system-variables.md) system variable is enabled, the server permits only connections that use some form of secure transport. Per the preceding remarks, connections that use TCP/IP encrypted using TLS/SSL, a socket file, or shared memory are secure connections. TCP/IP connections not encrypted using TLS/SSL and named-pipe connections are not secure.
+
+See also [Configuring Encrypted Connections as Mandatory](using-encrypted-connections.md).
+
+#### Connection Compression
+
+All transport protocols are subject to use of compression on the traffic between the client and server. If both compression and encryption are used for a given connection, compression occurs before encryption. For more information, see [Section 4.2.6, “Connection Compression Control”](connection-compression-control.md).

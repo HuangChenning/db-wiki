@@ -1,0 +1,32 @@
+---
+title: "6.2.9 When Privilege Changes Take Effect"
+book: MySQL 5.7 Reference Manual
+version: "5.7"
+source: "https://dev.mysql.com/doc/refman/5.7/en/privilege-changes.html"
+tags:
+  - mysql
+  - mysql-5.7
+  - reference-manual
+---
+
+MySQL 5.7 Reference Manual Including MySQL NDB Cluster 7.5 and NDB Cluster 7.6
+
+### 6.2.9 When Privilege Changes Take Effect
+
+If the [**mysqld**](mysqld.md) server is started without the [`--skip-grant-tables`](server-options.md) option, it reads all grant table contents into memory during its startup sequence. The in-memory tables become effective for access control at that point.
+
+If you modify the grant tables indirectly using an account-management statement, the server notices these changes and loads the grant tables into memory again immediately. Account-management statements are described in [Section 13.7.1, “Account Management Statements”](account-management-statements.md). Examples include [`GRANT`](grant.md), [`REVOKE`](revoke.md), [`SET       PASSWORD`](set-password.md), and [`RENAME       USER`](rename-user.md).
+
+If you modify the grant tables directly using statements such as [`INSERT`](insert.md), [`UPDATE`](update.md), or [`DELETE`](delete.md) (which is not recommended), the changes have no effect on privilege checking until you either tell the server to reload the tables or restart it. Thus, if you change the grant tables directly but forget to reload them, the changes have *no effect* until you restart the server. This may leave you wondering why your changes seem to make no difference!
+
+To tell the server to reload the grant tables, perform a flush-privileges operation. This can be done by issuing a [`FLUSH PRIVILEGES`](flush.md) statement or by executing a [**mysqladmin flush-privileges**](mysqladmin.md) or [**mysqladmin reload**](mysqladmin.md) command.
+
+A grant table reload affects privileges for each existing client session as follows:
+
+- Table and column privilege changes take effect with the client's next request.
+- Database privilege changes take effect the next time the client executes a ``USE           *`db_name`*`` statement.
+	Note
+	Client applications may cache the database name; thus, this effect may not be visible to them without actually changing to a different database.
+- Global privileges and passwords are unaffected for a connected client. These changes take effect only in sessions for subsequent connections.
+
+If the server is started with the [`--skip-grant-tables`](server-options.md) option, it does not read the grant tables or implement any access control. Any user can connect and perform any operation, *which is insecure.* To cause a server thus started to read the tables and enable access checking, flush the privileges.

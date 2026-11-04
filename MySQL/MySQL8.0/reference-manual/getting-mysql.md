@@ -1,0 +1,24 @@
+---
+title: "2.1.3 How to Get MySQL"
+book: MySQL 8.0 Reference Manual
+version: "8.0"
+source: "https://dev.mysql.com/doc/refman/8.0/en/getting-mysql.html"
+tags:
+  - mysql
+  - mysql-8.0
+  - reference-manual
+---
+
+MySQL 8.0 Reference Manual Including MySQL NDB Cluster 8.0
+
+### 2.1.3 How to Get MySQL
+
+Check our downloads page at [https://dev.mysql.com/downloads/](https://dev.mysql.com/downloads/) for information about the current version of MySQL and for downloading instructions.
+
+For RPM-based Linux platforms that use Yum as their package management system, MySQL can be installed using the [MySQL Yum Repository](https://dev.mysql.com/downloads/repo/yum/). See [Section 2.5.1, “Installing MySQL on Linux Using the MySQL Yum Repository”](linux-installation-yum-repo.md) for details.
+
+For Debian-based Linux platforms, MySQL can be installed using the [MySQL APT Repository](https://dev.mysql.com/downloads/repo/apt/). See [Section 2.5.2, “Installing MySQL on Linux Using the MySQL APT Repository”](linux-installation-apt-repo.md) for details.
+
+For SUSE Linux Enterprise Server (SLES) platforms, MySQL can be installed using the [MySQL SLES Repository](https://dev.mysql.com/downloads/repo/suse/). See [Section 2.5.3, “Installing MySQL on Linux Using the MySQL SLES Repository”](linux-installation-sles-repo.md) for details.
+
+To obtain the latest development source, see [Section 2.8.5, “Installing MySQL Using a Development Source Tree”](installing-development-tree.md).

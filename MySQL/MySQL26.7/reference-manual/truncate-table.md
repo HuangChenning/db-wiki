@@ -1,0 +1,41 @@
+---
+title: "MySQL :: MySQL 26.7 Reference Manual :: 15.1.44 TRUNCATE TABLE Statement"
+book: MySQL 26.7 Reference Manual
+version: "26.7"
+source: "https://dev.mysql.com/doc/refman/26.7/en/truncate-table.html"
+tags:
+  - mysql
+  - mysql-26.7
+  - reference-manual
+---
+
+### 15.1.44 TRUNCATE TABLE Statement
+
+```sql
+TRUNCATE [TABLE] tbl_name
+```
+
+`TRUNCATE TABLE` empties a table completely. It requires the [`DROP`](privileges-provided.md) privilege. Logically, `TRUNCATE       TABLE` is similar to a [`DELETE`](delete.md) statement that deletes all rows, or a sequence of [`DROP TABLE`](drop-table.md) and [`CREATE TABLE`](create-table.md) statements.
+
+To achieve high performance, `TRUNCATE       TABLE` bypasses the DML method of deleting data. Thus, it does not cause `ON DELETE` triggers to fire, it cannot be performed for `InnoDB` tables with parent-child foreign key relationships, and it cannot be rolled back like a DML operation. However, `TRUNCATE       TABLE` operations on tables that use an atomic DDL-supported storage engine are either fully committed or rolled back if the server halts during their operation. For more information, see [Section 15.1.1, “Atomic Data Definition Statement Support”](atomic-ddl.md).
+
+Although `TRUNCATE TABLE` is similar to [`DELETE`](delete.md), it is classified as a DDL statement rather than a DML statement. It differs from [`DELETE`](delete.md) in the following ways:
+
+- Truncate operations drop and re-create the table, which is much faster than deleting rows one by one, particularly for large tables.
+- Truncate operations cause an implicit commit, and so cannot be rolled back. See [Section 15.3.3, “Statements That Cause an Implicit Commit”](implicit-commit.md).
+- Truncation operations cannot be performed if the session holds an active table lock.
+- `TRUNCATE TABLE` fails for an `InnoDB` table or [`NDB`](mysql-cluster.md) table if there are any `FOREIGN KEY` constraints from other tables that reference the table. Foreign key constraints between columns of the same table are permitted.
+- Truncation operations do not return a meaningful value for the number of deleted rows. The usual result is “0 rows affected,” which should be interpreted as “no information.”
+- As long as the table definition is valid, the table can be re-created as an empty table with `TRUNCATE TABLE`, even if the data or index files have become corrupted.
+- Any `AUTO_INCREMENT` value is reset to its start value. This is true even for `MyISAM` and `InnoDB`, which normally do not reuse sequence values.
+- When used with partitioned tables, `TRUNCATE TABLE` preserves the partitioning; that is, the data and index files are dropped and re-created, while the partition definitions are unaffected.
+- The `TRUNCATE TABLE` statement does not invoke `ON DELETE` triggers.
+- Truncating a corrupted `InnoDB` table is supported.
+
+`TRUNCATE TABLE` is treated for purposes of binary logging and replication as DDL rather than DML, and is always logged as a statement.
+
+`TRUNCATE TABLE` for a table closes all handlers for the table that were opened with [`HANDLER OPEN`](handler.md).
+
+`TRUNCATE TABLE` can be used with Performance Schema summary tables, but the effect is to reset the summary columns to 0 or `NULL`, not to remove rows. See [Section 29.12.20, “Performance Schema Summary Tables”](performance-schema-summary-tables.md).
+
+Truncating an `InnoDB` table that resides in a file-per-table tablespace drops the existing tablespace and creates a new one. If the tablespace was created with an earlier version and resides in an unknown directory, `InnoDB` creates the new tablespace in the default location and writes the following warning to the error log: The DATA DIRECTORY location must be in a known directory. The DATA DIRECTORY location will be ignored and the file will be put into the default datadir location. Known directories are those defined by the [`datadir`](server-system-variables.md), [`innodb_data_home_dir`](innodb-parameters.md), and [`innodb_directories`](innodb-parameters.md) variables. To have `TRUNCATE TABLE` create the tablespace in its current location, add the directory to the [`innodb_directories`](innodb-parameters.md) setting before running `TRUNCATE TABLE`.
