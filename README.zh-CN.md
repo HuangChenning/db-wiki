@@ -18,6 +18,7 @@ Oracle 与达梦数据库文档的 Markdown 阅读库，按版本和手册组织
 | Oracle 12c | 12 | [版本总目录](Oracle/Oracle12c/catalog.md) · [数据库概念](Oracle/Oracle12c/concepts/contents.md) |
 | Oracle 19c | 17 | [版本总目录](Oracle/Oracle19c/catalog.md) · [数据库概念](Oracle/Oracle19c/concepts/contents.md) |
 | Oracle 21c | 23 | [版本总目录](Oracle/Oracle21c/catalog.md) · [数据库概念](Oracle/Oracle21c/concepts/contents.md) |
+| 达梦 DM7 | 21 | [版本总目录](dameng/dm7/catalog.md) · [系统管理员手册](dameng/dm7/administrator/contents.md) |
 | 达梦 DM8 | 56 | [版本总目录](dameng/dm8/catalog.md) · [系统管理](dameng/dm8/administrator/contents.md) |
 
 例如，阅读 [Oracle 19c 数据库概念目录](Oracle/Oracle19c/concepts/contents.md)，再进入 [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md)，即可查看完整章节；章节开头的 `source` 字段记录官方原文地址。

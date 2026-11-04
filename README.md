@@ -18,6 +18,7 @@ For database administrators and developers, this collection covers database conc
 | Oracle 12c | 12 | [Version catalog](Oracle/Oracle12c/catalog.md) · [Database Concepts](Oracle/Oracle12c/concepts/contents.md) |
 | Oracle 19c | 17 | [Version catalog](Oracle/Oracle19c/catalog.md) · [Database Concepts](Oracle/Oracle19c/concepts/contents.md) |
 | Oracle 21c | 23 | [Version catalog](Oracle/Oracle21c/catalog.md) · [Database Concepts](Oracle/Oracle21c/concepts/contents.md) |
+| Dameng DM7 | 21 | [Version catalog](dameng/dm7/catalog.md) · [System Administrator's Manual](dameng/dm7/administrator/contents.md) |
 | Dameng DM8 | 56 | [Version catalog](dameng/dm8/catalog.md) · [System Administration](dameng/dm8/administrator/contents.md) |
 
 For example, open the [Oracle 19c Database Concepts contents](Oracle/Oracle19c/concepts/contents.md), then [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md) to read a full chapter. Its opening `source` field records the official page URL.

@@ -1,0 +1,2539 @@
+---
+title: "附录3 ORACLE兼容视图"
+book: "DM7系统管理员手册"
+version: "DM7"
+source: "temp/doc/DM7系统管理员手册.pdf#page=335"
+tags:
+  - dameng
+  - dm7
+  - administrator
+---
+
+为了提高`DM`与`ORACLE`的兼容性，`DM`提供了如下一批视图。
+
+```
+1. DBA_ROLES
+```
+
+显示系统中所有的角色。
+
+序号列数据类型说明
+
+```
+1  ROLE  VARCHAR(128) 角色名
+```
+
+2 `PASSWORD_REQUIRED` `VARCHAR(1)`是否需要`ROLE`密码。 `DM`不支持，值为`NULL`
+
+```
+3  AUTHENTICATION_TYPE VARCHAR(1)  角色的验证机制。
+```
+
+`DM7`只支持`CREATE ROLE ROLE1`的方式，取值为`NULL`。
+
+```
+2. DBA_TAB_PRIVS
+```
+
+显示系统中所有表的权限。
+
+序号列数据类型说明
+
+```
+1  GRANTEE  VARCHAR(128)  被授权用户名
+2  OWNER  VARCHAR(128)  表的拥有者
+3  TABLE_NAME VARCHAR(128)  表名
+4  GRANTOR  VARCHAR(128)  授权者
+5  PRIVILEGE VARCHAR(32767) 权限名称
+```
+
+6 `GRANTABLE` `VARCHAR(3)`权限是否可转授。Y是，N否表示权限是否以有`HIERARCHY OPTION`的方式授予。`DM`机制不支
+
+```
+7  HIERARCHY VARCHAR(2)
+```
+
+持的功能项，取值为`NO`
+
+```
+3. USER_TAB_PRIVS
+```
+
+显示当前用户作为对象拥有者、授权者或被授权者的数据库表权限。结构同
+
+```
+DBA_TAB_PRIVS。
+4. ALL_TAB_PRIVS
+```
+
+显示当前用户可见的，数据库表的权限。结构同`DBA_TAB_PRIVS`。
+
+```
+5. DBA_SYS_PRIVS
+```
+
+显示系统中所有传授给用户和角色的权限。
+
+序号列数据类型说明
+
+```
+1 GRANTEE  VARCHAR(128)  被授权用户名
+2 PRIVILEGE  VARCHAR(32767) 权限名称
+```
+
+3 `ADMIN_OPTION VARCHAR(3)`是否可以转授。`YES`可转授，`NO`不可转授
+
+```
+6. USER_SYS_PRIVS
+```
+
+传授给当前用户的系统权限。
+
+序号列数据类型说明
+
+```
+1 USERNAME  VARCHAR(128)  用户名
+2 PRIVILEGE  VARCHAR(32767) 权限名称
+```
+
+3 `ADMIN_OPTION VARCHAR(3)`是否可转授。`YES`可转授，`NO`不可转授
+
+```
+7. DBA_USERS
+```
+
+325附录
+
+显示系统中所有的用户。
+
+序号列数据类型说明
+
+```
+1 USERNAME  VARCHAR(128) 用户名
+2 USER_ID  INT  用户ID
+3 PASSWORD  VARCHAR(128) 密码
+```
+
+账号状态，有如下状态
+
+```
+OPEN
+EXRIRYED(GRACE) & LOCKED
+EXRIRYED & LOCKED
+4 ACCOUNT_STATUS  VARCHAR(24)
+LOCKED
+LOCKED
+EXPIRED
+EXPIRED(GRACE)
+```
+
+5 `LOCK_DATE` `DATETIME(0)`如果用户被锁定，锁定开始的时间
+
+```
+6 EXPIRY_DATE  DATETIME(6)  密码有效期至
+7 DEFAULT_TABLESPACE  VARCHAR(128) 默认表空间
+8 TEMPORARY_TABLESPACE  VARCHAR(4)  默认临时表空间，DM7 为“TEMP”
+9 CREATED  DATETIME(6)  创建时间
+10 PROFILE  VARCHAR(32767) 表空间所在路径
+11 INITIAL_RSRC_CONSUMER_GROUP VARCHAR(1)  初始资源所在组
+12 EXTERNAL_NAME  VARCHAR(1)  用户外部名称，目前为NULL
+13 PASSWORD_VERSIONS  VARCHAR(20)  密码版本
+```
+
+`14 EDITIONS_ENABLED` `VARCHAR(1)`是否只读。Y是，N否。
+
+```
+15 AUTHENTICATION_TYPE  VARCHAR(19)  用户登陆验证类型
+16 NOWDATE  DATETIME(6)  当前日期时刻
+8. ALL_USERS
+```
+
+当前用户可见的所用用户。`ALL_USERS`的信息均来自`DBA_USERS`。
+
+序号列数据类型说明
+
+```
+1 USERNAME VARCHAR(128) 用户名
+2 USER_ID INT  用户ID
+3 CREATED DATETIME(6) 创建时间
+9. USER_USERS
+```
+
+当前用户。
+
+序号列数据类型说明
+
+```
+1  USERNAME  VARCHAR(128) 用户名
+2  USER_ID  INT  用户ID
+```
+
+3 `ACCOUNT_STATUS` `VARCHAR(24)`账号状态，有如下状态
+
+```
+OPEN
+EXRIRYED(GRACE) & LOCKED
+EXRIRYED & LOCKED
+LOCKED
+LOCKED
+EXPIRED
+EXPIRED(GRACE)
+```
+
+4 `LOCK_DATE` `DATETIME(0)`如果为`LOCK`状态，`LOCK`时间段内326附录该值为`NULL`5 `EXPIRY_DATE` `DATETIME(6)`密码失效时间。目前为`NULL`
+
+```
+6  DEFAULT_TABLESPAC VARCHAR(1)  默认表空间
+E
+7  TEMPORARY_TABLESP VARCHAR(1)  默认临时表空间，DM7 为“TEMP”
+ACE
+8  CREATED  VARCHAR(1)  创建时间
+```
+
+9 `INITIAL_RSRC_CONS` `VARCHAR(1)`初始资源所在组。该视图中为`NULL`
+
+```
+UMER_GROUP
+```
+
+10 `EXTERNAL_NAME` `VARCHAR(1)`用户外部名称。该视图中为`NULL`
+
+```
+10. DBA_ROLE_PRIVS
+```
+
+系统中的所有角色权限。
+
+序号列数据类型说明
+
+```
+1 GRANTEE  VARCHAR(128) 被授权用户名
+2 GRANTED_ROLE VARCHAR(128) 被授予的角色
+3 ADMIN_OPTION VARCHAR(3) 是否可以转授
+```
+
+4 `DEFAULT_ROLE VARCHAR(1)`是否为默认角色，Y是，N否。目前都为`NULL`
+
+```
+11. USER_ROLE_PRIVS
+```
+
+传授给当前用户的角色。
+
+序号列数据类型说明
+
+```
+1 USERNAME  VARCHAR(128) 被授权用户名
+2 GRANTED_ROLE VARCHAR(128) 被授予的角色
+```
+
+3 `ADMIN_OPTION VARCHAR(3)`是否可以转授，Y是，N否4 `DEFAULT_ROLE VARCHAR(1)`是否为默认角色。`DM`均为`NULL`5 `OS_GRANTED` `VARCHAR(1)`是否由操作系统授权，`DM`均为`NULL`
+
+```
+12. ALL_CONSTRAINTS
+```
+
+当前用户拥有的所有约束信息。
+
+序号列数据类型说明
+
+```
+1  OWNER  VARCHAR(128) 约束拥有者
+2  CONSTRAINT_NAME VARCHAR(128) 约束名
+```
+
+3 `CONSTRAINT_TYPE` `VARCHAR(1)`约束类型： `C –`表上的检查约束；`P –`主键约束；`U –`唯一约束；`R –`引用列；`V –`视图上的检查约束4 `TABLE_NAME` `VARCHAR(128)`约束所在的表名或视图名
+
+```
+5  SEARCH_CONDITION VARCHAR(2048) CHECK 约束的条件
+```
+
+6 `R_OWNER` `VARCHAR(128)`引用约束所引用的表的拥有者7 `R_CONSTRAINT_NAME VARCHAR(128)`引用约束所引用的表上的唯一约束的名称8 `DELETE_RULE` `VARCHAR(9)`引用约束的删除规则，`DM`支持如下规则
+
+```
+CASCADE
+SET NULL
+SET DEFAULT
+NO ACTION
+```
+
+9 `STATUS` `VARCHAR(8)`约束的状态：`ENABLED`可用，`DISABLED`不可用10 `DEFERRABLE` `VARCHAR(14)`约束是否延迟生效。`DEFERRABLE`延迟生效， `NOT``DEFERRABLE`不延迟生效327附录11 `DEFERRED` `VARCHAR(9)`约束是否初始为延迟生效。
+
+`DEFERRED`生效，`IMMEDIATE`不生效12 `VALIDATED` `VARCHAR(13)`是否所有数据都符合约束。
+
+```
+VALIDATED 符合，NOT VALIDATED 不符合
+```
+
+13 `GENERATED` `VARCHAR(14)`约束名是用户指定的`(USER NAME)`还是系统指定的
+
+```
+(GENERATED NAME)。DM 均为NULL
+```
+
+14 `BAD` `VARCHAR(3)`约束所指定的时间格式（`TO_DATE`）是否是可以引起歧义的。取值如下`BAD --`会引起歧义`NULL --`不会引起歧义
+
+```
+DM 均为NULL
+```
+
+15 `RELY` `VARCHAR(4)`是否约束是强制性的。`RELY`强制，`NULL`非强制
+
+```
+DM 均为NULL
+```
+
+16 `LAST_CHANGE` `DATETIME(6)`约束的最后修改时间
+
+```
+17 INDEX_OWNER  VARCHAR(128) 索引的所有者
+```
+
+18 `INDEX_NAME` `VARCHAR(128)`索引名，只对唯一约束和主键约束有效19 `INVALID` `VARCHAR(7)`约束是否是无效的，取值如下：
+
+```
+INVALID --无效的
+```
+
+`NULL --`有效的20 `VIEW_RELATED` `VARCHAR(14)`约束依赖视图，取值如下：
+
+```
+DEPEND ON VIEW--依赖于视图
+```
+
+`NULL--`不依赖视图
+
+```
+DM 均为NULL
+13. DBA_CONSTRAINTS
+```
+
+系统中所有的约束信息，结构同`ALL_CONSTRAINTS`。
+
+```
+14. USER_CONSTRAINTS
+```
+
+当前用户所拥有的表上定义的约束，结构同`ALL_CONSTRAINTS`。
+
+```
+15. DBA_TABLES
+```
+
+用户能够看到的所有表。
+
+序号列数据类型说明
+
+```
+1  OWNER  VARCHAR(128) 表拥有者
+2  TABLE_NAME  VARCHAR(128) 表名
+3  TABLESPACE_NAME  VARCHAR(128) 表所在表空间名。
+```
+
+对于分区表，临时表和索引组织表为`NULL`
+
+```
+4  CLUSTER_NAME  VARCHAR(1) 聚簇名
+5  IOT_NAME  VARCHAR(128) 索引组织表名
+```
+
+6 `STATUS` `VARCHAR(8)`表的状态。`UNUSABLE`无效，`VALID`有效7 `PCT_FREE` `NUMBER`块的最小空闲百分比，分区表为`NULL`8 `PCT_USED` `NUMBER`块的最小使用百分比，分区表为`NULL`9 `INI_TRANS` `NUMBER`初始事务数，分区表为`NULL`10 `MAX_TRANS` `NUMBER`最大事务数，分区表为`NULL`11 `INITIAL_EXTENT` `NUMBER`初始簇大小，单位：字节。分区表为`NULL`12 `NEXT_EXTENT` `NUMBER`下一个簇的大小，单位：字节。分区表为`NULL`13 `MIN_EXTENTS` `NUMBER`最小簇大小，分区表为`NULL`328附录14 `MAX_EXTENTS` `NUMBER`最大簇大小，分区表为`NULL`15 `PCT_INCREASE` `NUMBER`簇的增长百分比，分区表为`NULL`16 `FREELISTS` `NUMBER`空闲链的分配个数，分区表为`NULL`17 `FREELIST_GROUPS` `NUMBER`空闲连组的分配个数，分区表为`NULL`。`DM`不支持，返
+
+```
+回NULL
+```
+
+18 `LOGGING` `VARCHAR(1)`表的变化是否需要记录日志，Y是，N否。
+
+分区表为`NULL`。`DM`不支持，返回`NULL`19 `BACKED_UP` `VARCHAR(1)`最后一次修改后表是否已备份，Y是，N否20 `NUM_ROWS` `NUMBER`表里的记录数21 `BLOCKS` `NUMBER`表中已使用块的数目22 `EMPTY_BLOCKS` `NUMBER`表中未使用的块的数目23 `AVG_SPACE` `NUMBER`每个数据块的平均空闲空间，单位：字节24 `CHAIN_CNT` `NUMBER`表中已被链接数据的行数25 `AVG_ROW_LEN` `NUMBER`表中每行数据的平均长度。`DM`不支持，返回`NULL`26 `AVG_SPACE_FREELIST` `NUMBER`一条链上所有块的平均空闲空间，兼容用，`DM`不支持，
+
+```
+_BLOCKS
+```
+
+返回`NULL`27 `NUM_FREELIST_BLOCKS` `NUMBER`链上所有块的数量，兼容用，`DM`不支持，返回`NULL`28 `DEGREE` `VARCHAR(1)`每个实例扫描表的线程数，兼容用，`DM`不支持，返回
+
+```
+NULL
+```
+
+29 `INSTANCES` `VARCHAR(1)`扫描全表需要访问的实例数，`DM`不支持30 `CACHE` `VARCHAR(1)`表是否被`BUFFER CACHE`缓存。Y是，N否31 `TABLE_LOCK` `VARCHAR(8)`表锁是否可用。`ENABLED`可用，`DISABLED`不可用32 `SAMPLE_SIZE` `NUMBER`分析该表时的取样大小33 `LAST_ANALYZED` `DATE`最后分析表的时间34 `PARTITIONED` `VARCHAR(3)`是否为分区表，`YES`是，`NO`否35 `IOT_TYPE` `VARCHAR(8)`表是否为索引组织表，如果是则为`IOT`，`IOT_OVERFLOW`，或`IOT_MAPPING`。如果不是则为
+
+```
+NULL
+```
+
+36 `TEMPORARY` `VARCHAR(1)`是否为临时表，Y是，N否
+
+```
+37 SECONDARY  VARCHAR(1) DM 无意义，返回NULL
+```
+
+38 `NESTED` `VARCHAR(1)`是否为嵌套表，`YES`是，`NO`否
+
+```
+39 BUFFER_POOL  VARCHAR(1) 表的缓冲池：DEFAULT、KEEP、RECYCLE、NULL。分
+```
+
+区表为`NULL`。
+
+```
+40 FLASH_CACHE  VARCHAR(7) FLASH_CACHE 信息，DM 无意义，返回NULL
+41 CELL_FLASH_CACHE  VARCHAR(7) CELL_FLASH_CACHE 信息，DM 无意义，返回NULL
+```
+
+42 `ROW_MOVEMENT` `VARCHAR(7)`分区记录的移动是否允许。`ENABLED`允许，`DISABLED`不允许43 `GLOBAL_STATS` `VARCHAR(3)`分区的统计是来源于分区表（`YES`），还是通过子分区估计所得（`NO`）。
+
+44 `USER_STATS` `VARCHAR(2)`分区的统计信息用户是否可以直接访问，`YES`是，`NO`否45 `DURATION` `VARCHAR(15)`临时表的生命期：
+
+- `SYS$SESSION –`整个会话期间
+
+```
+- SYS$TRANSACTION – COMMIT 操作后立即
+```
+
+删除329附录46 `SKIP_CORRUPT` `VARCHAR(1)`兼容列用。`DM`无意义，返回`NULL`47 `MONITORING` `VARCHAR(1)`表是否配置了监视属性，`YES`是，`NO`否
+
+```
+48 CLUSTER_OWNER  VARCHAR(1) 聚簇的所有者
+49 DEPENDENCIES  VARCHAR(1) 创建表时是否指定ROWDEPENDENCIES 属性，DM 无意
+```
+
+义返回`NULL`
+
+```
+50 COMPRESSION  VARCHAR(8) 表是否压缩 (ENABLED) OR (DISABLED); 分区表
+为NULL
+51 COMPRESS_FOR  VARCHAR(1) 压缩选项：BASIC、OLTP、QUERY LOW、QUERY HIGH、
+ARCHIVE LOW、ARCHIVE HIGH、NULL
+```
+
+52 `DROPPED` `VARCHAR(1)`表是否已被删除并且还可以回滚，`YES`是，`NO`否。
+
+分区表为`NULL`53 `READ_ONLY` `VARCHAR(1)`表是否是只读的，`YES`是，`NO`否54 `SEGMENT_CREATED` `VARCHAR(3)`表的段是否被创建，`YES`是，`NO`否55 `RESULT_CACHE` `VARCHAR(7)`结果集缓存模式的注释：`DEFAULT–`表还没有被注
+
+```
+释、FORCE、MANUAL
+16. ALL_TABLES
+```
+
+当前用户能够访问的表，结构同`DBA_TABLES`。
+
+```
+17. USER_TABLES
+```
+
+当前用户所拥有的表，结构同`DBA_TABLES`，没有`OWNER`列。
+
+```
+18. USER_ALL_TABLES
+```
+
+当前用户所拥有的表。
+
+序号列数据类型说明
+
+```
+1  TABLE_NAME  VARCHAR(128) 表名
+2  TABLESPACE_NAME  VARCHAR(128) 表所在表空间名。
+```
+
+对于分区表，临时表和索引组织表为`NULL`
+
+```
+3  CLUSTER_NAME  VARCHAR(1) 聚簇名
+4  IOT_NAME  VARCHAR(128) 索引组织表名
+```
+
+5 `STATUS` `VARCHAR(8)`表的状态。`UNUSABLE`无效，`VALID`有效6 `PCT_FREE` `NUMBER`块的最小空闲百分比，分区表为`NULL`7 `PCT_USED` `NUMBER`块的最小使用百分比，分区表为`NULL`8 `INI_TRANS` `NUMBER`初始事务数，分区表为`NULL`9 `MAX_TRANS` `NUMBER`最大事务数，分区表为`NULL`10 `INITIAL_EXTENT` `NUMBER`初始簇大小，单位：字节。分区表为`NULL`11 `NEXT_EXTENT` `NUMBER`下一个簇的大小，单位：字节。分区表为`NULL`12 `MIN_EXTENTS` `NUMBER`最小簇大小，分区表为`NULL`13 `MAX_EXTENTS` `NUMBER`最大簇大小，分区表为`NULL`14 `PCT_INCREASE` `NUMBER`簇的增长百分比，分区表为`NULL`15 `FREELISTS` `NUMBER`空闲链的分配个数，分区表为`NULL`16 `FREELIST_GROUPS` `NUMBER`空闲连组的分配个数，分区表为`NULL`。`DM`不支持，返
+
+```
+回NULL
+```
+
+17 `LOGGING` `VARCHAR(1)`表的变化是否需要记录日志，Y是，N否。
+
+分区表为`NULL`。`DM`不支持，返回`NULL`18 `BACKED_UP` `VARCHAR(1)`最后一次修改后表是否已备份，Y是，N否330附录19 `NUM_ROWS` `NUMBER`表里的记录数20 `BLOCKS` `NUMBER`表中已使用块的数目21 `EMPTY_BLOCKS` `NUMBER`表中未使用的块的数目22 `AVG_SPACE` `NUMBER`每个数据块的平均空闲空间，单位：字节23 `CHAIN_CNT` `NUMBER`表中已被链接数据的行数24 `AVG_ROW_LEN` `NUMBER`表中每行数据的平均长度，`DM`不支持，返回`NULL`25 `AVG_SPACE_FREELIST` `NUMBER`一条链上所有块的平均空闲空间，兼容用，`DM`不支持，
+
+```
+_BLOCKS
+```
+
+返回`NULL`26 `NUM_FREELIST_BLOCKS NUMBER`链上所有块的数量，兼容用，`DM`不支持，返回`NULL`27 `DEGREE` `VARCHAR(1)`每个实例扫描表的线程数，兼容用，`DM`不支持，返回
+
+```
+NULL
+```
+
+28 `INSTANCES` `VARCHAR(1)`扫描全表需要访问的实例数，`DM`不支持29 `CACHE` `VARCHAR(1)`表是否被`BUFFER CACHE`缓存。Y是，N否30 `TABLE_LOCK` `VARCHAR(8)`表锁是否可用。`ENABLED`可用，`DISABLED`不可用31 `SAMPLE_SIZE` `NUMBER`分析该表时的取样大小32 `LAST_ANALYZED` `DATE`最后分析表的时间33 `PARTITIONED` `VARCHAR(3)`是否为分区表，`YES`是，`NO`否34 `IOT_TYPE` `VARCHAR(8)`表是否为索引组织表，如果是则为`IOT`，`IOT_OVERFLOW`，或`IOT_MAPPING`。如果不是则为
+
+```
+NULL
+```
+
+35 `OBJECT_ID_TYPE` `VARCHAR(1)`是用户定义的还是系统定义的，`DM`不支持36 `TABLE_TYPE_OWNER` `VRACHAR(1)`对象表的所有者，`DM`不支持37 `TABLE_TYPE` `VARCHAR(1)`对象表类型，`DM`不支持38 `TEMPORARY` `VARCHAR(1)`是否为临时表，Y是，N否
+
+```
+39 SECONDARY  VARCHAR(1) DM 无意义，返回NULL
+```
+
+40 `NESTED` `VARCHAR(1)`是否为嵌套表，`YES`是，`NO`否
+
+```
+41 BUFFER_POOL  VARCHAR(1) 表的缓冲池：DEFAULT、KEEP、RECYCLE、NULL。分
+```
+
+区表为`NULL`。
+
+```
+42 FLASH_CACHE  VARCHAR(7) FLASH_CACHE 信息，DM 无意义，返回NULL
+43 CELL_FLASH_CACHE  VARCHAR(7) CELL_FLASH_CACHE 信息，DM 无意义，返回NULL
+```
+
+44 `ROW_MOVEMENT` `VARCHAR(7)`分区记录的移动是否允许。`ENABLED`允许，`DISABLED`不允许45 `GLOBAL_STATS` `VARCHAR(3)`分区的统计是来源于分区表（`YES`），还是通过子分区估计所得（`NO`）。
+
+46 `USER_STATS` `VARCHAR(2)`分区的统计信息用户是否可以直接访问，`YES`是，`NO`否47 `DURATION` `VARCHAR(15)`临时表的生命期：
+
+- `SYS$SESSION –`整个会话期间
+
+```
+- SYS$TRANSACTION – COMMIT 操作后立即
+```
+
+删除48 `SKIP_CORRUPT` `VARCHAR(1)`兼容列用。`DM`无意义，返回`NULL`49 `MONITORING` `VARCHAR(1)`表是否配置了监视属性，`YES`是，`NO`否
+
+```
+50 CLUSTER_OWNER  VARCHAR(1) 聚簇的所有者
+```
+
+331附录
+
+```
+51 DEPENDENCIES  VARCHAR(1) 创建表时是否指定ROWDEPENDENCIES 属性，DM 无意
+```
+
+义返回`NULL`
+
+```
+52 COMPRESSION  VARCHAR(8) 表是否压缩 (ENABLED) OR (DISABLED); 分区表
+为NULL
+53 COMPRESS_FOR  VARCHAR(1) 压缩选项：BASIC、OLTP、QUERY LOW、QUERY HIGH、
+ARCHIVE LOW、ARCHIVE HIGH、NULL
+```
+
+54 `DROPPED` `VARCHAR(1)`表是否已被删除并且还可以回滚，`YES`是，`NO`否。
+
+分区表为`NULL`55 `SEGMENT_CREATED` `VARCHAR(3)`表的段是否被创建，`YES`是，`NO`否
+
+```
+19. USER_TAB_COLS
+```
+
+当前用户所拥有的表、视图或聚簇的列。
+
+序号列数据类型说明1 `TABLE_NAME` `VARCHAR(128)`表、视图或聚簇的名字
+
+```
+2 COLUMN_NAME  VARCHAR(128)  列名
+3 DATA_TYPE  VARCHAR(128)  列类型名
+```
+
+4 `DATA_TYPE_MOD` `VARCHAR(3)` `DM`不支持的属性，取值为`NULL`
+
+```
+5 DATA_TYPE_OWNER  VARCHAR(128)  列数据类型的所有者
+```
+
+6 `DATA_LENGTH` `NUMBER`列长度。单位：字节
+
+```
+7 DATA_PRECISION  NUMBER  精度
+8 DATA_SCALE  NUMBER  刻度
+```
+
+9 `NULLABLE` `VARCHAR(1)`是否允许为`NULL`，Y是，N否`10 COLUMN_ID` `NUMBER`列序号（1 开始）
+
+```
+11 DEFAULT_LENGTH  NUMBER  默认值长度
+12 DATA_DEFAULT  TEXT  默认值
+13 NUM_DISTINCT  NUMBER  不同值的个数
+14 LOW_VALUE  VARBINARY(32)  列最小值
+15 HIGH_VALUE  VARBINARY(32)  列最大值
+16 DENSITY  NUMBER  列的密度
+17 NUM_NULLS  NUMBER  NULL 值的个数
+18 NUM_BUCKETS  NUMBER  直方图槽数
+19 LAST_ANALYZED  DATETIME(6)  最后一次分析的时间
+20 SAMPLE_SIZE  NUMBER  取样大小
+21 CHARACTER_SET_NAME VARCHAR(44)  字符集名字：CHAR_CS、NCHAR_CS
+22 CHAR_COL_DECL_LENGTH NUMBER  列数据字符类型长度
+23 GLOBAL_STATS  VARCHAR(3)
+```
+
+对于分区表，统计信息是作为一个整体搜集`(YES)`，还是通过分区和子分区来估算`(NO)``24 USER_STATS` `VARCHAR(3)`统计信息生成是否通过手动，`YES`是，`NO`否`25 AVG_COL_LEN` `NUMBER`列数据的平均长度，单位：字节`26 CHAR_LENGTH` `NUMBER`显示时的字符长度，对下述类型有效：`CHAR`、
+
+```
+VARCHAR、NCHAR、NVARCHAR
+```
+
+`27 CHAR_USED` `VARCHAR(1)`列是字节长度还是字符长度`(B) OR (C)`，`OR`
+
+```
+(NULL)：
+- CHAR
+```
+
+332附录
+
+```
+- VARCHAR
+- NCHAR
+- NVARCHAR
+```
+
+`28 V80_FMT_IMAGE` `VARCHAR(3)`列数据是否为`8.0`版本的`IMAGE`格式，`YES`是，`NO`否
+
+```
+29 DATA_UPGRADED  VARCHAR(3)
+```
+
+列数据是否已经更新为最新的类型版本格式，`YES`是，`NO`否`30 HIDDEN_COLUMN` `VARCHAR(3)`是否是一个隐藏列，`YES`是，`NO`否`31 VIRTUAL_COLUMN` `VARCHAR(3)`是否是一个伪列，`YES`是，`NO`否
+
+```
+32 SEGMENT_COLUMN_ID  NUMBER  列在段中的序号
+33 INTERNAL_COLUMN_ID NUMBER  列的内部序号
+```
+
+`34 HISTOGRAM` `VARCHAR(15)`直方图类型，`DM`不支持，返回`NULL`
+
+```
+35 QUALIFIED_COL_NAME VARCHAR(4000)  合格的列名
+20. DBA_TAB_COLUMNS
+```
+
+显示数据库中所有表、视图或聚簇的列。
+
+序号列数据类型说明
+
+```
+1 OWNER  VARCHAR(128) 对象的拥有者
+```
+
+`2 TABLE_NAME` `VARCHAR(128)`表、视图或聚簇的名字
+
+```
+3 COLUMN_NAME  VARCHAR(128) 列名
+4 DATA_TYPE  VARCHAR(128) 列类型名
+```
+
+`5 DATA_TYPE_MOD` `VARCHAR(1)` `DM`不支持的属性，取值为`NULL`
+
+```
+6 DATA_TYPE_OWNER  VARCHAR(1)  列数据类型的所有者
+```
+
+`7 DATA_LENGTH` `NUMBER`列长度。单位：字节
+
+```
+8 DATA_PRECISION  NUMBER  精度
+9 DATA_SCALE  NUMBER  刻度
+```
+
+`10 NULLABLE` `VARCHAR(1)`是否允许为`NULL`，Y是，N否`11 COLUMN_ID` `NUMBER`列序号（1 开始）
+
+```
+12 DEFAULT_LENGTH  NUMBER  默认值长度
+```
+
+默认值
+
+```
+13 DATA_DEFAULT
+VARCHAR(2048)
+14 NUM_DISTINCT  NUMBER  不同值的个数
+15 LOW_VALUE  VARCHAR(1)  列最小值
+16 HIGH_VALUE  VARCHAR(1)  列最大值
+17 DENSITY  NUMBER  列的密度
+18 NUM_NULLS  NUMBER  NULL 值的个数
+19 NUM_BUCKETS  NUMBER  直方图槽数
+```
+
+`20 LAST_ANALYZED` `DATE`最后一次分析的时间
+
+```
+21 SAMPLE_SIZE  NUMBER  取样大小
+22 CHARACTER_SET_NAME  VARCHAR(8)  字符集名字：CHAR_CS、NCHAR_CS
+```
+
+`CHAR_COL_DECL_LENG`列数据字符类型长度
+
+```
+23  NUMBER
+TH
+```
+
+对于分区表，统计信息是作为一个整体搜集
+
+```
+24 GLOBAL_STATS  VARCHAR(3)
+```
+
+`(YES)`，还是通过分区和子分区来估算`(NO)``25 USER_STATS` `VARCHAR(2)`统计信息生成是否通过手动，`YES`是，`NO`否`26 AVG_COL_LEN` `NUMBER`列数据的平均长度，单位：字节`27 CHAR_LENGTH` `NUMBER`显示时的字符长度，对下述类型有效：`CHAR`、333附录
+
+```
+VARCHAR、NCHAR、NVARCHAR
+```
+
+列是字节长度还是字符长度`(B) OR (C)`，`OR`
+
+```
+(NULL)：
+- CHAR
+28 CHAR_USED  VARCHAR(1)
+- VARCHAR
+- NCHAR
+- NVARCHAR
+```
+
+列数据是否为`8.0`版本的`IMAGE`格式，`YES`是，
+
+```
+29 V80_FMT_IMAGE  VARCHAR(1)
+```
+
+`NO`否列数据是否已经更新为最新的类型版本格式，`YES`
+
+```
+30 DATA_UPGRADED  VARCHAR(1)
+```
+
+是，`NO`否`31 HISTOGRAM` `VARCHAR(1)`直方图类型，`DM`不支持，返回`NULL`
+
+```
+21. USER_TAB_COLUMNS
+```
+
+显示当前用户所拥有的表、视图或聚簇的列。
+
+序列数据类型说明号1 `TABLE_NAME` `VARCHAR(128)`表、视图或聚簇的名字
+
+```
+2  COLUMN_NAME  VARCHAR(128) 列名
+3  DATA_TYPE  VARCHAR(128) 列类型名
+```
+
+4 `DATA_TYPE_MOD` `VARCHAR(1)` `DM`不支持的属性，取值为`NULL`5 `DATA_TYPE_OWNER` `VARCHAR(1)`列数据类型的所有者6 `DATA_LENGTH` `NUMBER`列长度。单位：字节
+
+```
+7  DATA_PRECISION  NUMBER  精度
+8  DATA_SCALE  NUMBER  刻度
+```
+
+9 `NULLABLE` `VARCHAR(1)`是否允许为`NULL`，Y是，N否10 `COLUMN_ID` `NUMBER`列序号（1 开始）
+
+```
+11 DEFAULT_LENGTH  NUMBER  默认值长度
+```
+
+默认值
+
+```
+12 DATA_DEFAULT
+VARCHAR(2048)
+13 NUM_DISTINCT  NUMBER  不同值的个数
+14 LOW_VALUE  VARCHAR(1)  列最小值
+15 HIGH_VALUE  VARCHAR(1)  列最大值
+16 DENSITY  NUMBER  列的密度
+17 NUM_NULLS  NUMBER  NULL 值的个数
+18 NUM_BUCKETS  NUMBER  直方图槽数
+```
+
+19 `LAST_ANALYZED` `DATE`最后一次分析的时间
+
+```
+20 SAMPLE_SIZE  NUMBER  取样大小
+21 CHARACTER_SET_NAME  VARCHAR(8)  字符集名字：CHAR_CS、NCHAR_CS
+22 CHAR_COL_DECL_LENGTH NUMBER  列数据字符类型长度
+```
+
+对于分区表，统计信息是作为一个整体搜集
+
+```
+23 GLOBAL_STATS  VARCHAR(3)
+```
+
+`(YES)`，还是通过分区和子分区来估算`(NO)`24 `USER_STATS` `VARCHAR(2)`统计信息生成是否通过手动，`YES`是，`NO`否25 `AVG_COL_LEN` `NUMBER`列数据的平均长度，单位：字节显示时的字符长度，对下述类型有效：`CHAR`、
+
+```
+26 CHAR_LENGTH  NUMBER
+VARCHAR、NCHAR、NVARCHAR
+```
+
+列是字节长度还是字符长度`(B) or (C)`，`or`
+
+```
+27 CHAR_USED  VARCHAR(1)  (NULL)：
+CHAR
+```
+
+334附录
+
+```
+VARCHAR
+NCHAR
+NVARCHAR
+```
+
+`VARCHAR(1)`列数据是否为`8.0`版本的`image`格式，`YES`是，
+
+```
+28 V80_FMT_IMAGE
+```
+
+`NO`否`VARCHAR(1)`列数据是否已经更新为最新的类型版本格式，`YES`
+
+```
+29 DATA_UPGRADED
+```
+
+是，`NO`否30 `HISTOGRAM` `VARCHAR(1)`直方图类型，`DM`不支持，返回`NULL`
+
+```
+22. DBA_CONS_COLUMNS
+```
+
+显示当前数据库中所有的约束涉及列。
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`约束的模式名
+
+```
+2 CONSTRAINT_NAME VARCHAR(128) 约束名
+3 TABLE_NAME  VARCHAR(128) 约束的表名
+4 COLUMN_NAME  VARCHAR(128) 约束列名
+5 POSITION  DEC(10)  当前COLUMN 所在的KEY 序号
+23. ALL_CONS_COLUMNS
+```
+
+显示当前用户有权限访问的约束涉及列。
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`约束的模式名
+
+```
+2 CONSTRAINT_NAME VARCHAR(128) 约束名
+3 TABLE_NAME  VARCHAR(128) 约束的表名
+4 COLUMN_NAME  VARCHAR(128) 约束列名
+5 POSITION  DEC(10)  当前COLUMN 所在的KEY 序号
+24. USER_CONS_COLUMNS
+```
+
+显示当前用户所拥有的约束涉及列。结构同`ALL_CONS_COLUMNS`。
+
+```
+25. DBA_INDEXES
+```
+
+显示数据库中所有的索引。
+
+序列数据类型说明号
+
+```
+1 OWNER  VARCHAR(128) 所有者
+2 INDEX_NAME  VARCHAR(128) 索引名
+```
+
+`3 INDEX_TYPE` `VARCHAR(21)`索引类型，`DM`支持如下取值：
+
+```
+- DOMAIN
+- FUNCTION-BASED NORMAL
+- BITMAP
+- FLAT
+- NORMAL
+- VIRTUAL
+- CLUSTER
+4 TABLE_OWNER  VARCHAR(128) 索引对象的所有者
+5 TABLE_NAME  VARCHAR(128) 索引对象名
+```
+
+`6 TABLE_TYPE` `VARCHAR(5)`索引对象类型，`DM`支持在表上建索引，取值`TABLE`335附录
+
+```
+7 UNIQUENESS  VARCHAR(9) 是否为唯一索引(UNIQUE) 或 (NONUNIQUE)
+8 COMPRESSION  VARCHAR(8) 索引压缩是否可用(ENABLED) 或(DISABLED)
+```
+
+`9 PREFIX_LENGTH` `NUMBER`压缩`KEY`前的列数，`DM`不支持，返回`NULL`
+
+```
+10 TABLESPACE_NAME  VARCHAR(128) 索引所在的表空间名
+11 INI_TRANS  NUMBER  初始事务数
+12 MAX_TRANS  NUMBER  最大事务数
+13 INITIAL_EXTENT  NUMBER  初始簇大小
+14 NEXT_EXTENT  NUMBER  下一个簇大小
+15 MIN_EXTENTS  NUMBER  最小簇数目
+16 MAX_EXTENTS  NUMBER  最大簇数目
+17 PCT_INCREASE  NUMBER  簇扩展百分比
+```
+
+`18 PCT_THRESHOLD` `NUMBER`每个索引占用的最大空间百分比`19 INCLUDE_COLUMN` `NUMBER`包含在索引组织表的主键索引中的最后一个列`ID``20 FREELISTS` `NUMBER`空闲链表的数目
+
+```
+21 FREELIST_GROUPS  NUMBER  空闲链组的个数
+```
+
+`22 PCT_FREE` `NUMBER`块中最小空闲的百分比`23 LOGGING` `VARCHAR(3)`索引修改是否记录日志:
+
+```
+- YES
+```
+
+- `NO`
+
+```
+24 BLEVEL  NUMBER  B 树的层次
+```
+
+`25 LEAF_BLOCKS` `NUMBER`索引上叶子块的个数`26 DISTINCT_KEYS` `NUMBER`索引上不同值的个数`27 AVG_LEAF_BLOCKS_PER_KEY NUMBER`每个索引不同值里的平均叶子块个数`28 AVG_DATA_BLOCKS_PER_KEY NUMBER`用来表示索引数据分布的列，`DM`无意义，返回`NULL``29 CLUSTERING_FACTOR` `NUMBER`聚集因子，`DM`无意义，返回`NULL`
+
+```
+30 STATUS  VARCHAR(8) 非分区索引的状态 VALID 或 UNUSABLE
+```
+
+`31 NUM_ROWS` `NUMBER`索引中的行数`32 SAMPLE_SIZE` `NUMBER`索引分析的取样大小`33 LAST_ANALYZED` `DATE`最后一次索引分析的时间`34 DEGREE` `VARCHAR(1)`每个实例扫描索引的线程个数或`DEFAULT``35 INSTANCES` `VARCHAR(1)`扫描索引的实例个数或`DEFAULT``36 PARTITIONED` `VARCHAR(3)`索引是否被分区，`YES`是，`NO`否`37 TEMPORARY` `VARCHAR(1)`是否是临时表上的索引，Y是，N否`38 GENERATED` `VARCHAR(1)`索引名是否是系统生成，Y是，N否`39 SECONDARY` `VARCHAR(1)` `DM`不支持，该列无意义`40 BUFFER_POOL` `VARCHAR(20)`索引块使用缓冲池的方式:
+
+```
+- DEFAULT
+- KEEP
+- RECYCLE
+- NULL
+```
+
+`41 FLASH_CACHE` `VARCHAR(1)`索引块使用`FLASH CACHE`信息。`DM`无意义，返回
+
+```
+NULL
+```
+
+336附录
+
+```
+42 CELL_FLASH_CACHE  VARCHAR(1) 索引块CELL_FLASH_CACHE 信息。DM 无意义，返
+回NULL
+```
+
+`43 USER_STATS` `VARCHAR(2)`统计信息是否是用户生成，`YES`是，`NO`否`44 DURATION` `VARCHAR(15)`临时表的生命周期：
+
+- `SYS$SESSION –`整个会话期间
+
+```
+- SYS$TRANSACTION – COMMIT 操作后立
+```
+
+即删除`45 PCT_DIRECT_ACCESS` `NUMBER`索引组织表的二级索引中有效行的百分比。`DM`无意义，返回`NULL``46 ITYP_OWNER` `VARCHAR(1)`域索引的索引类型的所有者`47 ITYP_NAME` `VARCHAR(1)`域索引的索引类型名
+
+```
+48 PARAMETERS  VARCHAR(1) 域索引的参数串
+```
+
+`49 GLOBAL_STATS` `VARCHAR(3)`对于分区表，统计信息是作为一个整体搜集`(YES)`，还是通过分区和子分区来估算`(NO)``50 DOMIDX_STATUS` `VARCHAR(1)`域索引状态，`DM`无意义，返回`NULL``51 DOMIDX_OPSTATUS` `VARCHAR(1)`域索引的操作状态，`DM`无意义，返回`NULL``52 FUNCIDX_STATUS` `VARCHAR(1)`函数索引状态，`DM`无意义，返回`NULL``53 JOIN_INDEX` `VARCHAR(1)`是否为组合索引，`YES`是，`NO`否
+
+```
+54 IOT_REDUNDANT_PKEY_ELIM VARCHAR(1) DM 无意义，返回NULL
+```
+
+`55 DROPPED` `VARCHAR(1)`索引是否已被删除并在回滚段中，`YES`是，`NO`否。
+
+分区表为`NULL`
+
+```
+56 VISIBILITY  VARCHAR(7) 索引是否可见。 VISIBLE 可见，INVISIBLE 不可
+```
+
+见
+
+```
+57 DOMIDX_MANAGEMENT  VARCHAR(1) 域索引的管理方式(SYSTEM_MANAGED) 或
+(USER_MANAGED)
+```
+
+`58 SEGMENT_CREATED` `VARCHAR(1)`索引段是否已建立，`YES`是，`NO`否
+
+```
+26. ALL_INDEXES
+```
+
+当前用户有权访问的索引，结构同`DBA_INDEXES`。
+
+```
+27. USER_INDEXES
+```
+
+当前用户所拥有的索引，结构同`DBA_INDEXES`，除了`OWNER`列。
+
+```
+28. DBA_VIEWS
+```
+
+显示数据库中所有的视图。
+
+序号列数据类型说明
+
+```
+1 OWNER  VARCHAR(128) 视图所有者
+2 VIEW_NAME  VARCHAR(128) 视图名
+```
+
+3 `TEXT_LENGTH` `INTEGER`视图文本的长度4 `TEXT` `TEXT`视图文本5 `TYPE_TEXT_LENGTH NUMBER`对象视图定义文本长度，`DM`不支持，返回`NUL`6 `TYPE_TEXT` `VARCHAR(4000)`对象视图定义文本，`DM`不支持，返回`NULL`
+
+```
+7 OID_TEXT_LENGTH NUMBER  对象视图WITH OBJECT IDENTIFIER 子句文本长度
+```
+
+`DM`不支持，返回`NULL`
+
+```
+8 OID_TEXT  VARCHAR(4000) 对象视图WITH OBJECT IDENTIFIER 子句文本
+```
+
+337附录`DM`不支持，返回`NULL`9 `VIEW_TYPE_OWNER VARCHAR(30)`对象视图对象的所有者`DM`不支持，返回`NULL``10 VIEW_TYPE` `VARCHAR(30)`对象视图的源对象`DM`不支持，返回`NULL`
+
+```
+11 SUPERVIEW_NAME VARCHAR(30) 上级视图名
+```
+
+`DM`不支持，返回`NULL`
+
+```
+12 EDITIONING_VIEW VARCHAR(1)  保留
+```
+
+`13 READ_ONLY` `VARCHAR(1)`视图是否只读，Y是，N否
+
+```
+29. ALL_VIEWS
+```
+
+当前用户能够访问的所有视图，结构同`DBA_VIEWS`。
+
+```
+30. USER_VIEWS
+```
+
+当前用户所拥有的所有视图，结构同`DBA_VIEWS`，没有`OWNER`列。
+
+```
+31. DBA_TRIGGERS
+```
+
+显示当前数据库的全部触发器。
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`触发器模式名
+
+```
+2 TRIGGER_NAME  VARCHAR(128) 触发器名
+3 TRIGGERING_TYPE VARCHAR(16) 触发器类型：
+- BEFORE STATEMENT
+- BEFORE EACH ROW
+- AFTER STATEMENT
+- AFTER EACH ROW
+- INSTEAD OF
+- COMPOUND
+```
+
+表触发器
+
+```
+1) INSERT、DELETE 和UPDATE 触发器
+```
+
+`2)`元组级触发器和语句级触发器
+
+```
+3)BEFORE 和AFTER 触发器
+```
+
+事件触发器4 `TRIGGERING_EVENT VARCHAR(128)`表触发器、事件触发器、`DML`，`DDL`或数据库事件5 `TABLE_OWNER` `VARCHAR(128)`触发器的表的模式
+
+```
+6 TABLE_NAME  VARCHAR(128) 如果是TABLE 或 VIEW, 表名或视图名
+```
+
+7 `COLUMN_NAME` `VARCHAR(1)`触发器是嵌套表，则嵌套表的列名8 `STATUS` `CHAR(1)`禁用或启用
+
+```
+9 TRIGGER_BODY  TEXT  触发器体
+32. ALL_TRIGGERS
+```
+
+显示当前用户有权限访问的触发器。如果有`CREATE ANY TRIGGER`权限，则等同
+
+```
+DBA_TRIGGERS。
+```
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`触发器模式名
+
+```
+2 TRIGGER_NAME  VARCHAR(128) 触发器名
+3 TRIGGERING_TYPE VARCHAR(16) 触发器类型：
+- BEFORE STATEMENT
+- BEFORE EACH ROW
+```
+
+338附录
+
+```
+- AFTER STATEMENT
+- AFTER EACH ROW
+- INSTEAD OF
+- COMPOUND
+```
+
+表触发器
+
+```
+1) INSERT、DELETE 和UPDATE 触发器
+```
+
+`2)`元组级触发器和语句级触发器
+
+```
+3)BEFORE 和AFTER 触发器
+```
+
+事件触发器4 `TRIGGERING_EVENT VARCHAR(128)`表触发器、事件触发器`DML`，`DDL`，或数据库事件5 `TABLE_OWNER` `VARCHAR(128)`触发器的表的模式
+
+```
+6 TABLE_NAME  VARCHAR(128) 表名或视图名
+```
+
+7 `COLUMN_NAME` `VARCHAR(1)`触发器是嵌套表，则嵌套表的列名8 `STATUS` `CHAR(1)`禁用或启用
+
+```
+9 TRIGGER_BODY  TEXT  触发器体
+33. USER_TRIGGERS
+```
+
+显示当前用户所拥有的触发器。
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`触发器模式名
+
+```
+2 TRIGGERING_TYPE VARCHAR(16) 触发器类型：
+- BEFORE STATEMENT
+- BEFORE EACH ROW
+- AFTER STATEMENT
+- AFTER EACH ROW
+- INSTEAD OF
+- COMPOUND
+```
+
+表触发器
+
+```
+1) INSERT、DELETE 和UPDATE 触发器
+```
+
+`2)`元组级触发器和语句级触发器
+
+```
+3)BEFORE 和AFTER 触发器
+```
+
+事件触发器3 `TRIGGERING_EVENT VARCHAR(128)`表触发器、事件触发器。`DML`，`DDL`，或数据库事件4 `TABLE_OWNER` `VARCHAR(128)`触发器的表的模式
+
+```
+5 TABLE_NAME  VARCHAR(128) 表名或视图名
+```
+
+6 `COLUMN_NAME` `VARCHAR(1)`触发器是嵌套表，则嵌套表的列名7 `STATUS` `CHAR(1)`禁用或启用
+
+```
+8 TRIGGER_BODY  TEXT  触发器体
+34. DBA_OBJECTS
+```
+
+显示数据库中所有的对象。
+
+序列数据类型说明号
+
+```
+1 OWNER  VARCHAR(128) 对象所属用户
+2 OBJECT_NAME  VARCHAR(128) 对象名
+```
+
+`3 SUBOBJECT_NAME VARCHAR(1)`子对象名，例如分区。`DM`为`NULL`
+
+```
+4 OBJECT_ID  NUMBER  对象的ID
+```
+
+339附录`5 DATA_OBJECT_ID NUMBER`对象所在段的`ID`，`DM`不支持，返回`NULL`
+
+```
+6 OBJECT_TYPE  VARCHAR(15)  对象类型（取值如TABLE 或INDEX）
+7 CREATED  DATETIME(6) 对象创建时间
+```
+
+`8 LAST_DDL_TIME VARCHAR(2048) DDL`语句（包括授权）最后修改时间
+
+```
+9 TIMESTAMP  DATETIME(6) 对象的时间戳
+10 STATUS  VARCHAR(7)  对象状态。DM为NULL
+```
+
+`11 TEMPORARY` `VARCHAR(1)`表明是否是临时表`12 GENERATED` `VARCHAR(1)` Y表示系统创建的对象，N表示用户创建的对象。
+
+只支持表、视图、触发器、存储过程、同义词、包
+
+```
+13 SECONDARY  VARCHAR(1)  DM为NULL
+14 NAMESPACE  NUMBER  对象命名空间。DM为NULL
+15 EDITION_NAME VARCHAR(1)  版本名。DM为NULL
+35. USER_OBJECTS
+```
+
+当前用户所拥有的对象。结构同`DBA_OBJECTS`，少了`OWNER`列。
+
+```
+36. ALL_OBJECTS
+```
+
+当前用户可访问的对象。结构同`DBA_OBJECTS`。
+
+```
+37. USER_COL_COMMENTS
+```
+
+当前用户所拥有的所有表和视图上的列注释。
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`对象所属用户
+
+```
+2 TABLE_NAME VARCHAR(128) 表视图名
+3 COLUMN_NAME VARCHAR(128) 列名
+4 COMMENTS  VARCHAR(1024) 列注释
+38. DBA_COL_COMMENTS
+```
+
+当前数据库中的所有表和视图上的列注释。
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`对象所属用户
+
+```
+2 TABLE_NAME VARCHAR(128) 表视图名
+3 COLUMN_NAME VARCHAR(128) 列名
+4 COMMENTS  VARCHAR(1024) 列注释
+39. ALL_COL_COMMENTS
+```
+
+当前用户可访问的所有表和视图上的列注释。
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`对象所属用户
+
+```
+2 TABLE_NAME VARCHAR(128) 表视图名
+3 COLUMN_NAME VARCHAR(128) 列名
+4 COMMENTS  VARCHAR(1024) 列注释
+40. USER_TAB_COMMENTS
+```
+
+当前用户所拥有的所有表和视图上的注释。
+
+序号列数据类型说明340附录
+
+```
+1 TABLE_NAME VARCHAR(128) 表名
+2 TABLE_TYPE VARCHAR(5)  表类型
+3 COMMENTS VARCHAR(1024) 表或视图注释
+41. DBA_TAB_COMMENTS
+```
+
+当前数据库中的所有表和视图上的注释。
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`对象所属用户
+
+```
+2 TABLE_NAME VARCHAR(128) 表名
+3 TABLE_TYPE VARCHAR(5)  表类型
+4 COMMENTS VARCHAR(1024) 表或视图注释
+42. ALL_TAB_COMMENTS
+```
+
+当前用户可访问的所有表和视图上的注释。
+
+序号列数据类型说明1 `OWNER` `VARCHAR(128)`对象所属用户
+
+```
+2 TABLE_NAME VARCHAR(128) 表名
+4 TABLE_TYPE VARCHAR(5)  表类型
+5 COMMENTS VARCHAR(1024) 表或视图注释
+43. USER_PART_TABLES
+```
+
+显示当前用户所有的分区表信息，视图结构与`ALL_PART_TABLES`一样，区别是少了`OWNER`字段。
+
+```
+44. DBA_PART_TABLES
+```
+
+显示整个数据库所有的分区表信息，视图结构与`ALL_PART_TABLES`一样。
+
+```
+45. ALL_PART_TABLES
+```
+
+显示当前用户有权访问的所有的分区表信息。
+
+序列数据类型说明号`1 OWNER` `VARCHAR(128)`分区表的拥有者
+
+```
+2 TABLE_NAME  VARCHAR(128) 分区表名
+3 PARTITIONING_TYPE  VARCHAR(8)  分区表类型：UNKNOWN、RANGE、HASH、LIST、
+```
+
+`VERTICAL`（垂直分区）
+
+```
+4 SUBPARTITIONING_TYPE  VARCHAR(8)  组合分区类型：NONE、RANGE、HASH、LIST
+5 PARTITION_COUNT  BIGINT  分区个数
+6 DEF_SUBPARTITION_COUNT  BIGINT  组合分区个数
+7 PARTITIONING_KEY_COUNT  INTEGER  分区中KEY 包含列的个数
+8 SUBPARTITIONING_KEY_COUNT INTEGER  组合分区中KEY 包含列的个数
+9 STATUS  VARCHAR(5)  分区表状态(UNUSABLE) 或 (VALID)
+10 DEF_TABLESPACE_NAME  VARCHAR(128) 表空间名
+```
+
+`11 DEF_PCT_FREE` `NUMBER`增加一个分区表时`PCTFREE`的默认值。`DM`默认为`NULL`。
+
+`12 DEF_PCT_USED` `NUMBER`增加一个分区表时`PCTUSED`的默认值。`DM`默认为`NULL`。
+
+`13 DEF_INI_TRANS` `NUMBER`增加一个分区表时`INITRANS`的默认值。`DM`默认341附录为`NULL`。
+
+`14 DEF_MAX_TRANS` `NUMBER`增加一个分区表时`MAXTRANS`的默认值。`DM`默认为`NULL`。
+
+`15 DEF_INITIAL_EXTENT` `VARCHAR(7)`增加一个分区表时`INITIAL`的默认值。`DM`默认
+
+```
+为DEFAULT。
+```
+
+`16 DEF_NEXT_EXTENT` `VARCHAR(7)`增加一个分区表时`NEXT`的默认值。`DM`默认为
+
+```
+DEFAULT。
+```
+
+`17 DEF_MIN_EXTENTS` `VARCHAR(7)`增加一个分区表时`MINEXTENTS`的默认值。`DM`默认为`DEFAULT`。
+
+`18 DEF_MAX_EXTENTS` `VARCHAR(7)`增加一个分区表时`MAXEXTENTS`的默认值。`DM`默认为`DEFAULT`。
+
+`19 DEF_MAX_SIZE` `VARCHAR(7)`增加一个分区表时`MAXSIZE`的默认值。`DM`默认
+
+```
+为DEFAULT。
+20 DEF_PCT_INCREASE  VARCHAR(7)  增加一个分区表时PCTINCREASE的默认值。DM
+```
+
+默认为`DEFAULT`。
+
+`21 DEF_FREELISTS` `INTEGER`增加一个分区表时`FREELISTS`的默认值。`DM`默认为0。
+
+```
+22 DEF_FREELIST_GROUPS  INTEGER  增加一个分区表时FREELISTGROUPS的默认值。
+```
+
+`DM`默认为0。
+
+`23 DEF_LOGGING` `VARCHAR(4)`增加一个分区时是否记录额外日志。
+
+`DM`不支持，返回`NULL``24 DEF_COMPRESSION` `VARCHAR(7)`增加一个分区表时默认是否压缩：
+
+```
+ENABLED
+DISABLED
+```
+
+`25 DEF_COMPRESS_FOR` `VARCHAR(12)`增加一个分区表时哪些操作进行压缩：
+
+```
+BASIC、OLTP、QUERY LOW、QUERY HIGH、
+ARCHIVE LOW 、 ARCHIVE HIGH 、
+UNKNOWN、NULL。
+```
+
+`DM`不支持，返回`NULL.``26 DEF_BUFFER_POOL` `VARCHAR(7)`增加一个分区表时使用`STORAGE`子句指定的`BUFFER_POOL`的值。
+
+`DM`不支持，返回`DEFAULT``27 DEF_FLASH_CACHE` `VARCHAR(7)`增加一个分区表时使用`STORAGE`子句指定的`FLASH_CACHE`的值。
+
+`DM`不支持，返回`DEFAULT`
+
+```
+28 DEF_CELL_FLASH_CACHE  VARCHAR(7)  增加一个分区表时CELL FLASH CACHE的默认
+值：DEFAULT、KEEP、NONE。
+29 REF_PTN_CONSTRAINT_NAME VARCHAR(128) 引用分区表的引用约束名。
+```
+
+`DM`不支持，返回`NULL`
+
+```
+30 INTERVAL  VARCHAR(1000) 分区字符串，
+```
+
+`DM`不支持，返回`NULL``31 IS_NESTED` `VARCHAR(2)`分区表是否是嵌套表，`YES`是，`NO`否。
+
+```
+46. USER_TAB_PARTITIONS
+```
+
+显示当前用户所拥有的分区表的详细分区信息，视图结构与`ALL_TAB_PARTITIONS`一样，区别是少了`TABLE_OWNER`字段。
+
+```
+47. DBA_TAB_PARTITIONS
+```
+
+显示整个数据库所有的分区表的详细分区信息，视图结构与`ALL_TAB_PARTITIONS`一样。
+
+```
+48. ALL_TAB_PARTITIONS
+```
+
+342附录
+
+显示当前用户可以访问的的所有分区表的详细分区信息。
+
+序列数据类型说明号
+
+```
+1 TABLE_OWNER  VARCHAR(128) 表的拥有者
+2 TABLE_NAME  VARCHAR(128) 表名
+```
+
+3 `COMPOSITE` `VARCHAR(3)`是否是组合分区：`YES`是，`NO`否
+
+```
+4 PARTITION_NAME  VARCHAR(128) 分区名
+5 SUBPARTITION_COUNT  BIGINT  组合分区个数
+6 HIGH_VALUE  VARCHAR(8187) 分区边界最大值
+```
+
+7 `HIGH_VALUE_LENGTH` `INTEGER`分区边界最大值的长度
+
+```
+8 PARTITION_POSITION  INTEGER  表的第几个分区
+9 TABLESPACE_NAME  VARCHAR(128) 分区所在的表空间名
+```
+
+`10 PCT_FREE` `NUMBER`空闲空间百分比`DM`不支持，返回`NULL``11 PCT_USED` `NUMBER`使用空间百分比`DM`不支持，返回`NULL`
+
+```
+12 INI_TRANS  NUMBER  初始化事务数
+```
+
+`DM`不支持，返回`NULL`
+
+```
+13 MAX_TRANS  NUMBER  最大事务数
+```
+
+`DM`不支持，返回`NULL`
+
+```
+14 INITIAL_EXTENT  NUMBER  INITIAL值。
+```
+
+`DM`不支持，返回`NULL`
+
+```
+15 NEXT_EXTENT  NUMBER  NEXT值。
+```
+
+`DM`不支持，返回`NULL``16 MIN_EXTENT` `NUMBER`段中最小的簇数`DM`不支持，返回`NULL``17 MAX_EXTENT` `NUMBER`段中最大的簇数`DM`不支持，返回`NULL`
+
+```
+18 MAX_SIZE  NUMBER  MAXSIZE值。
+```
+
+`DM`不支持，返回`NULL`
+
+```
+19 PCT_INCREASE  NUMBER  PCTINCREASE值。
+```
+
+`DM`不支持，返回`NULL`
+
+```
+20 FREELISTS  NUMBER  FREELISTS值。
+```
+
+`DM`不支持，返回`NULL`
+
+```
+21 FREELIST_GROUPS  NUMBER  FREELISTGROUPS值。
+```
+
+`DM`不支持，返回`NULL``22 LOGGING` `VARCHAR(4)`分区表是否有额外日志记录。
+
+`DM`不支持，返回`NULL`
+
+```
+23 COMPRESSION  VARCHAR(7)  分区是否压缩
+```
+
+`24 COMPRESS_FOR` `VARCHAR(12)`分区表时哪些操作进行压缩：
+
+```
+- BASIC
+- OLTP
+- QUERY LOW
+- QUERY HIGH
+- ARCHIVE LOW
+- ARCHIVE HIGH
+- NULL
+```
+
+343附录`DM`不支持，返回`NULL``25 NUM_ROWS` `NUMBER`分区的行数。
+
+`26 BLOCKS` `NUMBER`分区用的块数。`DM`全部为`NULL`。
+
+`27 EMPTY_BLOCKS` `NUMBER`分区空块数。`DM`全部为`NULL`。
+
+`28 AVG_SPACE` `NUMBER`分区的平均空闲数。`DM`全部为`NULL`。
+
+```
+29 CHAIN_CNT  NUMBER  分区CHAINED ROWS 数。DM 全部为NULL。
+```
+
+`30 AVG_ROW_LEN` `NUMBER`行的平均数据长度。`DM`全部为`NULL`。
+
+`31 SAMPLE_SIZE` `NUMBER`分区表收集统计信息的样本数。
+
+`DM`全部为`NULL`。
+
+`32 LAST_ANALYZED` `DATE`分区最近－次统计分析的时间。`DM`全部为`NULL`。
+
+```
+33 BUFFER_POOL  VARCHAR(7)  分区的BUFFER POOL 值：
+- DEFAULT
+- KEEP
+- RECYCLE
+- NULL
+```
+
+`DM`全部为`DEFAULT`。
+
+```
+34 FLASH_CACHE  VARCHAR(7)  分区的FLASH CACHE 值
+- DEFAULT
+- KEEP
+- NONE
+```
+
+`DM`全部为`DEFAULT`。
+
+```
+35 CELL_FLASH_CACHE  VARCHAR(7)  分区的CELL FLASH CACHE 值：
+- DEFAULT
+- KEEP
+- NONE
+```
+
+`DM`全部为`DEFAULT`。
+
+`36 GLOBAL_STATS` `VARCHAR(2)`分区的统计是来源于分区表（`YES`），还是通过子分区估计所得（`NO`）。`DM`默认为`NO`。
+
+`37 USER_STATS` `VARCHAR(3)`分区的统计信息用户是否可以直接访问，`YES`是，`NO`否。`DM`全部为`YES`。
+
+`38 IS_NESTED` `VARCHAR(2)`分区表是否是嵌套表，`YES`是，`NO`否。`DM`全部为`NO`。
+
+```
+39 PARENT_TABLE_PARTITION VARCHAR(128) 父分区名
+```
+
+`40 INTERVAL` `VARCHAR(2)`分区表的区间分区`(YES)`或范围分区`(NO)``41 SEGMENT_CREATED` `VARCHAR(3)`分区的段是否创建，`YES`是，`NO`否。`DM`全部为`YES`。
+
+```
+49. DBA_SOURCE
+```
+
+数据库中所有的存储对象和源码。
+
+序号列数据类型说明
+
+```
+1  OWNER  VARCHAR(128)  对象的所有者
+2  NAME  VARCHAR(128)  对象的名称
+3  TYPE  VARCHAR(10) 对象的类型
+```
+
+4 `LINE` `NUMBER`行数，`DM`不支持，为`NULL`5 `TEXT TEXT`存储对象的源代码
+
+```
+50. ALL_SOURCE
+```
+
+当前用户可访问的存储对象和源码，结构同`DBA_SOURCE`。
+
+```
+51. USER_SOURCE
+```
+
+344附录
+
+当前用户拥有的存储对象和源码，结构同`DBA_SOURCE`，除了`OWNER`列。
+
+```
+52. DBA_TRIGGER_COLS
+```
+
+触发器中使用的列，`DM`暂不支持，查询为空集。
+
+序号列数据类型说明
+
+```
+1 TRIGGER_OWNER VARCHAR2(30) 触发器所有者
+2 TRIGGER_NAME VARCHAR2(30) 触发器名称
+```
+
+`3 TABLE_OWNER` `VARCHAR2(30)`触发器所属的表的所有者
+
+```
+4 TABLE_NAME  VARCHAR2(30) 触发器所属的表名
+```
+
+`5 COLUMN_NAME` `VARCHAR2(4000)`触发器中使用的列名`6 COLUMN_LIST` `VARCHAR2(3)`列是否定义在`UPDATE`语句中，`YES`是，`NO`否`7 COLUMN_USAGE VARCHAR2(17)`触发器中列的使用方式
+
+```
+- NEW IN
+- OLD IN
+- NEW IN OLD IN
+- NEW OUT
+- NEW IN OUT
+- NEW OUT OLD IN
+- NEW IN OUT OLD IN
+- PARENT IN
+53. ALL_TRIGGER_COLS
+```
+
+当前用户有权访问的触发器的列。结构同`DBA_TRIGGER_COLS`。
+
+```
+54. USER_TRIGGER_COLS
+```
+
+当前用户所拥有的触发器或表上所定义的触发器中使用的列，结构同
+
+```
+DBA_TRIGGER_COLS。
+55. DBA_DB_LINKS
+```
+
+数据库中所有的`DB_LINK`。
+
+序号列数据类型说明
+
+```
+1 OWNER  VARCHAR(32767) LINK 的所有者
+2 DB_LINK VARCHAR(128) LINK 名称
+3 USERNAME VARCHAR(128) LINK 登录名
+4 HOST  VARCHAR(1024) LINK 连接主库
+5 CREATED DATETIME(6)  LINK 的创建时间
+56. ALL_DB_LINKS
+```
+
+当前用户可访问的`DB_LINK`，结构同`DBA_DB_LINKS`。
+
+```
+57. USER_DB_LINKS
+```
+
+当前用户所拥有的`DBLINK`，结构同`DBA_DB_LINKS`，没有`OWNER`列。
+
+```
+58. DBA_SEQUENCES
+```
+
+数据库中所有的序列。
+
+序号列数据类型说明
+
+```
+1 SEQUENCE_OWNER VARCHAR2(128) 序列的所有者
+2 SEQUENCE_NAME VARCHAR2(128) 序列名称
+3 MIN_VALUE  BIGINT  最小值
+```
+
+345附录序号列数据类型说明
+
+```
+4 MAX_VALUE  BIGINT  最大值
+5 INCREMENT_BY BIGINT  增加步长
+6 CYCLE_FLAG  VARCHAR(1)  循环标记
+7 ORDER_FLAG  VARCHAR(1)  顺序标记
+8 CACHE_SIZE  VARCHAR(1)  缓存大小
+9 LAST_NUMBER  VARCHAR(1)  最后的序列值
+59. ALL_SEQUENCES
+```
+
+当前用户可访问的序列。结构同`DBA_SEQUENCES`
+
+```
+60. USER_SEQUENCES
+```
+
+当前用户所拥有的序列，结构同`DBA_SEQUENCES`，没有`SEQUENCE_OWNER`列。
+
+```
+61. DBA_SYNONYMS
+```
+
+数据库中所有的同义词。
+
+序号列数据类型说明
+
+```
+1  OWNER  VARCHAR(128) 所有者
+2  SYNONYM_NAME VARCHAR(128) 同义词名
+```
+
+3 `TABLE_OWNER` `VARCHAR(128)`同义词所指向的对象的所有者4 `TABLE_NAME` `VARCHAR(128)`同义词所指的对象，如表/视图、过程、同义词、序列等
+
+```
+5  DB_LINK  VARCHAR(1)  LINK 名称
+62. ALL_SYNONYMS
+```
+
+当前用户可访问的同义词，结构同`DBA_SYNONYMS`。
+
+```
+63. USER_SYNONYMS
+```
+
+当前用户所拥有的同义词，结构同`DBA_SYNONYM`，没有`OWNER`列。
+
+```
+64. DBA_TABLESPACES
+```
+
+数据库中所有的表空间。
+
+序列数据类型说明号
+
+```
+1 TABLESPACE_NAME  VARCHAR(128) 表空间名
+2 BLOCK_SIZE  BIGINT  块大小
+3 INITIAL_EXTENT  VARCHAR(1) 初始分配大小
+4 NEXT_EXTENT  VARCHAR(1) 下次分配大小
+5 MIN_EXTENTS  VARCHAR(1) 最小分配次数
+6 MAX_EXTENTS  VARCHAR(1) 最大分配次数
+7 MAX_SIZE  BIGINT  段最大大小
+```
+
+`8 PCT_INCREASE` `VARCHAR(1)`相对于上次增长百分比
+
+```
+9 MIN_EXTLEN  VARCHAR(1) 最小扩展长度
+10 STATUS  INTEGER  状态：ONLINE 或OFFLINE
+或READ ONLY
+11 CONTENTS  VARCHAR(9) 内容。PERMANENT 或TEMPORARY
+```
+
+`12 LOGGING` `VARCHAR(1)`日志属性（缺省为进行日志）`13 FORCE_LOGGING` `VARCHAR(1)`强制日志记录模式下
+
+```
+14 EXTENT_MANAGEMENT  VARCHAR(1) 扩展管理跟踪：DICTIONARY
+```
+
+346附录序列数据类型说明号
+
+```
+或LOCAL
+15 ALLOCATION_TYPE  VARCHAR(1) 扩展分配类型
+```
+
+`16 PLUGGED_IN` `VARCHAR(1)`表示表空间为追加
+
+```
+17 SEGMENT_SPACE_MANAGEMENT VARCHAR(1) 创建表空间时SEGMENT_MANAGEMENT子句指定表
+```
+
+明段的管理方式。`DM`无意义，返回`NULL``18 DEF_TAB_COMPRESSION` `VARCHAR(8)`默认表压缩是否可用。`DM`无意义，返回`NULL``19 RETENTION` `VARCHAR(1)`创建表空间时指定的`RETENTION`项。`DM`无意义，返回`NULL``20 BIGFILE` `VARCHAR(1)`创建表空间是否为`BIGFILE`表空间，`DM`无意义，返回`NULL`
+
+```
+21 PREDICATE_EVALUATION  VARCHAR(1) DM 无意义，返回NULL
+```
+
+`22 ENCRYPTED` `VARCHAR(1)`是否是加密表空间`23 COMPRESS_FOR` `VARCHAR(1)`默认为何种操作压缩，`DM`无意义，返回`NULL`
+
+```
+65. USER_TABLESPACES
+```
+
+当前用户可访问的表空间，结构同`DBA_TABLESPACES`。
+
+```
+66. DBA_COL_PRIVS
+```
+
+数据库中的所有列对象。
+
+序号列数据类型说明
+
+```
+1 GRANTEE  VARCHAR(128) 被授权者
+2 OWNER  VARCHAR(128) 所有者
+3 TABLE_NAME VARCHAR(128) 对象名
+4 COLUMN_NAME VARCHAR(128) 列名
+5 GRANTOR  VARCHAR(128) 授权者
+6 PRIVILEGE VARCHAR(32767) 权限
+7 GRANTABLE VARCHAR(3)  是否可转授
+67. ALL_COL_PRIVS
+```
+
+当前用户作为所有者、授权者或被授权者以及被授权给`PUBLIC`的所有列对象。
+
+序号列数据类型说明
+
+```
+1 GRANTOR  VARCHAR(128) 授权者
+2 GRANTEE  VARCHAR(128) 被授权者
+3 TABLE_SCHEMA VARCHAR(128) 模式名
+4 TABLE_NAME VARCHAR(128) 表名
+5 COLUMN_NAME VARCHAR(128) 列名
+6 PRIVILEGE  VARCHAR(32767) 权限
+7 GRANTABLE  VARCHAR(3)  是否可转授
+68. USER_COL_PRIVS
+```
+
+当前用户作为所有者、授权者或被授权者所有列对象，结构同`DBA_COL_PRIVS`。
+
+```
+69. DBA_IND_COLUMNS
+```
+
+系统中所有的索引列。
+
+347附录序号列数据类型说明
+
+```
+1 INDEX_OWNER  VARCHAR(128) 索引所有者
+2 INDEX_NAME  VARCHAR(128) 索引名称
+3 TABLE_OWNER  VARCHAR(128) 表的所有者
+4 TABLE_NAME  VARCHAR(128) 表名
+5 COLUMN_NAME  VARCHAR(128) 列名
+6 COLUMN_POSITION NUMBER  索引中列的位置
+7 COLUMN_LENGTH NUMBER  列的数据长度
+```
+
+`8 CHAR_LENGTH` `NUMBER`字符类型定义的最大长度`9 DESCEND` `VARCHAR2(4)`正序或逆序排序
+
+```
+70. ALL_IND_COLUMNS
+```
+
+当前用户可访问的索引列，结构同`DBA_IND_COLUMNS`。
+
+```
+71. USER_IND_COLUMNS
+```
+
+当前用户所拥有的索引列。表及索引均属于当前用户。
+
+序号列数据类型说明
+
+```
+1 INDEX_NAME  VARCHAR(128) 索引名称
+2 TABLE_NAME  VARCHAR(128) 表名
+3 COLUMN_NAME  VARCHAR(128) 列名
+4 COLUMN_POSITION DEC(10)  索引中列的位置
+5 COLUMN_LENGTH DEC(10)  列的数据长度
+```
+
+`6 CHAR_LENGTH` `DEC(10)`字符类型定义的最大长度`7 DESCEND` `VARCHAR2(4)`正序或逆序排序
+
+```
+72. SYS.SESSION_PRIVS
+```
+
+显示用户当前可访问的权限
+
+序号列数据类型说明
+
+```
+1 PRIVILEGE VARCHAR(32767) 权限名
+73. SYS.SESSION_ROLES
+```
+
+显示当前可授权给用户的角色
+
+序号列数据类型说明
+
+```
+1 ROLE VARCHAR(32767) 角色名
+74. USER_MVIEWS
+```
+
+当前用户所拥有的物化视图
+
+序列数据类型说明号
+
+```
+1 SCHID  INTEGER  模式ID
+2 MVIEW_NAME  VARCHAR(128) 物化视图名称
+```
+
+3 `QUERY` `TEXT`文本信息4 `QUERY_LEN` `INTEGER`文本信息长度，单位：字节5 `REWRITE_ENABLED` `VARCHAR(128)`是否可以被重写。Y是，N否
+
+```
+6 REFRESH_MODE  VARCHAR(128) 刷新模式：DEMAND,COMMIT
+7 REFRESH_METHOD  VARCHAR(128) 刷新方法：COMPLETE,FORCE,FAST,NEVER
+```
+
+348附录快速刷新类型：
+
+`SIMPLE`：简单；
+
+`AGGREGATE`：聚合；
+
+```
+8 MVIEW_TYPE  VARCHAR(128)
+```
+
+`JOIN`：连接；
+
+`Sub-Query`：子查询；
+
+`COMPLEX`：不可快速刷新。
+
+```
+9 LAST_REFRESH_TYPE VARCHAR(128) 最后一次刷新的类型
+```
+
+物化视图状态：
+
+`UNUSEABLE`：物化视图不可用, 即从未刷新过`FRESH`：物化视图数据是最新的；
+
+`NEEDS_COMPILE`：物化视图数据陈旧；
+
+```
+10 STALENESS  VARCHAR(128)
+```
+
+`COMPILE_ERROR`：化视图解析出错, 如基表不存在；
+
+`NEEDS_FULL_REFRESH`：物化视图数据陈旧, 需要一次全刷新；
+
+`UNDEFINED`：物化视图包含远程表状态不可知。
+
+```
+11 LAST_REFRESH_DATE DATETIME(6) 最后刷新的日期
+75. DBA_DATA_FILES
+```
+
+显示数据文件信息。
+
+序列数据类型说明号
+
+```
+1 FILE_NAME  VARCHAR(256) 数据文件名称
+```
+
+2 `FILE_ID` `INTEGER`数据文件所属文件`id`3 `TABLESPACE_NAME VARCHAR(128)`数据文件所属表空间名4 `BYTES` `BIGINT`数据文件大小，单位：字节5 `BLOCKS` `BIGINT`数据文件块大小6 `STATUS` `VARCHAR(9)`数据文件状态。`AVAILABLE`可用，`INVALID`不可用7 `RELATIVE_FNO` `INTEGER`所在表空间的数据文件个数
+
+```
+8 AUTOEXTENSIBLE VARCHAR(9)  是否可自动扩展
+```
+
+9 `MAXBYTES` `NUMBER`最大数据文件大小，单位：字节10 `MAXBLOCKS` `INTEGER`最大数据文件大小，单位：块11 `INCREMENT_BY` `INTEGER`可用于自动扩展的数据块数量12 `USER_BYTES` `BIGINT`用户数据可使用的文件大小13 `USER_BLOCKS` `BIGINT`数据可使用的块数量文件状态。`SYSOFF`、`SYSTEM`、`OFFLINE`、`ONLINE`、
+
+```
+14 ONLINE_STATUS  VARCHAR(9)
+RECOVER
+76. SYS.SYSAUTH$
+```
+
+显示所有对象被授于的权限。
+
+序号列数据类型说明
+
+```
+1 GRANTEE# INTEGER  被授权者id
+2 PRIVILEGE# VARCHAR(32767) 被授权的权限
+3 SEQUENCE# BIGINT  系统序号
+```
+
+`4 OPTION$` `INTEGER`是否可以转授
+
+```
+77. DBA_SEGMENTS
+```
+
+显示数据库中所有段的存储信息。
+
+349附录序号列数据类型说明
+
+```
+1  OWNER  VARCHAR2(128) 段的拥有者
+2  SEGMENT_NAME  VARCHAR2(128) 段名
+3  PARTITION_NAME  VARCHAR2(128) 分区名
+```
+
+段分三种类型： `"INDEX","TABLE`
+
+```
+4  SEGMENT_TYPE  VARCHAR2(15)
+PARTION","TABLE"
+5  SEGMENT_SUBTYPE  VARCHAR(1)  暂时为NULL
+6  TABLESPACE_NAME  VARCHAR(128)  表空间名
+7  HEADER_FILE  SMALLINT  段头所在文件ID
+8  HEADER_BLOCK  INTEGER  段头所在块ID
+```
+
+9 `BYTES` `BIGINT`段的大小，单位为字节10 `BLOCKS` `INTEGER`段的大小，单位为块
+
+```
+11  EXTENTS  INTEGER  段的簇数
+12  INITIAL_EXTENT  BIGINT  段的初始簇大小
+```
+
+13 `NEXT_EXTENT` `BIGINT`段的下一个簇的大小
+
+```
+14  MIN_EXTENTS  SMALLINT  簇的最小值
+15  MAX_EXTENTS  BIGINT  簇的最大值
+16  MAX_SIZE  BIGINT  同MAX_EXTENTS
+17  RETENTION  VARCHAR(1)  暂时为NULL
+18  MINRETENTION  VARCHAR(1)  暂时为NULL
+19  PCT_INCREASE  VARCHAR(1)  暂时为NULL
+20  FREELISTS  VARCHAR(1)  暂时为NULL
+21  FREELIST_GROUPS  VARCHAR(1)  暂时为NULL
+```
+
+22 `RELATIVE_FNO` `SMALLINT`与段相关的文件个数段中块使用缓冲池的方式，有如下几种方式：`"KEEP"`，
+
+```
+23  BUFFER_POOL  VARCHAR(7)
+"RECYCLE"，"FAST"，"DEFAULT"
+24  FLASH_CACHE  VARCHAR(1)  暂时为NULL
+25  CELL_FLASH_CACHE VARCHAR(1)  暂时为NULL
+78. USER_SEGMENTS
+```
+
+显示数据库中当前用户的段的存储信息。结构与`DBA_SEGMENTS`相同。
+
+```
+79. DBA_DEPENDENCIES
+```
+
+只有具备`DBA`角色的用户才可以查询的对象的依赖关系。
+
+序列数据类型说明号
+
+```
+1 OWNER  VARCHAR(128) 对象的模式名
+2 NAME  VARCHAR(128) 对象名
+```
+
+`3 TYPE` `VARCHAR(17)`对象类型（被引用对象类型）：
+
+```
+TABLE（CLASS,TYPE,DOMAIN,SEQUENCE）
+VIEW（TABLE,VIEW,PACKAGE,PROCEDURE,SEQUENCE）
+PROCEDURE
+（TABLE,VIEW,PROCEDURE,PACKAGE,CLASS,TYPE
+```
+
+）
+
+```
+PACKAGE
+（TABLE,VIEW,PROCEDURE,PACKAGE,CLASS,TYPE
+```
+
+）
+
+```
+TRIGGER
+（TABLE,VIEW,PROCEDURE,PACKAGE,CLASS,TYPE
+```
+
+）
+
+```
+SYNONYM（TABLE,VIEW,PROCEDURE
+PACKAGE,CLASS,TYPE,SEQUENCE）
+CLASS（CLASS,TYPE）
+TYPE（CLASS,TYPE）
+```
+
+`INDEX`（`FUNCTION(`确定性函数)）350附录
+
+```
+FUNCTION（FUNCTION,TABLE,VIEW,PROCEDURE,
+PACKAGE,CLASS,TYPE）
+4 REFERENCED_OWNER VARCHAR(128) 被引用对象的模式名
+5 REFERENCED_NAME VARCHAR(32767) 被引用对象名
+6 REFERENCED_TYPE VARCHAR(17)  被引用对象类型
+TABLE
+VIEW
+PROCEDURE
+SYNONYM
+CLASS
+PACKAGE
+TYPE
+DOMAIN
+SEQUENCE
+FUNCTION
+7 REFERENCED_LINK VARCHAR(1)  默认为NULL
+_NAME
+8 DEPENDENCY_TYPE VARCHAR(4)  默认为HARD
+80. ALL_DEPENDENCIES
+```
+
+当前用户有权限访问的所有对象的依赖关系。
+
+序列数据类型说明号1 `OWNER` `VARCHAR(128)`对象的模式名
+
+```
+2 NAME  VARCHAR(128) 对象名
+```
+
+3 `TYPE` `VARCHAR(17)`对象类型（被引用对象类型）：
+
+```
+TABLE（CLASS,TYPE,DOMAIN,SEQUENCE）
+VIEW
+（TABLE,VIEW,PACKAGE,PROCEDURE,SEQUENCE
+```
+
+）
+
+```
+PROCEDURE
+（TABLE,VIEW,PROCEDURE,PACKAGE,CLAS
+S,TYPE）
+PACKAGE
+（TABLE,VIEW,PROCEDURE,PACKAGE,CLAS
+S,TYPE）
+TRIGGER
+（TABLE,VIEW,PROCEDURE,PACKAGE,CLAS
+S,TYPE）
+SYNONYM（TABLE,VIEW,PROCEDURE
+PACKAGE,CLASS,TYPE,SEQUENCE）
+CLASS（CLASS,TYPE）
+TYPE（CLASS,TYPE）
+```
+
+`INDEX`（`FUNCTION (`确定性函数)）
+
+```
+FUNCTIO（FUNCTION,TABLE,VIEW,PROCEDURE,
+PACKAGE,CLASS,TYPE）
+4 REFERENCED_OWNER  VARCHAR(128) 被引用对象的模式名
+5 REFERENCED_NAME  VARCHAR(128) 被引用对象名
+6 REFERENCED_TYPE  VARCHAR(17) 被引用对象类型
+TABLE
+VIEW
+PROCEDURE
+SYNONYM
+CLASS
+PACKAGE
+```
+
+351附录
+
+```
+TYPE
+DOMAIN
+SEQUENCE
+FUNCTION
+7 REFERENCED_LINK_NAM VARCHAR(1)  默认为NULL
+E
+8 DEPENDENCY_TYPE  VARCHAR(4)  默认为HARD
+81. USER_DEPENDENCIES
+```
+
+查看当前用户所属模式下的对象依赖关系。
+
+序列数据类型说明号1 `OWNER` `VARHCAR(128)`对象的模式名
+
+```
+1 NAME  VARCHAR(128) 对象名
+```
+
+2 `TYPE` `VARCHAR(17)`对象类型（被引用对象类型）：
+
+```
+TABLE（CLASS,TYPE,DOMAIN,SEQUENCE）
+VIEW
+（TABLE,VIEW,PACKAGE,PROCEDURE,SEQUENCE
+```
+
+）
+
+```
+PROCEDURE
+（TABLE,VIEW,PROCEDURE,PACKAGE,CLAS
+S,TYPE）
+PACKAGE
+（TABLE,VIEW,PROCEDURE,PACKAGE,CLAS
+S,TYPE）
+TRIGGER
+（TABLE,VIEW,PROCEDURE,PACKAGE,CLAS
+S,TYPE）
+SYNONYM（TABLE,VIEW,PROCEDURE
+PACKAGE,CLASS,TYPE,SEQUENCE）
+CLASS（CLASS,TYPE）
+TYPE（CLASS,TYPE）
+```
+
+`INDEX`（`FUNCTION (`确定性函数)）
+
+```
+FUNCTION（FUNCTION,TABLE,VIEW,PROCEDURE,
+PACKAGE,CLASS,TYPE）
+3 REFERENCED_OWNER  VARCHAR(128) 被引用对象的模式名
+4 REFERENCED_NAME  VARCHAR(32767 被引用对象名
+)
+```
+
+5 `REFERENCED_TYPE` `VARCHAR`（17） 被引用对象类型
+
+```
+TABLE
+VIEW
+PROCEDURE
+SYNONYM
+CLASS
+PACKAGE
+TYPE
+DOMAIN
+SEQUENCE
+FUNCTION
+6 REFERENCED_LINK_NAM VARCHAR（1）默认为NULL
+E
+```
+
+7 `SCHEMAID` `INTEGER`当前模式的`ID`号
+
+```
+8 DEPENDENCY_TYPE  VARCHAR(4)  默认为HARD
+82. USER_IND_PARTITIONS
+```
+
+352附录
+
+查看当前用户所属模式的一级分区表索引信息。
+
+序列数据类型说明号
+
+```
+1 INDEX_NAME  VARCHAR(128) 索引名
+2 SCH_NAME  VARCHAR(128) 模式名
+3 STATUS  VARCHAR(8)  索引状态(USABLE:可用;  UNUSABLE:不可用)
+4 PARTITION_NAME  VARCHAR(128) 分区名
+5 SUBPARTITION_COUNT INTEGER  二级分区个数
+6 HIGH_VALUE  VARBINARY  分区信息
+```
+
+（8188）7 `INITIAL_EXTENT` `INTEGER`创建索引初始簇数目8 `MIN_EXTENT` `INTEGER`索引最小蔟数目9 `LOGGING` `VARCHAR(3)`索引变化是否需要记录日志`(YES`是，`NO`否)
+
+```
+83. USER_IND_SUBPARTITIONS
+```
+
+查看当前用户所属模式的多级分区表索引信息。
+
+序列数据类型说明号
+
+```
+1 INDEX_NAME  VARCHAR(128) 索引名
+2 SCH_NAME  VARCHAR(128) 模式名
+3 STATUS  VARCHAR(8)  索引状态(USABLE:可用;  UNUSABLE:不可用)
+4 PARTITION_NAME  VARCHAR(128) 分区名
+5 SUBPARTITION_NAME  VARCHAR(128) 多级分区名称
+6 SUBPARTITION_POSITI INTEGER  多级分区序号
+ON
+6 HIGH_VALUE  VARBINARY  分区信息
+```
+
+（8188）7 `INITIAL_EXTENT` `INTEGER`创建索引初始簇数目8 `MIN_EXTENT` `INTEGER`索引最小蔟数目9 `LOGGING` `VARCHAR(3)`索引变化是否需要记录日志`(YES`是，`NO`否)
+
+```
+84. ALL_PART_KEY_COLUMNS
+```
+
+查看数据库中一级水平分区表的分区列信息。
+
+序列数据类型说明号
+
+```
+1 OWNER  VARCHAR(128) 所属模式名
+```
+
+2 `NAME` `VARCHAR(128)`所属分区表名3 `OBJECT_TYPE` `VARCHAR(5)`对象类型，`DM`只支持`TABLE`（表）类型
+
+```
+4 COLUMN_NAME  VARCHAR(128) 分区列名
+5 COLUMN_POSITION  INTEGER  分区列序号
+85. USER_PART_KEY_COLUMNS
+```
+
+查看当前用户所属模式的一级水平分区表的分区列信息。
+
+序列数据类型说明号353附录1 `NAME` `VARCHAR(128)`所属分区表名2 `OBJECT_TYPE` `VARCHAR(5)`对象类型，`DM`只支持`TABLE`（表）类型
+
+```
+3 COLUMN_NAME  VARCHAR(128) 分区列名
+4 COLUMN_POSITION  INTEGER  分区列序号
+86. ALL_SUBPART_KEY_COLUMNS
+```
+
+查看数据库中多级分区表的分区列信息。
+
+序号列数据类型说明
+
+```
+1  OWNER  VARCHAR(128) 所属模式名
+```
+
+2 `NAME` `VARCHAR(128)`所属分区表名3 `OBJECT_TYPE` `VARCHAR(5)`对象类型，`DM`只支持`TABLE`（表）类型
+
+```
+4  COLUMN_NAME  VARCHAR(128) 分区列名
+5  COLUMN_POSITION  INTEGER  分区列序号
+87. USER_SUBPART_KEY_COLUMNS
+```
+
+查看当前用户所属模式的多级水平分区表的分区列信息。
+
+序列数据类型说明号1 `NAME` `VARCHAR(128)`所属分区表名2 `OBJECT_TYPE` `VARCHAR(5)`对象类型，`DM`只支持`TABLE`（表）类型
+
+```
+3 COLUMN_NAME  VARCHAR(128) 分区列名
+4 COLUMN_POSITION  INTEGER  分区列序号
+88. ALL_TAB_COLS
+```
+
+查看当前用户可见的表、视图的列信息。
+
+序号列数据类型说明
+
+```
+1 OWNER  VARCHAR(128)  用户名
+```
+
+2 `TABLE_NAME` `VARCHAR(128)`表、视图或聚簇的名字
+
+```
+3 COLUMN_NAME  VARCHAR(128)  列名
+4 DATA_TYPE  VARCHAR(128)  列类型名
+```
+
+5 `DATA_TYPE_MOD` `VARCHAR(3)` `DM`不支持的属性，取值为`NULL`
+
+```
+6 DATA_TYPE_OWNER  VARCHAR(128)  列数据类型的所有者
+```
+
+7 `DATA_LENGTH` `NUMBER`列长度。单位：字节
+
+```
+8 DATA_PRECISION  NUMBER  精度
+9 DATA_SCALE  NUMBER  刻度
+```
+
+`10 NULLABLE` `VARCHAR(1)`是否允许为`NULL`，Y是，N否`11 COLUMN_ID` `NUMBER`列序号（1 开始）
+
+```
+12 DEFAULT_LENGTH  NUMBER  默认值长度
+13 DATA_DEFAULT  TEXT  默认值
+14 NUM_DISTINCT  NUMBER  不同值的个数
+15 LOW_VALUE  VARBINARY(32)  列最小值
+16 HIGH_VALUE  VARBINARY(32)  列最大值
+17 DENSITY  NUMBER  列的密度
+18 NUM_NULLS  NUMBER  NULL 值的个数
+```
+
+354附录
+
+```
+19 NUM_BUCKETS  NUMBER  直方图槽数
+20 LAST_ANALYZED  DATETIME(6)  最后一次分析的时间
+21 SAMPLE_SIZE  NUMBER  取样大小
+22 CHARACTER_SET_NAME VARCHAR(44)  字符集名字：CHAR_CS、NCHAR_CS
+23 CHAR_COL_DECL_LENGTH NUMBER  列数据字符类型长度
+24 GLOBAL_STATS  VARCHAR(3)
+```
+
+对于分区表，统计信息是作为一个整体搜集`(YES)`，还是通过分区和子分区来估算`(NO)``25 USER_STATS` `VARCHAR(3)`统计信息生成是否通过手动，`YES`是，`NO`否`26 AVG_COL_LEN` `NUMBER`列数据的平均长度，单位：字节`27 CHAR_LENGTH` `NUMBER`显示时的字符长度，对下述类型有效：`CHAR`、
+
+```
+VARCHAR、NCHAR、NVARCHAR
+```
+
+`28 CHAR_USED` `VARCHAR(1)`列是字节长度还是字符长度`(B) OR (C)`，`OR`
+
+```
+(NULL)：
+- CHAR
+- VARCHAR
+- NCHAR
+- NVARCHAR
+```
+
+`29 V80_FMT_IMAGE` `VARCHAR(3)`列数据是否为`8.0`版本的`IMAGE`格式，`YES`是，`NO`否
+
+```
+30 DATA_UPGRADED  VARCHAR(3)
+```
+
+列数据是否已经更新为最新的类型版本格式，`YES`是，`NO`否`31 HIDDEN_COLUMN` `VARCHAR(3)`是否是一个隐藏列，`YES`是，`NO`否`32 VIRTUAL_COLUMN` `VARCHAR(3)`是否是一个伪列，`YES`是，`NO`否
+
+```
+33 SEGMENT_COLUMN_ID  NUMBER  列在段中的序号
+34 INTERNAL_COLUMN_ID NUMBER  列的内部序号
+```
+
+`35 HISTOGRAM` `VARCHAR(15)`直方图类型，`DM`不支持，返回`NULL`
+
+```
+36 QUALIFIED_COL_NAME VARCHAR(4000)  合格的列名
+89. DBA_TAB_COLS
+```
+
+查看数据库中所有表、视图的列信息。与`ALL_TAB_COLS`的列相同
+
+```
+90. DBA_PART_KEY_COLUMNS
+```
+
+查看数据库中所有一级水平分区表的分区列信息。
+
+序列数据类型说明号
+
+```
+1 OWNER  VARCHAR(128) 所属模式名
+```
+
+2 `NAME` `VARCHAR(128)`所属分区表名3 `OBJECT_TYPE` `VARCHAR(5)`对象类型，`DM`只支持`TABLE`（表）类型
+
+```
+4 COLUMN_NAME  VARCHAR(128) 分区列名
+5 COLUMN_POSITION  INTEGER  分区列序号
+91. ALL_SOURCE_AE
+```
+
+当前用户可见的存储对象的定义信息
+
+序号列数据类型说明
+
+```
+1  OWNER  VARCHAR(128) 所属模式名
+```
+
+355附录2 `NAME` `VARCHAR(128)`所属分区表名
+
+```
+3  TYPE  VARCHAR(12) 对象类型
+```
+
+4 `LINE` `INTEGER`保留字段，置0
+
+```
+5  TEXT  VARCHAR(128) 对象定义
+6  EDITION_NAME  VARCHAR(12) 保留字段，置空
+92. DBA_SOURCE_AE
+```
+
+数据库中所有存储对象的定义信息
+
+序号列数据类型说明
+
+```
+1  OWNER  VARCHAR(128) 所属模式名
+```
+
+2 `NAME` `VARCHAR(128)`所属分区表名
+
+```
+3  TYPE  VARCHAR(12) 对象类型
+```
+
+4 `LINE` `INTEGER`保留字段，置0
+
+```
+5  TEXT  VARCHAR(128) 对象定义
+6  EDITION_NAME  VARCHAR(12) 保留字段，置空
+93. USER_SOURCE_AE
+```
+
+当前用户下的存储对象的定义信息
+
+序号列数据类型说明1 `NAME` `VARCHAR(128)`所属分区表名
+
+```
+2  TYPE  VARCHAR(12) 对象类型
+```
+
+3 `LINE` `INTEGER`保留字段，置0
+
+```
+4  TEXT  VARCHAR(128) 对象定义
+5  EDITION_NAME  VARCHAR(12) 保留字段，置空
+94. ALL_DIRECTORIES
+```
+
+当前用户可以访问的所有目录信息
+
+序号列数据类型说明
+
+```
+1  OWNER  VARCHAR(128) 目录所有者
+2  DIRECTORY_NAME  VARCHAR(128 目录名
+3  DIRECTORY_PATH  VARCHAR(512) 目录路径
+95. DBA_DIRECTORIES
+```
+
+当前系统中所有目录的信息，只有拥有`DBA`权限的用户可以查看，结构同
+
+```
+ALL_DIRECTORIES。
+96. USER_TYPES
+```
+
+当前用户下的类类型与自定义类型信息。
+
+序号列数据类型说明
+
+```
+1  TYPE_NAME  VARCHAR(128) 类型名
+2  TYPE_OID  INTEGER  类型ID
+3  TYPECODE  VARCHAR(10) 类型标识
+```
+
+4 `ATTRIBUTES` `VARCHAR(1)`类型的属性个数，目前都为0 5 `METHODS` `VARCHAR(1)`类型的方法个数，目前都为0
+
+```
+6  PREDEFINED  VARCHAR(2)  类是否是PREDEFINED，目前都为NO
+```
+
+7 `INCOMPLETE` `VARCHAR(2)`类是否有编译警告，目前都为`NO`356附录
+
+```
+8  FINAL  VARCHAR(3)  类是否为FINAL
+9  INSTANTIABLE  VARCHAR(3)  类是否为INSTANTIABLE
+```
+
+10 `SUPERTYPE_OWNER` `VARCHAR(128)`父类的模式名，目前都为`NULL`
+
+```
+11  SUPERTYPE_NAME  VARCHAR(128) 父类名，目前都为NULL
+```
+
+12 `LOCAL_ATTRIBUTES` `VARCHAR(1)`子类本地变量，目前都为`NULL`13 `LOCAL_METHODS` `VARCHAR(1)`子类本地方法，目前都为`NULL`
+
+```
+14  TYPEID  INTEGER  类ID
+```
+
+357附录
