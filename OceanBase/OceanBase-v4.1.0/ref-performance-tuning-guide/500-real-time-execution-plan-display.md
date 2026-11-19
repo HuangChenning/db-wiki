@@ -1,0 +1,291 @@
+---
+title: "实时执行计划展示"
+book: "性能调优"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700653.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 实时执行计划展示
+
+实时执行计划展示可以展示 SQL 的物理执行计划。
+
+使用 `EXPLAIN` 命令可以展示出当前优化器所生成的执行计划，但由于统计信息变化、用户 Session 变量设置变化等，会造成该 SQL 在计划缓存中实际对应的计划可能与 `EXPLAIN` 的结果并不相同。为了确定该 SQL 在系统中实际使用的执行计划，需要进一步分析计划缓存中的物理执行计划。
+
+## 查询物理执行计划
+
+OceanBase 数据库每个服务器的计划缓存都是独立的。用户可以直接访问 `V$OB_PLAN_CACHE_PLAN_STAT` 视图查询本服务器上的计划缓存并提供 `tenant_id` 和需要查询的 SQL 字符串（可以使用模糊匹配），查询该条 SQL 在计划缓存中对应的 `plan_id`，并进一步展示该 SQL 在计划缓存中的物理执行计划。
+
+`V$OB_PLAN_CACHE_PLAN_EXPLAIN` 视图的查询定义如下：
+
+```sql
+VIEW_DEFINITION='SELECT * FROM oceanbase.V$OB_PLAN_CACHE_PLAN_EXPLAIN WHERE TENANT_ID = tenant_id() AND PLAN_ID = plan_id()'
+```
+
+本文通过具体示例展示如何使用 `V$OB_PLAN_CACHE_PLAN_EXPLAIN` 视图查询物理执行计划。
+
+1. 查询 `V$OB_PLAN_CACHE_PLAN_STAT` 视图获取 SQL 在计划缓存中的 `plan_id`。
+
+   ```shell
+   obclient> SELECT * FROM oceanbase.V$OB_PLAN_CACHE_PLAN_STAT WHERE tenant_id= 1001 AND STATEMENT LIKE 'INSERT INTO T1 VALUES%'\G
+   ***************************1. row ***************************
+               TENANT_ID: 1001
+                  SVR_IP: xxx.xxx.xxx.xxx
+                SVR_PORT: 2882
+                 PLAN_ID: 9228
+                  SQL_ID: 5AB7C2585394BAD0EE04A39099728804
+                    TYPE: 1
+       IS_BIND_SENSITIVE: 0
+           IS_BIND_AWARE: 0
+                   DB_ID: 201001
+               STATEMENT: insert into t1 values(?)
+               QUERY_SQL: insert into t1 values(1)
+          SPECIAL_PARAMS:
+             PARAM_INFOS: {0,0,0,0,5}
+                SYS_VARS: 45,45,12582912,2,4,1,0,0,3,1,0,1,10485760,1,0,BINARY,BINARY,AL32UTF8,AL16UTF16,BYTE,FALSE,1,100,64,200,0,13,NULL,1,1,1,1,1,0,0,0,1000,BLOOM_FILTER, RANGE,IN
+                 CONFIGS: 3,1,1,0,1,1,1,0,30,17180000256,
+               PLAN_HASH: 3290318591324336132
+         FIRST_LOAD_TIME: 2023-07-04 16:36:51.558406
+          SCHEMA_VERSION: 1688459804400976
+        LAST_ACTIVE_TIME: 2023-07-04 16:36:51.562434
+            AVG_EXE_USEC: 179697
+        SLOWEST_EXE_TIME: 2023-07-04 16:36:51.562434
+        SLOWEST_EXE_USEC: 179697
+              SLOW_COUNT: 0
+               HIT_COUNT: 0
+               PLAN_SIZE: 102616
+              EXECUTIONS: 1
+              DISK_READS: 9
+           DIRECT_WRITES: 0
+             BUFFER_GETS: 9
+   APPLICATION_WAIT_TIME: 0
+   CONCURRENCY_WAIT_TIME: 0
+       USER_IO_WAIT_TIME: 0
+          ROWS_PROCESSED: 1
+            ELAPSED_TIME: 179697
+                CPU_TIME: 177641
+            LARGE_QUERYS: 0
+    DELAYED_LARGE_QUERYS: 0
+       DELAYED_PX_QUERYS: 0
+         OUTLINE_VERSION: 0
+              OUTLINE_ID: -1
+            OUTLINE_DATA: /*+BEGIN_OUTLINE_DATA USE_DISTRIBUTED_DML(@"INS$1") OPTIMIZER_FEATURES_ENABLE('4.0.0.0') END_OUTLINE_DATA*/
+            ACS_SEL_INFO:
+              TABLE_SCAN: 0
+               EVOLUTION: 0
+          EVO_EXECUTIONS: 0
+            EVO_CPU_TIME: 0
+           TIMEOUT_COUNT: 0
+              PS_STMT_ID: -1
+                  SESSID: 0
+             TEMP_TABLES:
+              IS_USE_JIT: 0
+             OBJECT_TYPE: SQL_PLAN
+              HINTS_INFO:
+        HINTS_ALL_WORKED: 1
+            PL_SCHEMA_ID: 0
+   IS_BATCHED_MULTI_STMT: 0
+               RULE_NAME:
+   1 row in set
+   ```
+
+2. 获得 `plan_id` 后，用户可以使用 `tenant_id` 和 `plan_id` 访问 `V$OB_PLAN_CACHE_PLAN_EXPLAIN` 视图查询执行计划相关信息。
+
+   <main id="notice" type='notice'>
+     <h4>注意</h4>
+     <p>这里展示的计划为物理执行计划，在算子命名上会与 <code>EXPLAIN</code> 所展示的逻辑执行计划有所不同。</p>
+   </main>
+
+    ```shell
+    obclient> SELECT * FROM oceanbase.V$OB_PLAN_CACHE_PLAN_EXPLAIN WHERE tenant_id = 1001 AND plan_id = 9228;                        
+   +-----------+----------------+----------+---------+------------+--------------+------------------+------+------+------+----------+
+   | TENANT_ID | SVR_IP         | SVR_PORT | PLAN_ID | PLAN_DEPTH | PLAN_LINE_ID | OPERATOR         | NAME | ROWS | COST | PROPERTY |
+   +-----------+----------------+----------+---------+------------+--------------+------------------+------+------+------+----------+
+   |      1001 | xxx.xxx.xxx.xxx|     2882 |    9228 |          0 |            0 | PHY_INSERT       | NULL |    1 |   12 | NULL     |
+   |      1001 | xxx.xxx.xxx.xxx|     2882 |    9228 |          1 |            1 |  PHY_EXPR_VALUES | NULL |    1 |    0 | NULL     |
+   +-----------+----------------+----------+---------+------------+--------------+------------------+------+------+------+----------+
+   2 rows in set
+   ```
+
+## 实时 SQL Plan Monitor
+
+OceanBase 数据库 V4.0 版本开始支持实时 SQL Plan Monitor 功能，即用户可以通过查询 `GV$SQL_PLAN_MONITOR` 租户级视图获取执行计划相关信息，包括逻辑执行计划、物理执行计划、算子吐行数、算子开始和结束时间点以及各个执行线程执行算子的执行状态等。
+
+`GV$SQL_PLAN_MONITORSQL_PLAN_MONITOR` 视图的 `OTHERSTAT_?_ID` 和 `OTHERSTAT_?_VALUE` 字段用于记录算子特有的性能数据，目前一共有 10 个。每个字段实际记录数据的名字，通过一个 ID 表示，ID 对应的具体含义，则需要通过 `V$SQL_MONITOR_STATNAME` 视图查询。
+
+```sql
+obclient> DESC V$SQL_MONITOR_STATNAME;
++-------------+--------------+------+-----+---------+-------+
+| Field       | Type         | Null | Key | Default | Extra |
++-------------+--------------+------+-----+---------+-------+
+| CON_ID      | null         | NO   |     |         |       |
+| ID          | bigint(20)   | NO   |     | NULL    |       |
+| GROUP_ID    | bigint(20)   | NO   |     | NULL    |       |
+| NAME        | varchar(40)  | NO   |     | NULL    |       |
+| DESCRIPTION | varchar(200) | NO   |     | NULL    |       |
+| TYPE        | bigint(20)   | NO   |     | NULL    |       |
+| FLAGS       | bigint(1)    | NO   |     |         |       |
++-------------+--------------+------+-----+---------+-------+
+7 rows in set 
+```
+
+本文通过具体示例展示如何使用 `GV$SQL_PLAN_MONITOR` 和 `V$SQL_MONITOR_STATNAME` 视图查询执行计划信息。
+
+1. 查询 `GV$OB_SQL_AUDIT` 视图获取 `trace_id`。
+
+   ```shell
+   obclient> SELECT trace_id FROM oceanbase.GV$OB_SQL_AUDIT WHERE query_sql like '%TPCH_%' ORDER BY REQUEST_TIME DESC LIMIT 1;
+    +-----------------------------------+
+    | trace_id                          |
+    +-----------------------------------+
+    | Y4C360A65A34F-0005A9BD39CF5C74    |
+    +-----------------------------------+
+    1 row in set 
+   ```
+
+2. 查询 `GV$SQL_PLAN_MONITOR` 视图获取执行计划概要或者详情。
+ 
+   ```shell
+   obclient> SELECT
+        PROCESS_NAME,
+        PLAN_LINE_ID,
+        PLAN_OPERATION,
+        COUNT(*) PARALLEL,
+        AVG(LAST_REFRESH_TIME - FIRST_REFRESH_TIME) AVG_REFRESH_TIME,
+        MAX(LAST_REFRESH_TIME - FIRST_REFRESH_TIME) MAX_REFRESH_TIME,
+        MIN(LAST_REFRESH_TIME - FIRST_REFRESH_TIME) MIN_REFRESH_TIME,
+        AVG(LAST_CHANGE_TIME - FIRST_CHANGE_TIME) AVG_CHANGE_TIME,
+        MAX(LAST_CHANGE_TIME - FIRST_CHANGE_TIME) MAX_CHANGE_TIME,
+        MIN(LAST_CHANGE_TIME - FIRST_CHANGE_TIME) MIN_CHANGE_TIME,
+        SUM(OUTPUT_ROWS) TOTAL_OUTPUT_ROWS,
+        SUM(STARTS) TOTAL_RESCAN_TIMES
+      FROM
+        oceanbase.GV$SQL_PLAN_MONITOR
+      WHERE
+        trace_id = 'Y4C360A65A34F-0005A9BD39CF5C74'
+      GROUP BY
+        PLAN_LINE_ID
+      ORDER BY
+        PLAN_LINE_ID ASC;
+   +--------------+--------------+------------------------+----------+------------------+------------------+------------------+-----------------+-----------------+-----------------+-------------------+--------------------+
+   | PROCESS_NAME | PLAN_LINE_ID | PLAN_OPERATION         | PARALLEL | AVG_REFRESH_TIME | MAX_REFRESH_TIME | MIN_REFRESH_TIME | AVG_CHANGE_TIME | MAX_CHANGE_TIME | MIN_CHANGE_TIME | TOTAL_OUTPUT_ROWS | TOTAL_RESCAN_TIMES |
+   +--------------+--------------+------------------------+----------+------------------+------------------+------------------+-----------------+-----------------+-----------------+-------------------+--------------------+
+   |        16755 |            0 | PHY_PX_FIFO_COORD      |        1 |     0.0137190000 |         0.013719 |         0.013719 |    0.0063460000 |        0.006346 |        0.006346 |               300 |                  0 |
+   |        16883 |            1 | PHY_PX_REDUCE_TRANSMIT |        3 |     0.0031260000 |         0.005230 |         0.001036 |    0.0010606667 |        0.003182 |        0.000000 |               300 |                  0 |
+   |        16883 |            2 | PHY_HASH_JOIN          |        3 |     0.0031260000 |         0.005230 |         0.001036 |    0.0010606667 |        0.003182 |        0.000000 |               300 |                  0 |
+   |        16883 |            3 | PHY_PX_FIFO_RECEIVE    |        3 |     0.0031260000 |         0.005230 |         0.001036 |    0.0000000000 |        0.000000 |        0.000000 |                75 |                  0 |
+   |        16889 |            4 | PHY_PX_DIST_TRANSMIT   |        3 |     0.0024853333 |         0.003176 |         0.002140 |    0.0003526667 |        0.001058 |        0.000000 |                25 |                  0 |
+   |        16889 |            5 | PHY_GRANULE_ITERATOR   |        3 |     0.0024853333 |         0.003176 |         0.002140 |    0.0003526667 |        0.001058 |        0.000000 |                25 |                  0 |
+   |        16889 |            6 | PHY_TABLE_SCAN         |        3 |     0.0024853333 |         0.003176 |         0.002140 |    0.0003526667 |        0.001058 |        0.000000 |                25 |                  1 |
+   |        16883 |            7 | PHY_GRANULE_ITERATOR   |        3 |     0.0031260000 |         0.005230 |         0.001036 |    0.0013980000 |        0.004194 |        0.000000 |                300 |                  0 |
+   |        16883 |            8 | PHY_TABLE_SCAN         |        3 |     0.0031260000 |         0.005230 |         0.001036 |    0.0013980000 |        0.004194 |        0.000000 |               300 |                  1 |
+   +--------------+--------------+------------------------+----------+------------------+------------------+------------------+-----------------+-----------------+-----------------+-------------------+--------------------+
+   9 rows in set 
+   ``` 
+
+   通过 `GV$SQL_PLAN_MONITOR` 视图也可以查询执行计划详情。
+
+   ```shell
+   obclient> SELECT
+        SVR_IP,
+        SVR_PORT,
+        PROCESS_NAME,
+        PLAN_LINE_ID,
+        PLAN_OPERATION,
+        FIRST_REFRESH_TIME,
+        LAST_REFRESH_TIME,
+        LAST_REFRESH_TIME - FIRST_REFRESH_TIME REFRESH_TIME,
+        FIRST_CHANGE_TIME,
+        LAST_CHANGE_TIME,
+        LAST_CHANGE_TIME - FIRST_CHANGE_TIME CHANGE_TIME,
+        OUTPUT_ROWS,
+        STARTS RESCAN_TIMES
+      FROM
+        oceanbase.GV$SQL_PLAN_MONITOR
+      WHERE
+        trace_id = 'Y4C360A65A34F-0005A9BD39CF5C74'
+      ORDER BY
+        PLAN_LINE_ID ASC, PROCESS_NAME ASC, FIRST_REFRESH_TIME ASC;
+   +---------------+----------+--------------+--------------+------------------------+----------------------------+----------------------------+--------------+----------------------------+----------------------------+-------------+-------------+--------------+
+   | SVR_IP        | SVR_PORT | PROCESS_NAME | PLAN_LINE_ID | PLAN_OPERATION         | FIRST_REFRESH_TIME         | LAST_REFRESH_TIME          | REFRESH_TIME | FIRST_CHANGE_TIME          | LAST_CHANGE_TIME           | CHANGE_TIME | OUTPUT_ROWS | RESCAN_TIMES |
+   +---------------+----------+--------------+--------------+------------------------+----------------------------+----------------------------+--------------+----------------------------+----------------------------+-------------+-------------+--------------+
+   | 10.10.1.1 |    19510 |        16755 |            0 | PHY_PX_FIFO_COORD      | 2020-07-06 11:18:34.207460 | 2020-07-06 11:18:34.221179 |     0.013719 | 2020-07-06 11:18:34.214833 | 2020-07-06 11:18:34.221179 |    0.006346 |         300 |            0 |
+   | 10.10.1.2 |    19510 |        16882 |            1 | PHY_PX_REDUCE_TRANSMIT | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.216951 |     0.005230 | 2020-07-06 11:18:34.213769 | 2020-07-06 11:18:34.216951 |    0.003182 |         300 |            0 |
+   | 10.10.1.3 |    19510 |        16883 |            1 | PHY_PX_REDUCE_TRANSMIT | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.212757 |     0.001036 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.4 |    19510 |        16891 |            1 | PHY_PX_REDUCE_TRANSMIT | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.214833 |     0.003112 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.5 |    19510 |        16882 |            2 | PHY_HASH_JOIN          | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.216951 |     0.005230 | 2020-07-06 11:18:34.213769 | 2020-07-06 11:18:34.216951 |    0.003182 |         300 |            0 |
+   | 10.10.1.6 |    19510 |        16883 |            2 | PHY_HASH_JOIN          | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.212757 |     0.001036 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.7 |    19510 |        16891 |            2 | PHY_HASH_JOIN          | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.214833 |     0.003112 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.8 |    19510 |        16882 |            3 | PHY_PX_FIFO_RECEIVE    | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.216951 |     0.005230 | 2020-07-06 11:18:34.212757 | 2020-07-06 11:18:34.212757 |    0.000000 |          25 |            0 |
+   | 10.10.1.9 |    19510 |        16883 |            3 | PHY_PX_FIFO_RECEIVE    | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.212757 |     0.001036 | 2020-07-06 11:18:34.212757 | 2020-07-06 11:18:34.212757 |    0.000000 |          25 |            0 |
+   | 10.10.1.10 |    19510 |        16891 |            3 | PHY_PX_FIFO_RECEIVE    | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.214833 |     0.003112 | 2020-07-06 11:18:34.213769 | 2020-07-06 11:18:34.213769 |    0.000000 |          25 |            0 |
+   | 10.10.1.11 |    19510 |        16888 |            4 | PHY_PX_DIST_TRANSMIT   | 2020-07-06 11:18:34.209581 | 2020-07-06 11:18:34.212757 |     0.003176 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.12 |    19510 |        16889 |            4 | PHY_PX_DIST_TRANSMIT   | 2020-07-06 11:18:34.209581 | 2020-07-06 11:18:34.211721 |     0.002140 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.13 |    19510 |        16890 |            4 | PHY_PX_DIST_TRANSMIT   | 2020-07-06 11:18:34.209581 | 2020-07-06 11:18:34.211721 |     0.002140 | 2020-07-06 11:18:34.210663 | 2020-07-06 11:18:34.211721 |    0.001058 |          25 |            0 |
+   | 10.10.1.14 |    19510 |        16888 |            5 | PHY_GRANULE_ITERATOR   | 2020-07-06 11:18:34.209581 | 2020-07-06 11:18:34.212757 |     0.003176 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.15 |    19510 |        16889 |            5 | PHY_GRANULE_ITERATOR   | 2020-07-06 11:18:34.209581 | 2020-07-06 11:18:34.211721 |     0.002140 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.16 |    19510 |        16890 |            5 | PHY_GRANULE_ITERATOR   | 2020-07-06 11:18:34.209581 | 2020-07-06 11:18:34.211721 |     0.002140 | 2020-07-06 11:18:34.210663 | 2020-07-06 11:18:34.211721 |    0.001058 |          25 |            0 |
+   | 10.10.1.17 |    19510 |        16888 |            6 | PHY_TABLE_SCAN         | 2020-07-06 11:18:34.209581 | 2020-07-06 11:18:34.212757 |     0.003176 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.18 |    19510 |        16889 |            6 | PHY_TABLE_SCAN         | 2020-07-06 11:18:34.209581 | 2020-07-06 11:18:34.211721 |     0.002140 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.19 |    19510 |        16890 |            6 | PHY_TABLE_SCAN         | 2020-07-06 11:18:34.209581 | 2020-07-06 11:18:34.211721 |     0.002140 | 2020-07-06 11:18:34.210663 | 2020-07-06 11:18:34.211721 |    0.001058 |          25 |            1 |
+   | 10.10.1.20 |    19510 |        16882 |            7 | PHY_GRANULE_ITERATOR   | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.216951 |     0.005230 | 2020-07-06 11:18:34.212757 | 2020-07-06 11:18:34.216951 |    0.004194 |         300 |            0 |
+   | 10.10.1.21 |    19510 |        16883 |            7 | PHY_GRANULE_ITERATOR   | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.212757 |     0.001036 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.22 |    19510 |        16891 |            7 | PHY_GRANULE_ITERATOR   | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.214833 |     0.003112 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.23 |    19510 |        16882 |            8 | PHY_TABLE_SCAN         | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.216951 |     0.005230 | 2020-07-06 11:18:34.212757 | 2020-07-06 11:18:34.216951 |    0.004194 |         300 |            1 |
+   | 10.10.1.24 |    19510 |        16883 |            8 | PHY_TABLE_SCAN         | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.212757 |     0.001036 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   | 10.10.1.25 |    19510 |        16891 |            8 | PHY_TABLE_SCAN         | 2020-07-06 11:18:34.211721 | 2020-07-06 11:18:34.214833 |     0.003112 | 1970-01-01 08:00:00.000000 | 1970-01-01 08:00:00.000000 |    0.000000 |           0 |            0 |
+   +---------------+----------+--------------+--------------+------------------------+----------------------------+----------------------------+--------------+----------------------------+----------------------------+-------------+-------------+--------------+
+   25 rows in set 
+   ```
+
+3. 查询 `V$SQL_MONITOR_STATNAME` 视图获取 `GV$SQL_PLAN_MONITOR` 的 `OTHERSTAT_?_ID` 字段中数字的含义。
+
+   ```shell
+   obclient> SELECT * FROM oceanbase.V$SQL_MONITOR_STATNAME;  
+   +--------+----+----------+--------------------------+-------------------------------------------------+------+-------+     
+   | CON_ID | ID | GROUP_ID | NAME                     | DESCRIPTION                                     | TYPE | FLAGS |
+   +--------+----+----------+--------------------------+-------------------------------------------------+------+-------+
+   |   NULL |  1 |        0 | min hash entry count     | element count in shortest hash slot             |    0 |     0 |
+   |   NULL |  2 |        0 | max hash entry count     | element count in longest hash slot              |    0 |     0 |
+   |   NULL |  3 |        0 | total hash entry count   | total element count in all slots                |    0 |     0 |
+   |   NULL |  4 |        0 | slot size                | total hash bucket count                         |    0 |     0 |
+   |   NULL |  5 |        0 | non-empty bucket count   | non-empty hash bucket count                     |    0 |     0 |
+   |   NULL |  6 |        0 | total row count          | total row count building hash table             |    0 |     0 |
+   |   NULL |  7 |        0 | total miss count         | the total count of dtl loop miss                |    0 |     0 |
+   |   NULL |  8 |        0 | total miss count         | the total count of dtl loop miss after get data |    0 |     0 |
+   |   NULL |  9 |        0 | hash bucket init size    | init hash bucket count                          |    0 |     0 |
+   |   NULL | 10 |        0 | hash distinct block mode | hash distinct block mode                        |    0 |     0 |
+   +--------+----+----------+--------------------------+-------------------------------------------------+------+-------+
+   10 rows in set 
+
+   -- 其中的一个片段信息示例
+
+               SVR_IP: xx.xx.xx.xx
+             SVR_PORT: 19510
+         PROCESS_NAME: 49361
+        PLAN_LINE_ID: 2
+       PLAN_OPERATION: PHY_HASH_JOIN
+   FIRST_REFRESH_TIME: 2020-07-06 11:57:39.832042
+    LAST_REFRESH_TIME: 2020-07-06 11:57:39.840455
+         REFRESH_TIME: 0.008413
+    FIRST_CHANGE_TIME: 2020-07-06 11:57:39.835199
+     LAST_CHANGE_TIME: 2020-07-06 11:57:39.839398
+          CHANGE_TIME: 0.004199
+          OUTPUT_ROWS: 300
+         RESCAN_TIMES: 0
+       OTHERSTAT_1_ID: 1
+    OTHERSTAT_1_VALUE: 1
+       OTHERSTAT_2_ID: 2
+    OTHERSTAT_2_VALUE: 2
+       OTHERSTAT_3_ID: 3
+    OTHERSTAT_3_VALUE: 25
+       OTHERSTAT_4_ID: 4
+    OTHERSTAT_4_VALUE: 64
+       OTHERSTAT_5_ID: 5
+    OTHERSTAT_5_VALUE: 20
+       OTHERSTAT_6_ID: 6
+    OTHERSTAT_6_VALUE: 25
+   ```

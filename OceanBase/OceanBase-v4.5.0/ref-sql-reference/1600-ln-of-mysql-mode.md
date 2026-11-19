@@ -1,0 +1,46 @@
+---
+title: LN
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004481260.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# LN
+
+## 声明
+
+```sql
+LN(X)
+```
+
+## 说明
+
+返回 `X` 的自然对数，即 `X` 的以 `e` 为底的对数。如果 `X` 小于或等于 `0`，则返回 `NULL`，并上报警告 `Invalid argument for logarithm`。
+
+此函数与 `LOG(X)` 同义。
+
+## 示例
+
+```sql
+obclient> SELECT LN(-10), LN(0), LN(10), LN(-3.14), LN(3.14);
++---------+-------+-------------------+-----------+-------------------+
+| LN(-10) | LN(0) | LN(10)            | LN(-3.14) | LN(3.14)          |
++---------+-------+-------------------+-----------+-------------------+
+|    NULL |  NULL | 2.302585092994046 |      NULL | 1.144222799920162 |
++---------+-------+-------------------+-----------+-------------------+
+1 row in set, 3 warnings
+
+obclient> SHOW WARNINGS;
++---------+------+--------------------------------+
+| Level   | Code | Message                        |
++---------+------+--------------------------------+
+| Warning | 3020 | Invalid argument for logarithm |
+| Warning | 3020 | Invalid argument for logarithm |
+| Warning | 3020 | Invalid argument for logarithm |
++---------+------+--------------------------------+
+3 rows in set
+```

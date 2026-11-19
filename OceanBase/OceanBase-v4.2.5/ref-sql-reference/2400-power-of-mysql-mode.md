@@ -1,0 +1,36 @@
+---
+title: POWER
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504658.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# POWER
+
+## 声明
+
+```sql
+POWER(X,Y)
+```
+
+## 说明
+
+返回 `X` 的 `Y` 次方，该函数是 `POW()` 的别名。
+
+`X` 与 `Y` 中任何一个参数为 `NULL`，返回值都为 `NULL`。
+
+## 示例
+
+```sql
+obclient> SELECT POWER(2,8);
++------------+
+| POWER(2,8) |
++------------+
+|        256 |
++------------+
+1 row in set
+```

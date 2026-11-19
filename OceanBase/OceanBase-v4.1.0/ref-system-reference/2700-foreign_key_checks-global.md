@@ -1,0 +1,31 @@
+---
+title: foreign_key_checks
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002186436.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# foreign_key_checks
+
+## 功能描述
+
+<main id="notice">
+  <h4>功能适用性</h4>
+  <p>该变量当前仅在 MySQL 模式下生效。</p>
+</main>
+
+`foreign_key_checks` 用于设置是否在 DML/DDL 中检查外建约束。
+
+## 属性说明
+
+| **属性**  |                                                     **描述**                                                     |
+|---------|----------------------------------------------------------------------------------------------------------------|
+| 参数类型    | bool                        |
+| 默认值     | 1                           |
+| 取值范围    | <li> 0：不检查外键约束   <li> 1：检查外键约束    |
+| 生效范围    | <li> Global   <li> Session        |
+| 是否参与序列化 | 是                           |

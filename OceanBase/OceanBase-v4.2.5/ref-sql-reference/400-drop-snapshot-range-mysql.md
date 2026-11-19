@@ -1,0 +1,37 @@
+---
+title: DROP_SNAPSHOT_RANGE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503607.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP_SNAPSHOT_RANGE
+
+`DROP_SNAPSHOT_RANGE` 过程用于删除一个范围内的快照，仅在 SYS 租户下可用。
+
+## 语法
+
+```sql
+DBMS_WORKLOAD_REPOSITORY.DROP_SNAPSHOT_RANGE(
+    low_snap_id    INT,
+    high_snap_id   INT
+);
+```
+
+## 参数说明
+
+| **参数** | **说明** |
+| --- | --- |
+| low_snap_id | 要删除的低快照 ID。 |
+| high_snap_id | 要删除的高快照 ID。 |
+
+## 示例
+
+```shell
+obclient> CALL DBMS_WORKLOAD_REPOSITORY.DROP_SNAPSHOT_RANGE('123','456');
+Query OK, 0 rows affected
+```

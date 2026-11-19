@@ -1,0 +1,22 @@
+---
+title: bf_cache_miss_count_threshold
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702081.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# bf_cache_miss_count_threshold
+
+bf_cache_miss_count_threshold 用于控制 bloomfilter cache 的触发次数，当宏块未命中次数达到该值时，创建 bloomfilter 缓存。值为 0 时表示关闭。
+
+
+|      **属性**      |  **描述**  |
+|------------------|----------|
+| 参数类型             | 整型       |
+| 默认值              | 100      |
+| 取值范围             | \[0, +∞) |
+| 是否重启 OBServer 节点生效 | 否        |

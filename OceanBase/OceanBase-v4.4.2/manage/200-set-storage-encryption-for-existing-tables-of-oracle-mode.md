@@ -1,0 +1,267 @@
+---
+title: "为已有表设置透明加密"
+book: "管理数据库"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283324.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 为已有表设置透明加密
+
+本节主要介绍如何为已有表开启透明加密。
+
+OceanBase 数据库的加密在形式上尽量兼容 Oracle 数据库，数据的加密单位为表空间（Tablespace）。OceanBase 数据库并非一个多数据文件的数据库系统，表空间是为了兼容而设计的。
+
+本节以在加密表空间 `sectest_ts1` 上为已有表 `t1` 开启加密为例，提供透明加密的操作指导。
+
+## 配置加密
+
+本节给出 `internal` 方式和 `obcloud` 方式的配置示例。
+
+### 配置 internal 方式的透明加密
+
+以 internal 方式的存储主密钥，其加密信息主要在内部表中管理。为了避免日志回放时的循环依赖，该模式中的 clog 不做加密。
+
+1. 管理员用户登录到集群的 Oracle 租户。
+
+   <main id="notice" type='explain'>
+    <h4>说明（主密钥相关）</h4>
+    <p>步骤 2～6 用于在 <code>internal</code> 方式下设置 <code>tde_method</code>、校验参数，并通过创建与打开 Keystore、执行 <code>ADMINISTER KEY MANAGEMENT SET KEY</code> 建立租户主密钥。<strong>若本租户已完成相同配置，可跳过这些步骤</strong>，直接创建加密表空间。说明与示例参见 <a href="../../300.tenant-master-key/300.configure-tenant-master-key-oracle.md">生成租户主密钥（Oracle 模式）</a>。</p>
+   </main>
+
+2. 执行以下语句，开启 internal 方式的透明加密。
+
+   配置项 `tde_method` 用于设置透明表空间加密的方式，默认为 `none`，表示关闭透明表空间加密。
+
+   更多配置项 `tde_method` 的说明信息，参见 [tde_method](../../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7800.tde_method.md)。
+
+   <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>配置项 <code>tde_method</code> 一旦设置，就不能再修改。</p>
+   </main>
+
+   ```shell
+   obclient> ALTER SYSTEM SET tde_method='internal';
+   ```
+
+3. 执行以下语句，确认该租户上所有 OBServer 节点上的配置项 `tde_method` 的值均为 `internal`。
+
+   ```shell
+   obclient> SHOW PARAMETERS LIKE 'tde_method';
+   ```
+
+4. 创建 Keystore。
+
+   SQL 语句如下：
+
+   ```shell
+   obclient>ADMINISTER KEY MANAGEMENT CREATE KEYSTORE keystore_name IDENTIFIED BY password;
+   ```
+
+   示例：
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT CREATE KEYSTORE sectest1 IDENTIFIED BY **3**;
+   ```
+
+5. 开启 Keystore。
+
+   SQL 语句如下：
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN IDENTIFIED BY password;
+   ```
+
+   其中，`password` 为上一步设置的 Keystore 的密钥。
+
+   示例：
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN IDENTIFIED BY **3**;
+   ```
+
+6. 执行以下语句，生成主密钥。
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT SET KEY IDENTIFIED BY password;
+   ```
+
+   语句中的 `password` 即为之前设置的 Keystore 的密钥。
+
+   示例：
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT SET KEY IDENTIFIED BY **3**;
+   ```
+
+7. 创建表空间并指定加密算法。
+
+   可以指定加密算法 `aes-256`、`aes-128`、`aes-192`、`sm4-cbc`、`aes-128-gcm`、`aes-192-gcm`、`aes-256-gcm`、`sm4-gcm`。
+
+   示例如下：
+
+   ```shell
+   obclient> CREATE TABLESPACE sectest_ts1 ENCRYPTION USING 'aes-256';
+   ```
+
+### 配置 obcloud 方式的透明加密
+
+`obcloud` 方式适用于通过统一 KMS 代理服务管理主密钥的场景。
+
+1. 管理员用户登录到集群的 Oracle 租户。
+
+<main id="notice" type='explain'>
+   <h4>说明</h4>
+   <p>步骤 2～5 用于 <code>obcloud</code> 方式下的加密方式、KMS 配置及租户主密钥就绪。<strong>若本租户已参考<a href="../../300.tenant-master-key/300.configure-tenant-master-key-oracle.md">生成租户主密钥（Oracle 模式）</a>完成相同配置，可跳过这些步骤</strong>。为方便阅读及操作，以下内容再次详细列出全部流程。</p>
+</main>
+
+2. 执行以下语句，开启 `obcloud` 方式的透明加密。
+
+   配置项 `tde_method` 用于设置透明表空间加密的方式，默认为 `none`，表示关闭透明表空间加密。
+
+   更多配置项 `tde_method` 的说明信息，参见 [tde_method](../../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7800.tde_method.md)。
+
+   <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>配置项 <code>tde_method</code> 一旦设置，就不能再修改。</p>
+   </main>
+
+   ```shell
+   obclient> ALTER SYSTEM SET tde_method = 'obcloud';
+   ```
+
+3. 执行以下语句，确认该租户上所有 OBServer 节点上的配置项 `tde_method` 的值均为 `obcloud`。
+
+   ```shell
+   obclient> SHOW PARAMETERS LIKE 'tde_method';
+   ```
+
+4. 执行以下语句，配置 KMS 代理服务参数。
+
+   ```shell
+   obclient> ALTER SYSTEM SET external_kms_info = '{
+     "kms_host": "https://kms.example.oceanbase.com",
+     "access_key_id": "LTAI****************",
+     "access_key_secret": "your_access_key_secret",
+     "cmk_id": "your_customer_master_key_id"
+   }';
+   ```
+
+5. 配置完成后，租户将从 KMS 获取主密钥。在 `obcloud` 方式下，主密钥由 OCP 或 OceanBase Cloud KMS 生成和托管，无需像 `internal` 方式那样执行 `ADMINISTER KEY MANAGEMENT CREATE KEYSTORE`、`SET KEYSTORE OPEN` 或 `SET KEY`。更多说明请参见 [生成租户主密钥（Oracle 模式）](../../300.tenant-master-key/300.configure-tenant-master-key-oracle.md)。
+
+6. 创建表空间并指定加密算法。
+
+   可以指定加密算法 `aes-256`、`aes-128`、`aes-192`、`sm4-cbc`、`aes-128-gcm`、`aes-192-gcm`、`aes-256-gcm`、`sm4-gcm`。
+
+   示例如下：
+
+   ```shell
+   obclient> CREATE TABLESPACE sectest_ts1 ENCRYPTION USING 'aes-256';
+   ```
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>以上为 <code>external_kms_info</code> 的示例值，请根据实际 KMS endpoint 与密钥信息替换。若使用其他 KMS 对接形态，字段格式可能不同，请参见 <a href="../../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7800.tde_method.md">tde_method</a>、<a href="../../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/3200.external_kms_info.md">external_kms_info</a> 与 <a href="../../300.tenant-master-key/300.configure-tenant-master-key-oracle.md">生成租户主密钥（Oracle 模式）</a>。</p>
+</main>
+
+## 将已有表移入加密表空间
+
+配置完加密方式后，即可将已有表移入加密表空间中，具体步骤如下：
+
+1. 普通用户登录到数据库的 Oracle 租户。
+
+2. 将表 `t1` 移入表空间 `sectest_ts1` 中。
+
+   ```shell
+   obclient> ALTER TABLE t1 TABLESPACE sectest_ts1;
+   ```
+
+3. 修改索引表，将表上的索引加入到表空间 `sectest_ts1` 中。
+
+   示例如下：
+
+   ```shell
+   obclient> ALTER INDEX idx1 TABLESPACE sectest_ts1;
+   ```
+
+## 对表进行透明加密
+
+1. 普通用户登录到数据库的 Oracle 租户。
+
+2. 设置表的 `progressive_merge_num` 值，给表做全量合并或者渐进合并。
+
+    `progressive_merge_num` 用于设置表的渐进合并的轮次，默认为 `0`，表示进行增量合并。如果值设置为 `1`，则表示进行全量合并。
+
+    在给表做合并操作时，通常使用全量合并方式，如果表中的数据量很大，开启全量合并可能会导致单次合并时间过长，则建议使用渐进合并。
+
+    * 对表执行全量合并
+
+      1. 将 `progressive_merge_num` 的值设置为 `1`。
+
+         ```shell
+         obclient> ALTER TABLE t1 set progressive_merge_num = 1;
+         ```
+
+      2. 手动发起一轮合并。
+
+         手动发起合并的操作，参见 [手动触发合并](../../../../../700.reference/200.system-management/500.manage-data-storage/200.merge-management/400.manually-trigger-a-merge.md)。
+
+         <main id="notice" type='explain'>
+            <h4>说明</h4>
+            <p>对表执行全量合并后，待全量合并完成，所有表数据均已加密完成，您可以直接通过查看 <code>V$OB_ENCRYPTED_TABLES</code> 视图来确认加密完成情况。</p>
+         </main>
+
+      3. 待合并完成后，再将 `progressive_merge_num` 的值设置为 `0`。
+
+         ```shell
+         obclient> ALTER TABLE t1 set progressive_merge_num = 0;
+         ```
+
+    * 对表执行渐进合并
+
+      1. 将 `progressive_merge_num` 的值设置为大于 `1` 的数，并执行 `SHRINK SPACE` 操作，准备做渐进合并。
+
+         示例如下：
+
+         ```shell
+         obclient> ALTER TABLE t1 set progressive_merge_num = 3;
+         
+         obclient> ALTER TABLE t1 SHRINK SPACE;
+         ```
+
+      2. 手动发起多轮渐进合并，使表和其上的索引的所有存量宏块完成加密。
+
+         发起一轮渐进合并的语句如下：
+
+         ```shell
+         obclient> ALTER SYSTEM MAJOR FREEZE;
+         ```
+
+         <main id="notice" type='explain'>
+            <h4>说明</h4>
+            <p>渐进合并过程中，您可以通过查询 <code>V$OB_ENCRYPTED_TABLES</code> 视图来实时关注加密的完成情况。</p>
+         </main>
+
+3. 完成后，您可以查看以下视图，确认所有宏块是否已完成加密。
+
+     ```shell
+     obclient> SELECT * FROM V$OB_ENCRYPTED_TABLES;
+     +----------+------------+---------------+---------------+-----------+----------------------------------+-------------+------------------+------------------+--------+--------+
+     | TABLE_ID | TABLE_NAME | TABLESPACE_ID | ENCRYPTIONALG | ENCRYPTED | ENCRYPTEDKEY                     | MASTERKEYID | BLOCKS_ENCRYPTED | BLOCKS_DECRYPTED | STATUS | CON_ID |
+     +----------+------------+---------------+---------------+-----------+----------------------------------+-------------+------------------+------------------+--------+--------+
+     |   500005 | T1         |        500004 | aes-256       | YES       | xxxxxxxxxxxxxxxxxxxxxxxxxxxx66F3 |      xxxx03 |                0 |                0 | NORMAL |   1010 |
+     +----------+------------+---------------+---------------+-----------+----------------------------------+-------------+------------------+------------------+--------+--------+
+     1 row in set
+     ```
+
+    根据查询结果，如果 `BLOCKS_DECRYPTED` 字段的值为 `0`，则表示所有宏块都已完成加密。
+
+    更多视图 `V$OB_ENCRYPTED_TABLES` 的字段及说明信息，参见 [V$OB_ENCRYPTED_TABLES](../../../../../700.reference/700.system-views/500.system-view-of-oracle-mode/300.performance-view-of-oracle-mode/30300.v-ob_encrypted_tables-of-oracle-mode.md)。
+
+## 相关文档
+
+* [为新创建的表设置透明加密](../300.data-storage-encryption-of-oracle-mode/100.configure-internal-storage-encryption-of-oracle-mode.md)
+* [解除加密](../300.data-storage-encryption-of-oracle-mode/300.unencrypt-of-oracle-mode.md)

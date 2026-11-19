@@ -1,0 +1,34 @@
+---
+title: workers_per_cpu_quota
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702122.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# workers_per_cpu_quota
+
+`workers_per_cpu_quota` 用于设置租户在每个 CPU 上能分配的最大工作线程数。
+
+
+|  **属性** |  **描述**   |
+|-------------------------|-----------|
+| 参数类型                    | 整型        |
+| 默认值                     | 10        |
+| 取值范围                    | \[2, 20\] |
+| 是否重启 OBServer 节点生效        | 否         |
+
+
+
+租户中可同时处理的线程数由 `cpu_quota_concurrency` 与 `workers_per_cpu_quota` 2 个配置项控制，且设置时需要满足 `workers_per_cpu_quota > cpu_quota_concurrency`。
+
+其中：
+
+* `workers_per_cpu_quota` 表示租户在每个 CPU 上能分配的最大工作线程数。
+
+  
+
+* `cpu_quota_concurrency` 表示租户的每个 CPU 配额所允许的最大活跃线程数，也即并发数。`cpu_quota_concurrency` 配置项的详细信息，请参见 [cpu_quota_concurrency](../400.tenant-level-configuration-items/5500.cpu_quota_concurrency.md)。

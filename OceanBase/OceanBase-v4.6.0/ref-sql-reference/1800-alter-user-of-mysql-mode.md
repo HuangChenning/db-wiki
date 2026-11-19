@@ -1,0 +1,176 @@
+---
+title: ALTER USER
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686080.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER USER
+
+## 描述
+
+该语句主要用于执行以下操作：
+
+* 修改 OceanBase 数据库用户的密码。
+
+* 锁定或者解锁用户，且被锁定的用户不允许登录数据库。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>除了修改当前用户的口令之外，必须拥有 <code>CREATE USER</code> 的权限，才可以执行本命令。</p>
+  </main>
+
+* 设置用户在登录时默认激活的角色。
+
+* 修改用户的资源选项。
+
+## 权限要求
+
+执行 `ALTER USER` 语句需要当前用户具备 `CREATE USER` 管理权限。有关 OceanBase 数据库权限的详细介绍，请参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 语法
+
+* 修改用户密码：
+
+  ```sql
+  ALTER USER 'user_name'
+  IDENTIFIED [WITH auth_plugin]  BY 'password' | IDENTIFIED [WITH auth_plugin] AS 'auth_string';
+  ```
+
+* 修改用户密码并保留当前密码（双密码场景，自 V5.0.1 起）：
+
+  ```sql
+  ALTER USER 'user_name' IDENTIFIED BY 'password' RETAIN CURRENT PASSWORD;
+  ```
+
+* 丢弃已保留的旧密码（自 V5.0.1 起）：
+
+  ```sql
+  ALTER USER 'user_name' DISCARD OLD PASSWORD;
+  ```
+
+* 锁定用户：
+
+  ```sql
+  ALTER USER 'user_name' [ACCOUNT LOCK | ACCOUNT UNLOCK]
+  ```
+
+* 设置用户在登录时默认激活的角色：
+
+  ```sql
+  ALTER USER user_name DEFAULT ROLE {NONE | ALL | role_name [, role_name ...]}
+  ```
+
+* 修改用户的资源选项：
+
+  ```sql
+  ALTER USER user_name WITH  resource_option [resource_option]
+
+  resource_option:
+      MAX_CONNECTIONS_PER_HOUR integer
+      | MAX_USER_CONNECTIONS integer
+  ```
+
+## 参数解释
+
+|     **参数**   | **描述** |
+|----------------|----------|
+| user_name      | 指定用户名称。|
+| password       | 指定新密码。|
+| IDENTIFIED WITH auth_plugin AS 'auth_string' |将账户身份验证插件设置为 `auth_plugin`，并将 `auth_string` 值存储在 `mysql.user`表中。如果插件需要哈希字符串，则假定该字符串已经是插件所需的哈希格式。<main id="notice" type='notice'><h4>注意<h4><p><code>caching_sha2_password</code> 取值从 V5.0.1 开始支持。</p></main>|
+| ACCOUNT LOCK   | 指定锁定用户。|
+| ACCOUNT UNLOCK | 指定解锁用户。|
+| NONE           | 指定停用用户被授予的所有角色。|
+| ALL            | 指定激活用户下所有的角色。|
+| role_name      | 指定角色的名称，激活多个角色时，角色名用英文逗号（`,`）隔开。|
+| resource_option | 指定用户的资源选项，指定多个资源选项时，使用英文空格隔开。<ul><li>`MAX_CONNECTIONS_PER_HOUR`：用于指定每小时允许的最大连接数，`integer` 是一个整数，表示允许的最大连接数。</li><li>`MAX_USER_CONNECTIONS`：用于指定每个用户允许的最大连接数，`integer` 是一个整数，表示允许的最大连接数。</li></ul>|
+| RETAIN CURRENT PASSWORD | 与 `IDENTIFIED BY` 联用：设置新密码的同时保留旧密码，进入双密码状态。<main id="notice" type='explain'><h4>说明</h4><p>本功能从 V5.0.1 版本开始支持。</p></main> |
+| DISCARD OLD PASSWORD | 丢弃已保留的旧密码，仅保留当前密码。<main id="notice" type='explain'><h4>说明</h4><p>本功能从 V5.0.1 版本开始支持。</p></main> |
+
+## 示例
+
+* 执行以下命令将用户 `sqluser01` 的密码修改为 `******`。
+
+  ```sql
+  obclient> CREATE USER 'sqluser01' IDENTIFIED BY '******';
+  obclient> ALTER USER 'sqluser01' IDENTIFIED BY '******';
+  ```
+
+* 将用户 `sqluser01` 的密码修改为 `NewSecret`，并保留改密前的旧密码（双密码）。
+
+  ```sql
+  obclient> ALTER USER 'sqluser01'@'%' IDENTIFIED BY 'NewSecret' RETAIN CURRENT PASSWORD;
+  ```
+
+* 在业务切换完成后丢弃旧密码。
+
+  ```sql
+  obclient> ALTER USER 'sqluser01'@'%' DISCARD OLD PASSWORD;
+  ```
+
+* 指定使用 mysql_native_password 身份验证插件。
+
+  ```sql
+  obclient> ALTER USER 'sqluser01'
+  IDENTIFIED WITH mysql_native_password
+             AS '******';
+  ```
+
+* 指定使用 caching_sha2_password 身份验证插件。
+
+  ```sql
+  ALTER USER 'sqluser02'
+  IDENTIFIED WITH caching_sha2_password
+             BY '******';
+  ```
+
+* 锁定用户 `obsqluser01`。
+
+  ```sql
+  obclient> CREATE USER 'obsqluser01'
+  IDENTIFIED BY '******';
+  obclient> ALTER USER 'obsqluser01' ACCOUNT LOCK;
+  ```
+
+* 解锁用户 `obsqluser01`。
+
+  ```sql
+  obclient> ALTER USER 'obsqluser01' ACCOUNT UNLOCK;
+  ```
+
+* 指定用户 `user001` 在登录时，默认激活用户被授予的 `role001` 和 `role002` 角色。
+
+  ```sql
+  obclient> CREATE USER user001 IDENTIFIED BY '******';
+  -- 确保角色 `role001` 和 `role002` 已经存在。
+  obclient> ALTER USER user001 DEFAULT ROLE role001, role002;
+  ```
+
+* 修改用户的资源选项。先创建用户 `user001`，然后修改其最大连接数。
+
+  ```sql
+  obclient> ALTER USER user001 WITH MAX_USER_CONNECTIONS 30;
+  ```
+
+* 修改用户 `user001` 每小时的最大连接数。
+
+  ```sql
+  obclient> ALTER USER user001 WITH MAX_CONNECTIONS_PER_HOUR 50;
+  ```
+
+* 同时修改用户 `user001` 的最大连接数和每小时的最大连接数。
+
+  ```sql
+  obclient> ALTER USER user001 WITH MAX_USER_CONNECTIONS 300 MAX_CONNECTIONS_PER_HOUR 500;
+  ```
+
+## 相关文档
+
+* [激活角色](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/340.role-management-of-mysql-mode/500.activating-roles-of-mysql-mode.md)
+* [查看角色](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/340.role-management-of-mysql-mode/600.view-roles-of-mysql-mode.md)
+* [CURRENT_ROLE](../400.functions-of-mysql-mode/600.information-functions-of-mysql-mode/550.current-role-of-mysql-mode.md)
+* [双密码管理](../../../../../600.manage/500.security-and-permissions/200.identification-and-authentication/100.identification-and-authentication-of-mysql-mode/400.dual-password-of-mysql-mode.md)

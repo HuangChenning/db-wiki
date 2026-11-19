@@ -1,0 +1,47 @@
+---
+title: "弱一致性读"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501999.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 弱一致性读
+
+本文介绍在 OceanBase 数据库进行弱一致性读的最佳推荐。
+
+对于批量类或者统计类等实时性要求不高的应用，为了避免对主副本的影响，可以设置弱一致性读。配置 session 级别或弱一致性读的 hint，把读操作放到备副本执行：
+
+* SELECT 查询语句添加 hint
+
+  ```sql
+  SELECT /*+read_consistency(weak)*/ * FROM test WHERE c1=1;
+  ```
+
+* session 级别设置系统变量（1=FROZEN、2=WEAK、3=STRONG）
+
+  ```sql
+  SET @@ob_read_consistency= 2;
+  ```
+
+* 隔离级别为 Repeatable Read 和 Serializable 时支持执行弱读请求，示例如下。
+
+  ```sql
+  obclient> SET transaction read only;
+  Query OK, 0 rows affected (0.001 sec)
+  obclient> SELECT /*+ read_consistency(weak)*/ * FROM t WHERE a=2;
+  +------+------+
+  | ID   | A    |
+  +------+------+
+  | NULL |    2 |
+  +------+------+
+  1 row in set (0.001 sec)
+  ```
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>串行化隔离级别下，开启事务后，会保留事务快照，事务提交后快照才会回收。因此，串行化隔离级别下，需要注意及时提交事务，否则可能遇到磁盘占用变大或者读取越来越慢的问题。</p>
+  </main>

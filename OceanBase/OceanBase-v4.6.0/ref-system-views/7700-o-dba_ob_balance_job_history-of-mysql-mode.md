@@ -1,0 +1,80 @@
+---
+title: oceanbase.DBA_OB_BALANCE_JOB_HISTORY
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684727.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_BALANCE_JOB_HISTORY
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.2.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示租户下所有执行负载均衡工作的历史。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| JOB_ID | bigint(20) | NO | 负载均衡工作 ID |
+| CREATE_TIME | timestamp(6) | NO | Job 创建时间 |
+| FINISH_TIME | timestamp(6) | NO | Job 完成时间，包括成功、取消时间 |
+| BALANCE_STRATEGY | varchar(64) | NO | 均衡策略名称：<ul><li>`LS balance by migrate`：迁移均衡  </li><li>`LS balance by alter`：修改日志流属性均衡 </li><li>`LS balance by expand`：扩容均衡 </li><li>`LS balance by shrink`：缩容均衡 </li><li>`partition balance`：分区均衡 </li></ul>|
+| JOB_TYPE | varchar(64) | NO | 任务类型：<ul><li>`LS_BALANCE`：日志流均衡  </li><li>`PARTITION_BALANCE`：分区均衡 </li></ul>|
+| TARGET_UNIT_NUM | bigint(20) | NO | 目标变更的每个 Zone 的 Unit 数量 <main id="notice" type='explain'><h4>说明</h4><ul><li>对于 V4.6.x 版本，该字段从 V4.6.0 版本开始变更为始终为 <code>NULL</code>。</li><li>对于 V4.4.x 版本，该字段从 V4.4.2 版本开始变更为始终为 <code>NULL</code>。</li> <li>对于 V4.2.5 版本，该字段值从 V4.2.5 BP5 版本开始变更为始终为 <code>NULL</code>。</li></ul></main> |
+| TARGET_PRIMARY_ZONE_NUM | bigint(20) | NO | 目标变更的 Primary  Zone 数量 |
+| STATUS | varchar(64) | NO | 任务状态：<ul><li>`COMPLETED`：任务执行成功 </li><li>`CANCELED`：任务取消 </li></ul>|
+| COMMENT | longtext | YES | 注释信息 |
+| MAX_END_TIME            | timestamp(6) | YES | 负载均衡任务的最大结束时间 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.3.x 版本，该视图从 V4.3.4 版本开始引入；对于 V4.2.x 版本，该字段从 V4.2.4 版本开始引入。</p></main>     |
+| ZONE_UNIT_NUM_LIST      | varchar(4096) | NO   | 租户各个 Zone 的 Unit 数量 <main id="notice" type='explain'><h4>说明</h4><ul><li>对于 V4.6.x 版本，该字段从 V4.6.0 版本开始引入。</li> <li>对于 V4.4.x 版本，该字段从 V4.4.2 版本开始引入。</li> <li>对于 V4.2.5 版本，该字段从 V4.2.5 BP5 版本开始引入。</li></ul></main> |
+| PARAMETER_LIST          | longtext      | NO   | 均衡相关的配置项参数  <main id="notice" type='explain'><h4>说明</h4><ul><li>对于 V4.6.x 版本，该字段从 V4.6.0 版本开始引入。</li> <li>对于 V4.4.x 版本，该字段从 V4.4.2 版本开始引入。</li> <li>对于 V4.2.5 版本，该字段从 V4.2.5 BP5 版本开始引入。</li></ul></main> |
+
+## 查询示例
+
+查看本租户下所有已执行的负载均衡工作的历史。
+
+```shell
+obclient(root@mysql001)[oceanbase]> SELECT * FROM oceanbase.DBA_OB_BALANCE_JOB_HISTORY;
+```
+
+查询结果如下：
+
+```shell
++---------+----------------------------+----------------------------+-------------------------+------------+-----------------+-------------------------+-----------+--------------------------------------------------------------------------------+--------------+--------------------+----------------------------------------------------------------------------------------------+
+| JOB_ID  | CREATE_TIME                | FINISH_TIME                | BALANCE_STRATEGY        | JOB_TYPE   | TARGET_UNIT_NUM | TARGET_PRIMARY_ZONE_NUM | STATUS    | COMMENT                                                                        | MAX_END_TIME | ZONE_UNIT_NUM_LIST | PARAMETER_LIST                                                                               |
++---------+----------------------------+----------------------------+-------------------------+------------+-----------------+-------------------------+-----------+--------------------------------------------------------------------------------+--------------+--------------------+----------------------------------------------------------------------------------------------+
+| 6038754 | 2026-01-16 13:48:52.919970 | 2026-01-16 13:49:23.124313 | unit list balance       | LS_BALANCE |            NULL |                       1 | COMPLETED | NULL                                                                           | NULL         | z1:2,z2:2,z3:3     | ls_scale_out_factor:1,enable_rebalance:true,enable_transfer:true,enable_gts_standalone:false |
+| 6039266 | 2026-01-16 13:50:43.491205 | 2026-01-16 13:50:53.539887 | LS count balance        | LS_BALANCE |            NULL |                       2 | COMPLETED | NULL                                                                           | NULL         | z1:2,z2:2,z3:3     | ls_scale_out_factor:1,enable_rebalance:true,enable_transfer:true,enable_gts_standalone:false |
+| 6041716 | 2026-01-16 14:00:35.214859 | 2026-01-16 14:01:05.369658 | LS group count balance  | LS_BALANCE |            NULL |                       2 | COMPLETED | NULL                                                                           | NULL         | z1:2,z2:2          | ls_scale_out_factor:1,enable_rebalance:true,enable_transfer:true,enable_gts_standalone:false |
++---------+----------------------------+----------------------------+-------------------------+------------+-----------------+-------------------------+-----------+--------------------------------------------------------------------------------+--------------+--------------------+----------------------------------------------------------------------------------------------+
+3 rows in set
+```
+
+## 相关视图或文档
+
+* 查看本租户下正在执行的日志流级别的负载均衡工作（Job）：[DBA_OB_BALANCE_JOBS](7800.o-dba_ob_balance_jobs-of-mysql-mode.md)
+
+* 查看本租户下日志流级别的负载均衡任务（Task）：
+
+  * [DBA_OB_BALANCE_TASKS](8000.o-dba_ob_balance_tasks-of-mysql-mode.md)
+  * [DBA_OB_BALANCE_TASK_HISTORY](7900.o-dba_ob_balance_task_history-of-mysql-mode.md)
+
+* 查看本租户下 Tablet 级别的负载均衡任务（Task）：
+
+  * [DBA_OB_TRANSFER_TASKS](12700.o-dba_ob_transfer_tasks-of-mysql-mode.md)
+  * [DBA_OB_TRANSFER_TASK_HISTORY](12600.o-dba_ob_transfer_task_history-of-mysql-mode.md)
+
+* 查看本租户下的 Transfer Partition 任务（Task）：
+
+  * [DBA_OB_TRANSFER_PARTITION_TASKS](12400.o-dba_ob_transfer_partition_tasks-of-mysql-mode.md)
+  * [DBA_OB_TRANSFER_PARTITION_TASK_HISTORY](12500.o-dba_ob_transfer_partition_tasks_history-of-mysql-mode.md)
+
+* 有关数据负载均衡的相关操作，参见 [数据负载均衡](../../../../600.manage/350.load-balancing-manage/100.load-balancing-overview.md) 章节。

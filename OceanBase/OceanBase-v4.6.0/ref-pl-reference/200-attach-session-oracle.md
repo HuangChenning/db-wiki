@@ -1,0 +1,34 @@
+---
+title: ATTACH_SESSION
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686787.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# ATTACH_SESSION
+
+`ATTACH_SESSION` 存储过程用于将目标程序通知给调试会话。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_DEBUG.ATTACH_SESSION (
+debug_session_id  IN VARCHAR2,
+diagnostics       IN BINARY_INTEGER := 0);
+```
+
+## 参数解释
+
+|      **参数**      |         **解释**          |
+|------------------|-------------------------|
+| debug_session_id | 在目标会话中进行初始化调用的 DebugID。 |
+| diagnostics      | 非零时生成诊断输出。不支持等于 1。      |

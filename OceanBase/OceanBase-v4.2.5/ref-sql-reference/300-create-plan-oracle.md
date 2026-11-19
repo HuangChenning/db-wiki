@@ -1,0 +1,49 @@
+---
+title: CREATE_PLAN
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503703.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE_PLAN
+
+`CREATE_PLAN` 过程用于创建资源计划。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 语法 
+
+```sql
+DBMS_RESOURCE_MANAGER.CREATE_PLAN (
+    plan          IN   VARCHAR2, 
+    comment       IN   VARCHAR2 DEFAULT'');
+```
+
+## 参数说明 
+
+|   参数    |    说明    |
+|---------|----------|
+| plan    | 资源计划的名称。 |
+| comment | 用户注释。    |
+
+
+## 示例 
+
+```shell
+obclient> BEGIN
+  DBMS_RESOURCE_MANAGER.CREATE_PLAN('DAY','该资源计划用于事务处理');
+END ;
+```
+
+```shell
+obclient> BEGIN
+  DBMS_RESOURCE_MANAGER.CREATE_PLAN('NIGHT','该资源计划用于日常运维');
+END ;
+```

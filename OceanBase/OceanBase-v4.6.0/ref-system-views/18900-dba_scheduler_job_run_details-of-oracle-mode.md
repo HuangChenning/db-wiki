@@ -1,0 +1,94 @@
+---
+title: DBA_SCHEDULER_JOB_RUN_DETAILS
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005683589.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_SCHEDULER_JOB_RUN_DETAILS
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.2.1 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `DBA_SCHEDULER_JOB_RUN_DETAILS` 展示当前租户中所有调度程序作业的信息。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| -------- | -------- | --------------- | -------- |
+| LOG_ID            | NUMBER                            | NO   | 日志条目对应的 Log ID，暂不支持该字段，该字段默认为 0。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| LOG_DATE          | TIMESTAMP(6) WITH TIME ZONE       | NO   | 日志条目。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| OWNER             | VARCHAR2(128)                     | NO   | Job 的所有者。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| JOB_NAME          | VARCHAR2(128)                     | NO   | Job 的名称。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| JOB_SUBNAME       | VARCHAR2(128)                     | NO   | Job 子名称，暂不支持该字段，该字段默认为 NULL。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| STATUS            | VARCHAR2(128)                     | NO   | 作业状态。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| CODE              | NUMBER(38)                        | YES  | Job 运行发生错误时的错误编号。 |
+| REQ_START_DATE    | TIMESTAMP(6) WITH TIME ZONE       | NO   | Job 预期开始时间。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| ACTUAL_START_DATE | TIMESTAMP(6) WITH TIME ZONE       | NO   | Job 实际开始时间。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| RUN_DURATION      | NUMBER                            | NO   | Job 运行的持续时间。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| INSTANCE_ID       | VARCHAR2(128)                     | NO   | 暂不支持该字段，该字段默认为 NULL。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| SESSION_ID        | NUMBER                            | NO   | 暂不支持该字段，该字段默认为 NULL。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| SLAVE_PID         | VARCHAR2(128)                     | NO   | Job 执行调起的子进程pid，暂不支持该字段，该字段默认为 NULL。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| CPU_USED          | NUMBER                            | NO   | job CPU 使用率，暂不支持该字段，该字段默认为 NULL。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| CREDENTIAL_OWNER  | VARCHAR2(128)                     | NO   | 暂不支持该字段，该字段默认为 NULL。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| CREDENTIAL_NAME   | VARCHAR2(128)                     | NO   | 暂不支持该字段，该字段默认为 NULL。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| DESTINATION_OWNER | VARCHAR2(128)                     | NO   | 暂不支持跨库 Job，该字段默认为 NULL。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| DESTINATION       | VARCHAR2(128)                     | NO   | 暂不支持跨库 Job，该字段默认为 NULL。<main id="notice" type='explain'><h4>说明</h4><ul><li>在 V4.3.x 版本中，该字段从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.4 版本开始引入。</li></ul></p></main>|
+| MESSAGE           | VARCHAR2(4000)                    | NO   | Job 运行返回的错误信息。 |
+| JOB               | NUMBER(38)                        | NO   | 程序作业的名称。 |
+| TIME              | TIMESTAMP(6) WITH LOCAL TIME ZONE | NO   | Job 运行日志记录时间，单位为秒。 |
+| JOB_CLASS         | VARCHAR2(30)                      | YES  | 程序作业的类别。 |
+| GMT_CREATE        | TIMESTAMP(6) WITH LOCAL TIME ZONE | NO   | 程序作业创建的时间，单位为秒。 |
+| GMT_MODIFIED      | TIMESTAMP(6) WITH LOCAL TIME ZONE | NO   | 程序作业修改的时间，单位为秒。 |
+
+## 查询示例
+
+查询当前租户中所有调度程序作业的信息，展示第 1 条记录。
+
+```shell
+obclient(SYS@oracle001)[SYS]> SELECT * FROM SYS.DBA_SCHEDULER_JOB_RUN_DETAILS WHERE ROWNUM = 1\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+           LOG_ID: 0
+         LOG_DATE: NULL
+            OWNER: SYS
+         JOB_NAME: ASYNC_GATHER_STATS_JOB_PROC
+      JOB_SUBNAME: NULL
+           STATUS: SCHEDULED
+             CODE: -5001
+   REQ_START_DATE: 29-AUG-25 11.58.08.738054 AM +08:00
+ACTUAL_START_DATE: NULL
+     RUN_DURATION: +000 00:00:00
+      INSTANCE_ID: NULL
+       SESSION_ID: NULL
+        SLAVE_PID: NULL
+         CPU_USED: NULL
+ CREDENTIAL_OWNER: NULL
+  CREDENTIAL_NAME: NULL
+DESTINATION_OWNER: NULL
+      DESTINATION: NULL
+          MESSAGE: You have an error in your SQL syntax; check the manual that corresponds to your OceanBase version for the right syntax to use near 'and m.tablet_id < 1000  order by ratio desc,table_id  limit 139798971270784' at line 1
+              JOB: 9
+             TIME: 29-AUG-25 11.58.09.276820 AM
+        JOB_CLASS: DEFAULT_JOB_CLASS
+       GMT_CREATE: 29-AUG-25 11.58.09.276820 AM
+     GMT_MODIFIED: 29-AUG-25 11.58.09.276820 AM
+1 row in set (0.029 sec)
+```
+
+## 相关视图或文档
+
+* 查询所有租户下所有调度程序作业的信息：[CDB_SCHEDULER_JOB_RUN_DETAILS](../../300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/12450.o-cdb_scheduler_job_run_details-of-sys-tenant.md)
+* 有关 DBMS_SCHEDULER 的详细介绍，参见 [DBMS_SCHEDULER 概述](../../../600.pl-reference/300.pl-oracle/1400.pl-system-package-oracle/14200.dbms-scheduler-oracle/100.dbms-scheduler-overview-oracle.md)

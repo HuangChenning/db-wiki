@@ -1,0 +1,67 @@
+---
+title: CREATE PROFILE
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687535.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE PROFILE
+
+## 描述
+
+该语句用于创建配置文件。配置文件是对数据库资源的一组限制，如果将配置文件分配给用户，则该用户不能超过这些使用限制。
+
+## 语法
+
+```sql
+CREATE [WITH HINT] PROFILE [profile_name | DEFAULT] LIMIT
+  { FAILED_LOGIN_ATTEMPTS { integer | UNLIMITED | DEFAULT }
+  | PASSWORD_LOCK_TIME { integer | UNLIMITED | DEFAULT }
+  | PASSWORD_LIFE_TIME { integer | UNLIMITED | DEFAULT }
+  | PASSWORD_VERIFY_FUNCTION { function_name | NULL }
+  | PASSWORD_GRACE_TIME { integer | UNLIMITED | DEFAULT }
+  | PASSWORD_ROLLOVER_TIME { bigint(20) | UNLIMITED | DEFAULT }
+  }
+  [, ...]
+```
+
+## 参数解释
+
+|          参数           |               描述                |
+|-----------------------|---------------------------------|
+| WITH HINT             | 可选，指定查询优化器使用的提示信息。                  |
+| profile_name          | 指定要创建的配置文件的名称。可以是普通标识符、非保留关键字或 `DEFAULT`。                  |
+| FAILED_LOGIN_ATTEMPTS | 指定在锁定账户之前允许的连续失败登录尝试次数。                |
+| PASSWORD_LOCK_TIME    | 指定账户因登录失败被锁定的天数。 |
+| PASSWORD_LIFE_TIME    | 指定密码的有效期（天）。             |
+| PASSWORD_VERIFY_FUNCTION | 指定用于验证密码的函数。 |
+| PASSWORD_GRACE_TIME   | 指定密码过期后的宽限期（天），在此期间用户仍可使用旧密码登录但会收到警告。          |
+| PASSWORD_ROLLOVER_TIME | 指定密码轮转有效期，单位为微秒。在轮转有效期内，旧密码与新密码可同时用于认证。<main id="notice" type="explain"><h4>说明</h4><p>该参数从 V5.0.1 版本开始支持。</p></main> |
+| integer               | 指定参数的具体整数值。             |
+| UNLIMITED             | 指定参数无限制。                   |
+| DEFAULT               | 使用系统默认值。                   |
+| NULL                  | 将参数设置为 NULL。                  |
+| function_name         | 指定验证函数的名称。                  |
+
+## 示例
+
+创建密码限制的配置文件 `profile1`，并将 `FAILED_LOGIN_ATTEMPTS` 设置为 `5` 次，`PASSWORD_LOCK_TIME` 设置为 `1` 天，`PASSWORD_LIFE_TIME` 设置为 `60` 天，`PASSWORD_VERIFY_FUNCTION` 设置为 `NULL`，`PASSWORD_GRACE_TIME` 设置为默认限制，`PASSWORD_ROLLOVER_TIME` 设置为 `86400000000` 微秒（示例值）。
+
+```sql
+obclient> CREATE PROFILE profile1 LIMIT
+   FAILED_LOGIN_ATTEMPTS 5
+   PASSWORD_LOCK_TIME 1
+   PASSWORD_LIFE_TIME 60
+   PASSWORD_VERIFY_FUNCTION NULL
+   PASSWORD_GRACE_TIME DEFAULT
+   PASSWORD_ROLLOVER_TIME 86400000000;
+```
+
+<main id="notice" type="explain">
+<h4>说明</h4>
+<p>如果您要在 <code>PASSWORD_VERIFY_FUNCTION</code> 中使用自定义函数，需要先创建该函数。如果不需要密码验证功能，可以设置为 <code>NULL</code>。</p>
+</main>

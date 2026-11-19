@@ -1,0 +1,35 @@
+---
+title: enable_global_freeze_trigger
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685503.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# enable_global_freeze_trigger
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于 V4.x 版本调整为租户级冻结，该配置项已不适用，从 V4.0.0 版本开始删除。  </p>
+</main>
+
+## 功能描述
+
+`enable_global_freeze_trigger` 用于设置是否开启自动触发全局冻结。
+
+## 属性说明
+
+|      **属性**      |    **描述**                                 |
+|------------------|-----------------------------------------------|
+| 参数类型             | Bool                                          |
+| 默认值              | False                                           |
+| 取值范围             | <ul><li>True：开启 </li><li>False：不开启 </li></ul>    |
+| 是否重启 OBServer 节点生效 | 否                                        |
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>  该配置项保持保持默认值即可，不推荐修改。  </p>
+</main>

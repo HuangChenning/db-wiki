@@ -1,0 +1,426 @@
+---
+title: "AI 模型注册"
+book: OceanBase AI
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682098.html"
+tags:
+  - oceanbase
+  - distributed
+  - ob-vector-search
+---
+
+# AI 模型注册
+
+本文介绍如何通过 `DBMS_AI_SERVICE` 包注册 AI 模型及其访问端点，以便在 OceanBase 数据库内使用 AI 函数服务。
+
+<main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>使用 <code>AI_SPLIT_DOCUMENT</code> 函数不需要注册模型与端点。</p>
+</main>
+
+## 前提条件
+
+* 已具备 AI 模型相关权限，具体请参见 [AI 函数服务权限](150.ob-vector-search-ai-function-permission.md)。
+* 已获取第三方模型服务的 API Key。
+
+## 注册模型与端点模版
+
+使用 `CREATE_AI_MODEL` 注册模型，再使用 `CREATE_AI_MODEL_ENDPOINT` 注册该模型的访问端点。以下示例注册三个模型键 `ob_complete`、`ob_embed`、`ob_rerank`，分别用于文本生成（AI_COMPLETE）、向量嵌入（AI_EMBED）和重排序（AI_RERANK）。请将 `access_key` 替换为你的实际 API Key。
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>若仅需使用某类 AI 函数，可只注册对应模型与端点。例如仅使用<code>AI_COMPLETE</code>时，完成下文中的<code>注册文本生成模型及端点</code>步骤即可。</p>
+</main>
+
+### 注册嵌入模型及端点
+
+用于 `AI_EMBED`。
+
+:::tab
+tab 阿里云
+
+此示例为阿里云（兼容 OpenAI 格式）的嵌入模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_embed');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_embed_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_embed', '{
+    "type": "dense_embedding",
+    "model_name": "BAAI/bge-m3"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_embed_endpoint', '{
+    "ai_model_name": "ob_embed",
+    "url": "https://dashscope.aliyuncs.com/compatible-mode/v1/embeddings",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "aliyun-openAI"
+}');
+```
+
+tab 阿里云 DashScope
+
+此示例为阿里云 DashScope（非兼容 OpenAI 格式）的嵌入模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_embed');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_embed_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_embed', '{
+    "type": "dense_embedding",
+    "model_name": "BAAI/bge-m3"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_embed_endpoint', '{
+    "ai_model_name": "ob_embed",
+    "url": "https://dashscope.aliyuncs.com/api/v1/services/embeddings/text-embedding/text-embedding",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "aliyun-dashscope"
+}');
+```
+
+tab 硅基流动
+
+此示例为硅基流动（SiliconFlow）的嵌入模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_embed');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_embed_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_embed', '{
+    "type": "dense_embedding",
+    "model_name": "BAAI/bge-m3"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_embed_endpoint', '{
+    "ai_model_name": "ob_embed",
+    "url": "https://api.siliconflow.cn/v1/embeddings",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "siliconflow"
+}');
+```
+
+tab 腾讯混元
+
+此示例为腾讯混元（Hunyuan）（兼容 OpenAI 格式）的嵌入模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_embed');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_embed_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_embed', '{
+    "type": "dense_embedding",
+    "model_name": "BAAI/bge-m3"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_embed_endpoint', '{
+    "ai_model_name": "ob_embed",
+    "url": "https://api.hunyuan.cloud.tencent.com/v1/embeddings",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "hunyuan-openAI"
+}');
+```
+:::
+
+### 注册文本生成模型及端点
+
+用于 `AI_COMPLETE` 和 `AI_PROMPT`。
+
+:::tab
+tab 阿里云
+
+此示例为阿里云（兼容 OpenAI 格式）的文本生成模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_complete');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_complete_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_complete', '{
+    "type": "completion",
+    "model_name": "THUDM/GLM-4-9B-0414"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_complete_endpoint', '{
+    "ai_model_name": "ob_complete",
+    "url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "aliyun-openAI"
+}');
+```
+
+tab 阿里云 DashScope
+
+此示例为阿里云 DashScope（非兼容 OpenAI 格式）的文本生成模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_complete');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_complete_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_complete', '{
+    "type": "completion",
+    "model_name": "THUDM/GLM-4-9B-0414"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_complete_endpoint', '{
+    "ai_model_name": "ob_complete",
+    "url": "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "aliyun-dashscope"
+}');
+```
+
+tab deepseek
+
+此示例为 deepseek 的文本生成模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_complete');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_complete_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_complete', '{
+    "type": "completion",
+    "model_name": "THUDM/GLM-4-9B-0414"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_complete_endpoint', '{
+    "ai_model_name": "ob_complete",
+    "url": "https://api.deepseek.com/chat/completions",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "deepseek"
+}');
+```
+
+tab 硅基流动
+
+此示例为硅基流动（SiliconFlow）的文本生成模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_complete');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_complete_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_complete', '{
+    "type": "completion",
+    "model_name": "THUDM/GLM-4-9B-0414"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_complete_endpoint', '{
+    "ai_model_name": "ob_complete",
+    "url": "https://api.siliconflow.cn/v1/chat/completions",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "siliconflow"
+}');
+```
+
+tab 腾讯混元
+
+此示例为腾讯混元（Hunyuan）（兼容 OpenAI 格式）的文本生成模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_complete');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_complete_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_complete', '{
+    "type": "completion",
+    "model_name": "THUDM/GLM-4-9B-0414"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_complete_endpoint', '{
+    "ai_model_name": "ob_complete",
+    "url": "https://api.hunyuan.cloud.tencent.com/v1/chat/completions",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "hunyuan-openAI"
+}');
+```
+:::
+
+### 注册重排序模型及端点
+
+用于 `AI_RERANK`。
+
+:::tab
+tab 阿里云 DashScope
+
+此示例为阿里云 DashScope（非兼容 OpenAI 格式）的重排序模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_rerank');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_rerank_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_rerank', '{
+    "type": "rerank",
+    "model_name": "BAAI/bge-reranker-v2-m3"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_rerank_endpoint', '{
+    "ai_model_name": "ob_rerank",
+    "url": "https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "aliyun-dashscope"
+}');
+```
+
+tab 硅基流动
+
+此示例为硅基流动（SiliconFlow）的重排序模型和端点注册示例。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_rerank');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_rerank_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_rerank', '{
+    "type": "rerank",
+    "model_name": "BAAI/bge-reranker-v2-m3"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_rerank_endpoint', '{
+    "ai_model_name": "ob_rerank",
+    "url": "https://api.siliconflow.cn/v1/rerank",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "siliconflow"
+}');
+```
+:::
+
+### 注册多模态模型（图片）
+
+<main id="notice" type='notice'>
+<h4>注意</h4>
+<p>图片嵌入与图片处理从 V5.0.1 版本开始支持。</p>
+</main>
+
+与文本模型相同，先通过 `CREATE_AI_MODEL` 注册模型，再通过 `CREATE_AI_MODEL_ENDPOINT` 注册端点。以下示例基于阿里云 DashScope（兼容 OpenAI 格式）。请将 `access_key` 替换为你的实际 API Key。
+
+#### 注册图片嵌入模型及端点
+
+用于 `AI_EMBED` 图片嵌入。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_vl_embed');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_vl_embed_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_vl_embed', '{
+    "type": "dense_embedding",
+    "model_name": "qwen2.5-vl-embedding"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_vl_embed_endpoint', '{
+    "ai_model_name": "ob_vl_embed",
+    "url": "https://dashscope.aliyuncs.com/compatible-mode/v1/embeddings",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "aliyun-openAI"
+}');
+```
+
+调用示例（图片 URL 或 BASE64 二进制数据）：
+
+```sql
+-- 需将图片 URL 信息替换为实际的图片 URL
+SET @img_url = 'https://example.com/image.jpg';
+-- 图片 URL 嵌入
+SELECT AI_EMBED('ob_vl_embed', @img_url, '{"type":"image"}');
+
+-- 使用二进制图片数据（通过 BASE64 编码）
+SET @img_base64 = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx';
+-- 图片二进制数据嵌入（BASE64）
+SELECT AI_EMBED('ob_vl_embed', FROM_BASE64(@img_base64), '{"type":"image"}');
+```
+
+#### 注册图片处理模型及端点
+
+用于结合 `AI_COMPLETE` 与 `AI_PROMPT` 进行图片处理，可选择图片 URL 或二进制图片数据（BASE64）。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_vl_complete');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_vl_complete_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_vl_complete', '{
+    "type": "completion",
+    "model_name": "qwen3.5-plus"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_vl_complete_endpoint', '{
+    "ai_model_name": "ob_vl_complete",
+    "url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+    -- 需替换为实际的 access_key
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "aliyun-openAI"
+}');
+```
+
+调用示例：
+
+```sql
+-- 单图片处理（图片 URL）
+SELECT AI_COMPLETE(
+  'ob_vl_complete',
+  AI_PROMPT('请描述这张图片 {img_0}', @img_url)
+);
+
+-- 单图片处理（BASE64）
+SELECT AI_COMPLETE(
+  'ob_vl_complete',
+  AI_PROMPT('请描述这张图片 {img_0}', FROM_BASE64(@img_base64))
+);
+```
+
+## 配置并发批处理（可选）
+
+若使用 `AI_COMPLETE` 或 `AI_EMBED` 处理多行数据，可在注册或修改端点时，通过 `parameters` 字段配置并发批处理参数（如 `min_concurrency`、`max_concurrency`），以控制批量请求的并发度。不配置时默认并发范围为 10~100。
+
+```sql
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT('my_endpoint',
+  JSON_OBJECT(
+    "ai_model_name", "my_model",
+    "url", "https://api.deepseek.com/chat/completions",
+    "access_key", "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider", "deepseek",
+    "parameters", '{"min_concurrency": 5, "max_concurrency": 50}'
+  )
+);
+```
+
+参数说明、调优建议及更多示例，详见 [CREATE_AI_MODEL_ENDPOINT](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/1000.dbms-ai-service-mysql/400.create-ai-model-endpoint-mysql.md) 和 [ALTER_AI_MODEL_ENDPOINT](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/1000.dbms-ai-service-mysql/500.alter-ai-model-endpoint-mysql.md)。
+
+## 相关文档
+
+* [AI 函数服务快速上手](100.ob-vector-search-ai-function-quick-start.md)：注册完成后运行第一个示例的步骤。
+* [AI 函数服务使用及示例](300.ob-vector-search-ai-function.md)：各 AI 函数的语法与更多示例。
+* [DBMS_AI_SERVICE 包](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/1000.dbms-ai-service-mysql/100.dbms-ai-service-overview-mysql.md)：AI 模型与端点的完整参数说明。

@@ -1,0 +1,38 @@
+---
+title: DBA_OB_LS_LOCATIONS
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699099.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# DBA_OB_LS_LOCATIONS
+
+DBA_OB_LS_LOCATIONS 
+========================================
+
+功能 
+-----------------------
+
+展示本租户的日志流（ LS ）副本分布信息。
+
+字段说明 
+-------------------------
+
+
+
+|     字段名称     |      类型       | 是否可以为 NULL |                                                                                                                                                             描述                                                                                                                                                              |
+|--------------|---------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CREATE_TIME        | VARCHAR2(19)    | NO         | 创建时间                                                                                                                                                                                                                                                                                                                       |
+| MODIFY_TIME        | VARCHAR2(19)    | NO         | 修改时间                                                                                                                                                                                                                                                                                                                       |
+| SVR_IP       | varchar2(46)   | NO         | 服务器 IP 地址                                                                                                                                                                                                                                                                                                                   |
+| SVR_PORT     | NUMBER    | NO         | 服务器端口号                                                                                                                                                                                                                                                                                                                      |
+| SQL_PORT     | NUMBER    | NO         | SQL 端口号                                                                                                                                                                                                                                                                                                                     |
+| ZONE         | varchar2(128)  | NO         | Zone 名称                                                                                                                                                                                                                                                                                                                     |
+| ROLE         | varchar2(8)    | NO         | 副本角色 <li> `LEADER`   <li> `FOLLOWER`                                                                                                                                                                                           |
+| MEMBER_LIST  | varchar2(4480) | NO         | 副本成员列表：当角色为 `LEADER` 时，该字段有效；否则为 `NULL`                                                                                                                                                                                                                                                                                     |
+| PAXOS_REPLICA_NUMBER       | NUMBER    | NO         | Paxos 法定副本数：当角色为 `LEADER` 时，该字段有效；否则为 `NULL`                                                                                                                                                                                                                                                                                |
+| REPLICA_TYPE | varchar2(18)   | NO         | 副本类型。当前仅支持 `FULL` 全功能类型副本     |

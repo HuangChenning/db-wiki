@@ -1,0 +1,742 @@
+---
+title: CREATE TABLE
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686098.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE TABLE
+
+## 描述
+
+该语句用来在数据库中创建一张新表。
+
+## 语法
+
+```sql
+CREATE [hint_options] [TEMPORARY] TABLE [IF NOT EXISTS] table_name
+      (table_definition_list) [table_option_list] [partition_option] [table_column_group_option] [IGNORE | REPLACE] [AS] select;
+
+CREATE TABLE [TEMPORARY] [IF NOT EXISTS] table_name
+      LIKE table_name;
+
+table_definition_list:
+    table_definition [, table_definition ...]
+
+table_definition:
+      column_definition_list
+    | [CONSTRAINT [constraint_name]] PRIMARY KEY index_desc
+    | [CONSTRAINT [constraint_name]] UNIQUE {INDEX | KEY}
+            [index_name] index_desc
+    | [CONSTRAINT [constraint_name]] FOREIGN KEY
+            [index_name] index_desc
+            REFERENCES reference_definition
+            [match_action][opt_reference_option_list]
+    | [FULLTEXT] {INDEX | KEY} [index_name] [index_type] (key_part,...) [WITH PARSER tokenizer_option] [PARSER_PROPERTIES[=](parser_properties_list)] [FTS_INDEX_TYPE [=] {MATCH | PHRASE_MATCH}]
+      [index_option_list] [index_column_group_option]
+    | SEARCH INDEX [index_name] (search_index_column [, search_index_column ...])
+    | index_json_clause
+    | [CONSTRAINT [constraint_name]] CHECK(expression) constranit_state
+
+column_definition_list:
+    column_definition [, column_definition ...]
+
+column_definition:
+     column_name data_type
+         [DEFAULT const_value] [AUTO_INCREMENT]
+         [NULL | NOT NULL] [[PRIMARY] KEY] [UNIQUE [KEY]] [COMMENT string_value] [SKIP_INDEX(skip_index_option_list)]
+   | column_name data_type
+         [GENERATED ALWAYS] AS (expr) [VIRTUAL | STORED]
+         [opt_generated_column_attribute]
+
+skip_index_option_list:
+    skip_index_option [,skip_index_option ...]
+
+skip_index_option:
+    MIN_MAX
+    | SUM
+
+index_desc:
+   (column_desc_list) [index_type] [index_option_list]
+
+match_action:
+   MATCH {SIMPLE | FULL | PARTIAL}
+
+opt_reference_option_list:
+   reference_option [,reference_option ...]
+
+reference_option:
+   ON {DELETE | UPDATE} {RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT}
+
+tokenizer_option:
+    SPACE
+    | NGRAM
+    | BENG
+    | IK
+    | NGRAM2
+
+parser_properties_list:
+    parser_properties, [parser_properties]
+
+parser_properties:
+    min_token_size = int_value
+    | max_token_size = int_value
+    | ngram_token_size = int_value
+    | ik_mode = 'char_value'
+    | min_ngram_size = int_value
+    | max_ngram_size = int_value
+
+key_part:
+    {index_col_name [(length)] | (expr)} [ASC | DESC]
+
+search_index_column:
+    column_name [WITH (search_col_option_list)]
+
+search_col_option_list:
+    [INCLUDE_PATHS = ('path1'[, 'path2']...)]
+    [| EXCLUDE_PATHS = ('path1'[, 'path2']...)]
+    [| INCLUDE_TYPES = (type1[, type2]...)]
+
+index_type:
+    USING BTREE
+
+index_option_list:
+    index_option [ index_option ...]
+
+index_option:
+      [GLOBAL | LOCAL]
+    | block_size
+    | compression
+    | STORING(column_name_list)
+    | COMMENT string_value
+    | STORAGE_CACHE_POLICY(storage_cache_policy_option)
+
+table_option_list:
+    table_option [ table_option ...]
+
+table_option:
+      [DEFAULT] {CHARSET | CHARACTER SET} [=] charset_name
+    | [DEFAULT] COLLATE [=] collation_name
+    | table_tablegroup
+    | block_size
+    | lob_inrow_threshold [=] num
+    | compression
+    | AUTO_INCREMENT [=] INT_VALUE
+    | COMMENT string_value
+    | ROW_FORMAT [=] REDUNDANT|COMPACT|DYNAMIC|COMPRESSED|DEFAULT
+    | PCTFREE [=] num
+    | parallel_clause
+    | DUPLICATE_SCOPE [=] 'none|cluster'
+    | TABLE_MODE [=] 'table_mode_value'
+    | auto_increment_cache_size [=] INT_VALUE
+    | READ {ONLY | WRITE}
+    | ORGANIZATION [=] {INDEX | HEAP}
+    | enable_macro_block_bloom_filter [=] {True | False}
+    | DYNAMIC_PARTITION_POLICY [=] (dynamic_partition_policy_list)
+    | SEMISTRUCT_ENCODING_TYPE [=] 'encoding' # 从 V4.4.1 版本开始废弃，使用 SEMISTRUCT_PROPERTIES 替代。
+    | MICRO_BLOCK_FORMAT_VERSION [=] {1|2}
+    | STORAGE_CACHE_POLICY (storage_cache_policy_option)
+    | CLUSTER BY (column_name_list)
+    | HMS_CATALOG_NAME [=] string_value
+    | COLUMN_NAME_CASE_SENSITIVE [=] {True | False}
+    | MERGE_ENGINE = {delete_insert | partial_update | append_only} 
+    | TTL [=] col_name + INTERVAL interval_num ttl_unit BY COMPACTION
+    | DELTA_FORMAT [=] 'flat | encoding'
+    | SKIP_INDEX_LEVEL [=] {1 | 0}
+
+parallel_clause:
+    {NOPARALLEL | PARALLEL integer}
+
+table_mode_value:
+    NORMAL
+    | QUEUING
+    | MODERATE
+    | SUPER
+    | EXTREME
+
+dynamic_partition_policy_list:
+    dynamic_partition_policy_option [, dynamic_partition_policy_option ...]
+
+dynamic_partition_policy_option:
+    ENABLE = {true | false}
+    | TIME_UNIT = {'hour' | 'day' | 'week' | 'month' | 'year'}
+    | PRECREATE_TIME = {'-1' | '0' | 'n {hour | day | week | month | year}'}
+    | EXPIRE_TIME = {'-1' | '0' | 'n {hour | day | week | month | year}'}
+    | TIME_ZONE = {'default' | 'time_zone'}
+    | BIGINT_PRECISION = {'none' | 'us' | 'ms' | 's'}
+
+partition_option:
+      PARTITION BY HASH(expression)
+      [subpartition_option] PARTITIONS partition_count
+    | PARTITION BY KEY([column_name_list])
+      [subpartition_option] PARTITIONS partition_count
+    | PARTITION BY RANGE {(expression) | COLUMNS (column_name_list)}
+      [subpartition_option] (range_partition_list) [STORAGE_CACHE_POLICY = {"hot" | "auto" | "cold" | "none"}]
+    | PARTITION BY LIST {(expression) | COLUMNS (column_name_list)}
+      [subpartition_option] PARTITIONS partition_count
+    | PARTITION BY RANGE [COLUMNS]([column_name_list]) [SIZE('size_value')] (range_partition_list)
+    | PARTITION BY RANDOM [SIZE('size_value')]
+
+subpartition_option:
+      SUBPARTITION BY HASH(expression)
+      SUBPARTITIONS subpartition_count
+    | SUBPARTITION BY KEY(column_name_list)
+      SUBPARTITIONS subpartition_count
+    | SUBPARTITION BY RANGE {(expression) | COLUMNS (column_name_list)}
+      (range_subpartition_list) [STORAGE_CACHE_POLICY = {"hot" | "auto" | "cold" | "none"}]
+    | SUBPARTITION BY LIST(expression)
+
+storage_cache_policy_option:
+    GLOBAL = {"hot" | "auto" | "cold" | "none"}
+    | timeline_strategy_list
+
+timeline_strategy_list:
+    BOUNDARY_COLUMN = column_name
+    | BOUNDARY_COLUMN_UNIT = {"s" | "ms"}
+    | HOT_RETENTION = intnum retention_time_unit
+    | MIXED_RETENTION = intnum retention_time_unit
+    | GRANULARITY = {"partition" | "block"}
+
+retention_time_unit:
+    YEAR
+    | MONTH
+    | WEEK
+    | DAY
+    | HOUR
+    | MINUTE
+
+range_partition_list:
+    range_partition [, range_partition ...]
+
+range_partition:
+    PARTITION partition_name
+    VALUES LESS THAN {(expression_list) | MAXVALUE}
+    [STORAGE_CACHE_POLICY = {"hot" | "auto" | "none"}]
+
+range_subpartition_list:
+    range_subpartition [, range_subpartition ...]
+
+range_subpartition:
+    SUBPARTITION subpartition_name
+    VALUES LESS THAN {(expression_list) | MAXVALUE}
+    [STORAGE_CACHE_POLICY = {"hot" | "auto" | "none"}]
+
+expression_list:
+    expression [, expression ...]
+
+column_name_list:
+    column_name [, column_name ...]
+
+partition_name_list:
+    partition_name [, partition_name ...]
+
+partition_count | subpartition_count:
+    INT_VALUE
+
+table_column_group_option/index_column_group_option:
+      WITH COLUMN GROUP(all columns)
+    | WITH COLUMN GROUP(each column)
+    | WITH COLUMN GROUP(all columns, each column)
+
+index_json_clause:
+    [UNIQUE] INDEX idx_json_name((CAST(json_column_name->'$.json_field_name' AS UNSIGNED ARRAY)))
+    | INDEX idx_json_name(column_name, [column_name, ...] (CAST(json_column_name->'$.json_field_name' AS CHAR(n) ARRAY)))
+```
+
+## 参数说明
+
+|                        **参数**                        |        **描述**        |
+|------------------------------------------------------|-----------------------------------|
+| hint_options | 为可选项，指定 Hint 选项。支持手动指定旁路导入 Hint，包括 APPEND、DIRECT、NO_DIRECT。对应的 Hint 格式为 <code>/*+ [APPEND \| DIRECT(need_sort,max_error,load_type)] parallel(N) \|NO_DIRECT */</code>，有关 CREATE TABLE AS SELECT 语句旁路导入数据的内容，参见 [全量旁路导入](../../../../../620.obap/300.obap-data-transfer/300.data-import/200.load-data-import.md) 中的**使用 CREATE TABLE AS SELECT 语句旁路导入数据**章节。 |
+| TEMPORARY |为可选项，表示将该表创建为临时表。<main id="notice" type='explain'><h4>说明</h4><p><li>对于 V4.3.x 版本，该参数从 OceanBase 数据库 V4.3.5 BP4 版本开始支持。</li><br><li>对于 V4.6.x 版本，该参数从 OceanBase 数据库 V4.6.0 版本开始支持。</p></li></main>|
+| IF NOT EXISTS | 如果指定 `IF NOT EXISTS`，即使待创建的表已存在，也不会报错；如果不指定且待创建的表已存在，则系统会报错。 |
+| IGNORE \| REPLACE | 可选项，使用 `CREATE TABLE ... SELECT` 语句时指示如何处理重复唯一键值的行。当有重复唯一键值的行时，如果不指定 <code>IGNORE</code> 或者 <code>REPLACE</code> 将会报错。<ul><li><code>IGNORE</code>：如果新表中的唯一键值与复制的数据中的某行发生冲突，那么该冲突行将被忽略，不会被复制到新表中。即 <code>IGNORE</code> 选项会跳过重复的数据，只复制那些不会造成唯一键冲突的行。</li><li><code>REPLACE</code>：在遇到唯一键值重复的数据行，原新表中的行将被替换为新复制的数据中的行。</li></ul>|
+| PRIMARY KEY                                          | 为创建的表指定主键。如果不指定，则使用隐藏主键。OceanBase 数据库支持修改表的主键或通过 `ALTER TABLE` 语句为表添加主键，参见 [ALTER TABLE](1600.alter-table-of-mysql-mode.md)。     |
+| FOREIGN KEY                                          | 为创建的表指定外键。如果不指定外键名，则会使用表名 + `OBFK` + 创建时间命名。（例如，在 2021 年 8 月 1 日 00:00:00 为 `t1` 表创建的外键名称为 `t1_OBFK_1627747200000000`）。外键允许跨表交叉引用相关数据，当 `UPDATE` 或 `DELETE` 操作影响与子表相匹配行的父表中键值时，其结果取决于 `ON UPDATE` 和 `ON DELETE` 子句的引用操作：<ul><li>`CASCADE`：表示从父表中删除或更新行，并自动删除或更新子表中匹配的行。</li><li>`SET NULL`：表示从父表中删除或更新行，并将子表中的外键列设置为 `NULL`。</li><li>`RESTRICT`：表示拒绝对父表的删除或更新操作。</li><li>`NO ACTION`：指定延迟检查。</li></ul>此外还支持 `SET DEFAULT` 操作。  |
+| FULLTEXT | 可选项，指定创建全文索引。有关创建全文索引的详细信息，参见 [创建索引](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md) 中的 **创建全文索引** 章节。<main id="notice" type='notice'><h4>注意</h4><p>当前版本只支持创建局部全文索引。</p></main>|
+| SEARCH INDEX | 可选项，指定创建搜索索引（Search Index）。可在 `SEARCH INDEX [index_name] (search_index_column [, search_index_column ...])` 中按列声明；`search_index_column` 支持 `column_name [WITH (...)]`。其中 `WITH` 为列级选项，仅对 JSON 列生效，支持 `INCLUDE_PATHS`、`EXCLUDE_PATHS`（二选一）和 `INCLUDE_TYPES`。有关创建搜索索引的详细信息，参见 [创建索引](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md) 中的 **创建搜索索引** 章节。<main id="notice" type='notice'><h4>注意</h4><p><li>当前版本只支持创建局部搜索索引。</li><li>搜索索引支持应用于 JSON、单级数组以及多种标量类型列，完整列表请参见 [CREATE INDEX](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md) 中的 **搜索索引支持的数据类型** 章节。</li></p></main> |
+| WITH PARSER tokenizer_option                 | 可选项，指定全文索引的分词器。详细介绍可参见下文 [tokenizer_option](#tokenizer_option)。|
+| PARSER_PROPERTIES\[=\](parser_properties_list) | 可选项，指定分词器的属性。详细介绍可参见下文 [parser_properties](#parser_properties)。|
+| FTS_INDEX_TYPE [=] {MATCH \| PHRASE_MATCH} | 可选项，用于设置全文索引的类型。`MATCH` 表示词项匹配索引，支持基于 bm25 算法的匹配和打分，存储内容包含词元（token）、文档ID、词频、文档长度等信息。`PHRASE_MATCH` 表示短语匹配索引，能更高效地支持短语查询，是 `MATCH` 的功能超集，同时还会存储词的位置列表。|
+| KEY \| INDEX                                         | 为创建的表指定键或索引。如果不指定索引名，则会使用索引引用的第一列作为索引名，如果命名存在重复，则会使用下划线（_）+ 序号的方式命名。（例如，使用 `c1` 列创建的索引如果命名重复，则会将索引命名为 `c1_2`。） 您可以通过 `SHOW INDEX` 语句查看表上的索引。    |
+| key_part        | 创建（函数）索引。 |
+| index_col_name  | 指定索引的列名，每个列名后都支持 ASC（升序），不支持 DESC（降序）。默认为升序。建立索引的排序方式为：首先以 `index_col_name` 中第一个列的值排序；该列值相同的记录，按下一列名的值排序；以此类推。 |
+| expr            | 表示合法的函数索引表达式，且允许是布尔表达式，例如 `c1=c1`。<main id="notice" type='notice'><h4>注意</h4><p> OceanBase 数据库当前版本禁止创建生成列上的函数索引。 </p></main>              |
+| ROW_FORMAT                                           | 指定表是否开启 Encoding 存储格式。 <ul><li> `redundant`：不开启 Encoding 存储格式。   <li> `compact`：不开启 Encoding 存储格式。</li>   <li> `dynamic`：Encoding 存储格式。   <li> `compressed`：Encoding 存储格式。</li>   <li> `default`：等价 `dynamic` 模式。</li></ul>    |
+| \[GENERATED ALWAYS\] AS (expr) \[VIRTUAL \| STORED\] | 创建生成列，`expr` 为用于计算列值的表达式。 <ul><li> `VIRTUAL`：列值不会被存储，而是在读取行时，在任何 `BEFORE` 触发器之后立即计算。虚拟列不占用存储空间。</li>   <li> `STORED`：在插入或更新行时评估和存储列值。存储列确实需要存储空间并且可以被索引。</li></ul>    |
+| BLOCK_SIZE                                           | 指定表的微块大小。  |
+| lob_inrow_threshold                                  | 用于配置 `LOB` 字段 `INROW` 阈值，当某个 `LOB` 字段数据大小超过该阈值时，超过部分会转为`OUTROW` 存储在 LOB Meta 表中，默认值由变量 `ob_default_lob_inrow_threshold` 控制。|
+| COMPRESSION                                          | 指定表的压缩算法，取值如下： <ul><li> `none`：不使用压缩算法。</li>   <li> `lz4_1.0`: 使用 `lz4` 压缩算法。</li>   <li> `zstd_1.0`: 使用 `zstd` 压缩算法。</li>  <li> `snappy_1.0`: 使用 `snappy` 压缩算法。</li> </ul>    |
+| CHARSET \| CHARACTER SET                             | 指定表中列的默认字符集，可使用的字符集请参见 [字符集](../100.basic-elements-of-mysql-mode/300.character-set-and-collation-of-mysql-mode/200.character-set-of-mysql-mode.md)。    |
+| COLLATE                                              | 指定表中列的默认字符序，可使用的字符序请参见 [字符序](../100.basic-elements-of-mysql-mode/300.character-set-and-collation-of-mysql-mode/300.collation-of-mysql-mode.md)。  |
+| table_tablegroup                                     | 指定表所属的 `tablegroup`。   |
+| AUTO_INCREMENT                                       | 指定表中自增列的初始值。OceanBase 数据库支持使用自增列作为分区键。  |
+| COMMENT                                              | 注释。不区分大小写。|
+| PCTFREE                                              | 指定宏块保留空间百分比。   |
+| parallel_clause                                      | 指定表级别的并行度： <ul><li> `NOPARALLEL`：并行度为 `1`，默认配置 </li>  <li> `PARALLEL integer`：指定并行度，`integer` 取值大于等于 `1`。 </li></ul>    |
+| DUPLICATE_SCOPE |  指定复制表的属性，取值如下：<ul><li> `none`：表示该表是一个普通表，为默认值。</li><li> `cluster`：表示该表是一个复制表，Leader 需要将事务复制到当前租户的所有 F（全能）副本及 R（只读）副本。</li></ul>OceanBase 数据库目前仅支持 `cluster` 级别的复制表。|
+| CHECK                                                | 限制列中的值的范围。 <ul><li> 如果对单个列定义 `CHECK` 约束，那么该列级约束可以写到列定义中，并且可以指定名称。</li>   <li> 如果对一个表定义 `CHECK` 约束，那么此约束会应用于表中多个列，且允许出现在列的定义前。在删除表时，表中创建的 `CHECK` 约束也会一起被删除。</li></ul> 可以通过如下方式查看约束信息： <li> 使用 `SHOW CREATE TABLE` 命令 </li>  <li> 查看 `information_schema.TABLE_CONSTRAINTS` 视图 </li>  <li> 查看 `information_schema.CHECK_CONSTRAINTS` 视图  </li> </ul>    |
+| constraint_name                                      | 约束名称，最多包含 64 个字符。 <ul><li> 约束名称的开头结尾中间都允许有空格，但需要用"\`"标识名称的开头和结尾。   <li> 约束名称可以包含特殊字符"$"。   <li> 如果约束名称为保留字，需要用"\`"标识，否则会报错。   <li> 在同一 Database 下不允许 `CHECK` 约束的名称重复。</ul>    |
+| expression                                           | 约束表达式。 <ul><li> `expression` 不允许为空。   <li> `expression` 结果不能为非布尔类型。  <li> `expression` 不能包含不存在的列。 </ul>   |
+| table_column_group_option/index_column_group_option | 指定表或索引的列存选项。具体解释如下：<ul><li><code>WITH COLUMN GROUP(all columns, each column)</code>：指定创建行存列存冗余的表或索引。</li><li><code>WITH COLUMN GROUP(all columns)</code>：指定添加行存表或索引。</li><li><code>WITH COLUMN GROUP(each column)</code>：指定创建列存表或索引。</li></ul>|
+| SKIP_INDEX | 标识列的 Skip Index 属性。 取值如下：<ul><li><code>MIN_MAX</code>：是 Skip Index 中最通用的聚合数据类型，它会在索引节点粒度下存储被索引列的最大值、最小值和 Null Count。这种类型的数据可以加速下推的 Filter 和 `MIN/MAX` 聚合的下推。</li><li> <code>SUM</code>：用于加速数值类型的 `SUM` 聚合的下推。</li></ul>  <main id="notice" type='notice'><h4>注意</h4><p><ul><li>JSON 和空间数据类型的列禁止创建 Skip Index。</li><li>生成列禁止创建 Skip Index。</li></ul></p></main>|
+| index_json_clause | 指定创建多值索引子句。更多多值索引信息，参见 [创建索引](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md) 下 **创建多值索引** 章节。<main id="notice" type='notice'><h4>注意</h4><p>多值索引功能目前处于实验阶段，不推荐在生产环境中使用，以免影响系统稳定性。</p></main>|
+| json_column_name  | 指定表 `JSON` 数据类型的列名称。|
+| idx_json_name     | 指定待创建的多值索引的索引名。|
+| json_field_name   | Json 列中需要创建索引的字段名称。|
+| TABLE_MODE        | 可选项，用于指定合并触发阈值与合并策略，即控制数据转储后的合并行为。取值的详细介绍可参见下文 [table_mode_value](#table_mode_value)。|
+| auto_increment_cache_size | 可选项，用于设置缓存的自增值个数。该参数默认值为 0，表示该项未进行配置，系统将采用租户级别的配置项（[auto_increment_cache_size](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/100.auto_increment_cache_size-global.md)）作为自增列的缓存大小设置。|
+| READ {ONLY \| WRITE} | 指定表的读写权限。具体如下：<ul><li>`READ ONLY`：表示表只能被读取，不能被修改或删除。<main id="notice" type='notice'><h4>注意</h4><p>表级别的 <code>READ ONLY</code> 参数对具有 <code>SUPER</code> 权限的用户不生效，只对普通用户生效。</p></main></li><li>`READ WRITE`：默认值，表示表可以被读取、修改和删除。</li></ul>|
+| ORGANIZATION [=] {INDEX \| HEAP} | 指定表中数据行的存储顺序，即指定表组织模式。取值如下：<ul><li>`INDEX`：表示索引组织表。</li><li>`HEAP`：表示堆组织表。</li></ul> 如果不指定 `ORGANIZATION` 选项，则该选项取值与配置项 [default_table_organization](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2150.default_table_organization.md) 的值相同。|
+| enable_macro_block_bloom_filter [=] {True \| False} |用于指定是否持久化宏块级别 bloom filter。取值如下：<ul><li><code>True</code>：开启持久化宏块级别 bloom filter。</li></ul><ul></li></li><li><code>False</code>：关闭持久化宏块级别 bloom filter。</li></ul>|
+| DYNAMIC_PARTITION_POLICY \[=\] \(dynamic_partition_policy_list\) | 指定表的动态分区管理属性，实现分区的自动创建和删除。`dynamic_partition_policy_list` 动态分区策略的可配置参数列表，各参数用英文逗号分隔，详细介绍可参见下文 [dynamic_partition_policy_option](#dynamic_partition_policy_option)。|
+| PARTITION BY RANGE \[COLUMNS\]\(\[column_name_list\]\) \[SIZE\('size_value'\)\] | 用于指定创建自动分区表。详细介绍可参见 [自动分区分裂](../../../../300.database-object-management/100.manage-object-of-mysql-mode/300.manage-partitions-of-mysql-mode/250.partition-splitting-of-mysql-mode/300.automatic-partition-splitting-of-mysql-mode.md) 中的创建表时的自动分区语法。|
+| PARTITION BY RANDOM [SIZE('size_value')] | 用于指定创建随机分布表。其中 `SIZE('size_value')` 为可选项，用于指定每个分区的数据容量阈值，超出后触发自动新增分区，支持 `MB`、`GB` 等单位。如果不指定 `SIZE('size_value')` 参数，则该选项取值与配置项 [auto_split_tablet_size](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/450.auto_split_tablet_size.md) 的值相同。更多关于随机分布表的介绍信息，参见 [随机分布表概述](../../../../300.database-object-management/100.manage-object-of-mysql-mode/300.manage-partitions-of-mysql-mode/270.random-partition-table-of-mysql-mode/100.random-partition-table-overview-of-mysql-mode.md)。 <main id="notice" type='explain'><h4>说明</h4><p>该参数从 V5.0.1 版本开始引入。</p></main>|
+| SEMISTRUCT_ENCODING_TYPE | 可选项，用于指定半结构化编码类型。具体如下：<ul><li>`''`，表示不启用半结构化编码。</li><li>`'encoding'`，表示启用半结构化编码。</li></ul><main id="notice" type='notice'><h4>注意</h4><p>从 V4.4.1 版本开始，<code>semistruct_encoding_type</code> 已废弃，使用 <code>semistruct_properties</code> 替代。</p></main>|
+| SEMISTRUCT_PROPERTIES | 可选项，用于指定半结构化编码类型，以键值对形式填写。具体如下：<ul><li>`encoding_type`：表示半结构化编码类型，取值为 `encoding` 或 `none`，默认值为 `none`。</li><li>`freq_threshold`：表示频率阈值，取值范围 `(0, 100]`，默认值为 `90`。对于 JSON 对象中出现频率高于此阈值的路径，系统会将其作为独立的子列存储，这些子列被称为频繁列。较低的 `freq_threshold` 值会增加频繁列的数量，从而提高压缩比，但同时也会增加查询性能开销。</li></ul></br>功能使用说明可参见 <a href="../100.basic-elements-of-mysql-mode/100.data-type-of-mysql-mode/800.json-formatted-data-type-of-mysql-mode/200.create-a-json-value-of-mysql-mode.md">使用半结构化编码</a>。<main id="notice" type='notice'><h4>注意</h4><p>该参数从 V4.4.1 版本开始开始支持。</p></main>|
+|MICRO_BLOCK_FORMAT_VERSION|可选项，用于指定表的微块存储格式版本号。具体如下：取值范围为 [1,+∞) <ul>其中：<ul><li> `1`：表示和现有微块存储格式一致。</li><li>`2`：表示启用新的 Flat 行存储格式。</li><li>其他取值：会提示非法报错。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该参数从 V4.4.1 版本开始引入。</p></main>|
+|STORAGE_CACHE_POLICY|目前不需要关注。|
+|HMS_CATALOG_NAME [=] string_value|用于指定对接 Hive Metastore Service (HMS) 时需要访问的 catalog 名称。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该参数从 V4.5.0 版本开始引入。</p></main>|
+| CLUSTER BY (column_name_list) | 用于指定聚集列。更多指定聚集列的信息，参见 [创建表](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/200.create-a-table-for-mysql-tenant-of-mysql-mode.md) 中的 **创建表时指定聚集列** 章节。<main id="notice" type='notice'><h4>注意</h4><p>在 OceanBase 数据库 MySQL 租户下，如果用户没有显式指定表模式（<code>ORGNIZATION = HEAP</code>），但定义了 <code>CLUSTER BY</code> 选项，OceanBase 数据库将默认创建为堆组织表。</p></main> <main id="notice" type='explain'><h4>说明</h4><p>该参数在 V4.6.0 版本开始引入。</p></main>|
+|COLUMN_NAME_CASE_SENSITIVE [=] {True \| False} |用于设置生成列的列名是否区分大小写。<ul>其中：<ul><li><code>True</code>：开启列名的大小写敏感性功能。</li><li><code>False</code>：关闭列名的大小写敏感性功能。<main id="notice" type='explain'><h4>说明</h4><p>在 V4.5.0 之前的版本，默认大小写敏感，在 V4.5.0 及之后的版本默认大小写不敏感</p></main>|
+| DELTA_FORMAT [=] 'flat \| encoding' | 用于指定增量数据的存储格式，取值如下：<ul><li>`flat`：flat 数据格式。</li><li>`encoding`：encoding 数据格式。</li></ul> 可以通过修改配置项 `default_delta_format` 来调整表的默认增量数据存储格式，无需建表时指定，详细信息参见 [default_delta_format](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/1950.default_delta_format.md)。|
+| SKIP_INDEX_LEVEL [=] {1 \| 0} | 用于指定增量 SSTable 按照基线的行为生成 Skip Index 聚合信息，取值如下：<ul><li>0：表示表的列存基线都生成 Skip Index 聚合信息，行存基线根据 Schema 生成 Skip Index 聚合信息，增量 SSTable 不生成 Skip Index 聚合信息。</li><li>1：表示在 0 的基础上，`DELETE_INSERT`/`APPEND_ONLY` 模式的表的增量 SSTable 会根据基线的行为决定是否生成 Skip Index 聚合信息： <ul><li>列存：基线都生成 Skip Index，增量 SSTable 按照 Skip Index 聚合信息的生成策略生成 Skip Index。</li><li>行存：基线根据 schema 生成 Skip Index，增量 SSTable 也按照 Schema 生成 Skip Index。</li><li>行列混存：既有列存基线又有行存基线，增量 SSTable 根据列存基线行为，按照 Skip Index 聚合信息的生成策略生成 Skip Index。</li></ul> </li></ul> 如果没有指定 `SKIP_INDEX_LEVEL` 参数，系统会根据租户配置项 `default_skip_index_level` 设置的值确认 `SKIP_INDEX_LEVEL` 的默认值，详细信息参见 [default_skip_index_level](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2110.default_skip_index_level.md)。|
+| MERGE_ENGINE = {delete_insert \| partial_update \| append_only} | 可选项，用于指定表的更新模型，取值如下：<ul><li>`partial_update`：表示采用部分更新模式，每次更新仅记录修改的列（delta）。</li><li>`delete_insert`: 表示采用 `merge on write` 的方式，将 `update` 转为 `delete` 和 `insert`，并且写全列。</li><li>`append_only`：表示表的更新模式只允许 `INSERT` 操作，禁止其他所有会产生存储数据修改的 DML 和 DDL 操作。该模式下如果要做过期数据清理可以使用 TTL 功能。</li></ul> 如果不指定 `MERGE_ENGINE` 选项，则该选项取值与配置项 [default_table_merge_engine](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2130.default_table_merge_engine.md) 的值相同。 <main id="notice" type='explain'><h4>说明</h4><p>参数 <code>MERGE_ENGINE</code> 在创建表时指定之后，其配置值将不可修改。</p></main>|
+| TTL [=] col_name + INTERVAL interval_num ttl_unit BY COMPACTION | 指定表的 TTL 策略。创建 TTL 表时，当前版本表的更新模式 `MERGE_ENGINE` 支持 `append_only`、`delete_insert`或 `partial_update`。对于表更新模式为 `partial_update` 的表，仅支持主键列或内部隐藏列 `ora_rowscn` 作为 TTL 列，且不支持表上带索引。具体解释如下：<ul><li>`col_name`：指定表的 TTL 过滤列。当前版本支持指定内部隐藏列 `ora_rowscn`（记录最后一次更新的时间戳）或用户定义的时间列。指定为用户定义的时间列时，支持的列类型为 DATETIME、TIMESTAMP 和 DATE。</li><li>`interval_num`：指定过期时间的整数数值，取值范围 [0, +∞)。值为 `0` 时，时间单位 `ttl_unit` 可以为取值中的任意值，表示数据一旦提交即过期。</li><li>`ttl_unit`：指定过期时间的单位。取值支持 `SECOND`、`MINUTE`、`HOUR`、`DAY`、`MONTH` 或 `YEAR`。</li> <li>`BY COMPACTION`：表示使用 Compaction 删除过期数据。</li></ul> |
+
+### table_mode_value
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>在以下列出的 <code>TABLE_MODE</code> 模式中，除了 <code>NORMAL</code> 模式之外，所有模式都代表 <code>QUEUING</code> 表。这种 <code>QUEUING</code> 表是最基本的表类型，并且随后列出的几种模式（除了 NORMAL 模式）代表了使用更加积极的合并策略。</p>
+</main>
+
+* `NORMAL`：默认值，表示正常。在该模式下，数据转储后触发合并的概率极低。
+* `QUEUING`：在该模式下，数据转储后触发合并的概率低。
+* `MODERATE`：表示适度。在该模式下，数据转储后触发合并的概率为中等。
+* `SUPER`：表示超级。在该模式下，数据转储后触发合并的概率高。
+* `EXTREME`：表示极端。在该模式下，转储后触发合并的概率较高。
+
+更多有关合并的信息，请参见 [自适应合并](../../../../200.system-management/500.manage-data-storage/200.merge-management/320.adaptive-compaction.md)。
+
+### tokenizer_option
+
+* `SPACE`：默认值，表示按空格进行分词。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | min_token_size   | [1, 16] |
+  | max_token_size   | [10, 84]|
+
+* `NGRAM`：表示基于 N-Gram（中文）的分词方式。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | ngram_token_size | [1, 10] |
+
+* `NGRAM2`：表示将文本拆成 `min_ngram_size`～`max_ngram_size` 范围的连续字符。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | min_ngram_size   | [1, 16] |
+  | max_ngram_size   | [1, 16] |
+
+* `BENG`：基于 Beng （基础英文）的分词方式。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | min_token_size   | [1, 16] |
+  | max_token_size   | [10, 84]|
+
+* `IK`：表示基于 IK（中文）的分词方式。当前仅支持 `utf-8` 字符集。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | ik_mode          | <ul><li>`smart`</li><li>`max_word`</li></ul>|
+
+### parser_properties
+
+* `min_token_size`：表示最小分词长度，默认值为 3，取值范围是 1 到 16。
+
+* `max_token_size`：表示最大分词长度，默认值为 84，取值范围是 10 到 84。
+
+* `ngram_token_size`：表示 `NGRAM` 的分词长度，只有 `NGRAM` 分词器有效，默认值为 2，取值范围是 1 到 10。
+
+* `ik_mode`: 表示 `IK` 分词器的分词模式。取值如下：
+
+  * `smart`：默认值，表示词典中的词汇会被用来提高分词的准确性，词典中的词汇边界会被优先考虑，从而可能减少不必要的扩展。
+  * `max_word`：表示在词典中定义的词汇会被识别出来，但不会影响分词的最大化扩展。即使词典中有定义，`max_word` 模式仍然会尝试将文本切分成更多的词汇。
+
+* `min_ngram_size`：表示最小分词长度，的取值范围为[1,16]。
+
+* `max_ngram_size`: 表示最大分词长度，的取值范围为[1,16]。
+
+**示例如下：**
+
+```sql
+CREATE TABLE tbl1 (col1 VARCHAR(200), col2 TEXT,
+    FULLTEXT INDEX fidx(col2) WITH PARSER ik PARSER_PROPERTIES=(ik_mode='max_word'));
+```
+
+### dynamic_partition_policy_option
+
+* `ENABLE = {true | false}`：可选项，表示是否启用动态分区管理。可修改，取值如下：
+
+  * `true`：默认值，表示启用动态分区管理。
+  * `false`：表示禁用动态分区管理。
+
+* `TIME_UNIT = {'hour' | 'day' | 'week' | 'month' | 'year'}`：必选项，表示分区的时间单位，即自动创建分区边界的间隔。不可修改，取值如下：
+
+  * `hour`：按小时划分分区。
+  * `day`：按天划分分区。
+  * `week`：按周（星期）划分分区。
+  * `month`：按月划分分区。
+  * `year`：按年划分分区。
+
+* `PRECREATE_TIME = {'-1' | '0' | 'n {hour | day | week | month | year}'}`：可选项，表示预创建时间。调度一次动态分区管理，会预创建分区使得 **最大分区上界 > now() + precreate_time**。可修改，取值如下：
+
+  * `-1`：默认值，表示不预创建分区。
+  * `0`：表示仅预创建当前分区。
+  * `n {hour | day | week | month | year}`：表示预创建对应时间跨度的分区。例如，`3 hour` 表示预创建 3 小时内的分区。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p><ul><li>需要预创建多个分区时，分区边界的间隔为 <code>TIME_UNIT</code>。</li><li>首个预创建的分区边界为现存最大分区边界按 <code>TIME_UNIT</code> 向上取整。</li></ul></p>
+  </main>
+
+* `EXPIRE_TIME = {'-1' | '0' | 'n {hour | day | week | month | year}'}`：可选项，表示分区过期时间。调度一次动态分区管理，会删除所有 **分区上界 < now() - expire_time** 的过期分区。可修改，取值如下：
+
+  * `-1`：默认值，表示分区永不过期。
+  * `0`：表示除当前分区外，之前的所有分区均过期。
+  * `n {hour | day | week | month | year}`：表示分区过期时间。例如，`1 day` 表示分区过期时间为 1 天。
+
+* `TIME_ZONE = {'default' | 'time_zone'}`：可选项，表示判断当前时间与时间类型（`date`、`datetime`、`year` 类型）分区键大小时，依赖的时区信息。不可修改，取值如下：
+
+  * `default`：默认值，表示不额外配置时区，使用租户时区。除上述类型外，其他类型 `time_zone` 字段必须为 `default`。
+  * `time_zone`：表示自定义时区偏移值。例如，`+8:00` 等时区偏移值。
+
+* `BIGINT_PRECISION = {'none'| 'ms' | 's'}`：可选项，表示 `bigint` 类型分区键的时间戳精度。不可修改，取值如下：
+
+  * `none`：默认值，表示无精度（分区键不为 `bigint` 类型）。
+  * `ms`：毫秒精度。
+  * `s`：秒精度。
+
+更多有关创建动态分区表的信息，参见 [创建动态分区表](../../../../300.database-object-management/100.manage-object-of-mysql-mode/300.manage-partitions-of-mysql-mode/260.dynamic-partition-of-mysql-mode/200.create-a-dynamic-partition-table-of-mysql-mode.md)。
+
+**示例如下：**
+
+```sql
+CREATE TABLE tbl2 (col1 INT, col2 DATETIME)
+    DYNAMIC_PARTITION_POLICY(
+        ENABLE = true,
+        TIME_UNIT = 'hour',
+        PRECREATE_TIME = '3 hour',
+        EXPIRE_TIME = '1 day',
+        TIME_ZONE = '+8:00',
+        BIGINT_PRECISION = 'none')
+    PARTITION BY RANGE COLUMNS (col2)(
+        PARTITION P0 VALUES LESS THAN ('2024-11-11 13:30:00')
+        );
+```
+
+### storage_cache_policy
+
+目前不需要关注。
+
+## 示例
+
+* 创建数据库表。
+
+  ```sql
+  obclient> CREATE TABLE tbl1 (c1 INT PRIMARY KEY, c2 VARCHAR(50));
+  Query OK, 0 rows affected
+  ```
+
+* 创建带索引的表。
+
+  ```sql
+  obclient> CREATE TABLE tbl2 (c1 INT PRIMARY KEY, c2 INT, c3 INT, INDEX i1 (c2));
+  Query OK, 0 rows affected
+  ```
+
+* 创建带有函数索引的表 `tbl3`。
+
+  ```shell
+  obclient> CREATE TABLE tbl3 (c1 INT, c2 INT, INDEX i1 ((c1+1)), UNIQUE KEY ((c1+c2)));
+  Query OK, 0 rows affected
+
+  obclient> SHOW CREATE TABLE tbl3;
+  +-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Table | Create Table                                                                                                                                                                                                                                                                                                                                                                     |
+  +-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | tbl3    | CREATE TABLE `tbl3` (
+  `c1` int(11) DEFAULT NULL,
+  `c2` int(11) DEFAULT NULL,
+  UNIQUE KEY `functional_index` ((`c1` + `c2`)) BLOCK_SIZE 16384 LOCAL,
+  KEY `i1` ((`c1` + 1)) BLOCK_SIZE 16384 LOCAL
+  ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 2 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+  +-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  ```
+
+* 创建 Hash 分区，分区数为 `8` 的表。
+
+  ```sql
+  obclient> CREATE TABLE tbl4 (c1 INT PRIMARY KEY, c2 INT) PARTITION BY HASH(c1) PARTITIONS 8;
+  Query OK, 0 rows affected
+  ```
+
+* 创建一级分区为 Range 分区，二级分区为 Key 分区的表。
+
+  ```sql
+  obclient> CREATE TABLE tbl5 (c1 INT, c2 INT, c3 INT) PARTITION BY RANGE(c1)
+       SUBPARTITION BY KEY(c2, c3) SUBPARTITIONS 5
+       (PARTITION p0 VALUES LESS THAN(0), PARTITION p1 VALUES LESS THAN(100));
+  Query OK, 0 rows affected
+  ```
+
+* 创建一列为 `gbk`, 一列为 `utf8` 的表。
+
+  ```sql
+  obclient> CREATE TABLE tbl6 (c1 VARCHAR(10),
+                   c2 VARCHAR(10) CHARSET GBK COLLATE gbk_bin)
+               DEFAULT CHARSET utf8 COLLATE utf8mb4_general_ci;
+  Query OK, 0 rows affected
+  ```
+
+* 开启 Encoding 并使用 `zstd` 压缩，宏块保留空间为 `5%`。
+
+  ```sql
+  obclient> CREATE TABLE tbl7 (c1 INT, c2 INT, c3 VARCHAR(64))
+        COMPRESSION 'zstd_1.0'
+        ROW_FORMAT DYNAMIC
+        PCTFREE 5;
+  Query OK, 0 rows affected
+  ```
+
+* 创建表 `tbl8`，并设置并行度为 `3`。
+
+  ```sql
+  obclient> CREATE TABLE tbl8(c1 INT PRIMARY KEY, c2 INT) PARALLEL 3;
+  Query OK, 0 rows affected
+  ```
+
+* 使用自增列作为分区键。
+
+  ```sql
+  obclient> CREATE TABLE tbl9(inv_id BIGINT NOT NULL AUTO_INCREMENT,c1 BIGINT,
+  PRIMARY KEY (inv_id) ) PARTITION BY HASH(inv_id) PARTITIONS 8;
+  Query OK, 0 rows affected
+  ```
+
+* 为表 `ref_t2` 指定外键，当 `UPDATE` 操作影响与子表相匹配行的父表中键值时，执行 `SET NULL` 操作。
+
+  ```shell
+  obclient> CREATE TABLE ref_t1(c1 INT PRIMARY KEY, C2 INT);
+  Query OK, 0 rows affected
+
+  obclient> CREATE TABLE ref_t2(c1 INT PRIMARY KEY, C2 INT,FOREIGN KEY(c2) REFERENCES ref_t1(c1) ON UPDATE SET NULL);
+  Query OK, 0 rows affected
+  ```
+
+* 创建带 `CHECK` 约束的表 `tbl10`，并查看约束信息。
+
+  ```sql
+  obclient> CREATE TABLE tbl10 (col1 INT, col2 INT, col3 INT, CONSTRAINT equal_check1 CHECK(col1 = col3 * 2));
+  Query OK, 0 rows affected
+
+  obclient> SHOW CREATE TABLE tbl10;
+  +-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Table | Create Table                                                                                                                                                                                                                                                                                                                                               |
+  +-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | tbl10  | CREATE TABLE `tbl10` (
+    `col1` int(11) DEFAULT NULL,
+    `col2` int(11) DEFAULT NULL,
+    `col3` int(11) DEFAULT NULL,
+    CONSTRAINT `equal_check1` CHECK ((`col1` = (`col3` * 2)))
+  ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+  +-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1 row in set
+  ```
+
+* 依照表 `tbl10` 创建表 `tbl11`，并查看表信息。
+
+  ```sql
+  obclient> CREATE TABLE tbl11 LIKE tbl10;
+  Query OK, 0 rows affected
+
+  obclient> SHOW CREATE TABLE tbl11;
+  +-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Table | Create Table                                                                                                                                                                                                                                                                                                                                                                |
+  +-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | tbl11  | CREATE TABLE `tbl11` (
+    `col1` int(11) DEFAULT NULL,
+    `col2` int(11) DEFAULT NULL,
+    `col3` int(11) DEFAULT NULL,
+    CONSTRAINT `tbl11_OBCHECK_1650793233327894` CHECK ((`col1` = (`col3` * 2)))
+  ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+  +-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1 row in set
+  ```
+
+* 创建 `cluster` 级别的复制表 `dup_t1`。
+
+  1. 登录到 sys 租户，创建一个 Unit。
+
+     ```shell
+     obclient> CREATE RESOURCE UNIT IF NOT EXISTS 2c5g MAX_CPU 2, MEMORY_SIZE '5G';
+     Query OK, 0 rows affected
+     ```
+
+  2. 创建一个 Unit Num 为 2 的资源池。
+
+     ```shell
+     obclient> CREATE RESOURCE POOL tenant_pool UNIT = '2c5g', UNIT_NUM = 2, ZONE_LIST = ('z1', 'z2', 'z3');
+     Query OK, 0 rows affected
+     ```
+
+  3. 创建用户租户 `obmysql` 并指定 Locality 分布。
+
+     ```shell
+     obclient> CREATE TENANT obmysql resource_pool_list=('tenant_pool'), LOCALITY = "F@z1, F@z2, R@z3", PRIMARY_ZONE = "z1" SET ob_tcp_invited_nodes='%';
+     Query OK, 0 rows affected
+     ```
+
+  4. 登录到步骤 3 所创建的 `obmysql` 用户租户，创建一个复制表。
+
+     ```shell
+     obclient> USE test;
+     Database changed
+     obclient> CREATE TABLE dup_t1(c1 INT) DUPLICATE_SCOPE = 'cluster';
+     Query OK, 0 rows affected
+     ```
+
+  5. （可选）查看广播日志流信息，复制表会创建在该日志流上。
+
+     ```shell
+     obclient> SELECT * FROM oceanbase.DBA_OB_LS WHERE FLAG LIKE "%DUPLICATE%";
+     +-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+
+     | LS_ID | STATUS | PRIMARY_ZONE | UNIT_GROUP_ID | LS_GROUP_ID | CREATE_SCN          | DROP_SCN | SYNC_SCN            | READABLE_SCN        | FLAG      |
+     +-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+
+     |  1003 | NORMAL | z1;z2        |             0 |           0 | 1683267390195713284 |     NULL | 1683337744205408139 | 1683337744205408139 | DUPLICATE |
+     +-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+
+     1 row in set
+     ```
+
+  6. （可选）在 sys 租户下查看复制表的副本分布，`REPLICA_TYPE` 字段为副本类型。
+
+     ```shell
+     obclient> SELECT * FROM oceanbase.CDB_OB_TABLE_LOCATIONS WHERE TABLE_NAME = "dup_t1";
+     +-----------+---------------+------------+----------+------------+----------------+-------------------+------------+---------------+-----------+-------+------+----------------+----------+----------+--------------+-----------------+
+     | TENANT_ID | DATABASE_NAME | TABLE_NAME | TABLE_ID | TABLE_TYPE | PARTITION_NAME | SUBPARTITION_NAME | INDEX_NAME | DATA_TABLE_ID | TABLET_ID | LS_ID | ZONE | SVR_IP         | SVR_PORT | ROLE     | REPLICA_TYPE | DUPLICATE_SCOPE |
+     +-----------+---------------+------------+----------+------------+----------------+-------------------+------------+---------------+-----------+-------+------+----------------+----------+----------+--------------+-----------------+
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z1   | 11.xxx.xxx.xxx |    36125 | LEADER   | FULL         | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z1   | 11.xxx.xxx.xxx  |    36124 | FOLLOWER | READONLY     | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z2   | 11.xxx.xxx.xxx |    36127 | FOLLOWER | FULL         | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z2   | 11.xxx.xxx.xxx |    36126 | FOLLOWER | READONLY     | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z3   | 11.xxx.xxx.xxx |    36128 | FOLLOWER | READONLY     | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z3   | 11.xxx.xxx.xxx  |    36129 | FOLLOWER | READONLY     | CLUSTER         |
+     +-----------+---------------+------------+----------+------------+----------------+-------------------+------------+---------------+-----------+-------+------+----------------+----------+----------+--------------+-----------------+
+     6 rows in set
+     ```
+
+  7. 像普通表一样插入和读写复制表的数据。对于一个读请求，如果使用了 Proxy，读请求可能会路由到任意一个 OBServer 节点；如果直连 OBServer 节点，只要本地副本可读，就会在直连的 OBServer 节点上执行读请求。
+
+     ```shell
+     obclient> INSERT INTO dup_t1 VALUES(1);
+     Query OK, 1 row affected
+
+     obclient> SELECT * FROM dup_t1;
+     +------+
+     | c1   |
+     +------+
+     |    1 |
+     +------+
+     1 row in set
+     ```
+
+* 创建列存表 `tbl1_cg`。
+
+  ```sql
+  obclient> CREATE TABLE tbl1_cg (col1 INT PRIMARY KEY, col2 VARCHAR(50)) WITH COLUMN GROUP(each column);
+  ```
+
+* 创建带列存索引的表。
+
+  ```sql
+  obclient> CREATE TABLE tbl2_cg (col1 INT PRIMARY KEY, col2 INT, col3 INT, INDEX i1 (col2) WITH COLUMN GROUP(each column));
+  ```
+
+* 创建带列存索引的列存表。
+
+  ```sql
+  obclient> CREATE TABLE tbl3_cg (col1 INT PRIMARY KEY, col2 INT, col3 INT, INDEX i1 (col2) WITH COLUMN GROUP(each column)) WITH COLUMN GROUP(each column);
+  ```
+
+* 创建表时标识列 Skip Index 属性。
+
+  ```sql
+  obclient> CREATE TABLE test_skidx(
+    col1 INT SKIP_INDEX(MIN_MAX, SUM),
+    col2 FLOAT SKIP_INDEX(MIN_MAX),
+    col3 VARCHAR(1024) SKIP_INDEX(MIN_MAX),
+    col4 CHAR(10)
+  );
+  ```
+
+* 创建表 `tbl1`，它有一个整数类型的列 `col1`，并且指定该操作应用 5 个并行度来完成，指定了新表 `tbl1` 的数据内容将来源于表 `tbl2` 的查询结果。
+
+  ```sql
+  obclient> CREATE /*+ parallel(5) */ TABLE tbl1 (col1 INT) AS SELECT col1 FROM tbl2;
+  ```
+
+* 创建开启持久化宏块级别 bloom filter 的表 `tb`。
+
+  ```sql
+  obclient> CREATE TABLE tb(c1 INT PRIMARY KEY, c2 INT) enable_macro_block_bloom_filter = True;
+  ```
+
+* 创建表 `tbl1`，并指定半结构化编码类型为 `encoding`，频率阈值为 `90`。
+
+  ```sql
+  obclient> CREATE TABLE tbl1 (col1 INT PRIMARY KEY, col2 INT) SEMISTRUCT_PROPERTIES=(ENCODING_TYPE=ENCODING, FREQ_THRESHOLD=90);
+  ```
+
+* 创建表 `tb` 启用新的 Flat 行存储格式（版本 2）。
+  
+  ```sql
+  obclient> CREATE TABLE tb(c1 INT PRIMARY KEY, c2 INT) micro_block_format_version = 2;
+  ```
+
+* 创建一个数据过期时间为 7 天的 TTL 表。其中，TTL 列为内部隐藏列 `ora_rowscn`。
+
+  ```shell
+  obclient(root@mysql001)[infotest]> CREATE TABLE ttl_tbl1(
+    id INT PRIMARY KEY,
+    val VARCHER(100)
+  ) MERGE_ENGINE = append_only TTL ora_rowscn + INTERVAL 7 DAY BY COMPACTION;
+  ```
+
+* 创建一个数据过期时间为 7 天的 TTL 表。其中，TTL 列为用户定义的时间列。
+
+  ```shell
+  obclient(root@mysql001)[infotest]> CREATE TABLE ttl_tbl2(
+        order_id INT PRIMARY KEY,
+        order_time DATETIME NOT NULL,
+        payment_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP) 
+        MERGE_ENGINE = delete_insert TTL order_time + INTERVAL 7 DAY BY COMPACTION;
+  ```
+
+* 创建表 `tbl_e` 并指定增量数据格式为新的 encoding 增量数据格式。
+
+  ```shell
+  obclient> CREATE TABLE tbl_e(col1 INT PRIMARY KEY, col2 INT) DELTA_FORMAT = 'encoding';
+  ```
+
+## 相关文档
+
+* [创建表](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/200.create-a-table-for-mysql-tenant-of-mysql-mode.md)
+* [更改表](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/600.change-table-of-mysql-mode.md)

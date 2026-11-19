@@ -1,0 +1,38 @@
+---
+title: "查询 SQL 流量分布情况及 QPS"
+book: "性能调优"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503495.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 查询 SQL 流量分布情况及 QPS
+
+在某些情况下，您可能会遇到 OceanBase 数据库节点之间出现负载不均衡的问题，这可能会导致性能瓶颈。为了诊断这类问题，您可以查询 SQL 流量在各个 OBServer 节点之间的分布情况以及每个节点的查询处理速率（QPS）。
+
+以下是一个 SQL 查询示例，它可以帮助您查看特定 SQL 语句在过去一秒内在各个节点上的执行情况：
+
+```sql
+SELECT
+  /*+ PARALLEL(15) */ -- 使用 15 个并行线程来加快查询速度
+  t2.zone,            -- 显示 OBServer 节点所在的区域
+  t1.svr_ip,          -- 显示处理 SQL 的 OBServer 节点的 IP 地址
+  COUNT(*) AS RPC_COUNT,  -- 统计每个节点上执行的 RPC（远程过程调用）数量
+  AVG(t1.elapsed_time) AS AVG_ELAPSED_TIME, -- 计算每个节点上 SQL 语句的平均执行时间
+  AVG(t1.queue_time) AS AVG_QUEUE_TIME      -- 计算每个节点上 SQL 语句的平均队列等待时间
+FROM
+  oceanbase.GV$OB_SQL_AUDIT t1,  -- oceanbase 系统视图，提供 SQL 审计信息
+  __all_server t2                -- 系统表，包含所有 OBServer 的信息
+WHERE
+  t1.svr_ip = t2.svr_ip          -- 确保 JOIN 条件，匹配 SQL 审计记录与服务器信息
+  AND t1.tenant_id = 1001        -- 指定查询租户 ID
+  AND t1.sql_id = 'BF7AA13A28DF50BA5C33FF19F1DBD8A9' -- 指定查询的特定 SQL 语句的 ID
+  AND t1.is_executor_rpc = 0     -- 过滤条件，确保只计算非执行器 RPC 请求
+  AND t1.request_time > (time_to_usec(now()) - 1000000) -- 限制查询时间范围为最近一秒内
+  AND t1.request_time < time_to_usec(now()) -- 以当前时间为基准，确保请求时间在一秒之内
+GROUP BY
+  t1.svr_ip; -- 根据服务器 IP 地址分组结果
+```

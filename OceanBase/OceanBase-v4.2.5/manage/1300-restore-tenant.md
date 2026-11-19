@@ -1,0 +1,113 @@
+---
+title: "恢复租户"
+book: "管理数据库"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001499851.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 恢复租户
+
+为防止恶意或误操作导致的数据不可恢复性丢失，OceanBase 数据库提供了回收站功能，从而支持租户级的数据的快速恢复功能。本文介绍如何恢复回收站中的租户。
+
+OceanBase 数据库可以通过 `FLASHBACK TENANT` 语句恢复回收站中的租户。
+
+## 使用限制
+
+由于当前仅 `sys` 租户可以删除租户，故 MySQL 模式和 Oracle 模式的租户被删除后，只能进入 `sys` 租户的回收站中。也只有 `sys` 租户可以执行恢复租户的操作。
+
+## 操作步骤
+
+1. 使用 root 用户登录到集群的 sys 租户。
+
+    ```shell
+    obclient -h172.30.xx.xx -P2883 -uroot@sys#cluster -p**** -A
+    ```
+
+2. 进入 `oceanbase` 数据库。
+
+    ```shell
+    obclient [(none)]> USE oceanbase;
+    ```
+
+3. 通过 `SHOW RECYCLEBIN` 语句，查看当前系统租户回收站中的对象。
+
+    ```shell
+    obclient [oceanbase]> SHOW RECYCLEBIN;
+    +-------------------------------------+---------------+--------+----------------------------+
+    | OBJECT_NAME                         | ORIGINAL_NAME | TYPE   | CREATETIME                 |
+    +-------------------------------------+---------------+--------+----------------------------+
+    | __recycle_$_100017_1673367572701376 | mq_t1         | TENANT | 2025-06-20 09:50:54.113568 |
+    +-------------------------------------+---------------+--------+----------------------------+
+    1 row in set
+    ```
+
+    回收站相关参数的详细说明，参见 [recyclebin](../../../700.reference/800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/11300.recyclebin-global.md)。
+
+4. 通过 `FLASHBACK TENANT` 语句，恢复回收站中的租户。
+
+    以恢复租户 `mq_t1` 为例：
+
+    ```shell
+    obclient [oceanbase]> FLASHBACK TENANT mq_t1 TO BEFORE DROP;
+    Query OK, 0 rows affected
+    ```
+
+    `FLASHBACK TENANT` 语句的详细说明，参见 [FLASHBACK](../../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/5400.flashback-database-of-mysql-mode.md)。
+
+5. 查看 `DBA_OB_TENANTS` 视图和回收站确认执行结果。
+
+    ```shell
+    obclient [oceanbase]> SHOW RECYCLEBIN;
+    Empty set
+    ```
+
+    ```shell
+    obclient [oceanbase]> SELECT * FROM DBA_OB_TENANTS WHERE TENANT_NAME = 'mq_t1'\G
+    ```
+
+    返回结果如下：
+
+    ```shell
+    *************************** 1. row ***************************
+                     TENANT_ID: 1036
+                   TENANT_NAME: mq_t
+                   TENANT_TYPE: USER
+                   CREATE_TIME: 2025-06-20 09:50:54.113568
+                   MODIFY_TIME: 2025-06-20 11:04:44.588357
+                  PRIMARY_ZONE: zone1;zone2
+                      LOCALITY: FULL{1}@zone1, FULL{1}@zone2
+             PREVIOUS_LOCALITY: NULL
+            COMPATIBILITY_MODE: MYSQL
+                        STATUS: NORMAL
+                 IN_RECYCLEBIN: NO
+                        LOCKED: NO
+                   TENANT_ROLE: PRIMARY
+             SWITCHOVER_STATUS: NORMAL
+              SWITCHOVER_EPOCH: 0
+                      SYNC_SCN: 1684396167132057328
+                REPLAYABLE_SCN: 1684396167132057328
+                  READABLE_SCN: 1684396167051160964
+            RECOVERY_UNTIL_SCN: 4611686018427387903
+                      LOG_MODE: NOARCHIVELOG
+    ARBITRATION_SERVICE_STATUS: DISABLED
+                      UNIT_NUM: 1
+            ZONE_UNIT_NUM_LIST: zone1:1,zone2:1
+                    COMPATIBLE: 4.2.5.5
+                     MAX_LS_ID: 1002
+             FLASHBACK_LOG_SCN: NULL
+    1 row in set
+    ```
+
+## 相关文档
+
+删除租户和回收站相关的更多信息，参见：
+
+* [删除租户](../600.common-tenant-operations/1200.delete-tenant.md)
+
+* [回收站](../../400.high-availability/500.recyclebin-management/100.recyclebin-overview.md)。
+
+* [恢复回收站对象](../../400.high-availability/500.recyclebin-management/400.restore-the-recyclebin-objects.md)

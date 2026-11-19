@@ -1,0 +1,480 @@
+---
+title: CREATE EXTERNAL TABLE
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686072.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE EXTERNAL TABLE
+
+## 描述
+
+该语句用于在数据库中创建外表（External Table）。
+
+外表的数据存储于外部存储服务（本地文件系统、对象存储、HDFS、MaxCompute 等），OceanBase 侧保存表定义与访问路径。外表为**只读**对象，可用于查询，不支持 DML 操作，不支持定义约束与创建索引。
+
+## 权限要求
+
+* 执行 `CREATE EXTERNAL TABLE` 需要当前用户拥有 `CREATE` 权限。详见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+* 引用 Location 对象创建外表时，需要拥有该 Location 的 `READ` 权限。
+
+  ```sql
+  GRANT READ ON LOCATION test_location_local TO user001 WITH GRANT OPTION;
+  ```
+
+## 版本说明
+
+| 功能 / 参数 | 版本支持情况 |
+|-------------|----------|
+| HDFS 外表读 | V4.3.5 BP1 及以上 |
+| `IGNORE_LAST_EMPTY_COLUMN` | V4.3.5 BP2 及以上 |
+| `API_MODE`、`SPLIT`（ODPS 外表） | V4.3.5 BP3 及以上 |
+
+## 语法
+
+```sql
+CREATE EXTERNAL TABLE table_name (column_definition [, column_definition ...])
+    LOCATION = 'file_name'
+    {FORMAT = (format_type_options)
+     | PROPERTIES = (properties_type_options)}
+    [PARTITION BY (column_name [, column_name ...])]
+    [PARTITION_TYPE = USER_SPECIFIED]
+    [pattern_expr]
+    [AUTO_REFRESH = 'xxx'];
+
+column_definition:
+    column_name column_type [AS expr]
+
+format_type_options:
+    type_csv_option
+    | type_parquet_option
+    | type_orc_option
+
+type_csv_option:
+    TYPE = 'CSV'
+    LINE_DELIMITER = '<string>' | <expr>
+    FIELD_DELIMITER = '<string>' | <expr>
+    ESCAPE = '<character>' | <expr>
+    FIELD_OPTIONALLY_ENCLOSED_BY = '<character>' | <expr>
+    ENCODING = 'charset'
+    NULL_IF = ('<string>' | <expr>, '<string>' | <expr> ...)
+    SKIP_HEADER = <int>
+    SKIP_BLANK_LINES = {TRUE | FALSE}
+    TRIM_SPACE = {TRUE | FALSE}
+    EMPTY_FIELD_AS_NULL = {TRUE | FALSE}
+    IGNORE_LAST_EMPTY_COLUMN = {TRUE | FALSE}
+
+type_parquet_option:
+    TYPE = 'PARQUET'
+
+type_orc_option:
+    TYPE = 'ORC'
+
+properties_type_options:
+    type_odps_option
+
+type_odps_option:
+    TYPE = 'ODPS'
+    ACCESSID = '<string>'
+    ACCESSKEY = '<string>'
+    ENDPOINT = '<string>',
+    PROJECT_NAME = '<string>',
+    SCHEMA_NAME = '<string>',
+    TABLE_NAME = '<string>',
+    QUOTA_NAME = '<string>',
+    COMPRESSION_CODE = '<string>',
+    API_MODE = {"tunnel_api" | "storage_api"},
+    SPLIT = {"byte" | "row"}
+
+pattern_expr:
+    PATTERN [=] 'regex_pattern'
+    | REGEXP_PATTERN [=] 'regex_pattern'
+    | GLOB_PATTERN [=] 'glob_pattern'
+```
+
+## 使用方式说明
+
+创建外表时需指定 `LOCATION`，并根据外表类型选择 **`FORMAT`** 或 **`PROPERTIES`**（二者互斥，不可同时使用）：
+
+| 子句 | 适用外表类型 | 说明 |
+|------|--------------|------|
+| `FORMAT = (...)` | 文件型外表（CSV / PARQUET / ORC） | 指定外部**文件格式**及解析选项 |
+| `PROPERTIES = (...)` | ODPS 外表 | 指定 MaxCompute 连接参数与 API 模式，**不是**文件格式选项 |
+
+其他常用子句：
+
+| 子句 | 说明 |
+|------|------|
+| `LOCATION` | 外部数据路径（本地、OSS/S3、HDFS 等）。。 |
+| `PATTERN` | 正则表达式，过滤 `LOCATION` 目录下的文件；未指定时访问目录下全部文件。匹配结果在创建时写入系统表，扫描时按此列表访问。 |
+| `AUTO_REFRESH` | 外表元数据刷新策略：`OFF`（默认）、`INTERVAL`、`IMMEDIATE`。 |
+| `PARTITION_TYPE = USER_SPECIFIED` | 手动管理分区时使用。 |
+| `AS expr` / `metadata$filecol{N}` | 手动列映射；指定后须为所有列定义映射，自动顺序映射失效。 |
+
+## 参数说明
+
+| **参数** | **描述** |
+|----------|----------|
+| table_name | 外表名称。 |
+| column_name | 列名。默认情况下，文件列与外表列按定义顺序一一对应。 |
+| column_type | 列类型；不可定义 `DEFAULT`、`NOT NULL`、`UNIQUE`、`CHECK`、`PRIMARY KEY`、`FOREIGN KEY` 等约束。 |
+| AS expr | 手动列映射。通过 `metadata$filecol{N}` 指定外表列对应文件中第 N 列（N 从 1 开始），例如 `c2 INT AS (metadata$filecol4)`。 需要注意的是，如果指定了手动列映射，那么自动映射关系将会失效，而且所有的列都需要手动定义映射关系。|
+| LOCATION | 外表数据路径；通常指向单独目录，创建时会收集该目录（含子目录）下的文件。。关于创建 Location 对象详细介绍信息，参见 [CREATE LOCATION](../../../../../620.obap/400.data-lake/300.url-external-table.md)。 |
+| FORMAT | 文件型外表格式选项。详见 [format_type_options](#format_type_options)。 |
+| PROPERTIES | ODPS 外表连接选项。详见 [properties_type_options](#properties_type_options)。 |
+| PARTITION_TYPE | 设为 `USER_SPECIFIED` 时由用户手动增删分区。 |
+| pattern_expr | 指定文件匹配模式，用于过滤 `LOCATION` 目录下的文件。对于每个 `LOCATION` 目录下的文件路径，如果能够匹配该模式串，外表会访问这个文件，否则外表会跳过这个文件。如果不指定该参数，则默认可以访问 `LOCATION` 目录下的所有文件。外表会将 `LOCATION` 指定路径下满足 `PATTERN` 的文件列表保存在数据库系统表中，外表扫描时会根据这个列表来访问外部的文件。详细介绍参见下文 [pattern_expr](#pattern_expr)。|
+| AUTO_REFRESH | 用于外表自动刷新。取值如下：<ul><li>`OFF`：默认值，表示关闭自动刷新。</li><li>`INTERVAL`：让该外表可以通过 `dbms_external_table` 来管理自动刷新规则。</li><li>`IMMEDIATE`：代表每次 SQL 访问外表时，需要去刷新一次该 SQL 相关的外表 META。</li></ul> |
+
+## LOCATION 支持的路径格式
+
+### 本地路径
+
+`LOCATION = '[file://]local_file_path'`
+
+`local_file_path` 可为相对或绝对路径；相对路径时当前目录须为 OceanBase 安装目录。`secure_file_priv` 配置 OBServer 可访问路径，`local_file_path` 须为 `secure_file_priv` 的子路径。
+
+### 对象存储（OSS / S3）
+
+`LOCATION = '{oss|s3}://$ACCESS_ID:$ACCESS_KEY@$HOST:s3_region/remote_file_path'`
+
+* `$ACCESS_ID`、`$ACCESS_KEY`、`$HOST` 为访问阿里云 OSS、AWS S3 以及兼容 S3 协议的对象存储所需配置的访问信息。
+* `s3_region` 为 S3 区域。凭证以加密方式存入系统表。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>对象存储 URL 中各参数以 <code>&</code> 分隔；参数值仅可包含英文字母、数字、<code>/-_$+=</code> 及通配符，否则可能导致设置失败。</p>
+</main>
+
+### HDFS 路径
+
+**单 NameNode：**
+
+`LOCATION = 'hdfs://host:port/path'`
+
+**Hadoop HA（逻辑 nameservice）：**
+
+`LOCATION = 'hdfs://nameserviceID/path'`
+
+客户端 OBServer 侧须包含 HA 集群的 `nameservice` 定义及故障转移策略。
+
+**Kerberos 认证：**
+
+在 URL 后附加查询参数：`?principal=...&keytab=...&krb5conf=...&configs=...`
+
+| URL 参数 | 说明 |
+|----------|------|
+| principal | Kerberos 登录主体，指登录认证用户。 |
+| keytab | 密钥文件路径 |
+| krb5conf | Kerberos 配置文件路径（如 `/etc/krb5.conf`） |
+| configs | 额外 HDFS 配置，，默认为空。多项以 `#` 分隔。Kerberos 环境通常需设置 `dfs.data.transfer.protection`；HA 环境还需 nameservice、namenode 地址、failover 等配置项 |
+
+HA + Kerberos 环境下，`configs` 常用配置项（多项以 `#` 分隔）：
+
+| 配置项 | 说明 |
+|--------|------|
+| `dfs.data.transfer.protection` | 数据传输保护级别，须与集群配置一致 |
+| `dfs.nameservices` | HA 集群 nameservice ID |
+| `dfs.ha.namenodes.{nameservice}` | namenode 后备 ID 列表 |
+| `dfs.namenode.rpc-address.{nameservice}.{nn}` | 各 namenode RPC 地址 |
+| `dfs.ha.automatic-failover.enabled.{nameservice}` | 是否启用自动故障转移 |
+| `dfs.client.failover.proxy.provider.{nameservice}` | 故障转移代理类，通常为 `ConfiguredFailoverProxyProvider` |
+
+示例格式：
+
+```text
+dfs.data.transfer.protection=integrity#dfs.nameservices=mycluster#dfs.ha.namenodes.mycluster=nn1,nn2#...
+```
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>HA 相关配置项与 <code>nameservice</code> 绑定，须与集群 <code>hdfs-site.xml</code> 保持一致。完整 HA 配置示例参见下文<a href="#示例三hdfs-ha--kerberos">示例三</a>及 <a href="../../../../../620.obap/400.data-lake/100.data-lake-overview.md">通过 Catalog 加载 Hive 表</a> 中的 Location 配置说明。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>访问 HDFS 外表前，须在 OBServer 节点完成 Java/JNI/HDFS 环境部署，并配置 <code>ob_enable_java_env</code> 等集群参数。详见 <a href="../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md">部署 OceanBase JAVA SDK 环境</a>。</p>
+</main>
+
+## 文件格式与属性说明（format_type_options）
+
+### CSV 格式参数速查（`TYPE = 'CSV'`）
+
+| 参数 | 说明 | 默认值/取值 |
+| ---- | ---- | ------ |
+| `LINE_DELIMITER` | 行分隔符 | `\n` |
+| `FIELD_DELIMITER` | 列分隔符 | `\t` |
+| `ESCAPE` | 转义符（1 字节） | `\` |
+| `FIELD_OPTIONALLY_ENCLOSED_BY` | 字段包裹符 | 空 |
+| `ENCODING` | 字符集 | UTF8MB4 |
+| `NULL_IF` | 视为 NULL 的字符串 | 空 |
+| `SKIP_HEADER` | 跳过文件头行数 | — |
+| `SKIP_BLANK_LINES` | 是否跳过空行 | `FALSE` |
+| `TRIM_SPACE` | 是否修剪字段首尾空格 | `FALSE` |
+| `EMPTY_FIELD_AS_NULL` | 空字符串是否视为 NULL | `FALSE` |
+| `IGNORE_LAST_EMPTY_COLUMN` | 是否忽略行末空列 | `TRUE` |
+| `COMPRESSION`  |可选项，指定文件的压缩格式|取值如下：<ul><li>`GZIP`/`DEFLATE`：GZIP 压缩文件。</ul></li><ul><li>`ZSTD`：ZSTD 压缩文件。</ul></li><ul><li>`NONE`：表示文件没有压缩（默认值）。</ul></li><ul><li>`SNAPPY_BLOCK`：HADOOP-SNAPPY 压缩文件。</ul></li> |
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.3.5 版本，从 V4.3.5 BP2 版本开始支持 <code>IGNORE_LAST_EMPTY_COLUMN</code>。</p>
+</main>
+
+### format_type_options
+
+#### `TYPE = 'CSV'`
+
+各参数默认值见上表。以下为约束与注意事项：
+
+* `ESCAPE`：指定 CSV 文件的转义符号，只能为 1 个字节。默认值为 `ESCAPE ='\'`。
+* `ENCODING`：支持字符集见 [字符集](../100.basic-elements-of-mysql-mode/300.character-set-and-collation-of-mysql-mode/200.character-set-of-mysql-mode.md)；默认 UTF8MB4。
+* `FIELD_OPTIONALLY_ENCLOSED_BY`：当文件中包含 `NULL` 值（非字符串 `"NULL"`）时，须显式配置且不可为空。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>当外表数据文件中包含 <code>NULL</code> 值（非字符串 <b>NULL</b>，即不是 <b>"NULL"</b>）时，必须显式配置 <code>FIELD_OPTIONALLY_ENCLOSED_BY</code> 参数，且该参数值不可为空。</p>
+    </main>
+
+#### `TYPE = 'PARQUET'`
+
+指定外部文件格式为 Parquet。
+
+#### `TYPE = 'ORC'`
+
+指定外部文件格式为 ORC。
+
+### properties_type_options
+
+#### `TYPE = 'ODPS'`
+
+用于创建 MaxCompute（ODPS）外表，通过 API 访问远端表（非文件路径外表）。
+
+| 参数 | 说明 |
+|------|------|
+| ACCESSID | 阿里云 AccessKey ID，用于身份认证 |
+| ACCESSKEY | 指定 AccessKey ID 对应的 AccessKey Secret，用于身份验证。 |
+| ENDPOINT | ODPS 服务连接地址 |
+| PROJECT_NAME | ODPS 项目名称 |
+| SCHEMA_NAME | 可选，ODPS Schema 名称 |
+| TABLE_NAME | ODPS 表名 |
+| QUOTA_NAME | 可选，Quota 名称 |
+| COMPRESSION_CODE | 可选，压缩格式：`ZLIB`、`ZSTD`、`LZ4`、`ODPS_LZ4`；不设置表示不开启压缩 |
+| API_MODE | 调用 API 模式：`tunnel_api`（默认）或 `storage_api`。 |
+| SPLIT | 使用 `storage_api` 时的分片方式：`byte` 或 `row`。 |
+
+`API_MODE`：指定调用 ODPS 的 API 模式。取值如下：
+
+<main id="notice" type='explain'>
+   <h4>说明</h4>
+   <p>对于 OceanBase 数据库 V4.3.5 版本，从 V4.3.5 BP3 版本开始支持 <code>API_MODE</code> 和 <code>SPLIT</code> 参数。</p>
+</main>
+
+* `tunnel_api`（默认值）：
+
+  * 无需特殊网络配置：适用于所有部署场景，无需 OceanBase 数据库与 MaxCompute 位于同一 VPC（虚拟私有云）内。
+
+  * 无需 MaxCompute 额外权限：仅需提供 AccessID 和 AccessKey 即可完成认证，无需开通 MaxCompute Storage API 权限。
+
+  * 适用环境：
+
+    * OceanBase 数据库与 MaxCompute 未部署在同一 VPC 中。
+    * 未开通 MaxCompute Storage API。
+    * 数据传输对延迟要求较低。
+
+* `storage_api`：
+
+  * 网络依赖性：要求 OceanBase 数据库与 MaxCompute 必须部署在同一 VPC 内，以实现低延迟、高吞吐量的数据传输。
+
+  * 权限依赖性：需在 MaxCompute 中开通 Storage API 权限，并确保访问密钥（AccessKey）具备相应权限。
+
+  * 适用环境：
+
+    * OceanBase 数据库与 MaxCompute 同属一个 VPC 网络。
+    * 已开通 MaxCompute Storage API。
+    * 数据量极大或对实时性要求较高。
+
+* `SPLIT`：表示使用 `storage_api` 时，指定按照 `byte` 或 `row` 做任务切割分配给各个线程。当一张表各个行数据字节数差异过大的时候，`SPLIT` 取值 `byte`，而其他情况取值 `row`。
+
+场景实践与分区映射等详见 [ODPS 外部表](../../../../../620.obap/400.data-lake/200.data-lake-integration/300.odps/200.odps-external-table.md)。
+
+### pattern_expr
+
+* `PATTERN [=] 'regex_pattern'`：指定文件名或正则表达式，参数 `PATTERN` 和 `REGEXP_PATTERN` 等价。控制哪些文件被加载，示例如下：
+
+  * `PATTERN = 'extdata.csv'`：指定要加载的文件名为 `extdata.csv`。
+  * 如果有多个 CSV 文件，比如 `extdata_2024.csv`、`extdata_2025.csv`，可以写成 `PATTERN = 'extdata_\d{4}\.csv'`。
+
+* `REGEXP_PATTERN [=] 'regex_pattern'`：指定使用正则表达式匹配文件名。灵活匹配多种文件名，示例如下：
+
+  * `REGEXP_PATTERN = '.*[.]csv$'`：使用正则表达式来筛选 `LOCATION` 下所有以 `.csv` 结尾的文件。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>对于 V5.x 版本，从 V5.0.1 版本开始引入参数 <code>REGEXP_PATTERN</code>。</p>
+    </main>
+
+* `GLOB_PATTERN [=] 'glob_pattern'`：指定使用通配符匹配文件名。简单匹配常见文件类型，示例如下：
+
+  * `GLOB_PATTERN = '*.csv'`：匹配所有以 `.csv` 结尾的文件。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>对于 V5.x 版本，从 V5.0.1 版本开始引入参数 <code>GLOB_PATTERN</code>。</p>
+    </main>
+
+## 使用说明
+
+* 外表为只读对象，不支持 DML、约束与索引。
+* 文件列表在创建时根据 `LOCATION` 与 `PATTERN` 收集；目录下新增文件须执行 `ALTER EXTERNAL TABLE ... REFRESH` 更新。详见 [更新外表文件列表](1300.alter-external-table-of-mysql-mode.md)。
+* 外部文件删除、修改、并发访问、`secure_file_priv`、HDFS/ODPS 环境等，参见 [关于外表与外部文件](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/1000.manage-external-tables-of-mysql-mode/100.about-external-tables-of-mysql-mode.md) 与 [管理外部文件](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/1000.manage-external-tables-of-mysql-mode/300.manage-external-files-of-mysql-mode.md)。
+* 无需持久化表对象、仅临时读取外部文件时，可使用 [FILES 表函数](../400.functions-of-mysql-mode/760.table-functions-of-mysql-mode/200.files-table-function-of-mysql-mode.md)。
+
+## 示例
+
+### 示例一：本地 CSV 外表
+
+1. 准备数据。首先需要设置 `secure_file_priv` 的路径为 `/home/admin/`，将要导入的外表数据所对应的 CSV 文件 `extdata.csv` 放在当前本地连接的 OBServer 节点的 `/home/admin/test` 路径中。
+
+   设置全局安全路径的示例如下。
+
+   ```shell
+   obclient> SET GLOBAL secure_file_priv = "/home/admin/";
+   Query OK, 0 rows affected
+   obclinet> \q
+   Bye
+   ```
+
+   <main id="notice" type='explain'>
+     <h4>说明</h4>
+     <p>由于 <code>secure_file_priv</code> 是 <code>GLOBAL</code> 变量，所以需要执行 <code>\q</code> 退出使之生效。</p>
+   </main>
+
+   CSV 文件中的内容如下：
+
+   ```shell
+   1,'Dave','Smith','dsmith@outlook.com','friend',32
+   2,'Xena','Johnson','xjonson@outlook.com','contact',45
+   3,'Fred','Jackon','fjackson@outlook.com','co-worker',19
+   4,'Alma','Tyler','atyler@outlook.com','friend',53
+   ```
+
+2. 用户租户登录数据库后，创建外表 `contacts`。
+
+   ```shell
+   obclient> CREATE EXTERNAL TABLE contacts (
+       id    INT,
+       firstname  VARCHAR(100),
+       lastname   VARCHAR(100),
+       email      VARCHAR(255),
+       category   CHAR(30),
+       age        NUMBER
+      )
+      LOCATION = '/home/admin/test'
+      FORMAT = (
+        TYPE = 'CSV'
+        FIELD_DELIMITER = ','
+        FIELD_OPTIONALLY_ENCLOSED_BY ='\''
+       )
+     PATTERN = 'extdata.csv';
+   ```
+
+3. 查询外表 `contacts` 中的数据。
+
+   ```shell
+   obclient> SELECT * FROM contacts;
+   +----+-----------+----------+----------------------+-----------+------+
+   | id | firstname | lastname | email                | category  | age  |
+   +----+-----------+----------+----------------------+-----------+------+
+   |  1 | Dave      | Smith    | dsmith@outlook.com   | friend    |   32 |
+   |  2 | Xena      | Johnson  | xjonson@outlook.com  | contact   |   45 |
+   |  3 | Fred      | Jackon   | fjackson@outlook.com | co-worker |   19 |
+   |  4 | Alma      | Tyler    | atyler@outlook.com   | friend    |   53 |
+   +----+-----------+----------+----------------------+-----------+------+
+   4 rows in set
+   ```
+
+### 示例二：HDFS CSV 外表（无 Kerberos）
+
+前提：已完成 [Java SDK 环境部署](../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md)（访问 HDFS 时需要）。
+
+```sql
+CREATE EXTERNAL TABLE test_tbl1_csv_mysql (
+    id INT,
+    name VARCHAR(50),
+    c_date DATE
+)
+LOCATION = 'hdfs://${hadoop_namenode_host}:${hadoop_namenode_port}/user'
+FORMAT = (
+    TYPE = 'CSV'
+    FIELD_DELIMITER = ','
+    FIELD_OPTIONALLY_ENCLOSED_BY = '\''
+)
+PATTERN = 'test_tbl1.csv';
+
+SELECT * FROM test_tbl1_csv_mysql;
+```
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>请将 <code>${hadoop_namenode_host}</code> 与 <code>${hadoop_namenode_port}</code> 替换为实际 HDFS NameNode 地址与端口。</p>
+</main>
+
+### 示例三：HDFS HA + Kerberos
+
+前提：
+
+* 已完成 [Java SDK 环境部署](../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md)。
+* OBServer 各节点已部署 keytab、krb5.conf 等 Kerberos 凭据文件。
+* `configs` 中 HA 参数与集群 `nameservice` 配置一致。
+
+```sql
+CREATE EXTERNAL TABLE test_ha (
+    id INT,
+    r_name VARCHAR(100),
+    age INT
+)
+LOCATION = 'hdfs://mycluster/hadoop_ha_test?principal=ha/xxx@xxx.com&keytab=/path/to/ha.keytab&krb5conf=/path/to/krb5conf_file&configs=dfs.data.transfer.protection=integrity#dfs.nameservices=mycluster#dfs.ha.namenodes.mycluster=nn1,nn2#dfs.namenode.rpc-address.mycluster.nn1=localhost1:port#dfs.namenode.rpc-address.mycluster.nn2=localhost2:port#dfs.ha.automatic-failover.enabled.mycluster=true#dfs.client.failover.proxy.provider.mycluster=org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider'
+FORMAT = (
+    TYPE = 'CSV'
+    FIELD_DELIMITER = ','
+    FIELD_OPTIONALLY_ENCLOSED_BY = '\''
+)
+PATTERN = 'test_simple.csv';
+
+SELECT * FROM test_ha;
+```
+
+### 示例四：HDFS Kerberos 单节点
+
+前提同示例三。单 NameNode 环境下 `LOCATION` 可简化为：
+
+```sql
+CREATE EXTERNAL TABLE partsupp (
+    PS_PARTKEY    INTEGER,
+    PS_SUPPKEY    INTEGER,
+    PS_AVAILQTY   INTEGER,
+    PS_SUPPLYCOST DECIMAL(15,2),
+    PS_COMMENT    VARCHAR(199)
+)
+LOCATION = 'hdfs://localhost:8020/tpch_csv?principal=principal_str&keytab=/path/to/keytab&krb5conf=/path/to/krb5conf_file&configs=xxx=xxx#xxx=xxx'
+FORMAT = (
+    TYPE = 'CSV'
+    FIELD_DELIMITER = '|'
+    FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+)
+PATTERN = 'partsupp.tbl';
+```
+
+## 相关文档
+
+* [关于外表与外部文件](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/1000.manage-external-tables-of-mysql-mode/100.about-external-tables-of-mysql-mode.md)
+* [创建和查询外表](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/1000.manage-external-tables-of-mysql-mode/200.create-a-external-table-of-mysql-mode.md)
+* [ODPS 外部表](../../../../../620.obap/400.data-lake/200.data-lake-integration/300.odps/200.odps-external-table.md)
+* [FILES 表函数](../400.functions-of-mysql-mode/760.table-functions-of-mysql-mode/200.files-table-function-of-mysql-mode.md)
+* [管理外部文件](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/1000.manage-external-tables-of-mysql-mode/300.manage-external-files-of-mysql-mode.md)
+* [更新外表文件列表](1300.alter-external-table-of-mysql-mode.md)
+* [部署 OceanBase JAVA SDK 环境](../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md)

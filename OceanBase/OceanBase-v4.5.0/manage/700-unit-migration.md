@@ -1,0 +1,493 @@
+---
+title: "副本迁移"
+book: "管理数据库"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004476530.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 副本迁移
+
+本节主要介绍如何进行副本迁移。副本迁移仅涉及副本在 Zone 内部的位置变更，不涉及副本个数、副本类型的变更。副本迁移适用于节点故障场景和负载均衡场景。
+
+## Unit 迁移
+
+Unit 迁移，描述的是在单个 Zone 内部，Unit 在节点之间的迁移。通过对租户下 Unit 的迁移可以实现租户下日志流的副本迁移。
+
+### （可选）调整 Unit GC 的最大等待时长
+
+在 OceanBase 数据库中，Unit 迁移完成后，系统会自动删除迁移前源 Server 上的租户并 Kill 掉该租户上的所有 Session，这样可能就会影响用户正在执行的查询操作。为了解决该问题，OceanBase 数据库实现了 Unit 的平滑 GC（Garbage Collection） 方案，即当 Unit 迁移完成后就开始进入 Unit GC 的倒计时状态。倒计时开始后，系统不再接收新的连接请求，同时，如果有正在执行的请求，则系统会等待请求执行结束后再 GC。
+
+此外，由于完全的 Unit 平滑 GC 遇到执行时间很长的任务时，可能会存在长时间无法 GC 的问题。为了保证 Unit 能够平滑 GC，OceanBase 数据库使用集群级配置项 `unit_gc_wait_time` 来控制 Unit GC 的最大等待时长，超过最大等待时长后，系统会自动 GC。配置项 [unit_gc_wait_time](../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/300.cluster-level-configuration-items/24320.unit_gc_wait_time.md) 的默认值为 1 分钟，用户可以根据自身的业务需要，进行适当的调整。
+
+具体设置方法如下：
+
+1. 使用 root 用户登录到集群的 sys 租户。
+
+   连接示例如下：
+
+    ```shell
+    obclient -h172.30.xxx.xxx -P2883 -uroot@sys#obdemo -pxxxx -A
+    ```
+
+2. 查看当前配置项 `unit_gc_wait_time` 的值。
+
+   ```shell
+   obclient> SHOW PARAMETERS LIKE '%unit_gc_wait_time%';
+   ```
+
+3. 调整配置项 `unit_gc_wait_time` 的值。
+
+   示例如下：
+
+   ```shell
+   obclient> ALTER SYSTEM SET unit_gc_wait_time = '1m';
+   ```
+
+### 执行 Unit 迁移
+
+示例：将租户 `mq_t1` 中 `UNIT_ID = 1006` 的 Unit 迁移到同 Zone 的另一个节点。
+
+1. 使用 root 用户登录到集群的 sys 租户。
+
+    ```shell
+    obclient -h172.30.xxx.xxx -P2883 -uroot@sys#obdemo -pxxxx -A
+    ```
+
+2. 进入 `oceanbase` 数据库。
+
+    ```shell
+    obclient(root@sys)[(none)]> USE oceanbase;
+    ```
+
+3. 查询租户 `mq_t1` 的 `tenant_id`。
+
+    在本示例中，租户 `mq_t1` 的 `tenant_id` 为 1004。
+
+    ```shell
+    obclient(root@sys)[oceanbase]> SELECT TENANT_ID, TENANT_NAME, TENANT_TYPE, PRIMARY_ZONE, LOCALITY, STATUS, TENANT_ROLE FROM oceanbase.DBA_OB_TENANTS WHERE TENANT_NAME = 'mq_t1';
+    ```
+
+    查询结果如下：
+
+    ```shell
+    +-----------+-------------+-------------+----------------------------+--------------------------------------------------------------------+--------+-------------+
+    | TENANT_ID | TENANT_NAME | TENANT_TYPE | PRIMARY_ZONE               | LOCALITY                                                           | STATUS | TENANT_ROLE |
+    +-----------+-------------+-------------+----------------------------+--------------------------------------------------------------------+--------+-------------+
+    |      1004 | mq_t1       | USER        | sa128_obv4_1;sa128_obv4_2  | FULL{1}@sa128_obv4_1, FULL{1}@sa128_obv4_2, FULL{1}@@sa128_obv4_3  | NORMAL | PRIMARY     |
+    +-----------+-------------+-------------+----------------------------+--------------------------------------------------------------------+--------+-------------+
+    1 row in set
+    ```
+
+4. 查看对应租户 `mq_t1` 的 Unit 信息。
+
+    在本示例中，`UNIT_ID = 1006` 的 Unit 位于 Zone `sa128_obv4_3` 的 `xx.xx.xx.19` 节点中。
+
+    ```shell
+    obclient(root@sys)[oceanbase]> SELECT UNIT_ID, TENANT_ID, STATUS, RESOURCE_POOL_ID, UNIT_GROUP_ID, ZONE, SVR_IP, SVR_PORT FROM oceanbase.DBA_OB_UNITS WHERE TENANT_ID = 1004;
+    ```
+
+    查询结果如下：
+
+    ```shell
+    +---------+-----------+--------+------------------+---------------+--------------+---------------+----------+
+    | UNIT_ID | TENANT_ID | STATUS | RESOURCE_POOL_ID | UNIT_GROUP_ID | ZONE         | SVR_IP        | SVR_PORT |
+    +---------+-----------+--------+------------------+---------------+--------------+---------------+----------+
+    |    1004 |      1004 | ACTIVE |             1005 |          1002 | sa128_obv4_1 | xxx.xx.xxx.47 |     2882 |
+    |    1005 |      1004 | ACTIVE |             1005 |          1002 | sa128_obv4_2 | xxx.xx.xxx.81 |     2882 |
+    |    1006 |      1004 | ACTIVE |             1005 |          1002 | sa128_obv4_3 | xxx.xx.xxx.19 |     2882 |
+    +---------+-----------+--------+------------------+---------------+--------------+---------------+----------+
+    3 rows in set
+    ```
+
+5. 查看要迁移的 Unit 所在 Zone 中 OBServer 节点的服务器 IP。
+
+    在本示例中，Zone `sa128_obv4_3` 中包含两个 OBServer 节点，`xx.xx.xx.19` 和 `xx.xx.xx.158`。
+
+    ```shell
+    obclient(root@sys)[oceanbase]> SELECT SVR_IP, SVR_PORT, ID, ZONE, SQL_PORT, STATUS FROM oceanbase.DBA_OB_SERVERS;
+    ```
+
+    查询结果如下：
+
+    ```shell
+    +--------------+----------+----+--------------+----------+--------+
+    | SVR_IP       | SVR_PORT | ID | ZONE         | SQL_PORT | STATUS |
+    +--------------+----------+----+--------------+----------+--------+
+    | xx.xx.xx.81  |     2882 |  6 | sa128_obv4_2 |     2881 | ACTIVE |
+    | xx.xx.xx.19  |     2882 |  4 | sa128_obv4_3 |     2881 | ACTIVE |
+    | xx.xx.xx.158 |     2882 |  6 | sa128_obv4_3 |     2881 | ACTIVE |
+    | xx.xx.xx.43  |     2882 |  6 | sa128_obv4_1 |     2881 | ACTIVE |
+    | xx.xx.xx.106 |     2882 |  6 | sa128_obv4_2 |     2881 | ACTIVE |
+    | xx.xx.xx.47  |     2882 |  6 | sa128_obv4_1 |     2881 | ACTIVE |
+    +--------------+----------+----+--------------+----------+--------+
+    6 rows in set
+    ```
+
+6. 将租户 `mq_t1` 中 `UNIT_ID = 1006` 的 Unit 迁移到同 Zone 的另一个节点。
+
+    ```shell
+    obclient(root@sys)[oceanbase]> ALTER SYSTEM migrate unit = 1006 destination = 'xx.xx.xx.158:2882';
+    Query OK, 0 rows affected 
+    ```
+
+7. 查看 Unit 迁移状态。
+
+    ```shell
+    obclient(root@sys)[oceanbase]> SELECT * FROM oceanbase.DBA_OB_UNIT_JOBS WHERE JOB_TYPE = 'MIGRATE_UNIT';
+    ```
+
+    查询结果如下：
+
+    ```shell
+    +--------+--------------+------------+-------------+----------+----------------------------+----------------------------+-----------+---------+----------+------------+------------+-------------+
+    | JOB_ID | JOB_TYPE     | JOB_STATUS | RESULT_CODE | PROGRESS | START_TIME                 | MODIFY_TIME                | TENANT_ID | UNIT_ID | SQL_TEXT | EXTRA_INFO | RS_SVR_IP  | RS_SVR_PORT |
+    +--------+--------------+------------+-------------+----------+----------------------------+----------------------------+-----------+---------+----------+------------+------------+-------------+
+    |      4 | MIGRATE_UNIT | INPROGRESS |        NULL |        0 | 2023-01-04 17:22:02.208219 | 2023-01-04 17:22:02.208219 |      1004 |    1006 | NULL     | NULL       | xx.xx.xx.106 |        2882 |
+    +--------+--------------+------------+-------------+----------+----------------------------+----------------------------+-----------+---------+----------+------------+------------+-------------+
+    1 row in set
+    ```
+
+    根据查询结果，`JOB_STATUS` 的值为 `INPROGRESS` 代表迁移在进行中，当该值为 `SUCCESS` 时，说明迁移成功。
+
+8. 查看 Unit 迁移后的信息。
+
+    ```shell
+    obclient(root@sys)[oceanbase]> SELECT UNIT_ID, TENANT_ID, STATUS, RESOURCE_POOL_ID, UNIT_GROUP_ID, ZONE, SVR_IP, SVR_PORT FROM oceanbase.DBA_OB_UNITS WHERE UNIT_ID = 1006;
+    ```
+
+    查询结果如下：
+
+    ```shell
+    +---------+-----------+--------+------------------+---------------+--------------+----------------+----------+
+    | UNIT_ID | TENANT_ID | STATUS | RESOURCE_POOL_ID | UNIT_GROUP_ID | ZONE         | SVR_IP         | SVR_PORT |
+    +---------+-----------+--------+------------------+---------------+--------------+----------------+----------+
+    |    1006 |      1004 | ACTIVE |             1005 |          1002 | sa128_obv4_3 | xxx.xx.xxx.158 |     2882 |
+    +---------+-----------+--------+------------------+---------------+--------------+----------------+----------+
+    1 row in set
+    ```
+
+    通过查询可以看到 `UNIT_ID = 1006` 已经由 `xx.xx.xx.19` 变更为 `xx.xx.xx.158`，Unit 迁移成功。
+
+## 手动迁移副本
+
+在发生 Unit 迁移或其他情况下，副本所在位置与其 Unit 所在位置不一致时，可以通过 `ALTER SYSTEM MIGRATE REPLICA` 命令将对应副本迁移到指定位置。
+
+### 使用限制
+
+* 系统租户（sys 租户）可以对所有租户的日志流执行副本迁移操作，用户租户只能对本租户的日志流执行副本迁移操作。
+
+* 租户的同一个日志流，除了副本迁移任务可以并行执行多个以外，其他容灾任务（包括添加副本、删除副本、转换副本类型、修改日志流的法定成员数等）每次只能执行一个。
+
+  sys 租户可以通过视图 `CDB_OB_LS_REPLICA_TASKS` 确认是否有正在运行的容灾任务；用户租户可以通过视图 `DBA_OB_LS_REPLICA_TASKS` 确认是否有正在运行的容灾任务。
+
+* 副本迁移只能在同 Zone 之间进行。
+
+### 前提条件
+
+* 在执行副本迁移操作前，请确认当前用户拥有 `ALTER SYSTEM` 权限，否则无法执行 `ALTER SYSTEM MIGRATE REPLICA` 命令。
+
+* 在查询视图前，请确认当前用户拥有以下视图的 `SELECT` 权限，否则无法查询相关信息。
+
+  * `DBA_OB_TENANTS`
+
+  * `DBA_OB_LS`/`CDB_OB_LS`
+
+  * `GV$OB_UNITS`
+
+  * `DBA_OB_LS_LOCATIONS`/`CDB_OB_LS_LOCATIONS`
+
+* 在执行副本迁移操作前，需要保证目标服务器上有用户可用的资源即 Unit，并确保该 Unit 上没有该日志流的副本。
+
+* 如果需要同时执行多个副本迁移任务，租户角色为主租户时，需要将该租户对应配置项 `replica_parallel_migration_mode` 的值设置为 `on`；租户角色为备租户时，需要将该租户对应配置项 `replica_parallel_migration_mode` 的值设置为 `on` 或 `auto`。有关租户级配置项 `replica_parallel_migration_mode` 的详细介绍及设置，参见 [replica_parallel_migration_mode](../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7330.replica_parallel_migration_mode.md)。
+
+### 操作步骤
+
+假设当前有一租户 tenant1，使用了 Unit 迁移命令 `ALTER SYSTEM MIGRATE UNIT= 1003 DESTINATION = '100.xx.xx.002:5072';` 将 `unit_id` 为 `1003` 的 Unit 迁移到目标服务器 `100.xx.xxx.002:5072` 上，由于异常原因，系统未正常完成副本迁移，需要手动将副本迁移到目标服务器 `100.xx.xxx.002:5072` 上。
+
+1. 用户登录到集群对应的租户。
+
+    连接示例如下：
+
+    ```shell
+    obclient -h172.30.xxx.xxx -P2883 -uroot@tenant1#obdemo -pxxxx -A
+    ```
+
+    有关更加详细的连接数据库的操作指引，参见 [连接数据库概述（MySQL 模式）](../../../../300.develop/100.application-development-of-mysql-mode/100.connect-to-oceanbase-database-of-mysql-mode/100.connection-methods-overview-of-mysql-mode.md) 和 [连接数据库概述（Oracle 模式）](../../../../300.develop/200.application-development-of-oracle-mode/100.connect-to-oceanbase-database-of-oracle-mode/100.connection-methods-overview-of-oracle-mode.md)。
+
+2. 获取待操作租户的租户 ID 信息。
+
+    * 系统租户
+
+      ```shell
+      obclient(root@sys)[oceanbase]> SELECT TENANT_NAME,TENANT_ID FROM oceanbase.DBA_OB_TENANTS WHERE TENANT_NAME='tenant1';
+      ```
+
+    * 用户租户
+
+      :::tab
+      tab MySQL 模式
+
+      MySQL 模式下执行以下语句：
+
+      ```shell
+      obclient(root@tenant1)[oceanbase]> SELECT TENANT_NAME,TENANT_ID FROM oceanbase.DBA_OB_TENANTS;
+      ```
+
+      tab Oracle 模式
+
+      Oracle 模式下执行以下语句：
+
+      ```shell
+      obclient(SYS@tenant1)[SYS]> SELECT TENANT_NAME,TENANT_ID FROM SYS.DBA_OB_TENANTS;
+      ```
+
+      :::
+
+      查询结果的示例如下：
+
+      ```shell
+      +-------------+-----------+
+      | TENANT_NAME | TENANT_ID |
+      +-------------+-----------+
+      | tenant1     |      1002 |
+      +-------------+-----------+
+      1 row in set
+      ```
+
+      根据查询结果，该租户对应的租户 ID 为 `1002`。
+
+      有关视图 `DBA_OB_TENANTS` 中各字段的详细说明，请参见 [DBA_OB_TENANTS](../../../../700.reference/700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/23100.o-dba_ob_tenants-of-sys-tenant.md)。
+
+3. 查看待操作租户的所有日志流信息。
+
+    * 系统租户
+
+      ```shell
+      obclient(root@sys)[oceanbase]> SELECT * FROM oceanbase.CDB_OB_LS WHERE TENANT_ID=1002;
+      ```
+
+      有关视图 `CDB_OB_LS` 中各字段的详细说明，请参见 [CDB_OB_LS](../../../../700.reference/700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/9400.o-cdb_ob_ls-of-sys-tenant.md)。
+
+    * 用户租户
+
+      :::tab
+      tab MySQL 模式
+
+      MySQL 模式下执行以下语句：
+
+      ```shell
+      obclient(root@tenant1)[oceanbase]> SELECT * FROM oceanbase.DBA_OB_LS;
+      ```
+
+      tab Oracle 模式
+
+      Oracle 模式下执行以下语句：
+
+      ```shell
+      obclient(SYS@tenant1)[SYS]> SELECT * FROM SYS.DBA_OB_LS;
+      ```
+
+      :::
+
+      查询结果的示例如下：
+
+      ```shell
+      +-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+
+      | LS_ID | STATUS | PRIMARY_ZONE | UNIT_GROUP_ID | LS_GROUP_ID | CREATE_SCN          | DROP_SCN | SYNC_SCN            | READABLE_SCN        | FLAG      |
+      +-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+
+      |     1 | NORMAL | z1;z2        |             0 |           0 |                NULL |     NULL | 1712455113896017202 | 1712455113896017202 |           |
+      |  1001 | NORMAL | z1;z2        |          1001 |        1001 | 1712125812893680165 |     NULL | 1712455113896017202 | 1712455113896017202 |           |
+      |  1002 | NORMAL | z1;z2        |          1002 |        1002 | 1712125812908098857 |     NULL | 1712455114041323052 | 1712455113540551113 |           |
+      |  1003 | NORMAL | z1;z2        |             0 |           0 | 1712125828880850585 |     NULL | 1712455113896017202 | 1712455113896017202 | DUPLICATE |
+      +-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+
+      4 rows in set
+      ```
+
+      根据查询结果可知，tenant1 租户有一个 1 号日志流、一个 1001 号日志流、一个 1002 号日志流以及一个 1003 号广播日志流。
+
+      有关视图 `DBA_OB_LS` 中各字段的详细说明，请参见 [DBA_OB_LS](../../../../700.reference/700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/9600.o-dba_ob_ls-of-mysql-mode.md)。
+
+4. 查看待操作租户的 Unit 资源。
+
+    * 系统租户
+
+      ```shell
+      obclient(root@sys)[oceanbase]> SELECT SVR_IP, SVR_PORT, UNIT_ID, TENANT_ID, ZONE, ZONE_TYPE, STATUS FROM oceanbase.GV$OB_UNITS WHERE TENANT_ID=1002;
+      ```
+
+    * 用户租户
+
+      :::tab
+      tab MySQL 模式
+
+      MySQL 模式下执行以下语句：
+
+      ```shell
+      obclient(root@tenant1)[oceanbase]> SELECT SVR_IP, SVR_PORT, UNIT_ID, TENANT_ID, ZONE, ZONE_TYPE, STATUS FROM oceanbase.GV$OB_UNITS;
+      ```
+
+      tab Oracle 模式
+
+      Oracle 模式下执行以下语句：
+
+      ```shell
+      obclient(SYS@tenant1)[SYS]> SELECT SVR_IP, SVR_PORT, UNIT_ID, TENANT_ID, ZONE, ZONE_TYPE, STATUS FROM SYS.GV$OB_UNITS;
+      ```
+
+      :::
+
+      查询结果的示例如下：
+
+      ```shell
+      +----------------+----------+---------+-----------+-------+-----------+--------+
+      | SVR_IP         | SVR_PORT | UNIT_ID | TENANT_ID | ZONE  | ZONE_TYPE | STATUS |
+      +----------------+----------+---------+-----------+-------+-----------+--------+
+      | 100.xx.xxx.012 |     5070 |    1002 |      1002 |    z1 | ReadWrite | NORMAL |
+      | 100.xx.xxx.002 |     5072 |    1004 |      1002 |    z2 | ReadWrite | NORMAL |
+      | 100.xx.xxx.003 |     5073 |    1003 |      1002 |    z2 | ReadWrite | NORMAL |
+      | 100.xx.xxx.001 |     5071 |    1001 |      1002 |    z1 | ReadWrite | NORMAL |
+      | 100.xx.xxx.004 |     5074 |    1006 |      1002 |    z3 | ReadWrite | NORMAL |
+      | 100.xx.xxx.005 |     5075 |    1005 |      1002 |    z3 | ReadWrite | NORMAL |
+      +----------------+----------+---------+-----------+-------+-----------+--------+
+      6 rows in set
+      ```
+
+      根据查询结果可知，当前租户在 `100.xx.xxx.012:5070`、`100.xx.xxx.002:5072`、`100.xx.xxx.003:5073`、`100.xx.xxx.001:5071`、`100.xx.xxx.004:5074`、`100.xx.xxx.005:5075` 等服务器上均有可用的 Unit 资源。且`unit_id` 为 `1003` 的 Unit 在 `100.xx.xxx.003:5073` 服务器上。
+
+      有关视图 `GV$OB_UNITS` 中各字段的详细说明，请参见 [GV$OB_UNITS](../../../../700.reference/700.system-views/300.system-view-of-sys-tenant/300.performance-view-of-sys-tenant/4800.gv-ob_units-of-sys-tenant.md)。
+
+5. 根据前面获取到的租户的日志流信息，查看 1002 号日志流的副本分布。
+
+    * 系统租户
+
+      ```shell
+      obclient(root@sys)[oceanbase]> SELECT * FROM oceanbase.CDB_OB_LS_LOCATIONS WHERE LS_ID=1002 AND TENANT_ID=1002;
+      ```
+
+      有关视图 `CDB_OB_LS_LOCATIONS` 中各字段的详细说明，请参见 [CDB_OB_LS_LOCATIONS](../../../../700.reference/700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/9700.o-cdb_ob_ls_locations-of-sys-tenant.md)。
+
+    * 用户租户
+
+      :::tab
+      tab MySQL 模式
+
+      MySQL 模式下执行以下语句：
+
+      ```shell
+      obclient(root@tenant1)[oceanbase]> SELECT * FROM oceanbase.DBA_OB_LS_LOCATIONS WHERE LS_ID=1002;
+      ```
+
+      tab Oracle 模式
+
+      Oracle 模式下执行以下语句：
+
+      ```shell
+      obclient(SYS@tenant1)[SYS]> SELECT * FROM SYS.DBA_OB_LS_LOCATIONS WHERE LS_ID=1002;
+      ```
+
+      :::
+
+      查询结果的示例如下：
+
+      ```shell
+      +----------------------------+----------------------------+-------+----------------+----------+----------+------+----------+-------------------------------------------------------------------------------------------------+----------------------+--------------+--------------+---------+
+      | CREATE_TIME                | MODIFY_TIME                | LS_ID | SVR_IP         | SVR_PORT | SQL_PORT | ZONE | ROLE     | MEMBER_LIST                                                                                     | PAXOS_REPLICA_NUMBER | REPLICA_TYPE | LEARNER_LIST | REBUILD |
+      +----------------------------+----------------------------+-------+----------------+----------+----------+------+----------+-------------------------------------------------------------------------------------------------+----------------------+--------------+--------------+---------+
+      | 2023-11-05 23:52:15.716363 | 2023-11-05 23:52:24.212243 |  1002 | 100.xx.xxx.003 |     5073 |     5107 | z2   | LEADER   | 100.xx.xxx.003:5073:1699199535653021,100.xx.xxx.012:5070:1,100.xx.xxx.004:5074:1699194477097063 |                    3 | FULL         |              | FALSE   |
+      | 2023-11-05 22:05:20.420160 | 2023-11-05 23:52:24.807711 |  1002 | 100.xx.xxx.012 |     5070 |     5105 | z1   | FOLLOWER | NULL                                                                                            |                 NULL | FULL         |              | FALSE   |
+      | 2023-11-05 22:27:57.157395 | 2023-11-05 23:52:24.361105 |  1002 | 100.xx.xxx.004 |     5074 |     5109 | z3   | FOLLOWER | NULL                                                                                            |                 NULL | FULL         |              | FALSE   |
+      +----------------------------+----------------------------+-------+----------------+----------+----------+------+----------+-------------------------------------------------------------------------------------------------+----------------------+--------------+--------------+---------+
+      3 rows in set
+      ```
+
+      根据查询结果，需要迁移 `100.xx.xxx.003:5073` 上的副本，由于副本在 `z2` 上，结合上一步查询的 Unit 信息，在同 Zone 内找到一个可用的 Unit，可以将副本迁移到 `100.xx.xxx.002:5072` 上。
+
+6. 执行副本迁移命令。
+
+   语句如下：
+
+   ```sql
+   ALTER SYSTEM MIGRATE REPLICA LS [=] ls_id SOURCE [=] 'svr_ip:svr_port' DESTINATION [=] 'destination_ip:destination_port' [DATA_SOURCE [=] 'data_source'] [TENANT [=] 'tenant_name']
+   ```
+
+   语句使用说明：
+
+   * `ls_id`：指定待迁移副本的日志流 ID。
+
+   * `svr_ip:svr_port`：指定待迁移的副本所在服务器的 IP 及端口号。示例：`100.xx.xxx.003:5073`。
+
+   * `destination_ip:destination_port`：指定待迁移的副本的目标服务器的 IP 及端口号。示例：`100.xx.xxx.002:5072`。
+
+   * `data_source`：指定副本的数据来源地址。可以选择日志流中其他任意一个副本来作为数据来源地址，请根据业务实际情况进行选择。示例：`100.xx.xxx.004:5074`。
+
+      如果指定的数据源不可用时，系统会报错。如果不显式指定该值，则系统会自动选择一个可用的数据源。
+
+   * `tenant_name`：指定待操作的租户。系统租户可以指定其他租户，用户租户只能指定本租户。如果不显式指定待操作的租户，则默认租户名为当前租户。本语句不支持使用 `all`、`all_user`、`all_meta` 等指定所有租户、用户租户以及所有 Meta 租户。
+
+   * 本语句一次只能迁移一个日志流副本，如果需要迁移多个副本，需要多次执行该语句。
+
+   示例如下：
+
+   ```shell
+   obclient> ALTER SYSTEM MIGRATE REPLICA LS = 1002 SOURCE='100.xx.xxx.003:5073' DESTINATION = '100.xx.xxx.002:5072'
+   ```
+
+7. 执行成功后，再次查询该日志流的副本分布情况。
+
+    * 系统租户
+
+      ```shell
+      obclient(root@sys)[oceanbase]> SELECT * FROM oceanbase.CDB_OB_LS_LOCATIONS WHERE LS_ID=1002 AND TENANT_ID=1002;
+      ```
+
+    * 用户租户
+
+      :::tab
+      tab MySQL 模式
+
+      MySQL 模式下执行以下语句：
+
+      ```shell
+      obclient(root@tenant1)[oceanbase]> SELECT * FROM oceanbase.DBA_OB_LS_LOCATIONS WHERE LS_ID=1002;
+      ```
+
+      tab Oracle 模式
+
+      Oracle 模式下执行以下语句：
+
+      ```shell
+      obclient(SYS@tenant1)[SYS]> SELECT * FROM SYS.DBA_OB_LS_LOCATIONS WHERE LS_ID=1002;
+      ```
+
+      :::
+
+      查询结果的示例如下：
+
+      ```shell
+      +----------------------------+----------------------------+-------+----------------+----------+----------+------+----------+-------------------------------------------------------------------------------------------------+----------------------+--------------+--------------+---------+
+      | CREATE_TIME                | MODIFY_TIME                | LS_ID | SVR_IP         | SVR_PORT | SQL_PORT | ZONE | ROLE     | MEMBER_LIST                                                                                     | PAXOS_REPLICA_NUMBER | REPLICA_TYPE | LEARNER_LIST | REBUILD |
+      +----------------------------+----------------------------+-------+----------------+----------+----------+------+----------+-------------------------------------------------------------------------------------------------+----------------------+--------------+--------------+---------+
+      | 2023-11-06 00:05:39.520972 | 2023-11-06 00:05:49.101503 |  1002 | 100.xx.xxx.002 |     5072 |     5106 | z2   | LEADER   | 100.xx.xxx.002:5072:1699200339454143,100.xx.xxx.012:5070:1,100.xx.xxx.004:5074:1699194477097063 |                    3 | FULL         |              | FALSE   |
+      | 2023-11-05 22:05:20.420160 | 2023-11-06 00:05:50.037494 |  1002 | 100.xx.xxx.012 |     5070 |     5105 | z1   | FOLLOWER | NULL                                                                                            |                 NULL | FULL         |              | FALSE   |
+      | 2023-11-05 22:27:57.157395 | 2023-11-06 00:05:49.484669 |  1002 | 100.xx.xxx.004 |     5074 |     5109 | z3   | FOLLOWER | NULL                                                                                            |                 NULL | FULL         |              | FALSE   |
+      +----------------------------+----------------------------+-------+----------------+----------+----------+------+----------+-------------------------------------------------------------------------------------------------+----------------------+--------------+--------------+---------+
+      3 rows in set
+      ```
+
+      根据结果可知，租户 1002 号日志流原来 `100.xx.xxx.003:5073` 上的副本已迁移到 `100.xx.xxx.002:5072` 上，迁移成功。
+
+## 相关文档
+
+* [增加副本](300.add-replica.md)
+
+* [减少副本](400.reduce-replica.md)
+
+* [转换副本类型](450.change-the-replica-type.md)
+
+* [修改日志流的法定成员数](800.modify-paxos-replica-number.md)
+
+* [取消副本任务](900.cancel-a-replica-task.md)

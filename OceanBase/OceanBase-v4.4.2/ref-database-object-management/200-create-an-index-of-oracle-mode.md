@@ -1,0 +1,312 @@
+---
+title: "创建索引"
+book: "数据库对象管理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283512.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 创建索引
+
+本节主要介绍如何创建索引。
+
+## 背景信息
+
+OceanBase 数据库支持在非分区表和分区表上创建索引，索引可以是局部索引或全局索引，也可以是唯一索引或非唯一索引，还可以是函数索引。
+
+本节主要介绍如何在非分区表上创建索引，分区表上索引的创建请参见 [创建分区表索引](../200.manage-partitions-of-oracle-mode/900.create-partition-table-index-of-oracle-mode/200.local-index-of-oracle-mode.md) 章节。
+
+## 注意事项
+
+创建索引时需要注意，在 OceanBase 数据库中，索引名称在 Schema 范围内不能重复。
+
+## 创建普通索引
+
+可以使用 `CREATE INDEX` 语句来创建普通索引。语法如下：
+
+```sql
+CREATE [UNIQUE] INDEX index_name ON table_name ( column_name );
+```
+
+相关参数说明如下：
+
+* `index_name`：指定待添加的索引的索引名。
+
+* `UNIQUE`：可选，表示唯一索引。创建唯一索引时需要添加该关键字。
+
+* `table_name`：指定待添加索引的表的表名。
+
+* `column_list`：指定对哪些列进行索引，指定多列时，各列之间用英文逗号分隔。
+
+创建表 `tbl2` 后，再创建索引 `tbl2_idx1` 的示例如下：
+
+1. 创建表 `tbl2`。
+
+   ```sql
+   CREATE TABLE tbl2(id NUMBER,name VARCHAR2(20));
+   ```
+
+2. 在表 `tbl2` 上创建索引 `tbl2_idx1`。
+
+   ```sql
+   CREATE INDEX tbl2_idx1 ON tbl2(name);
+   ```
+
+3. 查看索引信息。
+
+   ```sql
+   SELECT index_name,index_type,table_owner,table_name,uniqueness FROM user_indexes WHERE table_name='TBL2';
+   ```
+
+   结果如下：
+
+   ```shell
+   +------------+------------+-------------+------------+------------+
+   | INDEX_NAME | INDEX_TYPE | TABLE_OWNER | TABLE_NAME | UNIQUENESS |
+   +------------+------------+-------------+------------+------------+
+   | TBL2_IDX1  | NORMAL     | SYS         | TBL2       | NONUNIQUE  |
+   +------------+------------+-------------+------------+------------+
+   1 row in set
+   ```
+
+## 创建函数索引
+
+基于表中一列或多列的值进行计算后的结果建立的索引称为函数索引。函数索引是一种优化技术，使用函数索引可以在查询时快速定位匹配的函数值，从而避免重复计算，提高查询效率。
+
+假设您有一张表 `sale`，表中有一个数据类型为 `date` 的列 `date_col`：
+
+```sql
+CREATE TABLE sale(date_col date, sales_col int, name_col varchar2(10));
+```
+
+如果您需要获取 3 月份的数据，则可以使用 `to_char` 函数来查询数据：
+
+```sql
+SELECT * FROM sale WHERE to_char(date_col,'MM') = 3;
+```
+
+该场景下，数据库需要为表中的每行计算 `to_char(date_col,'MM')`，并过滤掉不符合 `to_char(date_col,'MM') = 3` 的行。如果您需要频繁地使用月份信息来过滤数据，则每次都需要重新计算 `to_char(date_col,'MM')`，就会造成大量的开销。因此，您可以在 `date_col` 上创建一个函数索引，将 `to_char(date_col,'MM')` 存储到索引表中，来加速查询。
+
+```sql
+CREATE INDEX idx1 ON sale((to_char(date_col,'MM')));
+```
+
+### 函数索引使用限制
+
+在 OceanBase 数据库的 Oracle 模式中，对函数索引的表达式进行了限制，禁止部分系统函数的表达式作为函数索引，具体的函数列表请参见 [函数索引支持的系统函数列表](../400.manage-indexes-of-oracle-mode/500.function-index-list-of-supported-functions-of-oracle-mode.md) 和 [函数索引不支持的系统函数列表](../400.manage-indexes-of-oracle-mode/600.function-index-list-of-not-supported-functions-of-oracle-mode.md)。
+
+### 函数索引的创建
+
+您可以使用 `CREATE INDEX` 语句来创建函数索引。函数索引也可以是唯一索引。语法如下：
+
+```sql
+CREATE [UNIQUE] INDEX index_name ON table_name (expr);
+```
+
+相关参数说明如下：
+
+* `[UNIQUE]`：可选，表示唯一索引。创建唯一索引时需要添加对应的关键字。
+
+* `index_name`：待创建的函数索引的名称。
+
+* `table_name`：指定待创建索引的表的表名。
+
+* `expr`：合法的函数索引表达式，不能是布尔表达式，例如 `c1=c1` 不支持。
+
+在表上创建一个索引定义为 `c1+1` 的函数索引 `tbl2_func_idx1`，示例如下：
+
+1. 创建表 `tbl2_func`。
+
+   ```sql
+   CREATE TABLE tbl2_func(c1 int, c2 int);
+   ```
+
+2. 创建函数索引 `tbl2_func_idx1`。
+
+   ```sql
+   CREATE INDEX tbl2_func_idx1 ON TBL2_FUNC ((c1+1));
+   ```
+
+3. 创建成功后，可以查看创建的函数索引。
+
+   ```sql
+   SELECT index_name,index_type,table_owner,table_name,uniqueness FROM user_indexes WHERE table_name='TBL2_FUNC';
+   ```
+
+   结果如下：
+
+   ```shell
+   +----------------+-----------------------+-------------+------------+------------+
+   | INDEX_NAME     | INDEX_TYPE            | TABLE_OWNER | TABLE_NAME | UNIQUENESS |
+   +----------------+-----------------------+-------------+------------+------------+
+   | TBL2_FUNC_IDX1 | FUNCTION-BASED NORMAL | SYS         | TBL2_FUNC  | NONUNIQUE  |
+   +----------------+-----------------------+-------------+------------+------------+
+   1 row in set
+   ```
+
+## 创建列存索引
+
+可以使用 `CREATE INDEX` 语句来创建列存索引。语法如下：
+
+```sql
+CREATE [UNIQUE] INDEX index_name ON table_name ( column_name ) [STORING(column_name, ...)] WITH COLUMN GROUP([all columns, ]each column);
+```
+
+相关参数说明如下：
+
+* `index_name`：指定待添加的索引的索引名。
+
+* `UNIQUE`：可选，表示唯一索引。创建唯一索引时需要添加该关键字。
+
+* `table_name`：指定待添加索引的表的表名。
+
+* `column_list`：指定对哪些列进行索引，指定多列时，各列之间用英文逗号分隔。
+
+* `STORING(column_name, ...)`：可选，指定索引表上的冗余列。即使 `column_name` 列不是索引字段，也会按照列存格式进行冗余存储。
+
+* `WITH COLUMN GROUP([all columns, ]each column)`：指定索引的列存属性。
+
+  * `WITH COLUMN GROUP(all columns, each column)`：指定创建行存列存冗余的索引。
+  * `WITH COLUMN GROUP(all columns)`：指定创建行存索引。
+  * `WITH COLUMN GROUP(each column)`：指定创建列存索引。
+
+**示例如下：**
+
+创建表 `tbl3` 后，再创建列存索引 `idx1_tbl3_cg`。
+
+1. 创建表 `tbl3`。
+
+   ```sql
+   CREATE TABLE tbl3(id NUMBER, name VARCHAR2(20), age NUMBER);
+   ```
+
+2. 在表 `tbl3` 上创建列存索引 `idx1_tbl3_cg`，并且在索引表上存储 `age` 列的冗余数据。
+
+   ```sql
+   CREATE INDEX idx1_tbl3_cg ON tbl3(name) STORING(age) WITH COLUMN GROUP(each column);
+   ```
+
+## 创建空间索引
+
+可以使用 `CREATE INDEX` 语句来创建空间索引。语法如下：
+
+```sql
+CREATE INDEX index_name ON table_name(column_g_name) INDEXTYPE IS MDSYS.SPATIAL_INDEX;
+```
+
+相关参数说明如下：
+
+* `index_name`：指定待添加的索引的索引名。
+* `table_name`：指定待创建索引的表的表名。
+* `column_g_name`：指定对哪些列进行索引，指定多列时，各列之间用英文逗号分隔。待添加空间索引的列的列类型必须为空间数据类型。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>创建空间索引的列必须在建表时指定 SRID  信息，更多有关创建空间索引的信息，参见 <a href="../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/300.basic-elements-of-oracle-mode/100.built-in-data-types-of-oracle-mode/1200.spatial-data-type-of-oracle-mode/400.create-spatial-indexes-of-oracle-mode.md">创建空间索引</a>。</p>
+</main>
+
+**示例如下：**
+
+1. 创建表 `tbl4_g`。
+
+   ```sql
+   CREATE TABLE tbl4_g (col1 NUMBER PRIMARY KEY, col2 VARCHAR2(32), col3 SDO_GEOMETRY SRID 4326);
+   ```
+
+2. 为表创建空间索引 `tbl4_g_idx1`。
+
+   ```sql
+   CREATE INDEX tbl4_g_idx1 ON tbl4_g(col3) INDEXTYPE IS MDSYS.SPATIAL_INDEX;
+   ```
+
+## 创建全文索引
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 OceanBase 数据库 V4.4.2 版本，Oracle 模式从 V4.4.2 BP2 版本开始支持创建全文索引。</p>
+</main>
+
+OceanBase 数据库 Oracle 模式在创建表后，可以使用 `CREATE INDEX ... INDEXTYPE IS CTXSYS.CONTEXT ...` 语句来创建全文索引。更多全文索引信息，参见 [全文索引](../../../100.oceanbase-database-concepts/400.database-objects/200.database-objects-of-mysql-mode/300.index-of-oracle-mode/320.full-text-indexes-of-mysql-mode-in-concepts.md)。
+
+### 全文索引使用限制及注意事项
+
+* 支持以下类型的表创建全文索引：
+
+  * 普通表
+  * 分区表（Rang 分区、Hash 分区、List 分区、复合分区）
+  * 复制表
+  * 堆组织表（堆表）
+  * 列存表
+
+* 当前版本全文索引仅支持应用于 `CHAR`、`VARCHAR`、`VARCHAR2`、`NCHAR`、`NVARCHAR2` 和 `CLOB` 类型的列。
+* 当前版本仅支持创建局部（`LOCAL`）全文索引。
+* 索引名称必须在 Schema 的范围内保证唯一。
+* 不支持多列联合创建全文索引。
+* 不支持对生成列创建全文索引。
+* 不支持在视图上创建全文索引。
+* 不支持全文索引与普通索引同名。
+* 不支持删除有全文索引的列。
+* 不支持被全文索引列类型修改为整数类型。
+
+### 创建全文索引语法
+
+通过 `CREATE INDEX ... INDEXTYPE IS CTXSYS.CONTEXT ...` 语句为已有的表创建全文索引，语法如下：
+
+```sql
+CREATE INDEX [schema.]index_name ON [schema.]table_name(column_name)
+    INDEXTYPE IS CTXSYS.CONTEXT
+    [PARAMETERS('LEXER parser_name')]
+    LOCAL;
+
+parser_name:
+    SPACE
+    | NGRAM
+    | NGRAM2
+    | IK
+    | BENG
+```
+
+**相关参数说明如下：**
+
+* `schema.`：可选项，当需要在其他 Schema 的表上创建索引时，必须加上该 Schema 名。如果省略 `schema.`，则默认该索引/表在当前 Schema 中。
+* `index_name`：指定待创建的索引名称。
+* `table_name`：指定待创建索引的表的名称。
+* `column_name`：指定对哪个列进行创建索引。
+* `PARAMETERS('LEXER parser_name')`：可选项，指定全文索引的分词器。当不显示指定 `PARAMETERS('LEXER parser_name')` 时，分词器默认为 `SPACE`，适用于英文等用空格分隔语义的语言。`parser_name` 表示分词器名称，取值如下：
+
+  * `SPACE`：默认值，表示按空格进行分词。
+  * `NGRAM`：表示基于 N-Gram（中文）的分词方式。
+  * `NGRAM2`：表示将文本拆成设置范围的连续字符。
+  * `IK`：表示基于 IK（中文）的分词方式。
+  * `BENG`：基于 Beng（基础英文）的分词方式。
+
+   有关分词器选择策略的详细介绍，参见 [全文索引](../../../100.oceanbase-database-concepts/400.database-objects/200.database-objects-of-mysql-mode/300.index-of-oracle-mode/320.full-text-indexes-of-mysql-mode-in-concepts.md) 下的 **全文索引的分词器** 章节。
+
+* `LOCAL`：指定创建局部索引。
+
+**示例如下：**
+
+创建 `tbl5` 表后，再创建全文索引 `ft_idx1_tbl5`。
+
+1. 创建表 `tbl5`。
+
+    ```sql
+    obclient> CREATE TABLE tbl5(col1 INT, col2 VARCHAR2(50));
+    ```
+
+2. 在表 `tbl5` 上创建全文索引 `ft_idx1_tbl5`，指定全文索引的分词器为 `IK`。
+
+    ```sql
+    obclient> CREATE INDEX ft_idx1_tbl5 ON tbl5(col2)
+        INDEXTYPE IS CTXSYS.CONTEXT
+        PARAMETERS('LEXER IK')
+        LOCAL;
+    ```
+
+## 相关文档
+
+* 更多 `CREATE INDEX` 语法信息，参见 [CREATE INDEX](../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1600.create-index-of-oracle-mode.md)。
+* 使用全文索引查询数据的信息，参见 [全文查询](../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/800.queries-and-subqueries-of-oracle-mode/800.full-text-query-of-oracle-mode.md)。

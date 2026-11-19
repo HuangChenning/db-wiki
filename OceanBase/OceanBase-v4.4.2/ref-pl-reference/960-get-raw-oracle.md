@@ -1,0 +1,37 @@
+---
+title: GET_RAW
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005719949.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# GET_RAW
+
+`GET_RAW` 用于从操作系统文件中读取原始二进制数据。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+UTL_FILE.GET_RAW (
+    fid   IN  UTL_FILE.FILE_TYPE,
+    r     OUT RAW,
+    len   IN  PLS_INTEGER DEFAULT NULL
+);
+```
+
+## 参数解释
+
+|    参数     |           解释            |
+|-----------|-------------------------|
+| fid      | 通过 `FOPEN` 打开的文件句柄。  |
+| r        | 用于接收从文件中读取的二进制数据的输出缓冲区。        |
+| len | 可选参数，默认为 `FALSE`。若设为 `TRUE`，数据会立即刷新到磁盘，确保写入的实时性。 |

@@ -1,0 +1,46 @@
+---
+title: ALL_ERRORS
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005683553.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# ALL_ERRORS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V2.2.30 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前用户可以访问的当前存储对象的错误。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该视图仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 字段说明
+
+|    **字段名称**    |     **类型**     | **是否可以为 NULL** |                                             **描述**                                              |
+|----------------|----------------|----------------|-----------------------------------|
+| OWNER          | VARCHAR2(128)  | NO             | 对象的拥有者。      |
+| NAME           | VARCHAR2(128)  | NO             | 对象的名称。       |
+| TYPE           | VARCHAR2(19)   | NO             | 对象的类型：<ul><li> VIEW   </li><li> PROCEDUCE   </li><li> FUNCTION   </li><li> PACKAGE   </li><li> PACKAGE_BODY   </li><li> TRIGGER   </li><li> TYPE   </li><li> TYPE BODY   </li><li> LIBRARY   </li><li> JAVA SOURCE   </li><li> JAVA CLASS   </li><li> DIMENSION </li></ul>   |
+| SEQUENCE       | NUMBER         | NO             | 同一次编译有多条错误时的错误编号（为排序）。                                                                          |
+| LINE           | NUMBER         | NO             | 错误发生的行。      |
+| POSITION       | NUMBER         | NO             | 错误发生的列。      |
+| TEXT           | VARCHAR2(4000) | NO             | 错误信息文本。      |
+| ATTRIBUTE      | VARCHAR2(9)    | NO             | 表明是 Error 还是 Warning。                                                                           |
+| MESSAGE_NUMBER | number         | NO             | 错误编码。        |
+
+## 相关视图或文档
+
+* [DBA_ERRORS](8200.dba_errors-of-oracle-mode.md)
+
+* [USER_ERRORS](26200.user_errors-of-oracle-mode.md)

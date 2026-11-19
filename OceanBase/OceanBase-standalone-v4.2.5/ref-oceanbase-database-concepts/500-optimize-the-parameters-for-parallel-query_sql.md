@@ -1,0 +1,53 @@
+---
+title: "并行查询的参数调优"
+book: "系统原理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000003150199.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-oceanbase-database-concepts
+---
+
+# 并行查询的参数调优
+
+OceanBase 数据库并行查询（PX）的参数（变量或配置项）决定了并行查询的速度，主要包括并行度和 EXCHANGE 等相关参数。
+
+## 并行度变量
+
+并行度相关变量主要决定每个查询并发时的 Worker 个数。详细信息如下表所示。
+
+| **变量名称** | **描述** | **取值范围** | **默认值** | **配置建议** |
+|----|----|----|----|----|
+| parallel_servers_target | 当准备排队之前，控制检查查询要求的并行度和已统计的 Worker 总和是否超过该值。如果超过该值，则查询需要排队，否则查询继续执行。 | \[0, 1800\] | 10（目前会根据 CPU 个数计算得到，以实际大小为准） | 该变量主要是控制 PX 场景下，当准备进行并行查询时，如果没有足够 Worker 处理该查询，决定是否继续进行还是排队等待。 |
+| \_force_parallel_query_dop | 该变量在会话中指定查询 SQL 的默认并行度，在没有指定 PARALLEL Hint 情况下，查询SQL 的并行度受此变量控制。 | \[1, +∞\] | 1 | 根据实际需要。例如同一个会话中要运行一批并行查询SQL 又不想手动给每条 SQL 加上 Hint 时，建议使用此变量。 |
+| \_force_parallel_dml_dop | 该变量在会话中指定 DML SQL 的默认并行度，在没有指定 PARALLEL Hint 情况下，DML SQL 的并行度受此变量控制。 | \[1,+∞\] | 1 | 根据实际需要。例如同一个会话中要运行一批并行DML SQL 又不想手动给每条 SQL 加上 Hint 时，建议使用此变量。 |
+
+可以通过 `SHOW VARIABLES` 来查看这些变量的值。
+
+## EXCHANGE（Shuffle）配置项
+
+`EXCHANGE`（Shuffle）配置项主要用于控制 DFO（Distributed Function Operator）之间数据传输时的内存管理和数据重分布策略，也就是数据进行 Shuffle 时的内存控制。OceanBase 数据库将数据传输封装成了叫做 DTL（Data Transfer layer）的模块。
+
+| **配置项名称** | **描述** | **取值范围** | **默认值** | **配置建议** |
+|----|----|----|----|----|
+| dtl_buffer_size | 控制 `EXCHANGE` 算子之间（即 Transmit 和 Receive 之间）发送数据时，每次发送数据的 Buffer 的大小。即当数据达到了该值上限才进行发送，减少每行传输的代价。 | \[4k, 2M\] | 64K | PX 场景下，`EXCHANGE` 之间发送数据依赖于该配置项大小，一般不需要调整该配置项，如果是为了减少发送数据次数等可以尝试进行修改，一般不建议修改该值大小。 |
+
+可以通过 `SHOW PARAMETERS` 来查看配置项的值，如下例所示：
+
+``` sql
+obclient>SHOW PARAMETERS LIKE '%dtl%';
++-------+----------+----------------+----------+-----------------+-----------+-------+---------------+----------+---------+---------+-------------------+
+| zone  | svr_type | svr_ip         | svr_port | name            | data_type | value | info          | section  | scope   | source  | edit_level        |
++-------+----------+----------------+----------+-----------------+-----------+-------+---------------+----------+---------+---------+-------------------+
+| zone1 | observer | 100.XXX.XXX.XXX |    36500 | dtl_buffer_size | NULL      | 64K   | to be removed | OBSERVER | CLUSTER | DEFAULT | DYNAMIC_EFFECTIVE |
++-------+----------+----------------+----------+-----------------+-----------+-------+---------------+----------+---------+---------+-------------------+
+1 row in set
+```
+
+## 其他并行相关参数
+
+| **参数名称** | **描述** | **取值范围** | **默认值** | **配置建议** |  |
+|----|----|----|----|----|----|
+| \_enable_px_batch_rescan | 控制在 NLJ 生成分布式 PX RESCAN 计划执行时是否使用BATCH RESCAN, 可以获得更好的性能. | True 或者 False | True | 默认开启会获得更好的性能，但会消耗更多的内存。 |  |
+| \_bloom_filter_enabled | 控制在 HASH JOIN 场景下是否开启 BLOOM FILTER。 | True 或者 False | True | 在并行度大于 1 的情况下默认开启，如果 HASH JOIN 的连接条件过滤性不佳，打开 BLOOM FILTER 会有额外的开销，在此场景可以考虑关闭此功能。 | 九百毫米， |

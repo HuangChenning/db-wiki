@@ -1,0 +1,14 @@
+---
+title: "系统监控指标概述"
+book: "管理数据库"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000003577866.html"
+tags:
+  - oceanbase
+  - standalone
+  - manage
+---
+
+# 系统监控指标概述
+
+OceanBase 数据库的系统监控描述系统的运行状况，从而根据特定的监控信息，对系统（集群、租户、会话）的健康状况作出判断。系统监控指标包括集群、租户、会话和 SQL 等多个维度，对多样化的监控信息进行汇总展现，以满足不同场景的诊断需求，包括系统监控、故障诊断、SQL 分析等。

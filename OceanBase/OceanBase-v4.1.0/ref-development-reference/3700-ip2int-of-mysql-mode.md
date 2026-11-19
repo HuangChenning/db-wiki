@@ -1,0 +1,41 @@
+---
+title: IP2INT
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702888.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# IP2INT
+
+## 声明
+
+```sql
+IP2INT('ip_addr')
+```
+
+## 说明
+
+将 IP 地址 `ip_addr` 转换成整数。
+
+假设输入的 IP 形如 `s1.s2.s3.s4`，则返回值的计算规则为：
+
+`s1` \* 2^24^ + `s2` \* 2^16^ + `s3` \* 2^8^+ `s4`
+
+## 示例
+
+```sql
+obclient> SELECT
+     IP2INT('0.0.0.1'),
+     HEX(IP2INT('0.0.0.1')),
+     HEX(IP2INT('1.0.0.0'))
+     \G
+*************************** 1. row ***************************
+     IP2INT('0.0.0.1'): 1
+HEX(IP2INT('0.0.0.1')): 1
+HEX(IP2INT('1.0.0.0')): 1000000
+1 row in set 
+```

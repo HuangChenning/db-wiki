@@ -1,0 +1,59 @@
+---
+title: "锁表"
+book: "数据库对象管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501906.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 锁表
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>OceanBase 数据库社区版从 V4.2.5 版本开始支持表锁功能。</p>
+</main>
+
+表锁是最基本的锁定策略，它锁定整张表，在任意时刻只允许一个会话对该表进行读写操作。您可以通过 `LOCK TABLES` 语句锁定表。
+
+数据库是一个多用户使用的共享资源。当多个用户并发地存取数据时，在数据库中就会产生多个事务同时存取同一数据的情况。若对并发操作不加控制就可能会读取和存储不正确的数据，破坏数据库的一致性。加锁是实现数据库并发控制的一个非常重要的技术。为了确保资源的安全性（也就是数据完整性和一致性）才引申出锁机制。利用其锁机制来实现事务间的数据并发访问及数据一致性。
+
+## 前提条件
+
+* 使用 `LOCK TABLES` 语句前，需要打开如下租户级配置项：
+
+    ```sql
+    ALTER SYSTEM SET enable_lock_priority = TRUE;
+    ```
+
+    上述租户级配置项详细介绍，参见 [enable_lock_priority](../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2750.enable_lock_priority.md)。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>开启对应租户的 <code>enable_lock_priority</code> 后，并不是所有节点都能立即感知到配置项。因此，需通过视图 <code>GV$OB_PARAMETERS</code> 查询所有节点上对应配置项的值，以保证租户下所有机器都生效。</p>
+    </main>
+
+* 如果使用 proxy 连接集群，还需要打开 proxy 如下配置：
+
+    ```sql
+    ALTER PROXYCONFIG SET proxy_id = 1;
+    ALTER PROXYCONFIG SET client_session_id_version = 2;
+    ALTER PROXYCONFIG SET enable_single_leader_node_routing = false;
+    ```
+
+    上述 proxy 配置详细介绍，参见 [proxy_id](https://www.oceanbase.com/docs/common-odp-doc-cn-1000000001409988)、[client_session_id_version](https://www.oceanbase.com/docs/common-odp-doc-cn-1000000001410074) 和 [enable_single_leader_node_routing](https://www.oceanbase.com/docs/common-odp-doc-cn-1000000001410098)。
+
+## 操作示例
+
+为 `test1` 表设置读锁，为 `test2` 表设置写锁。
+
+```sql
+LOCK TABLES test1 as t1 READ LOCAL, test2 as t2 LOW_PRIORITY WRITE;
+```
+
+* 以只读方式锁住表，该表只能被 `select`，不能被修改。如果在锁表时，该表上存在事务，则 `lock` 语句挂起，直到事务结束。多个会话可以同时对表执行该操作。
+* 以读写方式锁住表，`lock table` 的会话可以对表做修改及查询等操作，而其他会话不能对该表做任何操作，包括 `select` 也要被阻塞
+  
+更多 `LOCK TABLES` 语句的介绍，请参见 [LOCK TABLES](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/6000.lock-table-of-mysql-mode.md)。

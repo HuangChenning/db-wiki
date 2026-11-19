@@ -1,0 +1,50 @@
+---
+title: "表达式概述"
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687400.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 表达式概述
+
+表达式用来计算数据的值，它由一个或多个数值、运算符和 SQL 函数等组合而成。
+
+表达式通常采用其组件的数据类型。例如 `2*2` 是个简单复合表达式，计算结果为 4。
+
+表达式可以在 SQL 语句中的多个位置使用，例如在 `SELECT` 语句的 `ORDER BY` 或 `HAVING` 子句中，在 `SELECT`、`DELETE` 或 `UPDATE` 语句的 `WHERE` 子句中，或在 `SET` 语句中。可以使用多个来源的值编写表达式，例如字面量、列值、`NULL`、变量、内置函数和运算符。
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t1 (a INT);
+obclient> INSERT INTO t1 VALUES (1), (2), (0);
+
+obclient> SELECT ABS(a + 1)
+  FROM t1
+ WHERE a > 0;
+```
+
+在上述示例中，各参数解释如下：
+
+* `a` 为列引用。
+* `0` 和 `1` 为常量。
+* `>`、`+` 为运算符。
+* `ABS` 为函数。
+
+有关完整语法层次，请参见 [表达式语法](200.expression-syntax-of-mysql-mode.md)。
+
+OceanBase 数据库当前版本支持如下表达式类型：
+
+* [简单表达式](210.simple-expression-of-mysql-mode.md)
+* [复合表达式](220.compound-expression-of-mysql-mode.md)
+* [条件表达式](230.conditional-expressions-of-mysql-mode.md)
+* [列表达式](240.column-expression-of-mysql-mode.md)
+* [日期时间表达式](250.date-and-time-expressions-of-mysql-mode.md)
+* [函数表达式](260.function-expression-of-mysql-mode.md)
+* [间隔表达式](270.interval-expressions-of-mysql-mode.md)
+* [标量子查询表达式](280.scalar-subquery-expression-of-mysql-mode.md)
+* [表达式列表](290.expression-list-of-mysql-mode.md)

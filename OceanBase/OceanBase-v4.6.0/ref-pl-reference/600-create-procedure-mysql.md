@@ -1,0 +1,295 @@
+---
+title: CREATE PROCEDURE
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684884.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CREATE PROCEDURE
+
+## 描述
+
+`CREATE PROCEDURE` 语句用于创建存储过程。
+
+## 权限要求
+
+使用 `CREATE PROCEDURE` 语句需要 `CREATE PROCEDURE` 权限。
+
+默认情况下，在创建完 `PROCEDURE` 之后，OceanBase 数据库自动将 `ALTER ROUTINE` 和 `EXECUTE` 权限授予例程（存储过程和函数）创建者。如果存在 `DEFINER` 子句，则所需的权限取决于 `user` 的值。
+
+## 语法
+
+```sql
+CREATE
+    [DEFINER = user]
+    PROCEDURE [IF NOT EXISTS] sp_name ([proc_parameter[,...]])
+    [characteristic ...] routine_body
+
+proc_parameter:
+    [ IN | OUT | INOUT ] param_name type
+
+type:
+    Any valid MySQL data type
+
+characteristic: {
+    COMMENT 'string'
+  | LANGUAGE SQL
+  | [NOT] DETERMINISTIC
+  | { CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA }
+  | SQL SECURITY { DEFINER | INVOKER }
+}
+
+routine_body:
+    Valid SQL routine statement
+```
+
+## 参数解释
+
+| 参数 | 说明 |
+|------|------|
+| DEFINER | 指定存储过程的定义者（创建者）。如果省略，默认为执行 `CREATE PROCEDURE` 语句的用户。可以指定为 `'user_name'@'host_name'` 或 `CURRENT_USER`。 |
+| IF NOT EXISTS | 如果存储过程已存在，则不报错。 |
+| sp_name | 要创建的存储过程名称。可以使用 `database_name.sp_name` 指定数据库。 |
+| proc_parameter | 存储过程参数列表。参数格式为 `[ IN \| OUT \| INOUT ] param_name type`。默认情况下，每个参数都是 `IN` 参数。 |
+| characteristic | 存储过程特性，可以包括：<br>- `COMMENT 'string'`：存储过程注释<br>- `LANGUAGE SQL`：指定语言（仅 SQL，可忽略）<br>- `[NOT] DETERMINISTIC`：指定存储过程是否为确定性的<br>- `CONTAINS SQL \| NO SQL \| READS SQL DATA \| MODIFIES SQL DATA`：指定存储过程的数据访问特性<br>- `SQL SECURITY { DEFINER \| INVOKER }`：指定执行权限模式 |
+| routine_body | 存储过程体，包含存储过程的具体实现逻辑。 |
+
+默认情况下，存储过程与默认数据库相关联。要将存储过程与指定数据库的相关联，请使用 `database_name.sp_name` 指定名称。
+
+要调用存储过程，请使用 `CALL` 语句，详细信息请参见 [CALL](../500.pl-manipulation-statement-mysql/100.CALL-mysql.md)。
+
+`DEFINER` 和 `SQL SECURITY` 子句指定在例程执行时检查访问权限要使用的安全上下文。
+
+`IF NOT EXISTS` 防止创建已经存在的同名例程。
+
+括号内的 `proc_parameter` 参数列表必须始终存在。如果没有参数，则应使用空括号 `()` 表示空参数列表。这里的参数名称不区分大小写。默认情况下，每个参数都是 `IN` 参数。如果要为存储过程的参数指定其他值，请在参数名称之前使用关键字 `OUT` 或 `INOUT`。
+
+`IN` 参数将值传递给存储过程。存储过程可能会修改该值，但当存储过程返回时，调用者看不到所做的修改。`OUT` 参数将存储过程中的值传递回给调用者。`OUT` 参数在存储过程内部的初始值为 `NULL`，当过程返回时，调用者可以看到 `OUT` 参数的值。`INOUT` 参数由调用者进行初始化，可以由过程进行修改，当存储过程返回时，存储过程所做的任何更改都对调用者可见。
+
+对于每个 `OUT` 或 `INOUT` 参数，使用 `CALL` 语句传递一个用户定义的变量以调用过程，这样在过程返回时可以获取该值。如果从另一个存储过程或函数中调用该过程，还可以将例程参数或局部例程变量作为 `OUT` 或 `INOUT` 参数进行传递。如果是从触发器内调用过程，还可以传递 `NEW.column_name` 作为 `OUT` 或 `INOUT` 参数。
+
+参数类型可以声明为任何有效的数据类型，如果前面带有 `CHARACTER SET`，则可以使用 `COLLATE` 属性。
+
+`routine_body` 由有效的 SQL 语句组成。SQL 语句可以是一个简单的语句，例如 `SELECT` 或 `INSERT`，也可以是使用由 `BEGIN` 和 `END` 编写的复合语句。复合语句可以包含声明、循环和其他控制结构语句。
+
+存储例程可以包含 DDL 语句，例如 `CREATE` 和 `DROP`。存储过程可以包含 SQL 事务语句，例如 `COMMIT`。存储函数不能包含执行显式或隐式提交、回滚的语句。SQL 标准不要求支持这些语句，该标准规定每个 DBMS 供应商可以决定是否允许使用这些语句。
+
+返回结果集的语句可以在存储过程中使用，但不能在存储函数中使用，包括没有 `INTO var_list` 子句的 `SELECT` 语句和其他语句，以及 `SHOW`、`EXPLAIN` 和 `CHECK TABLE` 等语句。如果存储函数使用这些语句则会报错。如果存储程序在使用这些语句时无法返回结果集，也会报错。
+
+不允许在存储例程中使用 `USE` 语句。调用例程时，将隐式执行 `USE database_name`（并在例程终止时撤消），为执行例程指定默认数据库。如果要引用例程默认数据库以外的其他数据库对象，可以使用数据库名称进行限定。
+
+如果在严格 SQL 模式下定义例程，却在非严格模式下调用它，则不会在严格模式下为例程的参数赋值。如果在严格 SQL 模式下分配传递给例程的表达式，则应在严格模式下调用例程。
+
+`COMMENT` 特性可以用来描述存储的例程，使用 `SHOW CREATE PROCEDURE` 和 `SHOW CREATE FUNCTION` 语句可以显示注释信息。
+
+`LANGUAGE` 特性表示编写例程所用的语言。仅适用于 SQL 例程，服务器会忽略此特征。
+
+如果一个例程总是对相同的输入参数产生相同的结果，那么它被认为是"确定性的"，否则就被认为是"不确定性的"。如果例程定义中既没有给出 `DETERMINISTIC` 也没有给出 `NOT DETERMINISTIC`，则默认为 `NOT DETERMINISTIC`。
+
+有关存储例程使用数据的特性信息如下：
+
+* `CONTAINS SQL` 表示存储例程不包含读写数据的语句，这是默认值。例如，`SET@x=1` 或 `DO RELEASE_LOCK('abc')` 会被执行但既不读取也不写入数据。
+
+* `NO SQL` 表示存储例程不包含 SQL 语句。
+
+* `READS SQL DATA` 表示存储例程包含读取数据的语句（例如 `SELECT`），但不包含写入数据的语句。
+
+* `MODIFIES SQL DATA` 表示存储例程包含可能写入数据的语句（例如 `INSERT` 或 `DELETE`）。
+
+`SQL SECURITY` 可以是 `DEFINER` 或 `INVOKER`，来指定存储例程是使用指定账号（此账号必须具有访问与例程关联的数据库的权限）的权限执行，还是使用调用者的权限执行。默认值为 `DEFINER`。调用存储例程的用户必须具有该例程的 `EXECUTE` 权限。
+
+`DEFINER` 子句指定在例程执行检查例程的访问权限时所使用的账号。如果存在 `DEFINER` 子句，则 `user` 值应为指定为 `'user_name'@'host_name'` 的账号（例如 `'admin'@'oblocalhost'`）或者由 `CURRENT_USER()` 函数获取的账户。如果省略 `DEFINER` 子句，则默认定义者是执行 `CREATE PROCEDURE` 语句的用户。在使用 `SQL SECURITY DEFINER` 特性定义的存储例程的主体中，可以使用 `CURRENT_USER` 函数返回存储例程的 `DEFINER` 值。
+
+如下示例使用了 `SQL SECURITY INVOKER` 特性，但该过程有一个 `'admin'@'localhost'` 的 `DEFINER`，在这种情况下会使用调用者的权限执行存储过程，能否执行成功取决于调用者是否具有 `EXECUTE` 权限和 `ob.user` 的 `SELECT` 权限。
+
+```sql
+obclient> CREATE DEFINER = 'admin'@'oblocalhost' PROCEDURE account_num()
+    SQL SECURITY INVOKER
+    BEGIN
+      SELECT 'Number of accounts:', COUNT(*) FROM ob.users;
+    END;
+```
+
+服务器对例程参数、使用 `DECLARE` 创建的本地例程变量或函数返回值的数据类型的处理方式如下：
+
+* 检查是否存在数据类型不匹配和溢出。转换和溢出问题会导致在严格 SQL 模式下出现告警或错误。
+
+* 只能指定标量值。例如 `SET val=(SELECT 1, 2)` 语句是无效的。
+
+* 对于字符数据类型，如果声明中包含 `CHARACTER SET`，则使用指定的字符集及其默认排序规则。如果使用了 `COLLATE` 属性，则使用指定的排序规则，而不使用默认排序规则。
+
+  如果不存在 `CHARACTER SET` 和 `COLLATE`，则使用在例程创建时应用的数据库字符集和排序规则。为避免服务器使用数据库字符集和排序规则，请为参数显式指定 `CHARACTER SET` 和 `COLLATE` 特性。
+
+  如果要更改数据库默认字符集或排序规则，则必须删除并重新创建存储例程以应用新的数据库默认值。
+
+  `character_set_database` 和 `collation_database` 系统变量可以用于指定数据库字符集和排序规则。
+
+## 示例
+
+**示例 1：创建简单的存储过程。**
+
+```sql
+obclient> CREATE TABLE employee_info(
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+obclient> INSERT INTO employee_info VALUES 
+    (1, 'Alice', 8000.00),
+    (2, 'Bob', 12000.00),
+    (3, 'Charlie', 9500.00);
+
+obclient> DELIMITER //
+
+obclient> CREATE PROCEDURE get_employee_list()
+    BEGIN
+        SELECT emp_id, emp_name, salary FROM employee_info ORDER BY salary DESC;
+    END //
+
+obclient> DELIMITER ;
+```
+
+调用存储过程：
+
+```sql
+obclient> CALL get_employee_list();
+```
+
+查询结果如下：
+
+```sql
++--------+----------+----------+
+| emp_id | emp_name | salary   |
++--------+----------+----------+
+|      2 | Bob      | 12000.00 |
+|      3 | Charlie  |  9500.00 |
+|      1 | Alice    |  8000.00 |
++--------+----------+----------+
+3 rows in set
+```
+
+**示例 2：创建带 IN 参数的存储过程。**
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE PROCEDURE get_employee_by_id(IN emp_id_param INT)
+    BEGIN
+        SELECT emp_id, emp_name, salary FROM employee_info WHERE emp_id = emp_id_param;
+    END //
+
+obclient> DELIMITER ;
+```
+
+调用存储过程：
+
+```sql
+obclient> CALL get_employee_by_id(1);
+```
+
+查询结果如下：
+
+```sql
++--------+----------+----------+
+| emp_id | emp_name | salary   |
++--------+----------+----------+
+|      1 | Alice    |  8000.00 |
++--------+----------+----------+
+1 row in set
+```
+
+**示例 3：创建带 OUT 参数的存储过程。**
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE PROCEDURE calculate_total_salary(OUT total_salary DECIMAL(10,2))
+    BEGIN
+        SELECT SUM(salary) INTO total_salary FROM employee_info;
+    END //
+
+obclient> DELIMITER ;
+```
+
+调用存储过程：
+
+```sql
+obclient> SET @total = 0;
+
+obclient> CALL calculate_total_salary(@total);
+
+obclient> SELECT @total;
+```
+
+查询结果如下：
+
+```sql
++----------+
+| @total   |
++----------+
+| 29500.00 |
++----------+
+1 row in set
+```
+
+**示例 4：创建带 INOUT 参数的存储过程。**
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE PROCEDURE update_salary(INOUT salary_amount DECIMAL(10,2), IN increase_rate DECIMAL(3,2))
+    BEGIN
+        SET salary_amount = salary_amount * (1 + increase_rate);
+    END //
+
+obclient> DELIMITER ;
+```
+
+调用存储过程：
+
+```sql
+obclient> SET @current_salary = 8000.00;
+
+obclient> CALL update_salary(@current_salary, 0.1);
+
+obclient> SELECT @current_salary;
+```
+
+查询结果如下：
+
+```sql
++------------------+
+| @current_salary   |
++------------------+
+|          8800.00 |
++------------------+
+1 row in set
+```
+
+**示例 5：使用 DEFINER 和 SQL SECURITY 子句。**
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE DEFINER='admin'@'localhost' PROCEDURE process_order_data()
+    SQL SECURITY INVOKER
+    COMMENT 'Process order data with invoker security'
+    BEGIN
+        SELECT COUNT(*) as order_count FROM order_table;
+    END //
+
+obclient> DELIMITER ;
+```
+
+## 相关文档
+
+* [存储过程](../200.storage-object-mysql/300.pl-stored-procedure-mysql.md)
+* [ALTER PROCEDURE](./200.alter-procedure-mysql.md)
+* [DROP PROCEDURE](./900.drop-procedure-mysql.md)
+* [CALL](../500.pl-manipulation-statement-mysql/100.CALL-mysql.md)
+* [SHOW CREATE PROCEDURE](../700.pl-database-management-statements-mysql/200.show-create-procedure-mysql.md)

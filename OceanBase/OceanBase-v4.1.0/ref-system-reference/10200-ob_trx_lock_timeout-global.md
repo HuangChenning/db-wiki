@@ -1,0 +1,27 @@
+---
+title: ob_trx_lock_timeout
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002183479.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ob_trx_lock_timeout
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该变量从 V2.2.77 版本开始引入。</p>
+</main>
+
+`ob_trx_lock_timeout` 用于设置事务的等锁超时时长。
+
+| **属性**  |                                                   **描述**                                                   |
+|---------|------------------------------------------------------------------------------------------------------------|
+| 参数类型    | int                     |
+| 默认值     | -1，表示不生效，关闭超时机制，单位为微秒。                      |
+| 取值范围    | [0,+∞)<main id="notice" type='explain'><h4>说明</h4><p>取值为 0，表示 NO WAIT。</p></main>          |
+| 生效范围    | <li> GLOBAL   <li> SESSION    |
+| 是否参与序列化 | 是                       |

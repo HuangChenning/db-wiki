@@ -1,0 +1,39 @@
+---
+title: "V$SYSTEM_EVENT"
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001701993.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# V$SYSTEM_EVENT
+
+V$SYSTEM_EVENT
+===================================
+
+#docslug#/oceanbase-database/oceanbase-database/V4.0.0/v-system_event-3
+
+## 功能
+
+展示租户级别的等待事件统计。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| CON_ID | bigint(20) | NO | 租户 ID |
+| SVR_IP | varchar(46) | NO | 信息所在 Server 的 IP |
+| SVR_PORT | bigint(20) | NO | 信息所在 Server 的端口号 |
+| EVENT_ID | bigint(20) | NO | 等待事件的 ID |
+| EVENT | varchar(64) | NO | 等待事件的描述 |
+| WAIT_CLASS_ID | bigint(20) | NO | 等待事件的所属 Class ID |
+| WAIT_CLASS# | bigint(20) | NO | 等待事件的所属的 Class下标 |
+| WAIT_CLASS | varchar(64) | NO | 等待事件所属的 Class |
+| TOTAL_WAITS | bigint(20) | NO | 该等待事件的总等待次数 |
+| TOTAL_TIMEOUTS | bigint(20) | NO | 该等待事件的总超时次数 |
+| TIME_WAITED | double | NO | 该等待事件的总等待时间，单位为 10 ms |
+| AVERAGE_WAIT | double | NO | 该等待事件的平均等待时间，单位为 10 ms |
+| TIME_WAITED_MICRO | bigint(20) | NO | 该等待事件的总等待时间（微秒） |

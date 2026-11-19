@@ -1,0 +1,52 @@
+---
+title: oceanbase.CDB_OB_BACKUP_PARAMETER
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501324.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_BACKUP_PARAMETER
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示所有租户配置的数据备份参数信息。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| TENANT_ID | bigint(20) | NO | 租户 ID |
+| NAME | varchar(1024) | NO | 参数名 |
+| VALUE | longtext | NO | 参数值 |
+
+## 查询示例
+
+系统租户查看租户 ID 为 1002 的租户的数据备份参数信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OB_BACKUP_PARAMETER WHERE TENANT_ID = 1002;
+```
+
+查询结果如下：
+
+```shell
++-----------+------------------+---------------------------------------------------------------------------------------------------------------------------+
+| TENANT_ID | NAME             | VALUE                                                                                                                     |
++-----------+------------------+---------------------------------------------------------------------------------------------------------------------------+
+|      1002 | data_backup_dest | oss://example_path/data?host=cn-heyuan.aliyuncs.com&access_id=******&access_key=******&checksum_type=md5&enable_worm=true |
++-----------+------------------+---------------------------------------------------------------------------------------------------------------------------+
+1 row in set
+```
+
+## 相关视图或文档
+
+有关备份路径中各参数值的相关说明，参见 [SET DATA_BACKUP_DEST](../../../500.sql-reference/100.sql-syntax/100.system-tenants/200.alter-system/3500.set-data-backup-dest.md)。

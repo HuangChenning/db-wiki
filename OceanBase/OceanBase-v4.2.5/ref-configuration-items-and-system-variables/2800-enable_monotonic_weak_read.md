@@ -1,0 +1,49 @@
+---
+title: enable_monotonic_weak_read
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502072.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# enable_monotonic_weak_read
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该配置项从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`enable_monotonic_weak_read` 用于设置是否开启单调读。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户均可修改该配置项。
+
+## 属性说明
+
+|      **属性**    |      **描述**      |
+|------------------|--------------------|
+| 参数类型             | Bool                |
+| 默认值               | False<main id="notice" type='explain'><h4>说明</h4><p>该配置项从 V4.2.1 版本开始默认值由 True 调整为 False。</p></main>               |
+| 取值范围             | <ul><li>True：开启 </li><li>False：不开启</li></ul>    |
+| 是否可修改           | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。        |
+
+## 配置示例
+
+设置不开启单调读。
+
+```shell
+obclient> ALTER SYSTEM SET enable_monotonic_weak_read =False;
+```

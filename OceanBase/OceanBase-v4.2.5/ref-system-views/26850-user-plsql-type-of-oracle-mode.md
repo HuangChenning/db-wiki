@@ -1,0 +1,62 @@
+---
+title: USER_PLSQL_TYPES
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500768.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# USER_PLSQL_TYPES
+
+<main id="notice" >
+    <h4>说明</h4>
+    <p>该视图从 V4.2.5 版本开始引入。只有在 package 成功编译的情况下，package 中的类型才能在该视图中展示。</p>
+  </main>
+
+## 功能描述
+
+展示当前用户拥有的所有 PL/SQL 数据类型的信息。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该视图仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 字段说明
+
+|         **字段名称**          |     **类型**     | **是否可以为 NULL** |**描述**|
+|---------------------------|---|---|--------------------------------------------|
+| TYPE_NAME      | VARCHAR2(136) | NO   | PL/SQL 类型的名称。 |
+| PACKAGE_NAME   | VARCHAR2(128) | YES  | PL/SQL 类型所属的包的名称。 |
+| TYPE_OID       | RAW(16)       | NO   | PL/SQL 类型的对象标识符。 |
+| TYPECODE       | VARCHAR2(58)  | NO   | PL/SQL 类型的代码。 |
+| ATTRIBUTES     | NUMBER(38)    | NO   | PL/SQL 类型所包含的属性数量。 |
+| CONTAINS_PLSQL | VARCHAR2(3)   | NO   | PL/SQL 类型是否包含 PL/SQL 代码。 |
+
+## 查询示例
+
+查看当前用户拥有的所有 PL/SQL 数据类型的信息。
+
+```sql
+obclient> SELECT * FROM USER_PLSQL_TYPES;
+```
+
+查询结果如下：
+
+```shell
++-----------+--------------+----------+------------+------------+----------------+
+| TYPE_NAME | PACKAGE_NAME | TYPE_OID | TYPECODE   | ATTRIBUTES | CONTAINS_PLSQL |
++-----------+--------------+----------+------------+------------+----------------+
+| TY1       | PKG1         | NULL     | COLLECTION |          0 | NO             |
+| TY2       | PKG1         | NULL     | COLLECTION |          0 | NO             |
++-----------+--------------+----------+------------+------------+----------------+
+2 rows in set
+```
+
+## 相关视图或文档
+
+* 查看当前用户可访问的所有 PL/SQL 数据类型的信息：[ALL_PLSQL_TYPES](2750.all-plsql-types-of-oracle-mode.md)
+* 查看当前租户下的所有 PL/SQL 数据类型的信息：[DBA_PLSQL_TYPES](16350.dba-plsql-types-oracle-mode.md)

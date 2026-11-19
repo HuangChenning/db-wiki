@@ -1,0 +1,93 @@
+---
+title: "GV$OB_SESSION"
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684540.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$OB_SESSION
+
+<main id="notice" type='explain'>
+ <h4>说明</h4>
+ <p>该视图从 V4.3.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `GV$OB_SESSION` 用于记录所有 Server 中创建的 Session 信息。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| ID | bigint(20) unsigned | NO |  对于 V4.3.x 版本：<ul><li> V4.3.5 BP2 之前版本：<br>在所有连接方式（直连模式/ODP 模式）下，该字段均表示 Server Session ID。</li><li> V4.3.5 BP2 及之后版本：<ul><li>在直连模式下：<br>该字段表示 Server Session ID。</li> <li>在 ODP 模式下：</li><ul><li>当 ODP 中的配置项 <code>client_session_id_version = 2</code> 时，该字段表示 Client Session ID。 </li> <li>当 <code>client_session_id_version = 1</code> 时，该字段表示 Server Session ID。</li></ul></ul></li></ul>    |
+| USER | varchar(32) | NO |  表示该会话所属的用户 |
+| TENANT | varchar(128) | NO |  访问的租户名称   |
+| HOST | varchar(128) | NO | 表示发起会话的客户端 IP 及端口号。如果是通过 ODP 连接数据库，则表示 ODP 的主机 IP 及端口号   |
+| DB | varchar(128) | YES | 表示该会话当前连接的数据库名   |
+| COMMAND | varchar(4096) | NO | 表示该会话正在执行的命令  |
+| SQL_ID | varchar(32) | NO |  SQL ID 信息   |
+| TIME | bigint(21) | NO | 表示当前命令执行的时间，单位是秒。如果命令发生重试，会清零后重新计算   |
+| STATE | varchar(128) | YES | 表示该会话当前的状态   |
+| INFO | varchar(262143) | YES | 表示该会话正在执行的语句   |
+| SVR_IP | varchar(46) | NO |  服务器 IP 地址 |
+| SVR_PORT | bigint(20) | NO |  服务器 RPC 端口号   |
+| SQL_PORT | bigint(20) | NO |  服务器的 SQL 端口号   |
+| PROXY_SESSID | bigint(20) unsigned | YES | 如果当前客户端是 ODP，则本列展示 ODP 的 Session ID   |
+| USER_CLIENT_IP | varchar(46) | YES |  用户客户端 IP   |
+| USER_HOST | varchar(128) | YES |  用户客户端主机名   |
+| TRANS_ID | bigint(20) unsigned | NO |  事务 ID   |
+| THREAD_ID | bigint(20) unsigned | NO |  线程 ID   |
+| TRACE_ID | varchar(64) | YES |  Trace ID   |
+| REF_COUNT | bigint(20) | NO | 连接引用计数 |
+| BACKTRACE | varchar(16384) | YES | 连接引用调用栈 |
+| TRANS_STATE | varchar(32) | YES |  事务状态（如果会话上没有事务，则显示为空）：<ul><li>`IDLE`：空闲状态，表示事务未开始。</li> <li>`ACTIVE`：事务显式开启。通过 `START TRANSACTION`、`BEGIN` 等语句显式开启。</li> <li>`IMPLICIT_ACTIVE`：事务隐式开启，`autocommit = on` 模式下，执行 DML 等修改数据的语句后事务被开启。</li> <li>`ROLLBACK_SAVEPOINT`：事务正在回滚至保存点。</li> <li>`IN_TERMINATE`：事务正在结束，包括内部原因导致的结束和用户发起的结束事务（例如，执行 `COMMIT`、`ROLLBACK` 语句）。</li> <li>`ABORTED`：事务因发生异常而内部终止或回滚。</li> <li>`ROLLED_BACK`：事务已经被回滚。</li> <li>`COMMIT_TIMEOUT`：事务提交超时。</li> <li>`COMMIT_UNKNOWN`：事务提交结果未知。</li> <li>`COMMITTED`：事务已经成功提交。</li></ul>   |
+| USER_CLIENT_PORT | bigint(20)          | NO   | 用户客户端端口号 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.x 版本，该字段从 V4.4.0 版本开始引入。</p></main>  |
+| TOTAL_CPU_TIME | bigint(21) | NO | 当前命令执行 CPU 使用时间，单位为秒 |
+
+## 查询示例
+
+查询所有 Server 中创建的 Session 信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.GV$OB_SESSION limit 1\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+              ID: 3221537799
+            USER: root
+          TENANT: mysql001
+            HOST: 100.xx.xxx.xxx:62434
+              DB: oceanbase
+         COMMAND: Query
+          SQL_ID: 9A973D26DFBCAD31C82BB47571C2E6CD
+            TIME: 0
+           STATE: ACTIVE
+            INFO: SELECT * FROM oceanbase.V$OB_SESSION limit 1
+          SVR_IP: 172.xx.xxx.xxx
+        SVR_PORT: 2882
+        SQL_PORT: 2881
+    PROXY_SESSID: NULL
+  USER_CLIENT_IP: 100.xx.xxx.xxx
+       USER_HOST: %
+        TRANS_ID: 0
+       THREAD_ID: 109604
+        TRACE_ID: YB4xxxxxxxxx-xxxxxxxxxx-0-0
+       REF_COUNT: 0
+       BACKTRACE:
+     TRANS_STATE:
+USER_CLIENT_PORT: 62434
+  TOTAL_CPU_TIME: 0
+1 row in set
+```
+
+## 相关视图或文档
+
+[V$OB_SESSION](33900.v-ob_session-of-mysql-mode.md)

@@ -1,0 +1,189 @@
+---
+title: CREATE LOCATION
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686076.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE LOCATION
+
+## 描述
+
+该语句用于创建一个 Location 对象。Location 对象用于存储外表、临时外表所访问的路径和鉴权信息，供数据库读取或写入外部数据。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 OceanBase 数据库 V4.4.x 版本，从 V4.4.1 版本开始支持 <code>CREATE LOCATION</code> 语句。</p>
+</main>
+
+## 权限要求
+
+* 执行权限：
+
+    执行 `CREATE LOCATION` 语句，需要当前用户拥有 `CREATE LOCATION` 权限。有关 OceanBase 数据库权限的详细介绍，参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+* 认证凭据权限：
+
+    提供的 `ACCESSID` 和 `ACCESSKEY` 需具备目标存储服务的合法访问权限。
+
+## 语法
+
+```sql
+CREATE [OR REPLACE] LOCATION location_name
+    URL = 'file_path'
+    [CREDENTIAL = (
+        ACCESSID = 'string' 
+        ACCESSKEY = 'string' 
+        HOST = 'string'
+        [S3_REGION = 'string',]
+        [PRINCIPAL = 'string',]
+        [KEYTAB = 'string',]
+        [KRB5CONF = 'string',]
+        [CONFIGS = 'string',]
+        [USERNAME = 'string']
+        )
+    ];
+```
+
+## 参数说明
+
+|    **参数**   | **描述** |
+|---------------|----------|
+| OR REPLACE    | 可选项，指定 `OR REPLACE` 表示如果对应的 Location 对象已经存在，则用新的 Location 对象定义替代原有的 Location 对象定义。|
+| location_name | 表示要创建的 Location 对象的名称。|
+| URL = 'file_path' | 用于指定外部存储路径。当前支持的存储类型有：本地文件、HDFS、OSS 和 S3，详细介绍可参见下文 [file_path](#file_path)。|
+| CREDENTIAL    | 可选项，用于指定访问路径所需的信息，本地路径不需要该参数。|
+| ACCESSID      | 用于指定访问对象存储的用户 AccessKey ID。|
+| ACCESSKEY     | 用于指定访问对象存储的用户 AccessKey Secret。|
+| HOST          | 用于指定对象存储服务的主机地址。|
+| S3_REGION     | 可选项，用于指定 S3 对象存储的服务区域。|
+| PRINCIPAL     | 可选项，目标 HDFS 集群带 kerberos 环境时，需要配置登录认证用户。|
+| KEYTAB        | 可选项，目标 HDFS 集群带 kerberos 环境时，需要配置认证密钥文件。|
+| KRB5CONF      | 可选项，目标 HDFS 集群带 kerberos 环境时，需要指定用户使用 kerberos 环境。|
+| CONFIGS       | 可选项，目标 HDFS 集群带 kerberos 环境时，需要指定额外的 Hadoop 客户端配置参数，以 `key=value` 形式拼接，用 `#` 分隔。详细介绍可参见下文 [configs_option](#configs_option)。|
+| USERNAME      | 可选项，目标 HDFS 集群带 Kerberos 环境时，需要指定唯一标识用户身份。|
+
+### file_path
+
+外表文件存放的路径有以下格式：
+
+* 本地路径格式为：`URL = 'file://local_file_path'`，其中 `local_file_path` 可以为相对路径，也可以为绝对路径。
+
+* HDFS 路径格式为：`URL = 'hdfs://localhost:port/PATH'`，其中 `localhost` 指的是 HDFS 的地址，`port` 指的是 HDFS 的端口号，`PATH` 指 HDFS 中的目录路径。
+
+* 对象存储（OSS/S3）路径格式为：`URL = '{oss | s3}://bucket/remote_file_path'`。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>创建 Location 对象的路径中不应该带有参数。</p>
+</main>
+
+### configs_option
+
+| 参数 | 作用 |
+|------|------|
+| dfs.data.transfer.protection=${string} | 用于指定在进行数据块读写时使用的安全连接的 SASL 保护级别。取值如下：<ul><li>`integrity`：表示提供身份验证和完整性保护。</li><li>`authentication`：表示仅提供身份验证功能，不提供完整性或隐私保护。</li><li>`privacy`：表示提供身份验证、完整性和隐私保护。</li></ul>|
+| dfs.nameservices=${nameservice id} | 指明当前 HA 集群的 `namesevice`（别名）。例如，`dfs.nameservices=mycluster` 表示定义逻辑集群名为 `mycluster`。|
+| dfs.ha.namenodes.${nameservice id}=${namenode1}, ${namenode2} | 指明 HA 集群的 namenode 后备 ID 列表。例如，`dfs.ha.namenodes.mycluster=nn1,nn2` 表示指定该集群有两个 NameNode：`nn1,nn2`。|
+| dfs.namenode.rpc-address.${nameservice id}.${namenode1}=${namenode 1 address} | 设置说明 `namenode1` 具体 namenode，方便客户端路由。例如，`dfs.namenode.rpc-address.mycluster.nn1=test1:18020` 表示 `nn1` 的 RPC 地址。|
+| dfs.namenode.rpc-address.${nameservice id}.${namenode2}=${namenode 2 address} | 设置说明 `namenode2` 具体 namenode，方便客户端路由。例如，`dfs.namenode.rpc-address.mycluster.nn2=test2:18020` 表示 `nn2` 的 RPC 地址。|
+| dfs.ha.automatic-failover.enabled.${nameservice id}=true | 表示启用自动故障转移，即让 HA 集群获取相关请求之后，自动获取可用 namenode 进行响应服务。|
+| dfs.client.failover.proxy.provider.${nameservice id}=org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider | 指示 HA 集群进行主备切换的逻辑工具类，也可自定义打包上传 HA 集群自己需要的逻辑等。|
+
+## 示例
+
+* 创建存储位置在本地的 Location 对象。
+
+    ```shell
+    obclient> CREATE LOCATION test_location_local
+        URL = 'file://home/admin/test_csv';
+    ```
+
+* 创建存储位置在 OSS 的 Location 对象。
+
+    ```shell
+    obclient> CREATE LOCATION test_location_oss
+        URL = 'oss://dir'
+        CREDENTIAL = (
+            ACCESSID = '******',
+            ACCESSKEY = '******',
+            HOST = '****'
+        );
+    ```
+
+* 创建用户认证模式的 Location 对象。
+
+    无需 Kerberos，但需以特定 HDFS 用户身份访问。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>适用于未开启 Kerberos 权限认证的集群，但相关 HDFS 路径需要特定用户才能访问的场景。</p>
+    </main>
+
+    ```shell
+    CREATE LOCATION hdfs_user
+        URL = 'hdfs://namenode:8020/'
+        CREDENTIAL (
+            USER = 'hdfs_user_name'
+        );
+    ```
+
+* 创建启用 Kerberos，HDFS 为单 NameNode（非 HA 模式）的 Location 对象。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p><code>CONFIGS</code> 中的 <code>dfs.data.transfer.protection</code> 必须与 HDFS 集群配置一致。</p>
+    </main>
+
+    ```shell
+    CREATE LOCATION hdfs_kerberos_single
+        URL = 'hdfs://namenode.example.com:8020/'
+        CREDENTIAL (
+            PRINCIPAL = "hdfs/xxx@xxx.COM",
+            KEYTAB = "/data/hdfs.keytab",
+            KRB5CONF = "/data/krb5.conf",
+            CONFIGS = 'dfs.data.transfer.protection=integrity'
+        );
+    ```
+
+* 创建启用 Kerberos，HDFS 为高可用（HA）模式的 Location 对象。
+
+    ```shell
+    CREATE LOCATION hdfs_kerberos_ha
+        URL = 'hdfs://${nameservice id}'
+        CREDENTIAL (
+            PRINCIPAL = "hdfs/xxx@xxx.COM",
+            KEYTAB = "/etc/ob/hdfs.keytab",
+            KRB5CONF = "/etc/krb5.conf",
+            CONFIGS = 'dfs.data.transfer.protection=${string}#dfs.nameservices=${nameservice id}#dfs.ha.namenodes.${nameservice id}=${namenode1}, ${namenode2}#dfs.namenode.rpc-address.${nameservice id}.${namenode1}=${namenode 1 address}#dfs.namenode.rpc-address.${nameservice id}.${namenode2}=${namenode 2 address}#dfs.ha.automatic-failover.enabled.${nameservice id}=true#dfs.client.failover.proxy.provider.${nameservice id}=org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider'
+            );
+    ```
+
+* 未启用 Kerberos，但 HDFS 为高可用（HA）模式。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>未启用 Kerberos，但 HDFS 为高可用（HA）模式，无需设置 <code>PRINCIPAL</code>、<code>KEYTAB</code> 和 <code>KRB5CONF</code> 参数。</p>
+    </main>
+
+    ```shell
+    CREATE LOCATION hdfs_location_ha
+        URL = 'hdfs://${nameservice id}'
+        CREDENTIAL (
+            CONFIGS = 'dfs.nameservices=${nameservice id}#dfs.ha.namenodes.${nameservice id}=${namenode1}, ${namenode2}#dfs.namenode.rpc-address.${nameservice id}.${namenode1}=${namenode 1 address}#dfs.namenode.rpc-address.${nameservice id}.${namenode2}=${namenode 2 address}#dfs.ha.automatic-failover.enabled.${nameservice id}=true#dfs.client.failover.proxy.provider.${nameservice id}=org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider'
+            );
+    ```
+
+创建 Location 后，可配合使用 `LOAD_FILE` 函数将指定路径下的外部文件读入数据库内（返回 BLOB），用于 OceanBase AI 中的文档处理场景。`LOAD_FILE` 的语法、参数与约束详见 [LOAD_FILE](5920.load-file-of-mysql-mode-in-sql.md)。
+
+## 相关文档
+
+* 关于将 Location 下文件读入为 BLOB 的函数介绍，参见 [LOAD_FILE](5920.load-file-of-mysql-mode-in-sql.md)。
+* 关于查看 Location 对象下文件的介绍信息，参见 [SHOW](8700.show-of-mysql-mode.md)。
+* 关于修改 Location 对象的介绍信息，参见 [ALTER LOCATION](1230.alter-location-of-mysql-mode-in-sql.md)。
+* 关于删除 Location 对象下文件的介绍信息，参见 [REMOVE](7680.remove-table-mysql-mode.md)。
+* 关于删除 Location 对象的介绍信息，参见 [DROP LOCATION](3530.drop-location-of-mysql-mode.md)。

@@ -1,0 +1,52 @@
+---
+title: AVG
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000001964955.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# AVG
+
+## 声明
+
+```sql
+AVG([DISTINCT | ALL] expr)
+```
+
+## 说明
+
+返回指定组中的平均值，空值被忽略。`DISTINCT` 选项可用于返回 `expr` 的不同值的平均值。如果找不到匹配的行，则 `AVG()` 返回 `NULL`。
+
+## 示例
+
+```sql
+obclient> SELECT * FROM oceanbasetest;
++----+------+------+
+| id | ip   | ip2  |
++----+------+------+
+|  1 |    4 | NULL |
+|  3 |    3 | NULL |
+|  4 |    3 | NULL |
++----+------+------+
+3 rows in set 
+
+obclient> SELECT avg(ip2), avg(ip), avg(distinct(ip)) FROM oceanbasetest;
++----------+---------+-------------------+
+| avg(ip2) | avg(ip) | avg(distinct(ip)) |
++----------+---------+-------------------+
+|     NULL |  3.3333 |            3.5000 |
++----------+---------+-------------------+
+1 row in set 
+
+obclient> SELECT avg(distinct(ip)),avg(ip),avg(ip2) FROM oceanbasetest;
++-------------------+---------+----------+
+| avg(distinct(ip)) | avg(ip) | avg(ip2) |
++-------------------+---------+----------+
+|            3.5000 |  3.3333 |     NULL |
++-------------------+---------+----------+
+1 row in set 
+```

@@ -1,0 +1,63 @@
+---
+title: RANK
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504366.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# RANK
+
+## 声明
+
+```sql
+RANK() OVER ([ query_partition_clause ] order_by_clause)
+```
+
+## 说明
+
+该函数用于在查询结果集中为每一行分配一个秩（排名），该列由 `order_by_clause` 中的列决定。
+
+在每个分区内，排名从 1 开始，依次递增，对于秩相同的行，下一个返回值会产生跳跃。例如，有两行的秩都为 1 时，下一行的秩会跳过 2，分配的秩为 3。
+
+## 示例
+
+1. 创建表 `employees`。
+
+    ```sql
+    CREATE TABLE employees(last_name CHAR(10), salary DECIMAL, job_id CHAR(32));
+    ```
+
+2. 向表 `employees` 中插入测试数据。
+
+    ```sql
+    INSERT INTO employees VALUES('TOM', 11000, 'ENGINEERING');
+    INSERT INTO employees VALUES('IRIS', 11000, 'ENGINEERING');
+    INSERT INTO employees VALUES('MIKE', 12000, 'ENGINEERING');
+    INSERT INTO employees VALUES('LILY', 13000, 'ENGINEERING');
+    INSERT INTO employees VALUES('JIM', 2000, 'CLEANER');
+    ```
+
+3. 按 `job_id` 分组并在薪水升序排列的情况下，每行数据在窗口内的排序列上的排名。
+
+    ```sql
+    SELECT last_name, RANK() OVER(PARTITION BY job_id ORDER BY salary) RANK FROM employees;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +-----------+------+
+    | last_name | RANK |
+    +-----------+------+
+    | TOM       |    1 |
+    | IRIS      |    1 |
+    | MIKE      |    3 |
+    | LILY      |    4 |
+    | JIM       |    1 |
+    +-----------+------+
+    5 rows in set
+    ```

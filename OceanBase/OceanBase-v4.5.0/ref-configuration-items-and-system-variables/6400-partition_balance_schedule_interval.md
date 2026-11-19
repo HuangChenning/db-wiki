@@ -1,0 +1,78 @@
+---
+title: partition_balance_schedule_interval
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478864.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# partition_balance_schedule_interval
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.2.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`partition_balance_schedule_interval` 用于分区均衡调度周期。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户均可修改该配置项。
+
+## 属性说明
+
+| **属性** | **描述** |
+| -------- | -------- |
+| 参数类型       | Time |
+| 默认值         | 0s，表示关闭后台自动分区均衡。  |
+| 取值范围       | [0s,+∞)    |
+| 是否可修改     |  是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效    | 否，设置后立即生效。     |
+
+## 使用说明
+
+* 配置项 `partition_balance_schedule_interval` 的值大于配置项 [balancer_idle_time](600.balancer_idle_time.md) 的值时，才能启用分区均衡。
+
+* **在 V4.4.x 版本中，分区均衡的行为有所不同：**
+
+  * V4.4.1 之前版本
+
+    自动分区均衡间隔由该配置项控制。
+
+  * V4.4.1 及之后版本
+
+    从 V4.4.1 版本开始，支持定时分区均衡任务，不再建议通过配置项 `partition_balance_schedule_interval` 来控制分区均衡。
+
+      * 对于 V4.4.1 版本新建的用户租户，配置项 `partition_balance_schedule_interval` 的值默认为 0，即后台的自动分区均衡默认关闭，同时定时分区均衡任务默认开启，分区均衡的触发依赖定时任务以及用户手动触发。
+
+      * 对于从其他版本升级至 V4.4.1 版本的用户租户，配置项 `partition_balance_schedule_interval` 的值与升级前保持一致，定时分区均衡任务默认关闭。
+
+## 配置示例
+
+* 系统租户下修改任意租户的分区均衡调度周期为 1h。
+
+  ```shell
+  obclient(root@sys)[oceanbase]> ALTER SYSTEM SET partition_balance_schedule_interval = '1h' tenant = all;
+  obclient(root@sys)[oceanbase]> ALTER SYSTEM SET partition_balance_schedule_interval = '1h' tenant = 'tenant_name';
+  ```
+
+* 用户租户下修改本租户的分区均衡调度周期为 1h。
+
+  ```shell
+  obclient [test]> ALTER SYSTEM SET partition_balance_schedule_interval = '1h';
+  ```
+
+## 相关文档
+
+有关定时分区均衡任务的详细说明，参见 [配置定时分区均衡任务](../../../../600.manage/350.load-balancing-manage/600.partition-balance-management/100.configure-a-scheduled-partition-balancing-task.md)。

@@ -1,0 +1,26 @@
+---
+title: CURRENT_INSTANCE
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686820.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CURRENT_INSTANCE
+
+`CURRENT_INSTANCE` 函数用于返回当前连接的实例编号。当连接的实例关闭时，返回 `NULL`。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_UTILITY.CURRENT_INSTANCE
+RETURN NUMBER;
+```

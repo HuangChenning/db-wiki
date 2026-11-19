@@ -1,0 +1,64 @@
+---
+title: datafile_size
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479166.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# datafile_size
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该配置项从 V2.2.50 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+配置项 `datafile_size` 用于设置数据文件的大小。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|      **属性**      |  **描述**   |
+|------------------|-----------|
+| 参数类型             | Capacity  |
+| 默认值              | 0M，默认单位为 MB，配置时需写明单位。       |
+| 取值范围             | [0M, +∞) |
+| 是否可修改  | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。  |
+
+## 使用说明
+
+* 该配置项设置后，再次修改时不支持缩小，只支持扩大。
+* 该配置项与 <code>datafile_disk_percentage</code> 同时配置时，以该配置项设置的值为准。有关 <code>datafile_disk_percentage</code> 的详细介绍，参见 <a href="4400.datafile_disk_percentage.md">datafile_disk_percentage</a>。
+
+## 配置示例
+
+设置数据文件的大小为 80G。
+
+```shell
+obclient> ALTER SYSTEM SET datafile_size='80G';
+```
+
+## 相关文档
+
+* [datafile_next](4600.datafile_next.md)
+
+* [datafile_maxsize](4500.datafile_maxsize.md)
+
+* [datafile_disk_percentage](4400.datafile_disk_percentage.md)
+
+* [配置磁盘数据文件扩容](../../../../700.reference/200.system-management/1000.disk-data-file-management/100.disk-data-file-dynamic-expansion.md)

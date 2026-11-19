@@ -1,0 +1,27 @@
+---
+title: "DBMS_METADATA 概述"
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702627.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# DBMS_METADATA 概述
+
+DBMS_METADATA 概述 
+=====================================
+
+`DBMS_METADATA` 系统包用于创建 DDL，或通过提交 XML 文档以执行 DDL。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+DBMS_METADATA 权限说明
+---------------------------
+
+该系统包属于 `SYS` 用户，并具有授予 `PUBLIC` 的执行访问权限。`DBMS_METADATA` 通过调用者权限（即调用者的安全配置文件）运行。

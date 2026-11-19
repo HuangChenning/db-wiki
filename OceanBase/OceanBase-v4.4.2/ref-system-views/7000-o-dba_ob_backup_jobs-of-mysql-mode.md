@@ -1,0 +1,87 @@
+---
+title: oceanbase.DBA_OB_BACKUP_JOBS
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285159.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_BACKUP_JOBS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户自身的备份 Job 任务。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| JOB_ID | bigint(20) | NO | 备份JOB 任务 ID，发起一次备份对应一条 JOB 任务记录 |
+| INCARNATION | bigint(20) | NO | 表示 Flashback Database 后的第几次分身 |
+| BACKUP_SET_ID | bigint(20) | YES | 备份集 ID，sys 租户默认为 0，普通租户从 1 开始递增。对于归档日志备份任务（`BACKUP_TYPE` 为 `BACKUP_ARCHIVE` 或 `BACKUP_ARCHIVE_DELETE_INPUT`）的记录，该字段没有实际意义。 |
+| INITIATOR_TENANT_ID | bigint(20) | NO | 任务发起者的租户 ID，表示该任务的发起租户，对应执行备份 SQL 命令的租户 ID |
+| INITIATOR_JOB_ID | bigint(20) | NO | 任务发起者所属于的 JOB_ID |
+| EXECUTOR_TENANT_ID | varchar(65536) | NO | 该 JOB 级备份任务关联的需要执行备份的租户 ID |
+| PLUS_ARCHIVELOG | varchar(4096) | NO | 是否开启日志补齐功能：<ul><li>ON：开启日志补齐功能</li><li>OFF：关闭日志补齐功能</li></ul>对于归档日志备份任务（`BACKUP_TYPE` 为 `BACKUP_ARCHIVE` 或 `BACKUP_ARCHIVE_DELETE_INPUT`）的记录，该字段没有实际意义。 |
+| BACKUP_TYPE | varchar(4096) | NO | 备份类型：<ul><li>`FULL`：表示全量备份 </li> <li>`INC`：表示增量备份</li><li>`BACKUP_ARCHIVE`：表示归档日志备份，通过 `ALTER SYSTEM BACKUP ARCHIVELOG ALL` 语句发起</li><li>`BACKUP_ARCHIVE_DELETE_INPUT`：表示带 `DELETE INPUT` 的归档日志备份，通过 `ALTER SYSTEM BACKUP ARCHIVELOG ALL DELETE INPUT` 语句发起</li></ul></br>对于 V4.4.x 版本，`BACKUP_ARCHIVE` 和 `BACKUP_ARCHIVE_DELETE_INPUT` 从 V4.4.2 BP3 版本开始引入。 |
+| JOB_LEVEL | varchar(4096) | NO | JOB 级别：<ul><li>CLUSTER：sys 租户发起所有租户的备份任务</li><li>SYS_TENANT：sys 租户发起的指定租户的备份任务</li><li>USER_TENANT：普通租户发起自身的备份</li></ul> |
+| ENCRYPTION_MODE | varchar(4096) | YES | 加密模式：<ul><li>None：表示不加密</li><li>Password：表示只使用密码保护</li><li>Password Encryption ：表示加密，并且使用密码保护</li><li>Transparent Encryption：表示使用 TDE 加密</li><li>Dual mode Encryption ：表示使用 TDE 加密以及密码保护</li></ul> </br>目前仅支持 None 和 Password 两种模式 |
+| PASSWD | varchar(4096) | YES | 密码 |
+| START_TIMESTAMP | timestamp(6) | NO | JOB 级备份任务开始时间 |
+| END_TIMESTAMP | timestamp(6) | NO | JOB 级备份任务结束时间 |
+| STATUS | varchar(4096) | NO | 备份的状态 |
+| RESULT | bigint(20) | NO | 备份错误码结果 |
+| COMMENT | varchar(4096) | YES | 错误码描述 |
+| DESCRIPTION | varchar(4096) | YES | 用户指定备份描述信息 |
+| PATH | varchar(4096) | YES | 备份路径 |
+
+## 查询示例
+
+用户租户查看本租户的备份 Job 任务。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OB_BACKUP_JOBS\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+             JOB_ID: 2
+        INCARNATION: 1
+      BACKUP_SET_ID: 2
+INITIATOR_TENANT_ID: 1002
+   INITIATOR_JOB_ID: 0
+ EXECUTOR_TENANT_ID: 1002
+    PLUS_ARCHIVELOG: OFF
+        BACKUP_TYPE: FULL
+          JOB_LEVEL: USER_TENANT
+    ENCRYPTION_MODE: NONE
+             PASSWD:
+    START_TIMESTAMP: 2025-01-07 14:24:12.797543
+      END_TIMESTAMP: NULL
+             STATUS: DOING
+             RESULT: 0
+            COMMENT:
+        DESCRIPTION:
+               PATH: file:///home/admin/oceanbase/backupdata
+1 row in set
+```
+
+## 相关视图或文档
+
+* 查看租户自身的 Job 级备份任务的历史记录：[DBA_OB_BACKUP_JOB_HISTORY](6900.o-dba_ob_backup_job_history-of-mysql-mode.md)
+
+* 查看租户自身的 Task 级备份任务：[DBA_OB_BACKUP_TASKS](7600.o-dba_ob_backup_tasks-of-mysql-mode.md)
+
+* 查看租户自身的 Task 级备份任务的历史记录：[DBA_OB_BACKUP_TASK_HISTORY](7500.o-dba_ob_backup_task_history-of-mysql-mode.md)
+
+* 查看数据备份进度的详细操作及说明，参见 [查看数据备份进度](../../../../600.manage/600.backup-and-recovery/400.data-backup/500.view-data-backup-progress.md)。

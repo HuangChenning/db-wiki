@@ -1,0 +1,36 @@
+---
+title: ENCODE
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699903.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# ENCODE
+
+## 声明
+
+```sql
+ENCODE(str,pass_str)
+```
+
+## 说明
+
+`ENCODE()` 使用 `pass_str` 作为密码加密字符串。返回的结果是一个与 `str` 长度相同的二进制字符串。要解密该结果，请使用 `DECODE()`。
+
+## 示例
+
+使用 `ENCODE()` 时必须使用盐值来降低风险。
+
+```sql
+obclient> SELECT ENCODE('text', CONCAT('ob_random_salt','ob_secret_password'))
++---------------------------------------------------------------+
+| ENCODE('text', CONCAT('ob_random_salt','ob_secret_password')) |
++---------------------------------------------------------------+
+5+                                                          |
++---------------------------------------------------------------+
+1 row in set
+```

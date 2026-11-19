@@ -1,0 +1,183 @@
+---
+title: ALTER MATERIALIZED VIEW
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287837.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER MATERIALIZED VIEW
+
+## 描述
+
+该语句用来修改物化视图属性。
+
+## 权限要求
+
+执行 `ALTER MATERIALIZED VIEW` 语句，需要当前用户拥有待操作对象的 `ALTER` 权限。更多有关 OceanBase 数据库权限的详细介绍，请参见 [Oracle 模式下的权限分类](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/000.permission-classification-of-oracle-mode.md)。
+
+## 语法
+
+```sql
+ALTER MATERIALIZED VIEW [schema.]view_name alter_mview_action_list;
+
+alter_mview_action_list:
+    alter_mview_action [, alter_mview_action ...]
+
+alter_mview_action:
+    parallel_clause
+    | REFRESH [nested_refresh_option] [[START WITH expr] [NEXT expr]]
+
+parallel_clause:
+    NOPARALLEL
+    | PARALLEL integer
+    | REFRESH PARALLEL integer
+
+nested_refresh_option:
+    INDIVIDUAL
+    | INCONSISTENT
+    | CONSISTENT
+```
+
+## 参数说明
+
+|        **参数**         |       **描述**           |
+|-------------------------|--------------------------|
+| schema.                 | 可选项，指定物化视图所在的 Schema。如果省略 `schema.`，则默认物化视图在当前会话所在的 Schema 中。|
+| view_name               | 指定待修改的物化视图的名称。<main id="notice" type='explain'><h4>说明</h4><p>OceanBase 数据库支持使用 <code>RENAME</code> 语句对物化视图重命名。</p></main>|
+| alter_mview_action_list | 表示可以对物化视图执行修改的操作列表。可以同时指定多个操作，使用英文逗号（`,`）分隔。详细介绍可参见下文 [alter_mview_action](#alter_mview_action)。|
+
+### alter_mview_action
+
+* `parallel_clause`：用于修改物化视图的并行度，取值如下：
+
+  * `NOPARALLEL`：默认配置，并行度为 1。
+  * `PARALLEL integer`：指定表级并行度，即查询物化视图时的并行度。`integer` 取值为大于等于 1 的整数。
+  * `REFRESH PARALLEL integer`：指定刷新并行度，即物化视图刷新时的刷新并行度。`integer` 取值为大于等于 0 的整数，为 0 时，表示刷新并行度使用系统变量 `mview_refresh_dop` 的取值。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>对于 V4.4.2 版本，<code>ALTER MATERIALIZED VIEW</code> 语句从 V4.4.2 BP2 版本开始支持通过指定 <code>REFRESH PARALLEL integer</code> 修改刷新并行度。</p>
+    </main>
+
+  **示例如下：**
+
+  * 设置查询物化视图时的并行度。
+
+    ```sql
+    ALTER MATERIALIZED VIEW mv1 PARALLEL 5;
+    ```
+
+  * 设置物化视图的刷新并行度。
+
+    ```sql
+    ALTER MATERIALIZED VIEW mv1 REFRESH PARALLEL 3;
+    ```
+
+* `REFRESH [nested_refresh_option] [[START WITH expr] [NEXT expr]]`：用于修改嵌套物化视图刷新策略或物化视图的后台刷新任务的时间周期。
+
+  * `nested_refresh_option`：可选项，表示嵌套物化视图的刷新策略。
+
+    * `INDIVIDUAL`：默认值，表示独立刷新。
+    * `INCONSISTENT`：表示级联非一致性刷。
+    * `CONSISTENT`：表示级联一致性刷新。
+
+    **示例如下：**
+
+    ```shell
+    obclient> ALTER MATERIALIZED VIEW mv1 REFRESH INDIVIDUAL;
+    ```
+
+    ```shell
+    obclient> ALTER MATERIALIZED VIEW mv1 REFRESH INCONSISTENT;
+    ```
+
+    ```shell
+    obclient> ALTER MATERIALIZED VIEW mv1 REFRESH CONSISTENT;
+    ```
+
+  * `[[START WITH expr] [NEXT expr]]`：修改物化视图的后台刷新任务的时间周期。
+
+    * `[START WITH expr]`：可选项，表示刷新计划开始的时间表达式。
+    * `[NEXT expr]`：可选项，表示下一次刷新的时间表达式。
+
+      <main id="notice" type='notice'>
+        <h4>注意</h4>
+        <p><ul><li>如果使用了 <code>NEXT</code> 子句，刷新计划的时间表达式必须设定在未来的时间点，否则会引发错误。</li><li>如果期望物化视图周期性自动调度刷新任务，请通过定义 <code>NEXT</code> 来设置调度周期。</li></ul></p>
+      </main>
+
+    建议使用 `current_date` 表示当前时区时间，时间表达式示例如下：
+
+    * 从当前时间（`current_date`）开始，每隔 10 秒刷新一次物化视图。
+
+      ```sql
+      START WITH current_date NEXT current_date + INTERVAL '10' SECOND
+      ```
+
+    * 从当前时间（`current_date`）开始，每隔 10 小时刷新一次物化视图。
+
+      ```sql
+      START WITH current_date NEXT current_date + INTERVAL '10' HOUR
+      ```
+
+    * 表示从当前时间（`current_date`）开始，每隔 1 天刷新一次物化视图。
+
+      ```sql
+      START WITH current_date NEXT current_date + 1
+      ```
+
+    **示例如下：**
+
+    ```shell
+    obclient> ALTER MATERIALIZED VIEW mv1
+        REFRESH START WITH current_date;
+    ```
+
+    ```shell
+    obclient> ALTER MATERIALIZED VIEW mv1
+        REFRESH NEXT current_date + 1;
+    ```
+
+    ```shell
+    obclient> ALTER MATERIALIZED VIEW mv1
+        REFRESH START WITH current_date NEXT current_date + 1;
+    ```
+
+## 示例
+
+1. 创建表 `test_tbl1`。
+
+    ```shell
+    obclient> CREATE TABLE test_tbl1 (col1 NUMBER PRIMARY KEY, col2 VARCHAR2(20), col3 NUMBER, col4 BLOB);
+    ```
+
+2. 创建名为 `mv_test_tbl1` 的物化视图。
+
+    ```shell
+    obclient> CREATE MATERIALIZED VIEW mv_test_tbl1
+        AS SELECT col1, col2, col3
+           FROM test_tbl1;
+    ```
+
+3. 修改物化视图 `mv_test_tbl1` 的并行度为 5。
+
+    ```shell
+    obclient> ALTER MATERIALIZED VIEW mv_test_tbl1 PARALLEL 5;
+    ```
+
+4. 修改物化视图 `mv_test_tbl1` 的刷新计划中初始刷新时间为当前日期，之后每隔 1 天刷新一次物化视图。
+
+    ```shell
+    obclient> ALTER MATERIALIZED VIEW mv_test_tbl1
+        REFRESH START WITH current_date NEXT current_date + 1;
+    ```
+
+## 相关文档
+
+* [物化视图概述](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/100.materialized-views-overview-of-oracle-mode.md)
+* [创建物化视图](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/300.create-materialized-views-of-oracle-mode.md)
+* [刷新物化视图](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/400.refresh-materialized-views-of-oracle-mode.md)
+* [查询物化视图](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/600.view-materialized-views-of-oracle-mode.md)

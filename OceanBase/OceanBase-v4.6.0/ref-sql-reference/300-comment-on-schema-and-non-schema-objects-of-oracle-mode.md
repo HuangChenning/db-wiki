@@ -1,0 +1,35 @@
+---
+title: "Schema 与非 Schema 对象的注释"
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687630.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# Schema 与非 Schema 对象的注释
+
+OceanBase 数据库用户可以使用 COMMENT 语句将注释与 Schema 对象（表、运算符、索引类型）或非 Schema 对象（Edition）关联起来。与 Schema 和非 Schema 对象关联的注释存储在数据字典中。
+
+创建 Schema 与非 Schema 对象的注释语法如下：
+
+```sql
+COMMENT ON {TABLE table | COLUMN column | INDEXTYPE indextype
+| OPERATOR operator} IS string
+```
+
+示例如下：
+
+* 创建用户表的注释
+
+  ```sql
+  COMMENT ON TABLE test.user is "这是记录用户信息的表";
+  ```
+
+* 创建 user_name 列的注释
+
+  ```sql
+  COMMENT ON COLUMN test.user.user_name is "这里记录了用户的姓名";
+  ```

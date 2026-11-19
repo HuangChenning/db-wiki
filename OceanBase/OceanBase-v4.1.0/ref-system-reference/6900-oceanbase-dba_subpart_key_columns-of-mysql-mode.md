@@ -1,0 +1,35 @@
+---
+title: oceanbase.DBA_SUBPART_KEY_COLUMNS
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702036.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# oceanbase.DBA_SUBPART_KEY_COLUMNS
+
+oceanbase.DBA_SUBPART_KEY_COLUMNS 
+======================================================
+
+
+功能 
+--------------------
+
+查看数据库中所有分区对象中子分区键包含的列。
+
+字段说明 
+----------------------
+
+
+
+|      **字段名称**      |    **类型**     | **是否可以为 NULL** |                                                              **描述**                                                              |
+|--------------------|---------------|----------------|----------------------------------------------------------------------------------------------------------------------------------|
+| OWNER              | varchar(128)  | NO             | 分区表或分区索引的拥有者                                                                                                                     |
+| NAME               | varchar(128)  | NO             | 分区表或分区索引的名字                                                                                                                      |
+| OBJECT_TYPE        | varchar(5)    | NO             | 分区对象的类型： <li> TABLE   <li> INDEX    |
+| COLUMN_NAME        | varchar(4000) | NO             | 列的名字                                                                                                                             |
+| COLUMN_POSITION    | bigint(21)    | NO             | 列在分区键中的位置                                                                                                                        |
+| COLLATED_COLUMN_ID | bigint(0)     | NO             | 目前暂未支持该字段，当前该字段默认为 NULL                                                                                                          |

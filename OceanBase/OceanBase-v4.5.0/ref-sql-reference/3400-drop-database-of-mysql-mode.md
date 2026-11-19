@@ -1,0 +1,75 @@
+---
+title: DROP DATABASE
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479605.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP DATABASE
+
+## 描述
+
+该语句用于删除数据库。
+
+## 语法
+
+```sql
+DROP DATABASE [IF EXISTS] database_name
+```
+
+## 参数解释
+
+|    **参数**     |      **描述**       |
+|---------------|-------------------|
+| IF EXISTS     | 用于防止当数据库不存在时发生错误。 |
+| database_name | 指定待删除的数据库名。       |
+
+## 示例
+
+* 删除数据库 `test2`。
+
+  ```sql
+  obclient> DROP DATABASE test2;
+  ```
+
+* 删除不存在的数据库 `notest`。
+
+  ```sql
+  obclient> DROP DATABASE notest;
+  ```
+
+  预期返回结果：
+
+  ```sql
+  ERROR 1008 (HY000): Can't drop database 'notest'; database doesn't exist
+  ```
+
+  ```sql
+  obclient> DROP DATABASE IF EXISTS notest;
+  ```
+
+  预期返回结果：
+
+  ```sql
+  Query OK, 0 rows affected, 1 warning
+  ```
+
+  ```sql
+  obclient> SHOW WARNINGS;
+  ```
+
+  预期返回结果：
+
+  ```sql
+  
+  +-------+------+------------------------------------------------------+
+  | Level | Code | Message                                              |
+  +-------+------+------------------------------------------------------+
+  | Note  | 1008 | Can't drop database 'notest'; database doesn't exist |
+  +-------+------+------------------------------------------------------+
+  1 row in set
+  ```

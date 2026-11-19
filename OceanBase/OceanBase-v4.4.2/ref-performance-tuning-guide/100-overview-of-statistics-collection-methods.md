@@ -1,0 +1,55 @@
+---
+title: "统计信息收集方式概述"
+book: "性能调优"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287971.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 统计信息收集方式概述
+
+目前 OceanBase 数据库优化器支持以下统计信息收集方式，同时提供了对应的视图用于查询收集的统计信息：
+
+* **手动统计信息收集**：用户通过 `DBMS_STATS` 系统包或 `ANALYZE` 语句收集统计信息。详细信息请参见 [手动收集统计信息](300.collect-statistics-manually.md)。
+
+* **自动统计信息收集**：通过维护窗口定期收集缺失或过期的统计信息。详细信息请参见 [自动收集统计信息](400.collect-statistics-automatically.md)。
+
+* **在线统计信息收集**：在批量导入数据的同时收集统计信息。详细信息请参见 [在线统计信息收集](500.online-statistics-collection.md)。
+
+* **异步统计信息收集**：定期检查表或分区的数据变化情况，及时处理数据量发生较大变化的表或分区。详细信息请参见 [异步统计信息收集](450.collect-statistics-asynchronously.md)。
+
+OceanBase 数据库提供了同 Oracle 数据库兼容的视图以用于 Oracle 模式下查询统计信息收集状态，相关视图如下表所示。
+
+|          视图名称                     |                        描述                       |
+|--------------------------------------|---------------------------------------------------|
+| ALL_TAB_STATISTICS、DBA_TAB_STATISTICS、USER_TAB_STATISTICS                         |  用于查询表级的统计信息。                     |
+| ALL_TAB_COL_STATISTICS、DBA_TAB_COL_STATISTICS、USER_TAB_COL_STATISTICS             |  用于查询 `GLOBAL` 级别的列级统计信息。         |
+| ALL_PART_COL_STATISTICS、DBA_PART_COL_STATISTICS、USER_PART_COL_STATISTICS          |  用于查询 `PARTITION` 级别的列级统计信息。       |
+| ALL_SUBPART_COL_STATISTICS、DBA_SUBPART_COL_STATISTICS、USER_SUBPART_COL_STATISTICS |  用于查询 `SUBPARTITION` 级别的列级统计信息。    |
+| ALL_TAB_HISTOGRAMS、DBA_TAB_HISTOGRAMS、USER_TAB_HISTOGRAMS                         |  用于查询 `GLOBAL` 级别的列级直方图统计信息。      |
+| ALL_PART_HISTOGRAMS、DBA_PART_HISTOGRAMS、USER_PART_HISTOGRAMS                      |  用于查询 `PARTITION` 级别的列级直方图统计信息。    |
+| ALL_SUBPART_HISTOGRAMS、DBA_SUBPART_HISTOGRAMS、USER_SUBPART_HISTOGRAMS             |  用于查询 `SUBPARTITION` 级别的列级直方图统计信息。 |
+| ALL_IND_STATISTICS、DBA_IND_STATISTICS、USER_IND_STATISTICS                         |  用于查询索引统计信息。 |
+| sys.ALL_VIRTUAL_TABLE_STAT_REAL_AGENT                               | 用于查询表级的统计信息的代理表。                                   |
+| sys.ALL_VIRTUAL_COLUMN_STAT_REAL_AGENT                              | 用于查询列级的基本统计信息的代理表。                                 |
+| sys.ALL_VIRTUAL_HISTOGRAM_STAT_REAL_AGENT                           | 用于查询列级的直方图信息的代理表。                                  |
+
+OceanBase 数据库 MySQL 模式下用于查询相关统计信息的视图如下表所示。
+
+|          视图名称                     |                        描述                       |
+|--------------------------------------|---------------------------------------------------|
+| oceanbase.DBA_TAB_STATISTICS         |  用于查询表级的统计信息。                      |
+| oceanbase.DBA_TAB_COL_STATISTICS     |  用于查询 `GLOBAL` 级别的列级统计信息。         |
+| oceanbase.DBA_PART_COL_STATISTICS    |  用于查询 `PARTITION` 级别的列级统计信息。       |
+| oceanbase.DBA_SUBPART_COL_STATISTICS |  用于查询 `SUBPARTITION` 级别的列级统计信息。    |
+| oceanbase.DBA_TAB_HISTOGRAMS         |  用于查询 `GLOBAL` 级别的列级直方图统计信息。   |
+| oceanbase.DBA_PART_HISTOGRAMS        |  用于查询 `PARTITION` 级别的列级直方图统计信息。    |
+| oceanbase.DBA_SUBPART_HISTOGRAMS     |  用于查询 `SUBPARTITION` 级别的列级直方图统计信息。 |
+| oceanbase.DBA_IND_STATISTICS         |  用于查询索引统计信息。 |
+
+### 更多信息
+
+[直方图简介](../200.statistics-collection-methods/200.histogram-introduction.md)

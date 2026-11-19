@@ -1,0 +1,30 @@
+---
+title: backup_zone
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502148.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# backup_zone
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<ul><li>由于 V4.x 版本对物理备份恢复功能进行了架构的优化调整，该配置项从 V4.0.0 版本开始删除。</li>
+<li>对于 V4.2.5 版本，从 V4.2.5 BP2 版本开始，可以通过 <code>ALTER SYSTEM CHANGE EXTERNAL_STORAGE_DEST</code> 语句来指定 Zone 进行备份，详细配置示例，参见 <a href="../../../../600.manage/600.backup-and-recovery/1500.configuration-case-the-source-of-backup-dest-and-archive-dest.md">备份路径和归档路径源端配置案例</a>。</li></ul>
+</main>
+
+## 功能描述
+
+`backup_zone`用于用户指定执行备份的 Zone。
+
+## 属性说明
+
+|      **属性**      | **描述** |
+|------------------|--------|
+| 参数类型             | String  |
+| 默认值              | 空字符串   |
+| 是否重启 OBServer 节点生效 | 否      |

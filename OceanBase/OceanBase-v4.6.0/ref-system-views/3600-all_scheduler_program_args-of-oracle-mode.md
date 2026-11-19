@@ -1,0 +1,41 @@
+---
+title: ALL_SCHEDULER_PROGRAM_ARGS
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005683736.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# ALL_SCHEDULER_PROGRAM_ARGS
+
+<main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>OceanBase 数据库暂未支持该视图。</p>
+  </main>
+
+## 功能描述
+
+展示用户可访问的调度程序参数信息。
+
+## 字段说明
+
+|       **字段名称**        |     **类型**     | **是否可以为 NULL** |                                                  **描述**                                                  |
+|-----------------------|----------------|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| OWNER                 | VARCHAR2(30)   | NO             | 参数所属程序的拥有者            |
+| PROGRAM_NAME          | VARCHAR2(30)   | NO             | 参数所属程序的名称             |
+| ARGUMENT_NAME         | VARCHAR2(30)   | NO             | 参数的可选名称               |
+| ARGUMENT_POSITION     | NUMBER         | NO             | 参数在参数列表中的位置           |
+| ARGUMENT_TYPE         | VARCHAR2(61)   | NO             | 参数的数据类型               |
+| METADATA_ATTRIBUTE    | VARCHAR2(19)   | NO             | 元数据的属性：<ul><li> JOB_NAME   </li><li> JOB_OWNER   </li><li> JOB_START   </li><li> WINDOW_START   </li><li> WINDOW_END   </li><li> JOB_SUBNAME   </li><li> EVENT_MESSAGE   </li><li> JOB_SCHEDULER_START </li></ul>   |
+| DEFAULT_VALUE         | VARCHAR2(4000) | NO             | 如果参数是一个字符串类型，参数的默认值   |
+| DEFAULT_ANYDATA_VALUE | VARCHAR2(128)  | YES            | 如果参数是 ANYDATA 类型，参数的默认值                                                                                  |
+| OUT_ARGUMENT          | VARCHAR2(5)    | YES            | 保留字段                  |
+
+## 相关视图
+
+* USER_SCHEDULER_PROGRAM_ARGS
+
+* DBA_SCHEDULER_PROGRAM_ARGS

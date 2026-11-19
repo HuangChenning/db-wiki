@@ -1,0 +1,59 @@
+---
+title: TO_SINGLE_BYTE
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006375202.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# TO_SINGLE_BYTE
+
+## 描述
+
+该函数用于将字符串中的多字节字符转换为对应的单字节字符形式。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该函数从 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+TO_SINGLE_BYTE(str)
+```
+
+## 参数解释
+
+`str`：要转换的字符串。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>如果 <code>str</code> 中任何多字节字符没有单字节等效项，则在输出字符串中显示为多字节字符。</p>
+</main>
+
+## 返回类型
+
+返回值与 `str` 的数据类型相同。
+
+## 示例
+
+将字符串中的全角字符转化为半角字符。
+
+```shell
+obclient> SELECT TO_SINGLE_BYTE('中国Ａ')
+```
+
+返回结果如下：
+
+```shell
++-----------------------------+
+| TO_SINGLE_BYTE('中国Ａ')    |
++-----------------------------+
+| 中国A                       |
++-----------------------------+
+1 row in set
+```

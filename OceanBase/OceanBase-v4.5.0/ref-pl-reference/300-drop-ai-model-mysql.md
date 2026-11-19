@@ -1,0 +1,40 @@
+---
+title: DROP_AI_MODEL
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479805.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DROP_AI_MODEL
+
+`DROP_AI_MODEL` 过程用于删除 AI 模型对象。
+
+## 语法
+
+```sql
+PROCEDURE drop_ai_model(
+    IN name VARCHAR(128));
+```
+
+## 参数说明
+
+| 参数 | 描述 | 类型 | 取值范围 | 是否可空 |
+|------|------|------|----------|----------|
+| name | AI 模型对象的名称。 | VARCHAR(128) |  | No |
+
+## 示例
+
+删除 AI 模型对象。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('my_ai_model_1');
+```
+
+## 相关文档
+
+* [DBMS_AI_SERVICE 子程序概览](100.dbms-ai-service-overview-mysql.md)
+* [CREATE_AI_MODEL](200.create-ai-model-mysql.md)

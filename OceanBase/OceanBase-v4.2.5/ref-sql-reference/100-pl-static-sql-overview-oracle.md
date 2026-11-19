@@ -1,0 +1,68 @@
+---
+title: "概述"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503125.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 概述
+
+PL 静态 SQL 支持直接在 PL 语句中使用 SQL 语法。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+一般情况下，PL 静态 SQL 语句与以下相应的 SQL 语句具有相同的语法：
+
+* `SELECT`（此语句也称为查询）
+
+* 数据操作语言（DML）语句：`INSERT`、`UPDATE`、`DELETE` 和 `MERGE`。
+
+* 事务控制语言（TCL）语句：`COMMIT`、`ROLLBACK`、`SAVEPOINT`、`SET TRANSACTION` 和 `LOCK TABLE`。
+
+伪列的行为类似于表列，但未存储在表中。静态 SQL 包括以下 SQL 伪列：
+
+* `CURRVAL` 和 `NEXTVAL`
+
+* `LEVEL`
+
+* `OBJECT_VALUE`
+
+* `ROWID`
+
+* `ROWNUM`
+
+OceanBase 数据库 PL 静态 SQL 在如下场景中支持 SQL 返回复杂数据类型：
+
+* `​SELECT INTO`/`BULK INTO​`
+* DML 语句中的 `RETURING INTO`/`BULK INTO`
+* `​FETCH INTO`/`BULK INTO`
+
+<main id="notice" type='notice'>
+  <h4>说明</h4>
+  <p>从 V4.2.0 开始，OceanBase 数据库允许将多列数据导入（`INTO`）到一个 RECORD类型的变量中；也允许将多列数据批量导入（`BULK INTO​`）到多个 OBJECT 类型的变量中。</p>
+</main>
+
+OceanBase 数据库兼容 Oracle 文本协议下复杂类型序列化功能，当 SQL 查询结果中存在复杂数据类型时，支持将复杂数据类型序列化为 Oracle 兼容的文本输出。
+
+例如，你在数据库中执行了一个查询，这个查询返回了一个复杂数据类型，例如，一个包含多个字段的复杂类型：
+
+```sql
+{
+  "id": 1001,
+  "name": "Alice",
+  "phoneNumbers": ["123-456-7890", "098-765-4321"]
+}
+```
+
+现在支持将复杂数据类型序列化为 Oracle 兼容的文本输出，它就被转换成：
+
+```
+ID: 1001, Name: Alice, PhoneNumbers: (123-456-7890, 098-765-4321)
+```

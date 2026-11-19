@@ -1,0 +1,192 @@
+---
+title: "创建表"
+book: "数据库对象管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501912.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 创建表
+
+您可以使用 `CREATE TABLE` 语句来创建表。
+
+本节主要介绍非分区表的创建，分区表的创建及使用请参见 [创建分区表](../300.manage-partitions-of-mysql-mode/200.create-a-partition-table-of-mysql-mode.md)。
+
+## 创建非分区表
+
+创建非分区表是指创建只有一个分区的表。
+
+创建非分区表的示例语句如下：
+
+```sql
+obclient>CREATE TABLE table_name1(w_id int
+, w_ytd decimal(12,2)
+, w_tax decimal(4,4)
+, w_name varchar(10)
+, w_street_1 varchar(20)
+, w_street_2 varchar(20)
+, w_city varchar(20)
+, w_state char(2)
+, w_zip char(9)
+, unique(w_name, w_city)
+, primary key(w_id)
+);
+
+Query OK, 0 rows affected (0.09 sec)
+
+obclient>CREATE TABLE table_name2 (c_w_id int NOT NULL
+, c_d_id int NOT null
+, c_id int NOT null
+, c_discount decimal(4, 4)
+, c_credit char(2)
+, c_last varchar(16)
+, c_first varchar(16)
+, c_middle char(2)
+, c_balance decimal(12, 2)
+, c_ytd_payment decimal(12, 2)
+, c_payment_cnt int
+, c_credit_lim decimal(12, 2)
+, c_street_1 varchar(20)
+, c_street_2 varchar(20)
+, c_city varchar(20)
+, c_state char(2)
+, c_zip char(9)
+, c_phone char(16)
+, c_since date
+, c_delivery_cnt int
+, c_data varchar(500)
+, index icust(c_last, c_d_id, c_w_id, c_first, c_id)
+, FOREIGN KEY (c_w_id) REFERENCES table_name1(w_id)
+, primary key (c_w_id, c_d_id, c_id)
+);
+
+Query OK, 0 rows affected
+```
+
+示例中创建了 2 个表，并同时对表中的列定义了一些约束信息，包括在不同列上创建的主键和外键等。更多主键、外键等的介绍，请参见 [定义列的约束类型](../200.manage-tables-of-mysql-mode/400.define-the-constraint-type-for-a-column-of-mysql-mode.md)。
+
+创建表的列时请选择正确的数据类型，有关 SQL 数据类型的详细描述，请参见 [数据类型](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/100.basic-elements-of-mysql-mode/100.data-type-of-mysql-mode/100.data-type-overview-of-mysql-mode.md)。
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>基于性能和后期维护的需要，建议建表时为表设计主键或者唯一键。如果没有合适的字段作为主键，可以在创建表时不指定主键，待表创建成功后系统会为无主键表指定自增列作为隐藏主键。有关自增列的介绍请参见 <a href="300.define-an-auto-increment-column-of-mysql-mode.md">定义自增列</a>。</p>
+</main>
+
+## 创建复制表
+
+复制表是 OceanBase 数据库的一种特殊表。这种表可以在任意一个“健康”的副本上读取到数据的最新修改。对于写入频率要求较低、读操作延迟和负载均衡要求较高的用户来说，复制表是一种很好的选择。
+
+当用户创建一个复制表后，所在租户的所有 OBServer 节点内都会创建一个复制表的副本，这些副本中有一个副本会被选为 Leader，接受写请求，其余的副本只能接受读请求。
+
+所有的副本都需要向 Leader 汇报状态，主要是副本的回放进度，即数据同步的进度。一般来说，Follower 的回放进度会略落后于 Leader，只要落后的幅度没有超过一个阈值，Leader 就会认为副本处于“健康”的状态，可以快速回放出 Leader 上的修改。Leader 认为某个副本在一定时间内“健康”后，会授予 Follower 一段时间的 Lease。通俗的说，Leader 在接下来的一段时间内“信任” Follower 会保持“健康”状态，并且可以提供强一致性读服务。在这个“信任”期内，Leader 的每一个复制表事务提交前都会确认 Follower 的回放进度。Follower 回放出本事务的修改后，Leader 才会汇报用户，事务提交成功。此时，用户在 Follower 上可以读到刚刚提交的事务的修改。
+
+复制表功能在 OceanBase 数据库 V3.x 版本上就已经存在，而对于 V4.x 版本，由于 OceanBase 数据库的架构有了比较大的变化，V4.x 复制表为了适应单机日志流的新架构，构建了基于分区的可读版本号校验以及基于日志流的 Lease 授予机制，用于保证强一致性读的正确性。
+
+另外，V4.x 版本的复制表功能完善了切主不 Kill 事务的能力，在用户或负载均衡发起 Leader 切换时，未提交的复制表事务不会像 V3.x 版本一样无法继续，而是可以在切主后继续执行。对比 V3.x 版本，V4.x 的复制表功能也有着更好的写事务性能和更强的容灾能力，副本宕机对于读操作的影响更低。
+
+### 复制表使用限制
+
+* 复制表：
+
+  * 创建复制表限制：sys 租户、meta 租户没有广播日志流，不支持创建复制表。
+  * 写入性能受节点数影响：因为复制表写，需要同步到所有副本，所以节点数量越大，对写入性能影响越大。
+    * 规避方式：尽量避免复制表的写跟读在同一个事务，复制表事务的纯写或者纯读都没问题。
+
+  * 属性转换：
+
+    * 复制表与 TableGroup 互斥，修改复制表的 TableGroup 属性会报错；普通表转为复制表时，如果普通表属于某个 TableGroup，属性变更命令将报错。
+    * 复制表转换依赖负载均衡及 transfer，需要保证相关配置项是打开状态。
+
+  * 路由：
+
+    * 事务中有复制表的写操作，之后查询复制表，如果随机路由到 follower，会遇到副本不可读的问题，observer 内部二次转发到复制表的 Leader，影响查询性能。
+
+      * ODP V4.3.3 已调整路由策略，如果有复制表的写操作，后续查询路由到复制表的 Leader。
+
+    * 复制表 `JOIN` 普通表的查询操作，会按照复制表去随机路由（对 `JOIN` 查询，ODP 是按照第一张表路由），此时可能会路由到普通表的非 Leader 节点，导致出现远程计划。
+    * 普通表属性变更为复制表，ODP 无法感知，不能按照复制表路由分摊压力。
+
+  * 事务内，有复制表做过变更，后续的查询操作：
+
+    * OceanBase 数据库 V4.2.5 BP1 之前版本：查询复制表时，生成的执行计划会选择本地副本，但是因为做过变更，会报副本不可读的错误，SQL 重试选择 Leader 副本，此时 plan cache 无法命中，导致查询性能差。
+    * OceanBase 数据库 V4.2.5 BP1 及之后版本：调整复制表执行计划，选择 Leader 副本，而不是本地副本，本事务内后续的复制表查询都退化为普通表查询。
+
+      * 潜在问题：事务中的复制表都路由到 Leader 节点，由于复制表都建在一个日志流，可能出现热点及负载不均衡问题。
+
+      <main id="notice" type='explain'>
+        <h4>说明</h4>
+        <p>对于 OceanBase 数据库 V4.2.5 版本，从 V4.2.5 BP1 版本开始在事务内，如果对复制表进行了变更，系统在查询时始终优先选择复制表的 Leader 副本，而非直接选择本地副本，从而确保 OceanBase 数据库提高查询效率，避免错误选择副本。</p>
+      </main>
+
+* 广播日志流：
+
+  * 每个用户租户最多只能有一个广播日志流。
+  * 不支持广播日志流和普通日志流之间的属性转换。
+  * 不支持手动删除广播日志流，目前随着租户删除而删除。
+
+### 创建复制表语法
+
+创建复制表的语法是在 `CREATE TABLE` 语句后增加 `DUPLICATE_SCOPE` 选项，仅用户租户可以创建复制表，`sys` 租户无法创建复制表。创建复制表的 SQL 语句如下：
+
+```sql
+CREATE TABLE table_name column_definition DUPLICATE_SCOPE='none | cluster';
+```
+
+其中，`DUPLICATE_SCOPE` 参数用来指定复制表的属性，取值如下：
+
+* `none`：表示该表是一个普通表。
+* `cluster`：表示该表是一个复制表，Leader 需要将事务复制到当前租户的所有 F 副本及 R 副本。
+
+创建表时，如果不指定 `DUPLICATE_SCOPE`，则默认值为 `none`。
+
+```sql
+CREATE TABLE dup_t1 (c1 int,c2 int) DUPLICATE_SCOPE= 'cluster';
+```
+
+当某个租户的第一个复制表被创建时，系统会同时创建一个特殊的日志流——广播日志流。之后新建的复制表都会创建到广播日志流上。广播日志流与普通日志流的不同之处在于，广播日志流会自动地在租户内的每个 OBServer 节点上都部署一个副本，保证在理想情况下，复制表可以在任意一个 OBServer 节点上提供强一致性读。您可以通过以下 SQL 查看租户的复制表所在的广播日志流：
+
+```sql
+SELECT * FROM oceanbase.DBA_OB_LS WHERE flag LIKE "%DUPLICATE%";
+```
+
+查询结果的示例如下。
+
+```shell
++-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+-----------+
+| LS_ID | STATUS | PRIMARY_ZONE | UNIT_GROUP_ID | LS_GROUP_ID | CREATE_SCN          | DROP_SCN | SYNC_SCN            | READABLE_SCN        | FLAG      | UNIT_LIST |
++-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+-----------+
+|  1003 | NORMAL | z1;z2        |             0 |           0 | 1683267390195713284 |     NULL | 1683337744205408139 | 1683337744205408139 | DUPLICATE |           |
++-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+-----------+
+1 rows in set
+```
+
+示例中，`LS_ID` 为 `1003` 的日志流即为广播日志流，租户的所有复制表都创建在该日志流上。有关广播日志流的更多介绍，请参见 [副本介绍](../../../../600.manage/300.replica-management/100.replica-introduction.md)。
+
+复制表创建成功后，可以与普通表一样进行插入和读写操作。不同的是，对于读请求，如果使用 Proxy 的方式连接数据库，则读请求可能会路由到任意一个 OBServer 节点执行；如果是通过直连方式连接数据库，则只要本地副本可读，系统就会在直连的 OBServer 节点上执行读请求。更多数据库连接方式的介绍，请参见 [连接方式概述](../../../../300.develop/100.application-development-of-mysql-mode/100.connect-to-oceanbase-database-of-mysql-mode/100.connection-methods-overview-of-mysql-mode.md)。
+
+## 复制已有表的数据创建新表
+
+### 复制表数据
+
+可以使用 `CREATE TABLE AS SELECT` 语句复制表的数据，但是结构并不完全一致，并且会丢失约束、索引、默认值、分区等信息。
+
+示例语句如下:
+
+```sql
+obclient>CREATE TABLE t1_copy AS SELECT * FROM t1;
+Query OK, 3 rows affected
+```
+
+### 复制表结构
+
+可以使用 `CREATE TABLE LIKE` 语句复制表结构，但是不能复制表数据。
+
+示例语句如下：
+
+```sql
+obclient>CREATE TABLE t1_like like t1;
+Query OK, 0 rows affected
+```

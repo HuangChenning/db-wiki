@@ -1,0 +1,69 @@
+---
+title: "通过 DBLink 访问远端数据库中的数据"
+book: "管理员指南"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001701195.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-administrator-guide
+---
+
+# 通过 DBLink 访问远端数据库中的数据
+
+您可以通过 DBLink 访问远端数据库的对象，对象包括表、视图和同义词等。
+
+## 前提条件
+
+* 已创建 DBLink，创建 DBLink 的详细操作，参见 [创建 DBLink](../900.manage-dblink-of-oracle-mode/100.create-a-dblink-of-oracle-mode.md)。
+
+* 使用 DBLink 功能访问远端 Oracle 数据库时，需要在集群的所有 OBServer 节点上安装并配置 OCI-11.2。安装和配置 OCI-11.2 的详细操作，请参见 [安装和配置 OCI](510.install-and-configure-the-oci.md)。
+
+## 访问远端数据库中表的数据
+
+使用 `SELECT... FROM 表名@DBLink 名` 语法来访问远端数据库中表的数据，SQL 语句如下：
+
+```sql
+SELECT select_expr_list 
+      FROM table_name@dblink_name 
+      WHERE where_conditions;
+ 
+select_expr_list:
+    table_name.*
+    | table_alias_name.*
+    | expr [[AS] column_alias_name]
+```
+
+语句使用说明：
+
+* `select_expr_list`：指定待查询的表达式或列名，不同的列之间用英文逗号（,）隔开，星号（\*）表示所有列。
+
+  * `table_name.*`：指定从指定的表、视图中选择所有的列。
+
+  * `table_alias_name.*`：指定表、视图的别名。
+
+  * `expr [[AS] column_alias_name]`：指定查询列或表达式的别名，`AS` 为可选。
+
+* `table_name@dblink_name`：指定待查询的远端数据库的表，多个数据库之间用英文逗号（,）隔开。
+
+* `where_conditions`：指定筛选条件，查询结果中仅包含满足条件的数据，为可选项。
+
+更多 DBLink 相关的查询语句，参见 [SIMPLE SELECT](../../../../400.development-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/200.dml-of-oracle-mode/500.select-of-oracle-mode/100.simple-select-of-oracle-mode.md)。
+
+通过名为 `my_link` 的 DBLink 查询远端数据库中表 `tbl1` 的数据的示例如下：
+
+```sql
+obclient> SELECT * FROM tbl1@my_link;
+```
+
+## 相关文档
+
+更多 DBLink 相关的操作，参见以下信息：
+
+* [创建 DBLink](../900.manage-dblink-of-oracle-mode/100.create-a-dblink-of-oracle-mode.md)
+
+* [查看 DBLink](../900.manage-dblink-of-oracle-mode/200.view-a-dblink-of-oracle-mode.md)
+
+* [通过 DBLink 修改远端数据库的数据](../900.manage-dblink-of-oracle-mode/400.update-data-in-remote-database-by-a-dblink-of-oracle-mode.md)
+
+* [删除 DBLink](../900.manage-dblink-of-oracle-mode/500.delete-a-dblink-of-oracle-mode.md)

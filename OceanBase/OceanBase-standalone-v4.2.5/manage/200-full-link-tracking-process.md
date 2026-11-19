@@ -1,0 +1,160 @@
+---
+title: "全链路追踪流程"
+book: "管理数据库"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000002701899.html"
+tags:
+  - oceanbase
+  - standalone
+  - manage
+---
+
+# 全链路追踪流程
+
+在全链路中，不同的请求有对应的请求链路。一条完整的请求链路则是若干个请求流程构成，在 OceanBase 数据库将内部处理的每一个流程定义为一个 Span。请求链路可以理解为树状图，包含父节点 span 以及相应的子节点 span，此部分信息会被打印到 trace 日志中，并通过 `parent_id` 与 `id` 来关联父子节点。同时，在 trace 日志中对于每个请求流程会包含实际执行 SQL 信息，这部分被命名为 tag，以不同的 tag 来记录当前操作的详细信息。span 和 tag 被记录在 trace 日志中，来帮助运维人员理解数据库内部的处理逻辑以及定位问题所在。
+
+根据整条访问链路，将其分为 2 个部分来介绍。
+
+## 客户端
+
+应用通过 OBClient 客户端或 JDBC 驱动连接 OceanBase 数据库。
+
+与客户端相关的 span，有 `OBClient` 和 `JDBC` 两种。
+
+- `OBClient` ：是通过 OBClient 客户端进行访问。
+
+- `JDBC` ：是通过 JDBC 驱动进行连接的。
+
+与客户端相关的 tag，有 `command_name` 和 `client_ip` 两种。OBClient 和 JDBC 的 tag 信息是一致的。
+
+- `command_name` 用于标记不同类型的请求，比如 文本、prepare、execute 等。
+
+- `client_ip` 用于标记发送请求的 OBClient 的 ip 和 port。
+
+## OBServer
+
+### span
+
+OBServer 内部的处理机制是将分发过来的请求根据请求类型分为文本 SQL、preprocess statement 和存储过程三类，同时在这三类中又包含事务、内部 SQL 以及存储 在数据库内部的访问。
+
+下图为不同请求类型的访问链路，可以看出 span 之间的父子关系。示例：span `mpquery_single_stmt` 的父 span 为`com_query_entry`；span `com_query_entry` 的子 span 为`mpquery_single_stmt`。
+
+![span.png](img/086ff5270fa537f7.png)
+
+相关 span 介绍如下：
+
+- com_query_entry：查询过程。
+
+- mpquery_single_stmt：单个语句的访问路径。
+
+- sql_compile：编译 SQL。
+
+- pc_get_plan：获取执行计划。
+
+- hard_parse： 硬解析。
+
+- parse：软解析。
+
+- resolve：解析语法树的语义并生成语句。
+
+- rewrite：重写 SQL。
+
+- optimize：进行基于成本的优化并生成执行计划日志。
+
+- code_generate：根据执行计划日志生成物理执行计划。
+
+- pc_add_plan：将生成的执行计划加入 plan cache。
+
+- sql_execute：执行物理执行计划。
+
+- open：打开执行计划。
+
+- response_result：执行计划过程和结果。
+
+- px_schedule：按照 px 划分任务。
+
+- px_task：执行 px 子任务。
+
+- close：关闭执行计划。
+
+- cmd_execute：执行命令。
+
+- cmd_open：开启 cmd 计划。
+
+- ps_prepare：preprocess statement 的预处理。
+
+- ps_execute：preprocess statement 的执行。
+
+- ps_close：关闭 preprocess statement。
+
+- pl_entry：存储过程处理。
+
+- pl_compile：编译存储过程对象。
+
+- pc_get_pl_object：从 plan cache 获取存储过程对象。
+
+- pc_add_pl_object：把存储过程对象存储在 plan cache。
+
+- pl_execute：执行存储过程。
+
+- pl_spi_query：执行存储过程中的 spi 语句。
+
+- pl_spi_prepare：存储过程预处理阶段。
+
+- pl_spi_execute：执行存储过程中的 spi 语句。
+
+- inner_prepare：内部 SQL 的预处理阶段。
+
+- inner_execute：内部 SQL 的执行阶段。
+
+- inner_execute_read：读内部 SQL。
+
+- inner_execute_write：写内部 SQL。
+
+- inner_commit：提交内部 SQL 事务。
+
+- inner_rollback：回滚内部 SQL 事务。
+
+### 相关 tag 介绍
+
+为丰富部分 span 的信息，定义了 tag，具体如下所示。
+
+- com_query_entry
+
+  - log_trace_id：当前请求在 log 中的 trace ID。
+
+  - err_code：当前请求的错误代码。
+
+- sql_compile。
+
+  - sess_id：session ID 。
+
+  - sql_text：SQL 文本。
+
+  - sql_id：SQL ID。
+
+  - hit_plan：执行计划命中执行计划缓存。
+
+- px_task
+
+  - task_id：并行任务的逻辑 ID。
+
+  - dfo_id：数据流操作 ID。
+
+  - sqc_id：子查询协调器 ID。
+
+  - qc_id：查询协调器 ID。
+
+  - group_id：资源组 ID。
+
+- px_schedule
+
+  - dfo_id：数据流操作 ID。
+
+  - used_worker_cnt：正在使用的 px 工作线程的个数。
+
+  - qc_id：查询协调器 ID。
+
+- ps_close
+
+  - ps_id：preprocess statement ID。

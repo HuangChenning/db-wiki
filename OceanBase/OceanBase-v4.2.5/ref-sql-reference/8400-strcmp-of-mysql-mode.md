@@ -1,0 +1,50 @@
+---
+title: STRCMP
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504774.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# STRCMP
+
+## 声明
+
+```sql
+STRCMP(expr1,expr2)
+```
+
+## 说明
+
+如果字符串 `expr1` 与 `expr2` 一致，则返回 `0`。如果 `expr1` 是 `expr2` 的子串，则返回 `-1`；如果 `expr2` 是 `expr1` 的子串，则返回 `1`。
+
+## 示例
+
+```sql
+obclient> SELECT STRCMP('text', 'text2');
++-------------------------+
+| STRCMP('text', 'text2') |
++-------------------------+
+|                      -1 |
++-------------------------+
+1 row in set
+
+obclient> SELECT STRCMP('text2', 'text');
++-------------------------+
+| STRCMP('text2', 'text') |
++-------------------------+
+|                       1 |
++-------------------------+
+1 row in set
+
+obclient> SELECT STRCMP('text', 'text');
++------------------------+
+| STRCMP('text', 'text') |
++------------------------+
+|                      0 |
++------------------------+
+1 row in set
+```

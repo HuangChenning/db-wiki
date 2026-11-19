@@ -1,0 +1,42 @@
+---
+title: PI
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504683.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# PI
+
+## 声明
+
+```sql
+PI()
+```
+
+## 说明
+
+返回 `π` 的值（圆周率）。
+
+## 示例
+
+```sql
+obclient> SELECT PI();
++----------+
+| PI()     |
++----------+
+| 3.141593 |
++----------+
+1 row in set
+
+obclient> SELECT ROUND(2*PI(),2);
++----------------+
+| ROUND(2*PI(),2)|
++----------------+
+| 6.28           |
++----------------+
+1 row in set
+```

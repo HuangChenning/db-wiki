@@ -1,0 +1,79 @@
+---
+title: ITEM
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354582.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# ITEM
+
+`ITEM` 函数用于返回节点列表中第 `idx` 个节点（从 0 起计）的 `DBMS_XMLDOM.DOMNODE` 句柄。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该子程序从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_XMLDOM.item (
+   nodelist  IN DBMS_XMLDOM.DOMNODELIST,
+   idx IN NUMBER);
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| nodelist | 节点列表 `DBMS_XMLDOM.DOMNODELIST` 句柄。 |
+| idx | 节点下标，从 0 开始。 |
+
+## 返回值
+
+列表中第 `idx` 个 `DBMS_XMLDOM.DOMNODE` 句柄。
+
+## 使用说明
+
+通常应结合 [GETLENGTH](../19500.dbms-xmldom-oracle/800.getlength-xmldom-oracle.md) 使用，访问前先判断 `idx` 是否在有效区间 `[0, GETLENGTH(nodelist) - 1]` 内，避免下标越界。若下标无效，具体行为依实现可能返回空或抛出异常。
+
+## 示例
+
+该示例通过 `DBMS_XMLPARSER` 系统包解析 XML 文档并获取 `DOMDOCUMENT` 句柄，然后通过 `DBMS_XMLDOM` 系统包获取 XML 文档的 `DOMNODELIST` 句柄，并获取列表中的第一、第二两个节点：
+
+```sql
+-- 声明解析器和文档句柄变量
+DECLARE
+  p   DBMS_XMLPARSER.PARSER;
+  doc DBMS_XMLDOM.DOMDOCUMENT;
+  nl  DBMS_XMLDOM.DOMNODELIST;
+  n   DBMS_XMLDOM.DOMNODE;
+BEGIN
+  -- 创建解析器实例
+  p := DBMS_XMLPARSER.NEWPARSER;
+  -- 在解析器上解析 XML 文档
+  DBMS_XMLPARSER.PARSECLOB(p, '<root><a/><b/></root>');
+  -- 获取 XML 文档的 DOMDOCUMENT 句柄
+  doc := DBMS_XMLPARSER.GETDOCUMENT(p);
+  -- 释放解析器实例
+  DBMS_XMLPARSER.FREEPARSER(p);
+  -- 获取 XML 文档中所有元素列表
+  nl := DBMS_XMLDOM.GETELEMENTSBYTAGNAME(doc, '*');
+  -- 获取列表中的第一个节点
+  n  := DBMS_XMLDOM.ITEM(nl, 0);
+  -- 获取列表中的第二个节点
+  n  := DBMS_XMLDOM.ITEM(nl, 1);
+  -- 释放 XML 文档资源
+  DBMS_XMLDOM.FREEDOCUMENT(doc);
+END;
+/
+```

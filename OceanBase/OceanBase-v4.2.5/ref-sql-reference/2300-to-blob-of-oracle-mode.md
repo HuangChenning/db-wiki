@@ -1,0 +1,61 @@
+---
+title: TO_BLOB
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504568.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# TO_BLOB
+
+## 描述
+
+该函数将 `LONG RAW` 值和 `RAW` 值转换为 `BLOB` 值。
+
+## 语法
+
+```sql
+TO_BLOB( raw_value )
+```
+
+## 参数解释
+
+参数 `raw_value` 是 `LONG RAW` 或 `RAW` 类型的值。
+
+## 返回类型
+
+返回 `BLOB` 的类型。
+
+## 示例
+
+在下面的示例中，我们可以建一个 `tbl_raw` 表，定添加一个名为 `COL_RAW` 的列，定义列类型为 RAW，长度为 16 字节，并插入数据。
+
+```sql
+CREATE TABLE tbl_raw (COL_RAW RAW(16));
+
+-- 表插入一行数据，COL_RAW 列的值为 0ABC
+-- 在 RAW 类型中，字符串被解释为十六进制数据
+-- 因此，这里的 '0ABC' 将被存储为二进制形式，占用 2 个字节：0A (十六进制)和 BC (十六进制)
+INSERT INTO tbl_raw (COL_RAW) VALUES ('0ABC');
+
+-- 再插入一行数据，COL_RAW 列的值为 0123456789ABCDEF，将被转换并存储为8个字节的二进制数据
+-- 01, 23, 45, 67, 89, AB, CD, EF 是相对应的二进制字节
+INSERT INTO tbl_raw (COL_RAW) VALUES ('0123456789ABCDEF');
+```
+
+执行下面的 SQL 将表 `tbl_raw` 的 `RAW` 类型的值转换为 `BLOB` 值并返回对应字节长度。
+
+```shell
+obclient> SELECT COL_RAW,LENGTHB(COL_RAW) "LENGTHB_RAW",LENGTHB(TO_BLOB(COL_RAW)) "LENGTHB_BLOB"
+          FROM tbl_raw;
++------------------+-------------+--------------+
+| COL_RAW          | LENGTHB_RAW | LENGTHB_BLOB |
++------------------+-------------+--------------+
+| 0ABC             |           4 |            2 |
+| 0123456789ABCDEF |          16 |            8 |
++------------------+-------------+--------------+
+2 rows in set
+```

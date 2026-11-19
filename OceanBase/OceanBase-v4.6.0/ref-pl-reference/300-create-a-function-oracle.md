@@ -1,0 +1,223 @@
+---
+title: "创建函数"
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685056.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# 创建函数
+
+PL 函数是由一个或多个 SQL 语句组成的子程序，可重复执行。函数只能返回一个变量，并且必须包含一个有效的 `RETURN` 语句。
+
+<main id="notice" type="explain">
+<h4>功能适用性</h4>
+<p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+创建函数的基本语法如下：
+
+```sql
+CREATE [OR REPLACE] FUNCTION function_name
+[ argment [ { IN | IN OUT }] Type,
+      argment [ { IN | OUT | IN OUT } ] Type ]
+    [ AUTHID DEFINER | CURRENT_USER ]
+    [ DETERMINISTIC ]
+    [ PARALLEL_ENABLE ]
+RETURN return_type
+{ IS | AS }
+ delarification_block
+BEGIN
+    FUNCTION_body
+EXCEPTION
+    exception_handler
+END;
+```
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE employees(
+       empno          NUMBER(4,0),
+       empname        VARCHAR(10),
+       job            VARCHAR(10),
+      deptno          NUMBER(2,0),
+      salary          NUMERIC
+   );
+Query OK, 0 rows affected
+
+obclient> INSERT INTO employees VALUES (200,'Jennifer','AD_ASST',1,15000),
+       (202,'Pat','MK_REP',3,12000),(119,'Karen','PU_CLERK', 4,10000),(201,'Michael','MK_MAN',3,9000);
+Query OK, 4 rows affected
+Records: 4  Duplicates: 0  Warnings: 0
+
+obclient> CREATE OR REPLACE FUNCTION get_salary_by_dept(
+       v_in_dept_id NUMBER,
+       v_out_emp_count OUT NUMBER)
+       RETURN NUMBER
+   IS
+       v_sum NUMBER;
+   BEGIN
+       SELECT SUM(salary), count(*) INTO v_sum, v_out_emp_count
+           FROM employees WHERE deptno=v_in_dept_id;
+       RETURN v_sum;
+   EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+         DBMS_OUTPUT.PUT_LINE('Dept id '||v_in_dept_id||' not found');
+      WHEN OTHERS THEN
+         DBMS_OUTPUT.PUT_LINE('ERR: '||SQLCODE||': '||SQLERRM);
+   END get_salary_by_dept;
+/
+Query OK, 0 rows affected
+```
+
+## 参数的传递
+
+向函数中传递参数有如下三种方法：
+
+* 位置表示法。
+
+  按照参数定义的顺序逐个传入，语法是 `argument_value1[,argument_value2 ...]`
+
+  示例如下：
+
+  ```sql
+  obclient> DECLARE
+           v_num NUMBER;
+           v_sum NUMBER;
+       BEGIN
+           v_sum :=get_salary_by_dept(3, v_num);
+           DBMS_OUTPUT.PUT_LINE('Total salary: '||v_sum);
+           DBMS_OUTPUT.PUT_LINE('Total amount of person: '||v_num);
+       END;
+       /
+  Query OK, 0 rows affected
+  Total salary: 21000
+  Total amount of person: 2
+  ```
+
+* 名称表示法。
+
+  显式地指定参数名和传入值，不必按照参数定义的顺序，语法是 `argument1 => parameter1 [, argument2 => parameter2[, ...]]`
+
+  示例如下：
+
+  ```sql
+  obclient> DECLARE
+           v_num NUMBER;
+           v_sum NUMBER;
+       BEGIN
+           v_sum :=get_salary_by_dept(v_out_emp_count => v_num, v_in_dept_id => 3 );
+           DBMS_OUTPUT.PUT_LINE('Total salary: '||v_sum);
+           DBMS_OUTPUT.PUT_LINE('Total amount of person: '||v_num);
+           END;
+       /
+  Query OK, 0 rows affected
+
+  Total salary: 21000
+  Total amount of person: 2
+  ```
+
+* 混合表示法。
+
+  同时使用位置表示法和名称表示法为函数传递参数。采用这种参数传递方法时，使用位置表示法所传递的参数必须放在名称表示法所传递的参数前面。也就是说，无论函数具有多少个参数，只要其中有一个参数使用名称表示法，其后所有的参数都必须使用名称表示法。
+
+  示例如下：
+
+  ```sql
+  obclient> DECLARE
+           v_num NUMBER;
+           v_sum NUMBER;
+       BEGIN
+           v_sum :=get_salary_by_dept(3, v_out_emp_count => v_num );
+           DBMS_OUTPUT.PUT_LINE('Total salary: '||v_sum);
+           DBMS_OUTPUT.PUT_LINE('Total amount of person: '||v_num);
+       END;
+       /
+  Query OK, 0 rows affected
+
+  Total salary: 21000
+  Total amount of person: 2
+  ```
+
+## 函数特性
+
+### DETERMINISTIC
+
+`DETERMINISTIC` 特性表示该函数是确定性的，即对于相同的输入参数总是返回相同的结果。这对于优化查询性能很重要。
+
+### PARALLEL_ENABLE
+
+`PARALLEL_ENABLE` 特性表示该函数可以在并行查询中安全执行。当指定此特性时，函数必须满足以下条件：
+
+* 函数必须是确定性的（`DETERMINISTIC`）
+* 函数不能修改数据库状态
+* 函数不能依赖于会话状态或全局变量
+
+<main id="notice" type="notice">
+<h4>注意</h4>
+<p>使用 <code>PARALLEL_ENABLE</code> 特性的函数在并行执行环境中可能会被多个线程同时调用，因此必须确保函数是线程安全的。</p>
+</main>
+
+**使用 PARALLEL_ENABLE 的示例：**
+
+```sql
+CREATE OR REPLACE FUNCTION sub_query_result(input VARCHAR)
+RETURN VARCHAR
+DETERMINISTIC
+PARALLEL_ENABLE
+IS
+    result tp_sys_para.para_value%type;
+BEGIN
+    SELECT tp.para_value INTO result
+    FROM tp_sys_para tp
+    WHERE tp.para_name_e = input;
+    RETURN result;
+END;
+/
+```
+
+## 参数默认值
+
+在 `CREATE OR REPLACE FUNCTION` 语句中声明函数参数时可以使用 `DEFAULT` 关键字作为输入参数指定默认值。示例如下：
+
+```sql
+CREATE OR REPLACE FUNCTION demo_def_args(
+    name VARCHAR2,
+    age INTEGER,
+    -- 如果 gender 不传入值，则默认为 male
+    gender VARCHAR2 DEFAULT 'Male')
+    RETURN VARCHAR2
+AS
+    v_var VARCHAR2(32);
+BEGIN
+    v_var := name||', '||gender||', '||TO_CHAR(age)||' years old.';
+    RETURN v_var;
+END;
+```
+
+具有默认值的函数创建后，在函数调用时，如果没有为具有默认值的参数提供实际参数值，函数将使用该参数的默认值。但当调用者为默认参数提供实际参数时，函数将使用实际参数值。在创建函数时，只能为输入参数设置默认值，而不能为输入/输出参数设置默认值。
+
+```sql
+obclient> DECLARE
+   v_var VARCHAR(32);
+   BEGIN
+       v_var := demo_def_args('Roger', 30);
+       DBMS_OUTPUT.PUT_LINE(v_var);
+
+       v_var := demo_def_args('Allen', age => 40);
+       DBMS_OUTPUT.PUT_LINE(v_var);
+
+       v_var := demo_def_args('Tracy', gender => 'Female', age => 20);
+       DBMS_OUTPUT.PUT_LINE(v_var);
+   END;
+   /
+Query OK, 0 rows affected
+
+Roger, Male, 30 years old.
+Allen, Male, 40 years old.
+Tracy, Female, 20 years old.
+```

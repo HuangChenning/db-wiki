@@ -1,0 +1,59 @@
+---
+title: RECOVER
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001701147.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# RECOVER
+
+## 描述
+
+该语句用于设置备租户恢复位点。
+
+## 语法
+
+```sql
+/* 恢复到指定时间戳*/
+ALTER SYSTEM RECOVER STANDBY 
+      [TENANT tenant_name] UNTIL TIME='timestamp';
+
+/* 恢复指定 SCN */
+ALTER SYSTEM RECOVER STANDBY 
+      [TENANT tenant_name] UNTIL SCN=scn_no;
+
+/* 恢复无终点*/
+ALTER SYSTEM RECOVER STANDBY 
+      [TENANT tenant_name] UNTIL UNLIMITED;
+      
+/* 取消使用归档 redo log 恢复数据库 */
+ALTER SYSTEM RECOVER STANDBY 
+      [TENANT tenant_name] CANCEL;
+```
+
+<main id="notice" type='explain'>
+ <h4>说明</h4>
+  <ul><li>系统租户执行此命令时需指定 <code>TENANT tenant_name</code> 参数。</li>
+     <li>普通租户只能对本租户执行此命令。</li></ul>
+</main>
+
+## 语法说明
+
+| **字段** | **说明** |
+| --- | --- |
+| timestamp | 指定恢复的时间戳。 |
+| scn_no | 指定恢复的 SCN（System Change Number），包括该 SCN 位点，指定 SCN 须以 `=` 连接。 |
+| UNLIMITED | 指定恢复无终点，持续回放归档源端日志。 |
+
+## 示例
+
+使备租户 `restore_oracle_tenant` 进入持续同步模式。
+
+```shell
+obclient> ALTER SYSTEM RECOVER STANDBY TENANT restore_oracle_tenant UNTIL UNLIMITED;
+Query OK, 0 rows affected
+```

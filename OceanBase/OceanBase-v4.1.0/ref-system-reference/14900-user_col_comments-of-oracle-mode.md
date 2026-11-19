@@ -1,0 +1,41 @@
+---
+title: USER_COL_COMMENTS
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001701915.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# USER_COL_COMMENTS
+
+USER_COL_COMMENTS
+======================================
+
+功能
+-----------
+
+查看当前用户拥有的视图和表的所有列注释。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+相关视图
+-------------
+
+* ALL_COL_COMMENTS
+
+* DBA_COL_COMMENTS
+
+字段说明
+-------------
+
+|  **字段名称**   |     **类型**     | **是否可以为 NULL** | **描述** |
+|-------------|----------------|----------------|--------|
+| OBJECT_NAME | VARCHAR2(128)  | NO             | 对象名字   |
+| COLUMN_NAME | VARCHAR2(128)  | NO             | 列名     |
+| COMMENTS    | VARCHAR2(4000) | YES            | 列注释    |

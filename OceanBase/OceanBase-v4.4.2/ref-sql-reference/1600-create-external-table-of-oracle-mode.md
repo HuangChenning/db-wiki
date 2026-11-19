@@ -1,0 +1,457 @@
+---
+title: CREATE EXTERNAL TABLE
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287823.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE EXTERNAL TABLE
+
+## 描述
+
+该语句用来在数据库中创建一张新的外表。
+
+外表是数据库管理系统中的一项关键功能，通常数据库中的表存放于数据库的存储空间中，而外表的数据存储于外部存储服务中。
+
+创建外表时需要定义数据的文件路径和文件格式，之后用户可以通过外表从外部存储服务中读取文件的数据。外表是只读的，可以在查询语句使用，但是不能执行 DML 操作。外表不支持定义约束和创建索引。
+
+## 语法
+
+```sql
+CREATE EXTERNAL TABLE table_name (column_definition_list)
+    LOCATION = {'file_path' | @location_name['/path']}
+    FORMAT = (format_type_options)
+    [PARTITION BY (column_name [, column_name ...])]
+    [PARTITION_TYPE = USER_SPECIFIED]
+    [PATTERN = '<regex_pattern>']
+    [AUTO_REFRESH = 'xxx'];
+
+column_definition_list:
+    column_definition [, column_definition ...]
+
+column_definition:
+    column_name column_type [AS expr]
+
+format_type_options:
+    type_csv_option
+    | type_parquet_option
+    | type_orc_option
+
+type_csv_option:
+    TYPE = 'CSV'
+    LINE_DELIMITER = '<string>' | <expr>
+    FIELD_DELIMITER = '<string>' | <expr>
+    ESCAPE = '<character>' | <expr>
+    FIELD_OPTIONALLY_ENCLOSED_BY = '<character>' | <expr>
+    ENCODING = 'charset'
+    NULL_IF = ('<string>' | <expr>, '<string>' | <expr> ...)
+    SKIP_HEADER = <int>
+    SKIP_BLANK_LINES = {TRUE | FALSE}
+    TRIM_SPACE = {TRUE | FALSE}
+    EMPTY_FIELD_AS_NULL = {TRUE | FALSE}
+    IGNORE_LAST_EMPTY_COLUMN = {TRUE | FALSE}
+    COMPRESSION = {GZIP | ZSTD | DEFLATE | NONE | SNAPPY_BLOCK}
+    PARALLEL_PARSE_ON_SINGLE_FILE = {TRUE | FALSE}
+    PARALLEL_PARSE_FILE_SIZE_THRESHOLD = <int>
+    MAX_ROW_LENGTH = <int>
+    BYTEORDERMARK = {check | nocheck}
+
+type_parquet_option:
+    TYPE = 'PARQUET'
+
+type_orc_option:
+    TYPE = 'ORC'
+```
+
+## 参数说明
+
+|             **参数**            |            **描述**              |
+|-----------------------------------|-----------------------------------|
+| table_name  | 要创建的外表的名称。|
+| column_name | 外表的列名称。默认情况下，文件中的数据列和外表定义的列是自动按顺序对应起来的。|
+| column_type |定义外表的列类型，但是不能定义约束（例如，`DEFAULT`、`NOT NULL`、`UNIQUE`、`CHECK`、`PRIMARY KEY`、`FOREIGN KEY` 等）。|
+| AS expr     | 用于手动指定列映射。当文件中的列顺序与外表的列所定义顺序不一致时，可以通过 `metadata$filecol{N}` 所表示的伪列来指定外表的列与文件中的第 N 列的对应关系。例如，`c2 INT AS (metadata$filecol4)` 表示外表的 `c2` 列对应文件中的第 4 列。需要注意的是，如果指定了手动列映射，那么自动映射关系将会失效，而且所有的列都需要手动定义映射关系。|
+| LOCATION    | 用于指定外表文件存放的路径。通常外表的数据文件存放于单独一个目录中，文件夹中可以包含子目录，在创建表时，外表会自动收集该目录中的所有文件。取值如下：<ul><li>`file_path`：表示具体的外表文件路径信息，详细介绍可参见下文 [file_path](#file_path)。</li><li>`@location_name['/path']`：表示引用 Location 对象创建外表。`['/path']` 为可选项，表示子目录。关于创建 Location 对象详细介绍信息，参见 [CREATE LOCATION](1730.create-location-of-oracle-mode.md)。<main id="notice" type='explain'><h4>说明</h4><p>对于 OceanBase 数据库 V4.4.x 版本，从 V4.4.1 版本开始支持 <code>@location_name[/'path']</code> 参数。</p></main></li></ul>|
+| FORMAT = (format_type_options) | 指定外部文件格式的相关属性，使用 `TYPE` 指定导出 `CSV`、`PARQUET` 文件格式，`TYPE` 不能为空。详细介绍可参见下文 [format_type_options](#format_type_options)。|
+| PATTERN | 指定一个正则模式串，用于过滤 `LOCATION` 目录下的文件。对于每个 `LOCATION` 目录下的文件路径，如果能够匹配该模式串，外表会访问这个文件，否则外表会跳过这个文件。如果不指定该参数，则默认可以访问 `LOCATION` 目录下的所有文件。外表会将`LOCATION` 指定路径下满足 `PATTERN` 的文件列表保存在数据库系统表中，外表扫描时会根据这个列表来访问外部的文件。|
+| PARTITION_TYPE = USER_SPECIFIED | 当您需要自己手动添加和删除分区，而不是让外表自动管理分区时，需要指定 `PARTITION_TYPE = USER_SPECIFIED` 字段。|
+| AUTO_REFRESH = 'xxx' | 用于外表自动刷新。取值如下：<ul><li>`OFF`：默认值，表示关闭自动刷新。</li><li>`INTERVAL`：让该外表可以通过 `dbms_external_table` 来管理自动刷新规则。</li><li>`IMMEDIATE`：代表每次 SQL 访问外表时，需要去刷新一次该 SQL 相关的外表 META。</li></ul>|
+
+### file_path
+
+外表文件存放的路径有以下格式：
+
+* 文件在本地时，本地 `LOCATION` 格式为：`LOCATION = '[file:// | sfile://] local_file_path'`
+
+  * `file://`：该协议头表示在多个 OBServer 节点上遇到相同逻辑路径的文件时，会被视为不同的文件分别处理。每个节点会独立读取其本地路径下的文件。
+  * `sfile://`：该协议头表示在多个 OBServer 节点上遇到相同逻辑路径的文件时，系统会根据逻辑路径进行去重处理，确保只读取一份数据（支持多服务器负载均衡）。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p><ul><li>在使用 <code>sfile://</code> 时，系统会对文件大小进行一致性校验。如果同一个逻辑路径下的文件在不同 OBServer 节点上的大小不一致，系统将报错 <code>OB_INVALID_EXTERNAL_FILE</code>，以避免因数据不一致导致结果错误。</li> <li>对于 V4.4.2 版本，从 V4.4.2 BP2 版本开始在 <code>CREATE EXTERNAL TABLE</code> 语法本地 Location 格式中加入了对 <code>sfile://</code> 协议头的支持。</li></ul></p>
+    </main>
+
+  * `local_file_path`：可以为相对路径，也可以为绝对路径。如果填写的是相对路径，则当前目录必须为 OceanBase 数据库的安装目录；`secure_file_priv` 用于配置 OBServer 节点有权限访问的文件路径。`local_file_path` 只能是 `secure_file_priv` 路径的子路径。
+
+* 文件在远程时，远程 `LOCATION` 格式为：
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>使用对象存储路径时，对象存储路径的各项参数由 <code>&</code> 符号进行分隔，请确保您输入的参数值中仅包含英文字母大小写、数字、<code>/-_$+=</code> 以及通配符。如果您输入了上述以外的其他字符，可能会导致设置失败。</p>
+  </main>
+
+  * 文件在 OSS/S3 上时，格式为：`LOCATION = '{oss\|s3}://$ACCESS_ID:$ACCESS_KEY@$HOST:s3_region/remote_file_path'`，其中 `$ACCESS_ID`、`$ACCESS_KEY` 和 `$HOST` 为访问阿里云 OSS、AWS S3 以及兼容 S3 协议的对象存储所需配置的访问信息，`s3_region` 为使用 S3 时选择的区域信息，这些敏感的访问信息会以加密的方式存放在数据库的系统表中。
+
+  * 文件在 HDFS 上时，有以下格式：
+
+    * 基于单节点 NameNode（NN）地址访问集群格式为：`LOCATION = hdfs://localhost:port/PATH`，其中 `localhost` 指的是 HDFS 的地址，`port` 指的是 HDFS 的端口号，`PATH` 指 HDFS 中的文件路径。
+
+      * 带 kerberos 认证的格式为：`LOCATION = 'hdfs://localhost:port/user?principal=xxx&keytab=xxx&krb5conf=xxx&configs=xxx'`，其中：
+
+        * `principal`：指登录认证用户。
+        * `keytab`：指定用户认证的密钥文件路径。
+        * `krb5conf`：指定用户使用 kerberos 环境的描述文件路径。
+        * `configs`：指定额外的 HDFS 配置项，默认为空，但是如果是 kerberos 环境，则通常该配置项有值，需要进行配置，例如：`dfs.data.transfer.protection=authentication,privacy`，指定数据传输保护级别为 `authentication` 和 `privacy`。
+
+    * 基于 Hadoop HA（高可用）的逻辑命名服务访问集群格式为：`LOCATION = hdfs://nameserviceID/PATH`，其中 `nameserviceID` 指的是 HDFS 的是 Hadoop HA 的逻辑命名服务 ID，`PATH` 指文件路径。
+  
+      <main id="notice" type='explain'>
+        <h4>说明</h4>
+        <p>请确保客户端 OBServer 侧的配置包含 HA 集群的 <code>nameservice</code> 定义及故障转移策略。</p>
+      </main>
+
+      * 带 kerberos 认证的格式为：`LOCATION = 'hdfs://nameserviceID/PATH?principal=xxx&keytab=xxx&krb5conf=xxx&configs=dfs.data.transfer.protection=${string}#dfs.nameservices=${nameservice id}#dfs.ha.namenodes.${nameservice id}=${namenode1}, ${namenode2}#dfs.namenode.rpc-address.${nameservice id}.${namenode1}=${namenode 1 address}#dfs.namenode.rpc-address.${nameservice id}.${namenode2}=${namenode 2 address}#dfs.ha.automatic-failover.enabled.${nameservice id}=true#dfs.client.failover.proxy.provider.${nameservice id}=org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider'`，其中：
+
+        * `principal`：指登录认证用户，设置为非主节点 NN 的 `pricipal`。
+        * `keytab` 和 `krb5conf`：与单节点 NN 设置一样。
+        * `configs`：指定额外的 HDFS 配置项，需要设置多配置项，仅和 HA 配置项和安全配置项相关：
+
+          * `dfs.data.transfer.protection=${string}`：对齐集群的 `dfs.data.transfer.protection` 的配置。
+          * `dfs.nameservices=${nameservice id}`：指明当前 HA 集群的 `namesevice`（别名）。
+          * `dfs.ha.namenodes.${nameservice id}=${namenode1}, ${namenode2}`：指明 HA 集群的 namenode 后备 ID 列表。
+          * `dfs.namenode.rpc-address.${nameservice id}.${namenode1}=${namenode 1 address}`：设置说明 `namenode1` 具体 namenode，方便客户端路由。
+          * `dfs.namenode.rpc-address.${nameservice id}.${namenode2}=${namenode 2 address}`：设置说明 `namenode2` 具体 namenode，方便客户端路由。
+          * `dfs.ha.automatic-failover.enabled.${nameservice id}=true`：让 HA 集群获取相关请求之后，自动获取可用 namenode 进行响应服务。
+          * `dfs.client.failover.proxy.provider.${nameservice id}=org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider`：指示 HA 集群进行主备切换的逻辑工具类，也可自定义打包上传 HA 集群自己需要的逻辑等。
+
+      <main id="notice" type='notice'>
+        <h4>注意</h4>
+        <p>HA 部分配置项是和 <code>namespace</code> 绑定，例如如下示例三的 <code>mycluster</code>, 注意相关配置项结合设置。</p>
+      </main>
+
+### format_type_options
+
+* `TYPE = 'CSV'`：指定外部文件的格式为 CSV 类型。支持读取符合 CSV 解析规则的 TEXT 文本文件，并按文件内容配置字段分隔符、行分隔符。还包含以下字段：
+
+  * `LINE_DELIMITER`：指定 CSV 文件的行分隔符。
+
+  * `FIELD_DELIMITER`：指定 CSV 文件的列分隔符。
+
+  * `ESCAPE`：指定 CSV 文件的转义符号，只能为 1 个字节。
+
+  * `FIELD_OPTIONALLY_ENCLOSED_BY`：指定 CSV 文件中包裹字段值的符号。默认值为空。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>当外表数据文件中包含 <code>NULL</code> 值（非字符串 <b>NULL</b>，即不是 <b>"NULL"</b>）时，必须显式配置 <code>FIELD_OPTIONALLY_ENCLOSED_BY</code> 参数，且该参数值不可为空。</p>
+    </main>
+
+  * `ENCODING`：指定文件的字符集编码格式，当前 Oracle 模式支持的所有字符集请参见 [字符集](../../300.basic-elements-of-oracle-mode/1000.character-set-and-collation-of-oracle-mode.md)。如果不指定，默认值为 UTF8MB4。
+
+  * `NULL_IF`：指定被当作 `NULL` 处理的字符串。默认值为空。
+
+  * `SKIP_HEADER`：跳过文件头，并指定跳过的行数。
+
+  * `SKIP_BLANK_LINES`：指定是否跳过空白行。默认值为 `FALSE`，表示不跳过空白的行。
+
+  * `TRIM_SPACE`：指定是否删除文件中字段的头部和尾部空格。默认值为 `FALSE`，表示不删除文件中字段头尾的空格。
+
+  * `EMPTY_FIELD_AS_NULL`：指定是否将空字符串当作 `NULL` 处理。默认值为 `FALSE`，表示不将空字符串当做 `NULL` 处理。
+
+  * `IGNORE_LAST_EMPTY_COLUMN`：如果文件一行末尾是空字段（即行分隔符前是列分隔符），指定是否忽略掉该空字段。默认值为 `TRUE`，表示忽略掉最后一个空字段。
+  * `COMPRESSION`：可选项，指定文件的压缩格式，取值如下：
+
+    * `GZIP`/`DEFLATE`：GZIP 压缩文件。
+    * `ZSTD`：ZSTD 压缩文件。
+    * `NONE`：表示文件没有压缩（默认值）。
+    * `SNAPPY_BLOCK`：HADOOP-SNAPPY 压缩文件。
+
+      <main id="notice" type='explain'>
+        <h4>说明</h4>
+        <p>对于 V4.4.2 版本，从 V4.4.2 BP1 版本开始支持压缩格式 <code>SNAPPY_BLOCK</code>。</p>
+      </main>
+
+  * `PARALLEL_PARSE_ON_SINGLE_FILE`：指定是否开启并行解析单个 CSV 文件。如果不指定，默认值为 `TRUE`。
+  * `PARALLEL_PARSE_FILE_SIZE_THRESHOLD`：指定超过该阈值大小的文件可能会进行并行解析，单位字节，默认值为 256 MB。
+  * `MAX_ROW_LENGTH`：指定单行数据的最大长度，单位字节，默认值为 2MB。用于并行解析单个 CSV 文件的界定阶段，不影响数据读取正确性。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>对于 V4.4.2 版本，<code>FORMAT</code> 选项从 V4.4.2 BP1 版本开始支持参数：<code>PARALLEL_PARSE_ON_SINGLE_FILE</code>、<code>PARALLEL_PARSE_FILE_SIZE_THRESHOLD</code> 和 <code>MAX_ROW_LENGTH</code>。</p>
+  </main>
+
+  * `BYTEORDERMARK`：可选项，用于设置是否需要检测并跳过 BOM 字符，不指定该属性时不会进行 BOM 字符检测。取值如下：
+
+    * `check`：表示检测并跳过 BOM 字符（推荐用于 UTF-8 with BOM 的文件）。
+    * `nocheck`：表示不进行 BOM 字符检测（适用于无 BOM 字符的 UTF-8 文件）。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>对于 V4.4.2 版本，从 V4.4.2 BP3 版本开始支持 <code>BYTEORDERMARK</code>。</p>
+    </main>
+
+* `TYPE = 'PARQUET'`：指定外部文件的格式为 `PARQUET` 类型。
+
+* `TYPE = 'ORC'`：指定外部文件的格式为 `ORC` 类型。
+
+## 使用说明
+
+* 当外部文件被删除时，外表访问文件列表中的文件将会不存在，这种情况下，外表会忽略不存在的文件。
+* 当外部文件被修改时，外表访问外部文件的最新的数据。当外部文件的修改与外表查询并发时，可能会产生不符合预期的结果，需要避免在查询外表的同时修改外部文件。
+* 当外部目录下有新增文件时，外表仅会访问文件列表中的文件，如果需要将新增文件添加到外表的文件列表中，需要执行更新外表文件操作。
+
+## 示例
+
+### 示例一
+
+1. 准备数据。首先需要设置 `secure_file_priv` 的路径为 `/home/admin/`，将要导入的外表数据所对应的 CSV 文件 `extdata.csv` 放在当前本地连接的 OBServer 节点的 `/home/admin/test` 路径中。
+
+   设置全局安全路径的示例如下。
+
+   ```shell
+   obclient> SET GLOBAL secure_file_priv = "/home/admin/";
+   Query OK, 0 rows affected
+   obclinet> \q
+   Bye
+   ```
+
+   <main id="notice" type='explain'>
+     <h4>说明</h4>
+     <p>由于 <code>secure_file_priv</code> 是 <code>GLOBAL</code> 变量，所以需要执行 <code>\q</code> 退出使之生效。</p>
+   </main>
+
+   CSV 文件中的内容如下：
+
+   ```shell
+   1,'Dave','Smith','dsmith@outlook.com','friend',32
+   2,'Xena','Johnson','xjonson@outlook.com','contact',45
+   3,'Fred','Jackon','fjackson@outlook.com','co-worker',19
+   4,'Alma','Tyler','atyler@outlook.com','friend',53
+   ```
+
+2. 用户租户登录数据库后，创建外表 `contacts`。
+
+   ```shell
+   obclient> CREATE EXTERNAL TABLE contacts (
+       id    INT,
+       firstname  VARCHAR(100),
+       lastname   VARCHAR(100),
+       email      VARCHAR(255),
+       category   CHAR(30),
+       age        NUMBER )
+      LOCATION = '/home/admin/test/'
+      FORMAT = (
+        TYPE = 'CSV'
+        FIELD_DELIMITER = ','
+        FIELD_OPTIONALLY_ENCLOSED_BY =''''
+       )PATTERN ='extdata.csv';
+   ```
+
+3. 查询外表 `contacts` 中的数据。
+
+   ```shell
+   obclient> SELECT * FROM contacts;
+   +------+-----------+----------+----------------------+--------------------------------+------+
+   | ID   | FIRSTNAME | LASTNAME | EMAIL                | CATEGORY                       | AGE  |
+   +------+-----------+----------+----------------------+--------------------------------+------+
+   |    1 | Dave      | Smith    | dsmith@outlook.com   | friend                         |   32 |
+   |    2 | Xena      | Johnson  | xjonson@outlook.com  | contact                        |   45 |
+   |    3 | Fred      | Jackon   | fjackson@outlook.com | co-worker                      |   19 |
+   |    4 | Alma      | Tyler    | atyler@outlook.com   | friend                         |   53 |
+   +------+-----------+----------+----------------------+--------------------------------+------+
+   4 rows in set
+   ```
+
+4. 创建一个 `FORMAT` 选项中使用 `COMPRESSION`、`PARALLEL_PARSE_ON_SINGLE_FILE`、`PARALLEL_PARSE_FILE_SIZE_THRESHOLD` 和 `MAX_ROW_LENGTH` 参数的外表 `test_tbl1_csv`。
+
+    ```shell
+    obclient> CREATE EXTERNAL TABLE test_tbl1_csv (
+        col1 INT,
+        col2 VARCHAR(100),
+        col3 VARCHAR(100),
+        col4 VARCHAR(255),
+        col5 CHAR(30),
+        col6 NUMBER)
+        LOCATION = '/home/admin/test/'
+        FORMAT = (
+            TYPE = 'CSV'
+            FIELD_DELIMITER = ','
+            FIELD_OPTIONALLY_ENCLOSED_BY = ''''
+            COMPRESSION = SNAPPY_BLOCK
+            PARALLEL_PARSE_ON_SINGLE_FILE = TRUE
+            PARALLEL_PARSE_FILE_SIZE_THRESHOLD = 1024
+            MAX_ROW_LENGTH = 1024)
+        PATTERN = 'extdata.csv';
+    ```
+
+### 示例二
+
+1. 假设 HDFS 上的某个文件路径下，存在 csv 文件，文件内容如下：
+
+   ```sql
+   $hdfs dfs -cat /user/test_tbl1.csv
+   1,'Emma','2021-09-01'
+   2,'William','2021-09-02'
+   3,'Olivia','2021-09-03'
+   ```
+
+2. 创建 HDFS 外表。
+
+   **目标 hdfs 环境若未打开 kerberos 认证**
+
+   ```shell
+   CREATE EXTERNAL TABLE test_tbl1_csv_oracle (
+   id INT,
+   name VARCHAR(50),
+   c_date DATE
+   )
+   LOCATION = 'hdfs://${hadoop_namenode_hostname}:${hadoop_namenode_port}/user'
+   FORMAT = (
+       TYPE = 'CSV',
+       FIELD_DELIMITER = ',',
+       FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+   )
+   PATTERN = 'test_tbl1.csv';
+   ```
+
+    <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>其中 <code>hadoop_namenode_hostname</code> 和 <code>hadoop_namenode_port</code> 指的是 HDFS 节点的主机名和端口，需要替换为实际值。</p>
+    </main>
+
+   **目标 hdfs 环境若打开 kerberos 认证**
+
+    <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>带 kerberos 认证配置的情况下，需要对应的 OBServer 节点部署配置相关 keytab（用户认证密钥文件） 和 krb5conf 文件。</p>
+    </main>
+
+   ```shell
+   CREATE EXTERNAL TABLE partsupp  ( PS_PARTKEY     INTEGER ,
+   PS_SUPPKEY     INTEGER ,
+   PS_AVAILQTY    INTEGER ,
+   PS_SUPPLYCOST  DECIMAL(15,2)  ,
+   PS_COMMENT     VARCHAR(199)
+   ) LOCATION = 'hdfs://localhost:8020/tpch_csv?principal=principal_str&keytab=/path/to/keytab&krb5conf=/path/to/krb5conf_file&configs=xxx=xxx#xxx=xxx'
+   FORMAT = (
+     TYPE = 'CSV'
+     FIELD_DELIMITER = '|'
+     FIELD_OPTIONALLY_ENCLOSED_BY ='"'
+     )
+   PATTERN = 'partsupp.tbl';
+   ```
+
+3. 查询外表数据。
+
+   ```shell
+   select * from test_tbl1_csv_oracle;
+   ```
+
+   返回结果如下：
+
+   ```sql
+   +----+----------+------------+
+   | id | name     | c_date     |
+   +----+----------+------------+
+   |  1 | Emma     | 2021-09-01 |
+   |  2 | William  | 2021-09-02 |
+   |  3 | Olivia   | 2021-09-03 |
+   +----+----------+------------+
+   3 rows in set
+   ```
+
+### 示例三
+
+1. 假设有 ORC 格式的数据文件 `data.orc` 已存放在 `/home/admin/orc_test/` 目录下。
+
+2. 创建 ORC 格式外表。
+
+   ```shell
+   obclient> CREATE EXTERNAL TABLE ext_table_orc (
+       id   NUMBER,
+       name VARCHAR2(50)
+   )
+   LOCATION = '/home/admin/orc_test/'
+   FORMAT = (
+     TYPE = 'ORC'
+   )
+   PATTERN = 'data.orc';
+   ```
+
+   <main id="notice" type="explain">
+   <h4>说明</h4>
+   <p>通过指定 <code>FORMAT = ( TYPE = 'ORC' )</code>，可让外表直接读取 ORC 格式的数据文件。请确保外部数据文件的实际格式与声明一致，否则会导致解析失败。</p>
+   </main>
+
+### 示例四
+
+1. 假设 HDFS 上的某个文件路径下，存在 csv 文件，文件内容如下：
+
+    ```shell
+    $hdfs dfs -cat /hadoop_ha_test/test_simple.csv
+    1,lili,19
+    2,alic,20
+    3,solvi,21
+    ```
+
+2. 启动 Observer 相关 JNI 配置项。
+
+    JNI 配置具体信息参见 [部署 OceanBase 数据库 JAVA SDK 环境](../../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md)。
+
+3. 创建 HDFS 外表
+
+    ```shell
+    obclient> CREATE EXTERNAL TABLE test_ha (
+        id INT,
+        r_name VARCHAR(100),
+        age INT
+        )
+        LOCATION = 'hdfs://mycluster/hadoop_ha_test?principal=ha/xxx@xxx.com&keytab=/path/to/ha.keytab&krb5conf=/path/to/krb5conf_file&configs=dfs.data.transfer.protection=integrity#dfs.nameservices=mycluster#dfs.ha.namenodes.mycluster=nn1,nn2#dfs.namenode.rpc-address.mycluster.nn1=localhost1:port#dfs.namenode.rpc-address.mycluster.nn2=localhost2:port#dfs.ha.automatic-failover.enabled.mycluster=true#dfs.client.failover.proxy.provider.mycluster=org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider'
+        FORMAT = (
+            TYPE = 'CSV'
+            FIELD_DELIMITER = ','
+            FIELD_OPTIONALLY_ENCLOSED_BY = '\''
+            )
+        PATTERN = 'test_simple.csv';
+    ```
+
+4. 查询外表数据。
+
+    ```shell
+    obclient> SELECT * FROM test_ha;
+    ```
+
+    返回结果如下：
+
+    ```sql
+    +----+--------+-------+
+    | ID | R_NAME | AGE   |
+    +----+--------+-------+
+    |  1 | lili   |    19 |
+    |  2 | alic   |    20 |
+    |  3 | solvi  |    21 |
+    +----+--------+-------+
+    3 rows in set
+    ```
+
+## 相关文档
+
+[创建外表](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/100.manage-tables-of-oracle-mode/1000.manage-external-tables-of-oracle-mode/200.create-a-external-table-of-oracle-mode.md)
+
+[外部文件管理](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/100.manage-tables-of-oracle-mode/1000.manage-external-tables-of-oracle-mode/300.manage-external-files-of-oracle-mode.md)
+
+[更新外表文件列表](../100.ddl-of-oracle-mode/100.alter-external-table-of-oracle-mode.md)

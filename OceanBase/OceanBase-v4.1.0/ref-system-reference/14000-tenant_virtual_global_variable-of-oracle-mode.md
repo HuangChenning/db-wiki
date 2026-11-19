@@ -1,0 +1,33 @@
+---
+title: TENANT_VIRTUAL_GLOBAL_VARIABLE
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699116.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# TENANT_VIRTUAL_GLOBAL_VARIABLE
+
+TENANT_VIRTUAL_GLOBAL_VARIABLE
+===================================================
+
+功能
+-----------
+
+展示全局变量信息。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+字段说明
+-------------
+
+|   **字段名称**    |     **类型**      | **是否可以为 NULL** | **描述** |
+|---------------|-----------------|----------------|--------|
+| VARIABLE_NAME | VARCHAR2(128)   | NO             | 变量名    |
+| VALUE         | VARCHAR2(65536) | YES            | 变量值    |

@@ -1,0 +1,51 @@
+---
+title: "创建数据库"
+book: "数据库对象管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000003150279.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-database-object-management
+---
+
+# 创建数据库
+
+本节主要介绍 MySQL 模式中数据库的创建语句及操作方法。
+
+## 前提条件
+
+请确认当前用户拥有 `CREATE` 权限。查看当前拥有的权限的操作请参见 [查看用户权限](../manage/400-view-user-permissions-of-mysql-mode.md)。如果您没有 `CREATE` 权限，请联系管理员为您添加，为用户添加权限的相关操作请参见 [直接授予权限](../manage/200-authority-of-mysql-mode.md)。
+
+## 操作步骤
+
+1.  用户登录集群的 MySQL 租户。
+
+2.  使用 `CREATE DATABASE` 语句创建数据库。
+
+    示例：
+
+    - 创建数据库 `test2`，并指定字符集为 `UTF8`。
+
+      ``` sql
+      obclient> CREATE DATABASE test2 DEFAULT CHARACTER SET UTF8;
+      Query OK, 1 row affected
+      ```
+
+    - 创建读写属性的数据库 `test3`。
+
+      ``` sql
+      obclient> CREATE DATABASE test3 READ WRITE;
+      Query OK, 1 row affected
+      ```
+
+    - 创建只读属性的数据库 `test4`。
+
+      ``` sql
+      obclient> CREATE DATABASE test4 READ ONLY;
+      Query OK, 1 row affected
+      ```
+
+## 相关文档
+
+更多 `CREATE DATABASE` 语句相关的语法说明请参见 [CREATE DATABASE](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503334)。

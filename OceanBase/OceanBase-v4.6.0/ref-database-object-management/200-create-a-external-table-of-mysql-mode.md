@@ -1,0 +1,252 @@
+---
+title: "创建和查询外表"
+book: "数据库对象管理"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685882.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 创建和查询外表
+
+本文介绍在 MySQL 模式下**创建并查询文件外表**的操作步骤。完整语法、`LOCATION`、`FORMAT`、`PROPERTIES` 等参数说明，参见 [CREATE EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2200.create-external-table-of-mysql-mode.md) 。
+
+若只需临时读取外部文件、无需创建表对象，请使用 [FILES 表函数](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/400.functions-of-mysql-mode/760.table-functions-of-mysql-mode/200.files-table-function-of-mysql-mode.md) 。
+
+## 前提条件
+
+* 已部署集群并创建 MySQL 模式租户，且已 [连接数据库](../../../../../300.develop/100.application-development-of-mysql-mode/100.connect-to-oceanbase-database-of-mysql-mode/100.connection-methods-overview-of-mysql-mode.md)。
+* 已 [创建数据库](../../../../../300.develop/100.application-development-of-mysql-mode/300.database-object-planning-of-mysql-mode/100.create-database-of-mysql-mode-in-develop.md)。
+* 当前用户具备 `CREATE` 权限，参见 [查看用户权限](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/400.view-user-permissions-of-mysql-mode.md)。
+* **本地文件**：已将数据放在 OBServer 可访问路径，且 [secure_file_priv](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/12000.secure_file_priv-global.md) 已配置（修改该变量通常需本地 Unix Socket 连接）。
+* **HDFS / ODPS**：已 [部署 OceanBase 数据库 JAVA SDK 环境](../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md) 完成配置。
+
+## 示例
+
+以下示例分两类：**本地文件外表**（通过 `LOCATION` + `FORMAT` 访问 OBServer 上的 CSV）与 **ODPS 外表**（通过 `PROPERTIES` 访问 MaxCompute 表，需 JAVA SDK）。两类外表创建成功后，均可使用 `SHOW CREATE TABLE` 查看定义，并用 `SELECT` 查询数据。
+
+### 创建本地 CSV 文件外表
+
+假设本地机器的 `/home/admin/oceanbase/` 下存放了一个 `data.csv` 文件，文件中的内容如下。
+
+```shell
+1,"lin",98
+2,"hei",90
+3,"ali",95
+```
+
+1. 在 OBServer 节点上，租户管理员通过本地 Unix Socket 连接集群的 MySQL 租户。
+
+   连接示例如下：
+
+   ```shell
+   obclient -S /home/admin/oceanbase/run/sql.sock -uroot@sys -p********
+   ```
+
+   通过本地 Unix Socket 连接 OceanBase 数据库的具体操作及说明，请参见 [secure_file_priv](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/12000.secure_file_priv-global.md)。
+
+2. 配置数据库可以访问的路径 `/home/admin/oceanbase/`。
+
+    ```sql
+    SET GLOBAL secure_file_priv = "/home/admin/oceanbase/";
+    ```
+
+    命令执行成功后，需要重启会话后，修改才能生效。
+
+3. 重新连接数据库后，创建外表 `ext_t3`。
+
+    ```sql
+    CREATE EXTERNAL TABLE ext_t3(id int, name char(10),score int)
+    LOCATION = '/home/admin/oceanbase/'
+    FORMAT = (
+    TYPE = 'CSV'
+    FIELD_DELIMITER = ','
+    FIELD_OPTIONALLY_ENCLOSED_BY ='"'
+    )
+    PATTERN = 'data.csv';
+    ```
+
+外表创建成功后，可以像普通表一样使用 `SHOW CREATE TABLE` 语句来查看表的定义。
+
+```sql
+SHOW CREATE TABLE ext_t3;
+```
+
+查询结果如下：
+
+```shell
++--------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table  | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
++--------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ext_t3 | CREATE EXTERNAL TABLE `ext_t3` (
+  `id` int(11) GENERATED ALWAYS AS (metadata$filecol1),
+  `name` char(10) GENERATED ALWAYS AS (metadata$filecol2),
+  `score` int(11) GENERATED ALWAYS AS (metadata$filecol3)
+)
+LOCATION='file:///home/admin/oceanbase/'
+PATTERN='data.csv'
+FORMAT (
+  TYPE = 'CSV',
+  FIELD_DELIMITER = ',',
+  FIELD_OPTIONALLY_ENCLOSED_BY = '"',
+  ENCODING = 'utf8mb4'
+)DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
++--------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set
+```
+
+也可以像普通表一样进行访问。查询外表时，系统通过外表的驱动层直接读取外部文件，并按照文件格式进行解析，转换成 OceanBase 数据库内部的数据类型后返回数据行。查询刚刚创建的外表 `ext_t3` 的示例如下。
+
+```sql
+SELECT * FROM ext_t3;
+```
+
+查询结果如下：
+
+```shell
++----+------+-------+
+| id | name | score |
++----+------+-------+
+|  1 | lin  |    98 |
+|  2 | hei  |    90 |
+|  3 | ali  |    95 |
++----+------+-------+
+3 rows in set
+```
+
+此外，外表也可以与普通表进行组合查询操作。假设当前数据库中有一个普通表 `info`，表中的数据如下所示：
+
+```shell
++------+--------+------+
+| name | sex    | age  |
++------+--------+------+
+| lin  | male   |    8 |
+| hei  | male   |    9 |
+| li   | female |    8 |
++------+--------+------+
+3 rows in set
+```
+
+将外部表 `ext_t3` 与普通表 `info` 组合查询的示例如下。
+
+```sql
+SELECT info.* FROM info, ext_t3 WHERE info.name = ext_t3.name AND ext_t3.score > 90;
+```
+
+查询结果如下：
+
+```shell
++------+--------+------+
+| name | sex    | age  |
++------+--------+------+
+| lin  | male   |    8 |
+| li   | female |    8 |
++------+--------+------+
+2 rows in set
+```
+
+更多查询操作，请参见 [读取数据](../../../../../300.develop/100.application-development-of-mysql-mode/500.read-data-of-mysql-mode/100.single-table-query-of-mysql-mode.md)。
+
+### 创建 ODPS JAVA SDK 外表
+
+本示例在 MaxCompute 公开数据集 `bigdata_public_dataset` 的 Schema `tpch_10g` 下，映射 TPC-H 表 `lineitem`（表结构与样例数据说明参见 [OceanBase 查询与读写 MaxCompute（ODPS）数据实战教程](../../../../../620.obap/1000.ap-tutorials/1200.odps-external-table-query.md)）。创建 ODPS 外表前，须已在所有 OBServer 节点 [部署 OceanBase 数据库 JAVA SDK 环境](../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md)，并准备好具备 MaxCompute 读权限的 `ACCESSID` / `ACCESSKEY`。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>未显式指定 <code>API_MODE</code> 时默认使用 <code>tunnel_api</code>，适用于公网或 OB 与 MaxCompute 不在同一 VPC 的场景。若 OB 与 MaxCompute 同地域 VPC 且已开通 Storage API，可设置 <code>API_MODE = 'storage_api'</code> 与 <code>SPLIT = 'byte'</code> 以提升吞吐；参数说明参见 <a href="../../../../../620.obap/400.data-lake/200.data-lake-integration/300.odps/200.odps-external-table.md">ODPS 外部表</a> 与 <a href="../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2200.create-external-table-of-mysql-mode.md">CREATE EXTERNAL TABLE</a> 中的 <code>properties_type_options</code>。</p>
+</main>
+
+1. 使用具备 `CREATE` 权限的用户连接 MySQL 模式租户，并切换到目标数据库（示例库名为 `test`）。
+
+   ```sql
+   USE test;
+   ```
+
+2. 创建 ODPS 外表 `ext_lineitem`，列定义须与 MaxCompute 源表一致。
+
+   ```sql
+   CREATE EXTERNAL TABLE ext_lineitem (
+       l_orderkey      BIGINT,
+       l_partkey       BIGINT,
+       l_suppkey       BIGINT,
+       l_linenumber    BIGINT,
+       l_quantity      DECIMAL(15,2),
+       l_extendedprice DECIMAL(15,2),
+       l_discount      DECIMAL(15,2),
+       l_tax           DECIMAL(15,2),
+       l_returnflag    CHAR(1),
+       l_linestatus    CHAR(1),
+       l_shipdate      DATE,
+       l_commitdate    DATE,
+       l_receiptdate   DATE,
+       l_shipinstruct  CHAR(25),
+       l_shipmode      CHAR(10),
+       l_comment       VARCHAR(44)
+   )
+   PROPERTIES = (
+       TYPE = 'ODPS',
+       ACCESSID = '***********',
+       ACCESSKEY = '***********',
+       ENDPOINT = 'https://service.cn-hangzhou.maxcompute.aliyun.com/api',
+       PROJECT_NAME = 'bigdata_public_dataset',
+       SCHEMA_NAME = 'tpch_10g',
+       TABLE_NAME = 'lineitem',
+       QUOTA_NAME = '',
+       COMPRESSION_CODE = 'zstd'
+   );
+   ```
+
+   若使用 Storage API（VPC 内、已开通 MaxCompute Storage API 权限），可在 `PROPERTIES` 中增加 `API_MODE = 'storage_api'` 与 `SPLIT = 'byte'`，并将 `ENDPOINT` 换为同地域 VPC 地址（例如 `https://service.cn-hangzhou-vpc.maxcompute.aliyun-inc.com/api`）。
+
+3. 查看外表定义，确认 `PROPERTIES` 与列映射已生效。
+
+   ```sql
+   SHOW CREATE TABLE ext_lineitem;
+   ```
+
+4. 查询 ODPS 外表。系统通过 JAVA SDK 访问 MaxCompute，将结果按外表列定义返回。
+
+   ```sql
+   SELECT * FROM ext_lineitem LIMIT 5;
+   ```
+
+   查询结果示例如下（与 MaxCompute 源表前 5 行一致）：
+
+   ```shell
+   +------------+-----------+-----------+--------------+------------+------------------+------------+-------+--------------+--------------+------------+------------+-------------+--------------------+------------+----------------------------------+
+   | l_orderkey | l_partkey | l_suppkey | l_linenumber | l_quantity | l_extendedprice  | l_discount | l_tax | l_returnflag | l_linestatus | l_shipdate | l_commitdate | l_receiptdate | l_shipinstruct     | l_shipmode | l_comment                        |
+   +------------+-----------+-----------+--------------+------------+------------------+------------+-------+--------------+--------------+------------+------------+-------------+--------------------+------------+----------------------------------+
+   |          1 |   1551894 |     76910 |            1 |      17.00 |         33078.94 |       0.04 |  0.02 | N            | O            | 1996-03-13 | 1996-02-12 | 1996-03-22  | DELIVER IN PERSON  | TRUCK      | egular courts above the          |
+   |          1 |    673091 |     73092 |            2 |      36.00 |         38306.16 |       0.09 |  0.06 | N            | O            | 1996-04-12 | 1996-02-28 | 1996-04-20  | TAKE BACK RETURN   | MAIL       | ly final dependencies: slyly bold|
+   |          1 |    636998 |     36999 |            3 |       8.00 |         15479.68 |       0.10 |  0.02 | N            | O            | 1996-01-29 | 1996-03-05 | 1996-01-31  | TAKE BACK RETURN   | REG AIR    | riously. regular, express dep    |
+   |          1 |     21315 |     46316 |            4 |      28.00 |         34616.68 |       0.09 |  0.06 | N            | O            | 1996-04-21 | 1996-03-30 | 1996-05-16  | NONE               | AIR        | lites. fluffily even de          |
+   |          1 |    240267 |     15274 |            5 |      24.00 |         28974.00 |       0.10 |  0.04 | N            | O            | 1996-03-30 | 1996-03-14 | 1996-04-01  | NONE               | FOB        |  pending foxes. slyly re         |
+   +------------+-----------+-----------+--------------+------------+------------------+------------+-------+--------------+--------------+------------+------------+-------------+--------------------+------------+----------------------------------+
+   5 rows in set
+   ```
+
+5. 将 ODPS 外表与本地普通表组合查询（与上一示例中 `ext_t3` 与 `info` 的 JOIN 用法相同）。假设库中已有普通表 `orders_summary`，记录需要重点分析的订单键，示例如下。
+
+   ```sql
+   SELECT o.order_id, l.l_quantity, l.l_extendedprice
+   FROM orders_summary o
+   JOIN ext_lineitem l ON o.order_id = l.l_orderkey
+   WHERE l.l_shipdate >= '1996-03-01'
+   LIMIT 10;
+   ```
+
+## 后续操作
+
+* **新增外部文件后**：执行 `ALTER EXTERNAL TABLE table_name REFRESH;`，或参见[管理外部文件](300.manage-external-files-of-mysql-mode.md)。
+* **按目录管理分区**：参见 [创建外表分区](210.create-table-partition-of-mysql-mode.md)。
+* **列类型**：参见 [数据类型映射](400.data-type-mapping-of-mysql-mode.md)。
+* **删除外表**：使用 `DROP TABLE`，同普通表，参见 [删除表](../800.delete-a-table-of-mysql-mode.md)。
+
+## 相关文档
+
+* [关于外表与外部文件](100.about-external-tables-of-mysql-mode.md)
+* [CREATE EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2200.create-external-table-of-mysql-mode.md)
+* [FILES 表函数](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/400.functions-of-mysql-mode/760.table-functions-of-mysql-mode/200.files-table-function-of-mysql-mode.md)
+* [管理外部文件](300.manage-external-files-of-mysql-mode.md)

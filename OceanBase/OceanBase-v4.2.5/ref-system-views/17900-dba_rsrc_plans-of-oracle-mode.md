@@ -1,0 +1,63 @@
+---
+title: DBA_RSRC_PLANS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500787.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_RSRC_PLANS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V3.1.2 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`DBA_RSRC_PLANS` 视图用于记录系统定义的所有资源管理计划。
+
+## 字段说明
+
+|           字段名称            |       类型       | 是否可以为 NULL |                         描述                         |
+|---------------------------|----------------|------------|----------------------------------------------------|
+| PLAN_ID                   | NUMBER         | NO         | 资源计划的 ID。                                          |
+| PLAN                      | VARCHAR2(128)  | NO         | 资源计划名。                                             |
+| NUM_PLAN_DIRECTIVES       | NUMBER         | NO         | 仅用于兼容，目前值固定为 `NULL`。 |
+| CPU_METHOD                | VARCHAR2(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`。                               |
+| MGMT_METHOD               | VARCHAR2(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`。                               |
+| ACTIVE_SESS_POOL_MTH      | VARCHAR2(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`。                               |
+| PARALLEL_DEGREE_LIMIT_MTH | VARCHAR2(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`。                               |
+| QUEUING_MTH               | VARCHAR2(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`。                               |
+| SUB_PLAN                  | VARCHAR2(3)    | NO         | 仅用于兼容，目前值固定为 `NULL`。                               |
+| COMMENTS                  | VARCHAR2(2000) | YES        | 资源计划的备注信息。                                         |
+| STATUS                    | VARCHAR2(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`。                               |
+| MANDATORY                 | VARCHAR2(3)    | NO         | 仅用于兼容，目前值固定为 `NULL`。                               |
+
+## 查询示例
+
+用户租户查询系统定义的所有资源管理计划。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_RSRC_PLANS;
+```
+
+查询结果如下：
+
+```shell
++---------+---------+---------------------+------------+-------------+----------------------+---------------------------+-------------+----------+----------+--------+-----------+
+| PLAN_ID | PLAN    | NUM_PLAN_DIRECTIVES | CPU_METHOD | MGMT_METHOD | ACTIVE_SESS_POOL_MTH | PARALLEL_DEGREE_LIMIT_MTH | QUEUING_MTH | SUB_PLAN | COMMENTS | STATUS | MANDATORY |
++---------+---------+---------------------+------------+-------------+----------------------+---------------------------+-------------+----------+----------+--------+-----------+
+|    NULL | daytime |                NULL | NULL       | NULL        | NULL                 | NULL                      | NULL        | NULL     | TPFirst  | NULL   | NULL      |
++---------+---------+---------------------+------------+-------------+----------------------+---------------------------+-------------+----------+----------+--------+-----------+
+1 row in set
+```
+
+## 相关视图
+
+* [DBA_RSRC_PLAN_DIRECTIVES](17800.dba_rsrc_plan_directives-of-oracle-mode.md)
+
+* [V$RSRC_PLAN](../300.performance-view-of-oracle-mode/35200.v-rsrc_plan-of-oracle-mode.md)

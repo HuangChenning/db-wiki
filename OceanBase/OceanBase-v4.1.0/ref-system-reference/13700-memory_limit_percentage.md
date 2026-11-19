@@ -1,0 +1,22 @@
+---
+title: memory_limit_percentage
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699328.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# memory_limit_percentage
+
+memory_limit_percentage 用于设置系统总可用内存大小占总内存大小的百分比。
+
+
+|      **属性**      |   **描述**   |
+|------------------|------------|
+| 参数类型             | 整型         |
+| 默认值              | 80         |
+| 取值范围             | \[10, 90\] |
+| 是否重启 OBServer 节点生效 | 否          |

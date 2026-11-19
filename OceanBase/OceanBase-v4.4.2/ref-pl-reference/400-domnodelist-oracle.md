@@ -1,0 +1,79 @@
+---
+title: DOMNODELIST
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354585.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DOMNODELIST
+
+`DOMNODELIST` 是一个有序节点集合的句柄，由 `GETCHILDNODES`、`GETELEMENTSBYTAGNAME` 等方法返回。可使用 `GETLENGTH` 获取节点数量，再用 `ITEM` 按下标访问各节点。该句柄为不透明类型，表示已解析 XML 文档的引用对象，仅用于传入/传出 DOM 相关 API，不可直接访问其内部结构。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该类型从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+nodelist DBMS_XMLDOM.DOMNODELIST;
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| nodelist | 节点列表句柄。 |
+
+## 返回值
+
+节点列表句柄。
+
+## 使用说明
+
+`DOMNODELIST` 表示一组按序排列的 `DOMNODE` 引用。遍历时应先调用 [GETLENGTH](../19500.dbms-xmldom-oracle/800.getlength-xmldom-oracle.md) 获取长度，再通过 [ITEM](../19500.dbms-xmldom-oracle/1000.item-oracle.md) 按下标访问，以避免越界。
+
+## 相关子程序
+
+| **子程序** | **说明** |
+|------------|----------|
+| [GETCHILDNODES](../19500.dbms-xmldom-oracle/600.getchildnodes-oracle.md) | 返回子节点列表。该方法需要传入 `DOMNODE` 类型的节点句柄作为输入参数。|
+| [GETELEMENTSBYTAGNAME](../19500.dbms-xmldom-oracle/700.getelementbytagname-oracle.md) | 返回匹配元素列表。该方法需要传入 `DOMNODE` 类型的节点句柄作为输入参数。|
+| [GETLENGTH](../19500.dbms-xmldom-oracle/800.getlength-xmldom-oracle.md) | 返回列表长度。该方法需要传入 `DOMNODELIST` 类型的节点列表句柄作为输入参数。|
+| [ITEM](../19500.dbms-xmldom-oracle/1000.item-oracle.md) | 按下标取节点。该方法需要传入 `DOMNODELIST` 类型的节点列表句柄和下标作为输入参数。|
+
+## 示例
+
+该示例通过 `DBMS_XMLPARSER` 系统包解析 XML 文档并获取 `DOMDOCUMENT` 句柄，然后通过 `DBMS_XMLDOM` 系统包获取 XML 文档的 `DOMNODELIST` 句柄：
+
+```sql
+-- 声明解析器和文档句柄变量
+DECLARE
+  p   DBMS_XMLPARSER.PARSER;
+  doc DBMS_XMLDOM.DOMDOCUMENT;
+  nl  DBMS_XMLDOM.DOMNODELIST;
+BEGIN
+  -- 创建解析器实例
+  p := DBMS_XMLPARSER.NEWPARSER;
+  -- 在解析器上解析 XML 文档
+  DBMS_XMLPARSER.PARSECLOB(p, '<root><x/><x/></root>');
+  -- 获取 XML 文档的 DOMDOCUMENT 句柄
+  doc := DBMS_XMLPARSER.GETDOCUMENT(p);
+  -- 释放解析器实例
+  DBMS_XMLPARSER.FREEPARSER(p);
+  -- 获取 XML 文档中所有名为 "x" 的元素列表
+  nl := DBMS_XMLDOM.GETELEMENTSBYTAGNAME(doc, 'x');
+  -- 释放 XML 文档资源
+  DBMS_XMLDOM.FREEDOCUMENT(doc);
+END;
+/

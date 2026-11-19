@@ -1,0 +1,22 @@
+---
+title: sys_bkgd_net_percentage
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702101.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# sys_bkgd_net_percentage
+
+sys_bkgd_net_percentage 用于设置后台系统任务可占用网络带宽百分比。
+
+
+|      **属性**      |   **描述**   |
+|------------------|------------|
+| 参数类型             | 整型         |
+| 默认值              | 60         |
+| 取值范围             | \[0, 100\] |
+| 是否重启 OBServer 节点生效 | 否          |

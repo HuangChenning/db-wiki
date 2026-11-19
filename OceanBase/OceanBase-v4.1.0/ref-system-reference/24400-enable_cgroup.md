@@ -1,0 +1,26 @@
+---
+title: enable_cgroup
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702131.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# enable_cgroup
+
+`enable_cgroup` 用于控制 OBServer 节点是否开启 Cgroup 功能。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V3.2.4 版本开始引入。</p>
+</main>
+
+| **属性** | **描述** |
+| ------ | ------ |
+| 参数类型 | 布尔类型 |
+| 默认值 | True |
+| 取值范围 |<ul><li>True：若检测到系统已经挂载好 cgroup 目录，就开启 Cgroup 功能；若检测不到，就报 warning。</li><li>False：不开启 Cgroup 功能。</li></ul>|
+| 是否重启 OBServer 节点生效 | 是 |

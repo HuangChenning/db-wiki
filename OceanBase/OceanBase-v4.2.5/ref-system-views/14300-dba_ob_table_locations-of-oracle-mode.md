@@ -1,0 +1,83 @@
+---
+title: DBA_OB_TABLE_LOCATIONS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500752.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_TABLE_LOCATIONS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示表或者分区所在的位置，包括：系统表、用户表、索引表等。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| DATABASE_NAME | VARCHAR2(128) | NO | Database 名 |
+| TABLE_NAME | VARCHAR2(256) | NO | 表名 |
+| TABLE_ID | NUMBER(38) | NO | 表 ID |
+| TABLE_TYPE | VARCHAR2(13) | NO | 表类型：<ul><li>USER TABLE：用户表 </li><li>SYSTEM TABLE：系统表，系统自建的表 </li><li>INDEX：索引表 </li><li>LOB AUX TABLE：LOB 辅助表，系统自建的表，用于辅助实现 LOB 列</li></ul> |
+| PARTITION_NAME | VARCHAR2(64) | NO | 一级分区名，非分区表默认为 NULL |
+| SUBPARTITION_NAME | VARCHAR2(64) | NO | 二级分区名，不存在二级分区则为 NULL |
+| INDEX_NAME | VARCHAR2(1024) | NO | 如果是索引表，展示索引表名，否则展示为 NULL |
+| DATA_TABLE_ID | NUMBER | NO | 如果是索引表或者 LOB 辅助表，展示其所属的主表的 ID，否则展示为 NULL |
+| TABLET_ID | NUMBER(38) | NO | TABLET ID |
+| LS_ID | NUMBER | NO | 对象所在的日志流 |
+| ZONE | VARCHAR2(128) | NO | 副本所在的 ZONE  |
+| SVR_IP | VARCHAR2(46) | NO | 副本位置的 IP 信息 |
+| SVR_PORT | NUMBER | NO | 副本位置的 PORT 信息 |
+| ROLE | VARCHAR2(8) | NO | 副本角色 |
+| REPLICA_TYPE | VARCHAR2(18) | NO | 日志流类型：<ul><li>`FULL`：全功能型</li> <li>READONLY：只读型</li></ul> |
+| DUPLICATE_SCOPE | VARCHAR2(7) | NO | 表明这个表是否为复制表，取值为：<ul><li>`CLUSTER`：复制表  </li><li>`NONE`：普通表 </li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入。</p></main>  |
+| OBJECT_ID | NUMBER(38) | NO | 分区对应的对象 ID<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入。</p></main> |
+| TABLEGROUP_NAME | VARCHAR2(128) | NO | 表对应 Table Group 的名称<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入。</p></main> |
+| TABLEGROUP_ID | NUMBER(38) | NO | 表对应 Table Group 的 ID<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入。</p></main> |
+| SHARDING | VARCHAR2(10) | NO | 表对应 Table Group 的 Sharding 属性（均衡模式）<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入</p></main> |
+| INDEX_TYPE | varchar(6) | YES | 展示索引表索引的 `GLOBAL`/`LOCAL` 属性信息，有以下三种取值：<ul><li>`NULL`：表示非索引表。</li><li>`GLOBAL`：表示全局索引，包含 `INDEX_TYPE_NORMAL_GLOBAL`、INDEX_TYPE_UNIQUE_GLOBAL、`INDEX_TYPE_SPATIAL_GLOBAL`。</li><li>`LOCAL`：局部索引，包含 `INDEX_TYPE_NORMAL_LOCAL`、`INDEX_TYPE_UNIQUE_LOCAL`、`INDEX_TYPE_PRIMARY`、`INDEX_TYPE_DOMAIN_CTXCAT`、`INDEX_TYPE_NORMAL_GLOBAL_LOCAL_STORAGE`、`INDEX_TYPE_UNIQUE_GLOBAL_LOCAL_STORAGE`、`INDEX_TYPE_SPATIAL_LOCAL`、`INDEX_TYPE_SPATIAL_GLOBAL_LOCAL_STORAGE`。</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>对于 OceanBase 数据库 V4.2.5 版本，该字段从 V4.2.5 BP2 版本开始引入。</p></main>|
+
+## 查询示例
+
+查看表 `TBL1` 所在的位置。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_OB_TABLE_LOCATIONS WHERE TABLE_NAME='TBL1'\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+    DATABASE_NAME: SYS
+       TABLE_NAME: TBL1
+         TABLE_ID: 500004
+       TABLE_TYPE: USER TABLE
+   PARTITION_NAME: NULL
+SUBPARTITION_NAME: NULL
+       INDEX_NAME: NULL
+    DATA_TABLE_ID: NULL
+        TABLET_ID: 200002
+            LS_ID: 1001
+             ZONE: zone1
+           SVR_IP: 172.xx.xxx.xxx
+         SVR_PORT: 2882
+             ROLE: LEADER
+     REPLICA_TYPE: FULL
+  DUPLICATE_SCOPE: NONE
+        OBJECT_ID: 500004
+  TABLEGROUP_NAME: NULL
+    TABLEGROUP_ID: NULL
+         SHARDING: NULL
+       INDEX_TYPE: NULL
+1 row in set
+```

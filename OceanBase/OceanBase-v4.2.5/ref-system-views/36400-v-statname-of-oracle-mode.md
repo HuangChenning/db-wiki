@@ -1,0 +1,66 @@
+---
+title: "V$STATNAME"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500693.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$STATNAME
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.2.2 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前租户的所有统计项的名称。
+
+## 字段说明
+
+| **字段名称** | **类型**  | **是否可以为 NULL** | **描述**                               |
+|--------------|-------------|---------------------|----------------------------------------|
+| CON_ID       | NUMBER       | NO   | 租户 ID |
+| STAT_ID      | NUMBER       | NO   | 统计项 ID |
+| STATISTIC#   | NUMBER       | NO   | 统计项序号 |
+| NAME         | VARCHAR2(64) | NO   | 统计项名称 |
+| DISPLAY_NAME | VARCHAR2(64) | NO   | 统计项名称  |
+| CLASS        | NUMBER       | NO   | 统计项类别，一个编号可以表示一种或多种统计项。以下编号可以相加：<ul><li>1： NETWORK</li> <li>2：QUEUE</li> <li>4：TRANS</li> <li>8：SQL</li> <li>16：CACHE</li> <li>32：STORAGE</li> <li>64：RESOURCE</li> <li>128：DEBUG</li> <li>256：CLOG</li> <li>512：ELECT</li> <li>1024：OBSERVER</li> <li>2048：RS</li> <li>3072：Time Model</li> <li>4096：TABLEAPI</li> <li>8192：WR</li></ul> |
+
+## 查询示例
+
+查看本租户所有统计事件的相关定义，展示前 10 条记录。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.V$STATNAME WHERE ROWNUM = 1;
+```
+
+查询结果如下：
+
+```shell
++--------+---------+------------+---------------+---------------+-------+
+| CON_ID | STAT_ID | STATISTIC# | NAME          | DISPLAY_NAME  | CLASS |
++--------+---------+------------+---------------+---------------+-------+
+|   1004 |   10000 |          0 | rpc packet in | rpc packet in |     1 |
++--------+---------+------------+---------------+---------------+-------+
+1 row in set
+```
+
+## 相关视图或文档
+
+* 查看 Session 级别的统计事件信息：
+
+  * [GV$SESSTAT](4900.gv-sesstat-of-oracle-mode.md)
+  * [V$SESSTAT](35500.v-sesstat-of-oracle-mode.md)
+
+* 查看租户级别的统计事件信息：
+
+  * [GV$SYSSTAT](5700.gv-sysstat-of-oracle-mode.md)
+
+  * [V$SYSSTAT](36500.v-sysstat-of-oracle-mode.md)
+
+* 有关统计事件的详细说明，参见 [常见统计事件说明](../../../700.system-views/510.statistical-event-description.md)。

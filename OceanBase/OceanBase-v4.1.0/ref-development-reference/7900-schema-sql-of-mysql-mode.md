@@ -1,0 +1,16 @@
+---
+title: SCHEMA
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000001967396.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# SCHEMA
+
+## 描述
+
+`SCHEMA` 是 `DATABASE` 的同义词，详细信息请参考 [CREATE DATABASE](../600.sql-statement-of-mysql-mode/2100.create-database-of-mysql-mode.md)、[ALTER DATABASE](../600.sql-statement-of-mysql-mode/1200.alter-database-of-mysql-mode.md)、[DROP DATABASE](../600.sql-statement-of-mysql-mode/3400.drop-database-of-mysql-mode.md)。

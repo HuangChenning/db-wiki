@@ -1,0 +1,60 @@
+---
+title: result_cache_max_size
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285721.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# result_cache_max_size
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.4.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`result_cache_max_size` 用于控制 `result cache` 模块能使用最大内存量。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户都可修改该配置项。
+
+## 属性说明
+
+| **属性**  |    **描述**  |
+|-----------|---------------|
+| 参数类型    |    Capacity          |
+| 默认值      |  64M  |
+| 取值范围    |    [0,+∞)            |
+| 是否可修改 | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。 |
+
+## 配置示例
+
+* 关闭 `result cache`。
+
+  ```shell
+  obclient> ALTER SYSTEM SET result_cache_max_size='0B';
+  ```
+
+* 设置 `result cache` 最多使用 64M。
+
+  ```shell
+  obclient> ALTER SYSTEM SET result_cache_max_size='64M';
+  ```
+
+## 相关文档
+
+[result_cache_max_result](7350.result_cache_max_result.md)
+[ob_result_cache_evict_percentage](7360.ob_result_cache_evict_percentage.md)

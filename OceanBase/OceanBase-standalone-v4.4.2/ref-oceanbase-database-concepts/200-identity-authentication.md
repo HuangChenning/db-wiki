@@ -1,0 +1,92 @@
+---
+title: "身份鉴别和认证"
+book: "系统原理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000006077359.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-oceanbase-database-concepts
+---
+
+# 身份鉴别和认证
+
+身份标识与鉴别功能用于对登录数据库访问数据的用户进行身份验证，确认该用户是否能够与某一个数据库用户进行关联，并根据关联的数据库用户的权限，对该用户在数据库中的数据访问活动进行安全控制。OceanBase 同时支持了 MySQL 和 Oracle 两种模式的身份鉴别功能。
+
+## MySQL 模式
+
+### 身份鉴别
+
+MySQL 中，一个 user 由 user_name 和 host 共同体组成。使用下列语句创建 3 个具有相同用户名的用户的示例如下：
+
+``` sql
+create user 'u1'@'%' identified by '***';
+create user 'u1'@'1.1.1.1' identified by '***';
+create user 'u1'@'2.2.2.2' identified by '***';
+```
+
+用户登录时，OBServer 节点 会根据 user_name、client_ip、password 匹配，来控制用户登录。
+
+### 认证插件
+
+OceanBase 数据库在 MySQL 模式下支持通过认证插件（Authentication Plugin）来控制密码的哈希计算和验证方式，当前支持以下两种认证插件：
+
+- mysql_native_password：传统的密码认证插件，使用 SHA-1 哈希算法。
+- caching_sha2_password：基于 SHA-256 的密码认证插件，具有更高的安全防护等级。该插件从 V4.4.2 BP2 版本开始支持，具备以下特性：
+  - SHA-256 哈希算法：使用更强的 SHA-256 算法替代 SHA-1，并且在生成哈希值时附加随机值。
+  - 双重认证模式：支持快速认证（基于哈希缓存）和完整认证（基于存储层哈希，使用多轮 SHA-256 计算）。
+  - 安全传输：支持 SSL 和 RSA 加密传输用户密码。
+  - 密码缓存：服务端缓存已认证用户的哈希值，提升后续认证性能。
+
+### 密码复杂度
+
+为了防止恶意的密码攻击，OceanBase 数据库用户可以根据需要设置密码的复杂度函数，验证用户登录身份，来提升数据库的安全性。
+
+MySQL 模式下，用户可以通过设置一系列系统变量规定密码复杂度规则，这些配置是租户级的。创建用户或修改用户的密码时会根据系统变量的配置对密码进行校验，未通过校验则会报错。涉及的系统变量如下表所示：
+
+[TABLE]
+
+### 登录失败处理
+
+OceanBase 数据库会锁定多次登录失败的用户，主要目的在于防止恶意的密码攻击，保护数据库，提升数据库的安全性。
+
+MySQL 模式下，使用系统变量 `connection_control_failed_connections_threshold` 来指定用户错误登录尝试的阀值。该变量是租户级的，为整数类型，取值范围为 \[0，2147483647\]，默认值为 0。当用户将参数设置为 0 时表示关闭该功能，即不对用户的错误登录尝试进行处理。当用户错误登录次数超过这个变量定义的值之后，会对账户进行锁定，锁定的时间参考下面的两个参数设置。
+
+- `connection_control_min_connection_delay`：指定了超过错误登录次数阀值之后的第一次错误锁定账户的时长。之后的第二次错误登录的锁定时长为 `min（ connection_control_min_connection_delay+1000，1000* trunc ( connection_control_min_connection_delay/1000,0 )）`。再之后每次错误登录的锁定时间都在原来的基础上再加 1000 毫秒（ 1 秒）。
+
+- `connection_control_max_connection_delay`：指定了错误链接锁定时长的最大值，当时长达到这个最大值之后就不再增长。
+
+## Oracle 模式
+
+### 身份鉴别
+
+Oracle 模式中，用户名称在租户内是唯一的，不同租户的用户可以同名，所以通过`用户名@租户名`的形式在系统全局唯一确定一个用户。
+
+### 认证插件
+
+OceanBase 数据库在 Oracle 模式下从 V4.4.2 BP2 版本开始新增支持密码认证插件机制。用户可以在创建或修改用户时显式指定使用 `caching_sha2_password`（基于 SHA-256）认证插件，具有更高的安全防护等级。
+
+### 密码复杂度
+
+为了防止恶意的密码攻击，OceanBase 数据库用户可以根据需要设置密码的复杂度函数，验证用户登录身份，来提升数据库的安全性。
+
+Oracle 模式下，用户可以使用 Profile 中的 PASSWORD_VERIFY_FUNCTION 属性来验证密码复杂度是否符合要求。用户需要先创建一个用于校验密码复杂度的 PL Function，需要满足如下接口：
+
+``` sql
+FUNCTION verify_function (username     IN VARCHAR2,
+              password     IN VARCHAR2,
+              old_password IN VARCHAR2)
+RETURN BOOLEAN;
+```
+
+创建用户或修改密码时，会调用该校验函数，根据函数执行结果来判断新密码是否符合复杂度要求。
+
+### 登录失败处理
+
+OceanBase 数据库会锁定多次登录失败的用户，主要目的在于防止恶意的密码攻击，保护数据库，提升数据库的安全性。
+
+Oracle 模式利用 User Profile 实现用户锁定功能。User Profile 的密码提供两个参数，来实现连续登录失败后锁定用户：
+
+- failed_login_attempts：连续登录失败的次数。
+
+- password_lock_time：锁定时间，单位为天。

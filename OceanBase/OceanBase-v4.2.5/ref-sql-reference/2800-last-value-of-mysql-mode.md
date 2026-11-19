@@ -1,0 +1,52 @@
+---
+title: LAST_VALUE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504382.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# LAST_VALUE
+
+## 声明
+
+```sql
+LAST_VALUE { (expr) [ {RESPECT | IGNORE} NULLS ] | (expr [ {RESPECT | IGNORE} NULLS ])} OVER (analytic_clause)
+```
+
+## 说明
+
+返回表达式 `expr` 的最后一个值。
+
+## 示例
+
+```sql
+obclient> CREATE TABLE employees(LAST_NAME CHAR(10), SALARY DECIMAL, JOB_ID CHAR(32));
+Query OK, 0 rows affected
+
+obclient> INSERT INTO employees VALUES('JIM', 2000, 'CLEANER');
+Query OK, 1 row affected
+
+obclient> INSERT INTO employees VALUES('MIKE', 12000, 'ENGINEERING');
+Query OK, 1 row affected
+
+obclient> INSERT INTO employees VALUES('LILY', 13000, 'ENGINEERING');
+Query OK, 1 row affected
+
+obclient> INSERT INTO employees VALUES('TOM', 11000, 'ENGINEERING');
+Query OK, 1 row affected
+
+obclient> SELECT LAST_NAME, FIRST_VALUE(SALARY) OVER(PARTITION BY JOB_ID) FIRST_S, LAST_VALUE(SALARY) OVER(PARTITION BY JOB_ID) LAST_S, NTH_VALUE(SALARY,2) OVER(PARTITION BY JOB_ID) 2ND_S FROM employees;
++-----------+---------+--------+-------+
+| LAST_NAME | FIRST_S | LAST_S | 2ND_S |
++-----------+---------+--------+-------+
+| JIM       |    2000 |   2000 |  NULL |
+| MIKE      |   12000 |  11000 | 13000 |
+| LILY      |   12000 |  11000 | 13000 |
+| TOM       |   12000 |  11000 | 13000 |
++-----------+---------+--------+-------+
+4 rows in set
+```

@@ -1,0 +1,30 @@
+---
+title: ob_temp_tablespace_size_percentage
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478687.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# ob_temp_tablespace_size_percentage
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>由于系统架构调整，该变量已不再使用，磁盘数据的写入百分比由 <a href="../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/300.cluster-level-configuration-items/4100.data_disk_usage_limit_percentage.md">data_disk_usage_limit_percentage</a> 配置项控制该变量在 V2.1 版本开始删除。</p>
+</main>，
+
+## 功能描述
+
+`ob_temp_tablespace_size_percentage` 用于租户磁盘中临时表空间大小的百分比限制。
+
+## 属性说明
+
+| **属性**  |    **描述**  |
+|-----------|---------------|
+| 参数类型    | Int                     |
+| 默认值      | 0                       |
+| 取值范围    | [0, 100]              |
+| 生效范围    |  <ul><li>Global</li><li>Session</li></ul>  |

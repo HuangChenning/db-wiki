@@ -1,0 +1,27 @@
+---
+title: nls_currency
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002183511.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# nls_currency
+
+`nls_currency` 用于设置数字格式元素 `L` 的本地货币符号。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该变量不支持修改。</p>
+  </main>
+
+|   属性    |                                                     描述                                                     |
+|---------|------------------------------------------------------------------------------------------------------------|
+| 参数类型    | varchar                 |
+| 默认值     | $                       |
+| 取值范围    | N/A                     |
+| 生效范围    | <li> Global   <li> Session    |
+| 是否参与序列化 | 是，即远程执行、分布式执行场景下，变量会参与序列化。|

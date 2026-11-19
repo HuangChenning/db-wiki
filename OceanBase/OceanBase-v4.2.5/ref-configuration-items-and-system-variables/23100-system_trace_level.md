@@ -1,0 +1,49 @@
+---
+title: system_trace_level
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502308.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# system_trace_level
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于在 V4.x 版本中对应逻辑已改变，对应功能不再使用，该配置项从 V4.2.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`system_trace_level` 用于设置 Trace Log 日志的日志打印级别。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|  **属性**   |      **描述**      |
+|-------------|--------------------|
+| 参数类型     | Int  |
+| 默认值       | 1    |
+| 取值范围     |<ul><li>0：表示 None</li><li>1：表示 Standard</li><li>2：表示 Debug</li></ul>     |
+| 是否可修改   | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。     |
+
+## 配置示例
+
+设置 Trace Log 日志的日志打印级别为 Debug。
+
+```shell
+obclient> ALTER SYSTEM SET system_trace_level=2;
+```

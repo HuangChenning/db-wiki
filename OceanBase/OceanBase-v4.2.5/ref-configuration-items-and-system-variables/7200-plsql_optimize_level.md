@@ -1,0 +1,47 @@
+---
+title: plsql_optimize_level
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502021.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# plsql_optimize_level
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.2.3 BP1 版本开始删除，并调整为系统变量 <a href="../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/10910.plsql_optimize_level-global.md">plsql_optimize_level（Global）</a>。</p>
+</main>
+
+## 功能描述
+
+`plsql_optimize_level` 用于控制 PL 代码编译时的优化等级。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户均可以修改该配置项。
+
+## 属性说明
+
+|        属性        |                 描述                 |
+|------------------|------------------------------------|
+| 参数类型             | Int                               |
+| 默认值               | 1                                  |
+| 取值范围             | <ul><li>0：表示不开启优化</li><li>1：表示开启优化</li></ul>  |
+| 是否重启 OBServer 节点生效 | 否                                  |
+
+## 配置示例
+
+设置 PL 代码编译时开启优化。
+```shell
+obclient> ALTER SYSTEM SET plsql_optimize_level=1;
+```

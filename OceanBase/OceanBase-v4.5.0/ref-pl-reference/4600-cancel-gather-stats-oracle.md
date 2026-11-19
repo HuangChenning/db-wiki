@@ -1,0 +1,39 @@
+---
+title: CANCEL_GATHER_STATS
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480206.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CANCEL_GATHER_STATS
+
+`CANCEL_GATHER_STATS` 用于取消统计信息收集命令。
+
+## 语法
+
+```sql
+DBMS_STATS.cancel_gather_stats (
+      taskid         VARCHAR2
+    );
+```
+
+## 参数解释
+
+|    参数    |        解释         |
+|----------|-----------------------|
+|taskid|表示正在收集任务的 ID。<main id="notice" type='explain'><h4>说明</h4><p>您可以通过查询 <code>GV$OB_OPT_STAT_GATHER_MONITOR</code> 视图获取<code>taskid</code>，更多关于该视图的介绍请参考 <a href="../../../../700.system-views/500.system-view-of-oracle-mode/300.performance-view-of-oracle-mode/2000.gv-ob_opt_stat_gather_monitor-of-oracle-mode.md">GV\$OB_OPT_STAT_GATHER_MONITOR</a>。</p></main>|
+
+## 示例
+
+```sql
+obclient> CALL DBMS_STATS.CANCEL_GATHER_STATS(taskid);
+```
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>其中 <code>taskid</code> 需要替换为实际值。</p>
+</main>

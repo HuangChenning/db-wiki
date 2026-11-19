@@ -1,0 +1,79 @@
+---
+title: oceanbase.CDB_TAB_SUBPARTITIONS
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700877.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# oceanbase.CDB_TAB_SUBPARTITIONS
+
+oceanbase.CDB_TAB_SUBPARTITIONS
+====================================================
+
+
+功能
+-------------------
+
+展示所有租户的分区表的二级分区信息。
+
+字段说明
+----------------------
+
+|         字段名称          |       类型        | 是否可以为 NULL |           描述            |
+|-----------------------|-----------------|------------|-------------------------|
+| CON_ID                | bigint(20)      | NO         | 租户 ID                   |
+| TABLE_OWNER           | varchar(128)    | NO         | 表的所有者                   |
+| TABLE_NAME            | varchar(128)    | NO         | 表名                      |
+| PARTITION_NAME        | varchar(128)    | NO         | 分区名称                    |
+| SUBPARTITION_NAME     | varchar(128)    | NO         | 子分区名称                   |
+| HIGH_VALUE            | varchar(262144) | NO         | 子分区表达式                  |
+| HIGH_VALUE_LENGTH     | bigint(20)      | NO         | 子分区表达式的长度               |
+| PARTITION_POSITION    | bigint(20)      | NO         | 分区的位置                   |
+| SUBPARTITION_POSITION | bigint(20)      | NO         | 子分区在分区中的位置              |
+| TABLESPACE_NAME       | varchar(30)     | NO         | 包含子分区的表空间的名称            |
+| PCT_FREE              | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| PCT_USED              | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INI_TRANS             | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| MAX_TRANS             | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INITIAL_EXTENT        | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| NEXT_EXTENT           | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| MIN_EXTENT            | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| MAX_EXTENT            | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| MAX_SIZE              | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| PCT_INCREASE          | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| FREELISTS             | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| FREELIST_GROUPS       | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| LOGGING               | varchar(3)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| COMPRESSION           | varchar(8)      | NO         | 子分区是否压缩                 |
+| COMPRESS_FOR          | varchar(30)     | NO         | 压缩方法                    |
+| NUM_ROWS              | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| BLOCKS                | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| EMPTY_BLOCKS          | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| AVG_SPACE             | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| CHAIN_CNT             | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| AVG_ROW_LEN           | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| SAMPLE_SIZE           | bigint(0)       | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| LAST_ANALYZED         | date            | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| BUFFER_POOL           | varchar(7)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| FLASH_CACHE           | varchar(7)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| CELL_FLASH_CACHE      | varchar(7)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| GLOBAL_STATS          | varchar(3)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| USER_STATS            | varchar(3)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INTERVAL              | varchar(3)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| SEGMENT_CREATED       | varchar(3)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INDEXING              | varchar(3)      | NO         | 指示索引属性。取值：<li>ON：该子分区的索引已开启<li>OFF：此子分区的索引已关闭                        |
+| READ_ONLY             | varchar(3)      | NO         | 指示子分区是否为只读：<li>YES：子分区的默认设置是只读的<li>NO：子分区的默认设置是读/写                        |
+| INMEMORY              | varchar(8)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INMEMORY_PRIORITY     | varchar(8)      | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INMEMORY_DISTRIBUTE   | varchar(15)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL   |
+| INMEMORY_COMPRESSION  | varchar(17)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INMEMORY_DUPLICATE    | varchar(13)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INMEMORY_SERVICE      | varchar(12)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INMEMORY_SERVICE_NAME | varchar(1000)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL           |
+| CELLMEMORY            | varchar(24)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL|
+| MEMOPTIMIZE_READ      | varchar(8)      | NO         | 指示表是否启用了基于快速键的访问：<li>ENABLED <li>DISABLED                       |
+| MEMOPTIMIZE_WRITE     | varchar(8)      | NO         | 仅限内部使用                       |

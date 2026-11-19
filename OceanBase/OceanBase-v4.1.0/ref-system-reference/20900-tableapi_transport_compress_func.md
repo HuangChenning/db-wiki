@@ -1,0 +1,21 @@
+---
+title: tableapi_transport_compress_func
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702106.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# tableapi_transport_compress_func
+
+`tableapi_transport_compress_func` 用于设置 tableAPI 查询结果传输使用的压缩算法。
+
+|      **属性**      |                                                             **描述**                                                             |
+|------------------|--------------|
+| 参数类型             | 字符串类型                                       |
+| 默认值              | none                                        |
+| 取值范围             | <li> none   <li> lz4_1.0   <li> snappy_1.0   <li> zlib_1.0   <li> zstd_1.0   <li> zstd 1.3.8    |
+| 是否重启 OBServer 节点生效 | 否                                           |

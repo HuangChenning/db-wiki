@@ -1,0 +1,62 @@
+---
+title: DROP RESTORE POINT
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479622.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP RESTORE POINT
+
+## 描述
+
+该语句用来删除还原点（Restore Point）。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p><ul><li>V4.x 版本暂不支持 DROP RESTORE POINT 语句。</li><li>系统租户不支持创建和删除还原点。</li></ul></p>
+  </main>
+
+## 语法
+
+```sql
+DROP RESTORE POINT restore_point
+```
+
+## 参数解释
+
+|      参数       |    描述    |
+|---------------|----------|
+| restore_point | 指定还原点名称。 |
+
+## 示例
+
+1. 查看租户现有还原点。
+
+   ```sql
+   obclient> SELECT * FROM V$RESTORE_POINT;
+   ```
+
+   预期返回结果：
+
+   ```sql
+   +-----------+------------------+----------------------------+------+
+   | TENANT_ID | SNAPSHOT         | TIME                       | NAME |
+   +-----------+------------------+----------------------------+------+
+   |      1001 | 1630407064663511 | 2021-08-31 18:51:04.665692 | rp1  |
+   +-----------+------------------+----------------------------+------+
+   1 row in set
+   ```
+
+2. 删除还原点 `rp1`。
+
+   ```sql
+   obclient> DROP RESTORE POINT rp1;
+   ```
+
+   ## 相关文档
+
+   * [CREATE RESTORE POINT](2400.create-restore-point-of-mysql-mode.md)

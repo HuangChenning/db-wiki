@@ -1,0 +1,62 @@
+---
+title: "向量数据类型概述"
+book: OceanBase AI
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005282524.html"
+tags:
+  - oceanbase
+  - distributed
+  - ob-vector-search
+---
+
+# 向量数据类型概述
+
+OceanBase 提供向量数据类型以支撑 AI 向量搜索的相关应用。通过使用向量数据类型，你可以存储和查询一个浮点数组，例如 `[0.1, 0.3, -0.9, ...]`，数组需要用单引号包裹。使用向量数据前，您需要知道以下事项：
+
+* 支持稠密和稀疏向量数据，其支持的数据元素均为单精度浮点数。
+* 向量数据中的元素值不允许为非数值（NaN）和无穷大（Inf），否则抛出运行时错误。
+* 在创建向量列时必须指定向量维度，例如 `VECTOR(3)`。
+* 支持创建稠密向量索引，具体请参见[稠密向量索引](../200.ob-vector-index/300.ob-dense-vector-index/100.ob-dense-vector-index-overview.md)。
+* OceanBase 中的向量数据以数组的形式存储。
+* 稠密/稀疏向量均支持[混合搜索](../350.ob-vector-hybrid-search/200.ob-vector-index-hybrid-search.md)。
+
+## 语法
+
+一个稠密向量值可以包含 16000 以内任意数量的浮点数。语法如下：
+
+```sql
+-- 稠密向量
+'[<float>, <float>, ...]'
+```
+
+稀疏向量基于 MAP 数据类型，包含无序的键值对。语法如下：
+
+```sql
+-- 稀疏向量
+'{<uint:float>, <uint:float>...}'
+```
+
+创建向量列和索引示例如下：
+
+```sql
+-- 创建稠密向量列和索引
+CREATE TABLE t1(
+    c1 INT, 
+    c2 VECTOR(3), 
+    PRIMARY KEY(c1), 
+    VECTOR INDEX idx1(c2) WITH (distance=L2, type=hnsw_sq)
+    );
+```
+
+```sql
+-- 创建稀疏向量列
+CREATE TABLE t2 (
+    c1 INT, 
+    c2 SPARSEVECTOR
+    );
+```
+
+## 相关文档
+
+* [向量索引](../200.ob-vector-index/100.ob-vector-index-overview.md)
+* [使用 SQL 函数](../250.ob-vector-function.md)

@@ -1,0 +1,55 @@
+---
+title: "GV$OB_HMS_CLIENT_POOL_STAT"
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684465.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$OB_HMS_CLIENT_POOL_STAT
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.4.1 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+该视图用于展示当前租户 HMS Catalog 客户端使用情况。
+
+## 字段说明
+
+|     字段名称    |     类型    | 是否可以为 NULL |      描述      |
+|----------------|-------------|----------------|----------------|
+| SVR_IP         | varchar(46) | NO             | 表示副本所在的节点地址。|
+| SVR_PORT       | bigint(20)  | NO             | 表示副本所在的节点端口。|
+| TENANT_ID      | bigint(20)  | NO             | 表示租户 ID，取值如下：<ul><li>1：表示系统租户 ID。 </li><li>其他值：表示用户租户或者 Meta 租户 ID。</li></ul>|
+| CLIENT_TYPE    | varchar(128)| NO             | 表示 Client 类型。|
+| CATALOG_ID     | bigint(20)  | NO             | 表示租户下某个 Catalog 的 ID。|
+| URI            | varchar(4096) | NO           | 表示 Client 所连接的 Server 地址。|
+| TOTAL_CLIENTS  | bigint(20)  | NO             | 表示总计当前的租户下对应的 Catalog 的创建的总客户端数。|
+| IN_USE_CLIENTS | bigint(20)  | NO             | 表示当前租户下对应的 Catalog 正在使用的客户端数。|
+| IDLE_CLIENTS   | bigint(20)  | NO             | 表示当前租户下对应的 Catalog 未被使用（空闲）的客户端数。|
+
+## 查询示例
+
+查询当前租户 HMS Catalog 客户端使用情况。
+
+```shell
+obclient> SELECT * FROM oceanbase.GV$OB_HMS_CLIENT_POOL_STAT;
+```
+
+查询结果如下：
+
+```shell
++----------------+----------+-----------+------------+---------------+----------------+--------------+
+| SVR_IP         | SVR_PORT | TENANT_ID | CATALOG_ID | TOTAL_CLIENTS | IN_USE_CLIENTS | IDLE_CLIENTS |
++----------------+----------+-----------+------------+---------------+----------------+--------------+
+| xx.xxx.xxx.xxx |    17131 |      1004 |     500006 |             1 |              0 |            1 |
+| xx.xxx.xxx.xxx |    17131 |      1004 |     500005 |             1 |              0 |            1 |
++----------------+----------+-----------+------------+---------------+----------------+--------------+
+2 rows in set
+```

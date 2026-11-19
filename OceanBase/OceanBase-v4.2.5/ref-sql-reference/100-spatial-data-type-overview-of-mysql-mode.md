@@ -1,0 +1,38 @@
+---
+title: "空间数据类型概述"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504586.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 空间数据类型概述
+
+OceanBase 数据库的地理信息系统（Geographic Information System，GIS）功能支持如下空间数据类型：
+
+* `GEOMETRY`
+
+* `POINT`
+
+* `LINESTRING`
+
+* `POLYGON`
+
+* `MULTIPOINT`
+
+* `MULTILINESTRING`
+
+* `MULTIPOLYGON`
+
+* `GEOMETRYCOLLECTION`
+
+其中 `POINT`、`LINESTRING` 和 `POLYGON` 是最基础的三种类型，用于保存单个空间数据，它们分别扩展了 `MULTIPOINT`、`MULTILINESTRING` 和 `MULTIPOLYGON` 三种集合类型，用于保存空间数据集合，但只能表示各自指定基础类型的集合。`GEOMETRY` 是一种虚类型，可以代表任意基础类型，`GEOMETRYCOLLECTION`可以是任意 `GEOMETRY` 类型的集合。
+
+## 相关文档
+
+* [空间参考系统](200.spacial-reference-system-of-mysql-mode.md)
+* [创建空间列](300.create-spatial-columns-of-mysql-mode.md)
+* [创建空间索引](400.create-spatial-indexes-of-mysql-mode.md)

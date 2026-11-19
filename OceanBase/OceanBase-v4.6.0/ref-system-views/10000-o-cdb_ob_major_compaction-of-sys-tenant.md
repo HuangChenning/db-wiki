@@ -1,0 +1,92 @@
+---
+title: oceanbase.CDB_OB_MAJOR_COMPACTION
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684060.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_MAJOR_COMPACTION
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+系统租户下展示所有租户的合并全局信息。
+
+## 字段说明
+
+|           字段名称           |     类型      | 是否可以为 NULL |        描述         |
+|--------------------------|-------------|------------|---------------------------------------------|
+| TENANT_ID                | bigint(20)  | NO         | 租户 ID             |
+| FROZEN_SCN           | bigint(20) unsigned  | NO         | 最近一次合并的版本号           |
+| FROZEN_TIME              | timestamp(6)  | NO         | 最近一次合并发起的时间（将 FROZEN_SCN 以可读的形式展示）           |
+| GLOBAL_BROADCAST_SCN | bigint(20) unsigned  | NO         | 全局广播的合并版本         |
+| LAST_SCN             | bigint(20) unsigned  | NO         | 上一个已经完成合并的版本      |
+| LAST_FINISH_TIME         | timestamp(6)  | NO         | 上一次合并结束时间         |
+| START_TIME               | timestamp(6)  | NO         | 合并开始时间            |
+| STATUS                   | varchar(10) | NO         | <ul><li>`IDLE`：没有在合并中</li><li> `COMPACTION`：正在合并中   </li><li> `CHECKSUM`：校验 checksum</li></ul> |
+| IS_ERROR                 | varchar(3)  | NO         | <ul><li>`YES`：合并过程存在错误 </li><li> `NO`：合并过程没有报错   </li></ul>  |
+| IS_SUSPENDED             | varchar(3)  | NO         | <ul><li> `YES`：暂停合并状态</li><li>`NO`：没有暂停合并</li></ul> |
+| INFO                     | varchar(14) | NO         | 展示合并信息。例如：合并失败原因  |
+| MODE                     | varchar(7)  | NO         | 每日合并的类型：<ul><li>`TENANT`：租户合并</li> <li>`WINDOW`：窗口合并</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.6.0 版本开始引入。</p></main>|
+
+## 查询示例
+
+系统租户查看所有租户的合并全局信息。
+
+```shell
+obclient(root@sys)[oceanbase]> SELECT * FROM oceanbase.CDB_OB_MAJOR_COMPACTION;
+```
+
+查询结果如下：
+
+```shell
++-----------+---------------------+----------------------------+----------------------+---------------------+----------------------------+----------------------------+--------+----------+--------------+------+--------+
+| TENANT_ID | FROZEN_SCN          | FROZEN_TIME                | GLOBAL_BROADCAST_SCN | LAST_SCN            | LAST_FINISH_TIME           | START_TIME                 | STATUS | IS_ERROR | IS_SUSPENDED | INFO | MODE   |
++-----------+---------------------+----------------------------+----------------------+---------------------+----------------------------+----------------------------+--------+----------+--------------+------+--------+
+|         1 | 1773079200622919000 | 2026-03-10 02:00:00.622919 |  1773079200622919000 | 1773079200622919000 | 2026-03-10 02:04:11.869858 | 2026-03-10 02:00:00.761885 | IDLE   | NO       | NO           |      | TENANT |
+|      1001 | 1773079200659792000 | 2026-03-10 02:00:00.659792 |  1773079200659792000 | 1773079200659792000 | 2026-03-10 02:06:02.436787 | 2026-03-10 02:00:00.687285 | IDLE   | NO       | NO           |      | TENANT |
+|      1002 | 1772992801519693000 | 2026-03-09 02:00:01.519693 |  1772992801519693000 | 1772992801519693000 | 2026-03-09 02:05:42.538179 | 2026-03-09 16:15:11.214954 | IDLE   | NO       | NO           |      | WINDOW |
+|      1003 | 1773079201393261000 | 2026-03-10 02:00:01.393261 |  1773079201393261000 | 1773079201393261000 | 2026-03-10 02:05:53.062461 | 2026-03-10 02:00:01.450419 | IDLE   | NO       | NO           |      | TENANT |
+|      1004 | 1772647200462679000 | 2026-03-05 02:00:00.462679 |  1772647200462679000 | 1772647200462679000 | 2026-03-05 02:05:31.394359 | 2026-03-09 17:47:22.612055 | IDLE   | NO       | NO           |      | WINDOW |
++-----------+---------------------+----------------------------+----------------------+---------------------+----------------------------+----------------------------+--------+----------+--------------+------+--------+
+5 rows in set
+```
+
+## 相关视图或文档
+
+* 查看所有租户各个 Zone 的合并信息：[CDB_OB_ZONE_MAJOR_COMPACTION](12000.o-cdb_ob_zone_major_compaction-of-sys-tenant.md)
+
+* 查看 Tablet 级的合并基础统计信息：
+
+  * [GV$OB_MERGE_INFO](../300.performance-view-of-sys-tenant/1800.gv-ob_merge_info-of-sys-tenant.md)
+
+  * [V$OB_MERGE_INFO](../300.performance-view-of-sys-tenant/32200.v-ob_merge_info-of-sys-tenant.md)
+
+* 查看 Tablet 级的合并的详细历史信息：
+
+  * [GV$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-sys-tenant/4300.gv-ob_tablet_compaction_history-of-sys-tenant.md)
+  * [V$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-sys-tenant/34700.v-ob_tablet_compaction_history-of-sys-tenant.md)
+
+* 合并相关的操作，参见以下文档：
+
+  * [自动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/200.automatic-merge-triggering.md)
+
+  * [定时触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/300.scheduled-trigger-merge.md)
+
+  * [窗口合并](../../../200.system-management/500.manage-data-storage/200.merge-management/310.window-compaction.md)
+
+  * [自适应合并](../../../200.system-management/500.manage-data-storage/200.merge-management/320.adaptive-compaction.md)
+
+  * [手动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/400.manually-trigger-a-merge.md)
+
+  * [手动控制合并](../../../200.system-management/500.manage-data-storage/200.merge-management/500.manually-control-a-merge.md)
+
+  * [查看合并信息](../../../200.system-management/500.manage-data-storage/200.merge-management/500.view-merge-process.md)

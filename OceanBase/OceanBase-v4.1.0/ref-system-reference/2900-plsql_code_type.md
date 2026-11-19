@@ -1,0 +1,33 @@
+---
+title: plsql_code_type
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700972.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# plsql_code_type
+
+plsql_code_type 
+====================================
+
+plsql_code_type 用于指定 PL/SQL 代码的编译类型。
+
+
+|        属性        |                                                            描述                                                            |
+|------------------|--------------------------------------------------------------------------------------------------------------------------|
+| 参数类型             | 字符串类型                                 |
+| 默认值              | NATIVE                                |
+| 取值范围             | <li> INTERPETED：解析型   <li> NATIVE：二进制可执行    |
+| 是否重启 OBServer 节点生效 | 否                                     |
+
+
+
+使用示例如下：
+
+```sql
+obclient> ALTER SYSDATE SET plsql_code_type='INTERPRETED';
+```

@@ -1,0 +1,57 @@
+---
+title: XA_SETTIMEOUT
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702625.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# XA_SETTIMEOUT
+
+XA_SETTIMEOUT 
+==================================
+
+XA_SETTIMEOUT 函数用于设置当前会话的事务超时间隔（以秒为单位）。
+
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+语法 
+-----------
+
+```sql
+DBMS_XA.XA_SETTIMEOUT (
+   seconds  IN  PLS_INTEGER)
+RETURN PLS_INTEGER;
+```
+
+
+
+参数解释 
+-------------
+
+
+
+| **参数**  |                         **解释**                         |
+|---------|--------------------------------------------------------|
+| seconds | 超时时间是指系统自动中止事务之前，事务分支可能与会话解除关联的最长时间（以秒为单位）。 默认值为 60 秒。 |
+
+
+
+返回值 
+------------
+
+请参见 [DBMS_XA 可能的常量返回值](../18500.dbms-xa-oracle/200.dbms-xa-constant-oracle.md)。
+
+可能返回的值是：`XA_OK`、`XAER_RMERR`、`XAER_RMFAIL` 或 `XAER_INVAL`。
+
+使用说明 
+-------------------------
+
+仅当返回值为 `XA_OK` 时，才说明超时值设置成功。

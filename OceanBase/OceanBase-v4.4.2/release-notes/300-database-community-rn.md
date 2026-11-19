@@ -1,0 +1,14 @@
+---
+title: "社区版版本发布记录"
+book: "版本发布记录"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006967035.html"
+tags:
+  - oceanbase
+  - distributed
+  - release-notes
+---
+
+# 社区版版本发布记录
+
+OceanBase 提供了 OceanBase 数据库各个版本的发布记录，涵盖版本上线的新功能、能力增强以及版本间产品行为的主要变更等，方便您快速了解新版本的核心变化。关于每个版本的详细介绍，参加 [OceanBase 数据库社区版版本发布记录](https://www.oceanbase.com/product/oceanbase-database-community-rn/releaseNote)。

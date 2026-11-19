@@ -1,0 +1,38 @@
+---
+title: CRC32
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504678.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CRC32
+
+## 声明
+
+```sql
+CRC32(expr)
+```
+
+## 说明
+
+计算循环冗余校验值并返回 32 位无符号值。
+
+参数 `expr` 应该是一个字符串，如果不是，则可能被视为一个字符串。
+
+如果参数为 `NULL`，则结果为 `NULL`。
+
+## 示例
+
+```sql
+obclient>SELECT CRC32('hello-world');
++-----------------------+
+| COS32('hello-world') |
++-----------------------+
+|               2983461467|
++-----------------------+
+1 row in set
+```

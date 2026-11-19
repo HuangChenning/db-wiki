@@ -1,0 +1,36 @@
+---
+title: BIN
+book: "SQL 参考"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002018255.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# BIN
+
+## 声明
+
+```sql
+bin(N)
+```
+
+## 说明
+
+返回数字 `N` 的二进制形式。该函数等价于 `CONV(N,10,2)`。
+
+如果 `N` 为 `NULL`，则返回 `NULL`。
+
+## 示例
+
+```sql
+obclient> SELECT BIN(12);
++---------+
+| BIN(12) |
++---------+
+| 1100    |
++---------+
+1 row in set
+```

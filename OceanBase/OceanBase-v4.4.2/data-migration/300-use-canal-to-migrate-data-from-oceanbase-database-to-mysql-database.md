@@ -1,0 +1,184 @@
+---
+title: "使用 Canal 从 OceanBase 数据库同步数据到 MySQL 数据库"
+book: "数据迁移"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005282704.html"
+tags:
+  - oceanbase
+  - distributed
+  - data-migration
+---
+
+# 使用 Canal 从 OceanBase 数据库同步数据到 MySQL 数据库
+
+本文档主要介绍使用 Canal 和 OceanBase Binlog 服务从 OceanBase 数据库同步数据至 MySQL 数据库。
+
+## OceanBase CDC 实现逻辑
+
+OceanBase Binlog 服务是 OceanBase 数据库的增量日志代理服务。基于 libobcdc（原名：liboblog），以服务的形式提供实时增量链路接入和管理能力，方便应用接入 OceanBase 增量日志。能够解决在网络隔离的情况下，订阅增量日志的需求，并提供多种链路接入方式。
+
+Canal 通过解析 MySQL 的 Binlog 日志，将数据库的增量数据抽取出来，并将其发送到订阅者进行消费和处理。这使得用户可以方便地实现数据的实时同步、实时分析等需求。
+
+Canal 的官方版本及使用说明，参见 [alibaba/canal](https://github.com/alibaba/canal/releases)。
+
+数据链路：
+
+```shell
+ob_cluster -> obbinlog -> canal_server -> canal_adapter -> mysql
+```
+
+组件介绍：
+
+* OceanBase 数据库：需要生成 Binlog 日志的业务数据库。
+
+* OceanBase 数据库代理：业务数据库的 ODP（也称 OBProxy），由它为订阅 Binlog 的客户端提供连接服务。
+
+* OceanBase Binlog 工具：OceanBase Binlog 服务的核心组件 obbinlog（原 oblogproxy），由它完成拉取 clog 和生成 Binlog 日志的操作。
+
+* Canal Server：Canal 的服务端，模拟 MySQL slave 的行为解析源端的 Binlog 日志，将增量数据转换为 CanalEntry 供下游消费。
+
+* Canal Adapter：Canal 的客户端适配器，解析 CanalEntry 并将增量数据同步至目标端。本文使用其 rdb 模块将数据同步至 MySQL 数据库。
+
+## 操作步骤
+
+### 步骤一：开启 OceanBase Binlog 服务
+
+1. 参考 [创建 Binlog 集群](https://www.oceanbase.com/docs/common-ocp-1000000001739745) 完成 OceanBase Binlog 服务的安装部署。
+
+2. 在 OCP 的租户概览页面为业务租户开通 Binlog 服务，并关联该租户对应的 OBProxy 集群。仅支持为 MySQL 兼容模式的租户开通 Binlog 服务，详细操作参见 [管理租户 Binlog 服务](https://www.oceanbase.com/docs/common-ocp-1000000003339476)。
+
+3. 创建用于数据同步的用户。
+
+    在业务租户中执行以下 SQL，创建用户并授予读权限。
+
+    ```sql
+    CREATE USER 'canal'@'%' IDENTIFIED BY '******';
+    GRANT SELECT ON *.* TO 'canal'@'%';
+    ```
+
+### 步骤二：安装 Canal Server
+
+1. 下载软件包。
+
+    下载 [canal.deployer-1.1.8.tar.gz](https://github.com/alibaba/canal/releases/download/canal-1.1.8/canal.deployer-1.1.8.tar.gz)。
+
+    ```bash
+    wget https://github.com/alibaba/canal/releases/download/canal-1.1.8/canal.deployer-1.1.8.tar.gz
+    ```
+
+2. 将压缩包解压至目录 `/Canal_Home/canal`。
+
+    ```bash
+    mkdir /Canal_Home/canal && tar zxvf canal.deployer-1.1.8.tar.gz -C /Canal_Home/canal
+    ```
+
+3. 配置 canal instance。
+
+    修改 `/Canal_Home/canal/conf/example/instance.properties`，配置源端 OceanBase 数据库的连接信息。其中，连接地址为业务租户的 ODP 地址和端口，用户名格式为 `用户名@租户名#集群名`。
+
+    ```bash
+    cd /Canal_Home/canal/conf/example
+    vi instance.properties
+
+    # 源端连接信息，地址为 ODP 的地址和端口
+    canal.instance.master.address=10.10.10.1:2883
+    canal.instance.dbUsername=canal@mysql001#test4000
+    canal.instance.dbPassword=******
+
+    # 日志过滤。格式为 库名.表名，支持正则
+    canal.instance.filter.regex=.*\\..*
+    ```
+
+    <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>开启 Binlog 服务后，ODP 会将客户端的 Binlog 订阅请求转发至对应的 Binlog 实例，因此 Canal 连接 ODP 即可订阅 OceanBase 数据库的增量日志。</p>
+    </main>
+
+4. 启动 Canal Server。
+
+    ```bash
+    cd /Canal_Home/canal && sh bin/startup.sh
+    ```
+
+    查看日志确认 Canal Server 启动成功。
+
+    ```bash
+    tail -f logs/canal/canal.log
+    ```
+
+### 步骤三：配置 RDB 适配器
+
+1. 下载软件包。
+
+    下载 [canal.adapter-1.1.8.tar.gz](https://github.com/alibaba/canal/releases/download/canal-1.1.8/canal.adapter-1.1.8.tar.gz)。
+
+    ```bash
+    wget https://github.com/alibaba/canal/releases/download/canal-1.1.8/canal.adapter-1.1.8.tar.gz
+    ```
+
+2. 将压缩包解压至目录 `/Canal_Home/adapter`。
+
+    ```bash
+    mkdir /Canal_Home/adapter && tar zxvf canal.adapter-1.1.8.tar.gz -C /Canal_Home/adapter
+    ```
+
+3. 修改 `application.yml`。
+
+    修改 `/Canal_Home/adapter/conf/application.yml`，配置 RDB 适配器以 tcp 模式连接 Canal Server，并配置目标 MySQL 数据库的连接信息。
+
+    ```bash
+    cd /Canal_Home/adapter/conf
+    vi application.yml
+
+    canal.conf:
+      mode: tcp #tcp kafka rocketMQ rabbitMQ
+      consumerProperties:
+        # canal tcp consumer
+        canal.tcp.server.host: 127.0.0.1:11111
+      canalAdapters:
+      - instance: example # canal instance Name or mq topic name
+        groups:
+        - groupId: g1
+          outerAdapters:
+          - name: logger
+          - name: rdb
+            key: mysql1
+            properties:
+              jdbc.driverClassName: com.mysql.cj.jdbc.Driver
+              jdbc.url: jdbc:mysql://10.10.10.1:3306/test_data?useUnicode=false
+              jdbc.username: root
+              jdbc.password: ******
+    ```
+
+4. 修改适配器库/表映射（以库映射为例）。
+
+    ```bash
+    cd /Canal_Home/adapter/conf/rdb
+    vi mytest_user.yml
+
+    ## Mirror schema synchronize config
+    dataSourceKey: defaultDS
+    destination: example
+    groupId: g1
+    outerAdapterKey: mysql1
+    concurrent: true
+    dbMapping:
+      mirrorDb: true
+      database: test_data
+    ```
+
+5. 启动 Canal Adapter。
+
+    ```bash
+    cd /Canal_Home/adapter && sh bin/startup.sh
+    ```
+
+6. 查看数据同步情况。
+
+    在 OceanBase 源端写入数据，在 MySQL 目标端查看数据同步。
+
+## 功能限制
+
+* 同步的表必须有主键。否则，源端删除无主键表的任意一笔记录，同步到目标端会导致整个表被删除。
+
+* DDL 支持新建表、新增列。

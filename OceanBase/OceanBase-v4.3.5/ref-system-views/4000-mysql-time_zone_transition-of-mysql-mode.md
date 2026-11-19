@@ -1,0 +1,29 @@
+---
+title: mysql.time_zone_transition
+book: "系统视图"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002015211.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# mysql.time_zone_transition
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示时区转换信息的系统视图。
+
+## 字段说明
+
+|      **字段名称**      |   **类型**   | **是否可以为 NULL** |  **描述**   |
+|--------------------|------------|----------------|-----------|
+| Time_zone_id       | bigint(20) | NO             | 时区 ID     |
+| Transition_time    | bigint(20) | NO             | 时区转换时间    |
+| Transition_type_id | bigint(20) | NO             | 时区转换类型 ID |

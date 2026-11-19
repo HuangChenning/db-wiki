@@ -1,0 +1,86 @@
+---
+title: REMOVE
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687587.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# REMOVE
+
+## 描述
+
+该语句用于从外部存储位置（Location）中删除文件。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 OceanBase 数据库 V4.4.x 版本，从 V4.4.1 版本开始支持 <code>REMOVE</code> 语句。</p>
+</main>
+
+## 使用限制及注意事项
+
+本地 Location 对象的文件不支持删除。
+
+## 权限要求
+
+执行 `REMOVE` 语句，需要当前用户拥有 Location 对象的 `WRITE` 权限。有关授予用户 Location 对象权限的详细介绍，参见 [GRANT](1700.grant-of-oracle-mode.md)。
+
+## 语法
+
+```sql
+REMOVE FILES IN LOCATION @location_name['/path'] [pattern_expr];
+
+pattern_expr:
+    PATTERN [=] 'regex_pattern'
+    | REGEXP_PATTERN [=] 'regex_pattern'
+    | GLOB_PATTERN [=] 'glob_pattern'
+```
+
+## 参数说明
+
+|   **参数**    | **描述** |
+|---------------|----------|
+| location_name | 表示目标存储位置的名称，即 Location 对象的名称。|
+| path          | 可选项，表示子目录。|
+| pattern_expr  | 可选项，指定文件匹配模式，用于筛选 `LOCATION` 目录下要删除的文件。如果不指定该参数，则默认删除 `LOCATION` 目录下的所有文件。|
+
+### pattern_expr
+
+* `PATTERN [=] 'regex_pattern'`：指定文件名或正则表达式，参数 `PATTERN` 和 `REGEXP_PATTERN` 等价。控制哪些文件被加载，示例如下：
+
+  * `PATTERN = 'extdata.csv'`：指定要加载的文件名为 `extdata.csv`。
+  * 如果有多个 CSV 文件，比如 `extdata_2024.csv`、`extdata_2025.csv`，可以写成 `PATTERN = 'extdata_\d{4}\.csv'`。
+
+* `REGEXP_PATTERN [=] 'regex_pattern'`：指定使用正则表达式匹配文件名。灵活匹配多种文件名，示例如下：
+
+  * `REGEXP_PATTERN = '.*[.]csv$'`：使用正则表达式来筛选 `LOCATION` 下所有以 `.csv` 结尾的文件。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>对于 V5.x 版本，从 V5.0.1 版本开始引入参数 <code>REGEXP_PATTERN</code>。</p>
+    </main>
+
+* `GLOB_PATTERN [=] 'glob_pattern'`：指定使用通配符匹配文件名。简单匹配常见文件类型，示例如下：
+
+  * `GLOB_PATTERN = '*.csv'`：匹配所有以 `.csv` 结尾的文件。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>对于 V5.x 版本，从 V5.0.1 版本开始引入参数 <code>GLOB_PATTERN</code>。</p>
+    </main>
+
+## 示例
+
+删除 Location 对象 `test_location_oss` 下的文件。
+
+```shell
+obclient> REMOVE FILES IN LOCATION @test_location_oss;
+```
+
+## 相关文档
+
+* 关于创建 Location 对象的介绍信息，参见 [CREATE LOCATION](../100.ddl-of-oracle-mode/1730.create-location-of-oracle-mode.md)。
+* 关于查看 Location 对象下文件的介绍信息，参见 [SHOW](3600.show-of-oracle-mode.md)。

@@ -1,0 +1,159 @@
+---
+title: "创建和查询外表"
+book: "数据库对象管理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286199.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 创建和查询外表
+
+本文介绍在 Oracle 模式下**创建并查询文件外表**的操作步骤。完整语法、`LOCATION`、`FORMAT` 等参数说明，请以 [CREATE EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1600.create-external-table-of-oracle-mode.md) 为准。
+
+若只需临时读取外部文件，请使用 [FILES 表函数](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/500.functions-of-oracle-mode/550.table-functions-of-oracle-mode/200.files-table-function-of-oracle-mode.md)。
+
+## 前提条件
+
+* 已部署集群并创建 Oracle 模式租户，且已连接数据库。
+* 当前用户具备 `CREATE` 权限。查看当前用户权限的操作请参见 [查看用户权限](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/600.view-user-permissions-of-oracle-mode.md)。如果您没有 `CREATE TABLE` 权限，请联系管理员为您添加，为用户添加权限的相关操作请参见 [直接授予权限](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/200.authority-of-oracle-mode.md)。
+* 本地文件路径须在 [secure_file_priv](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/12000.secure_file_priv-global.md) 允许范围内。
+* 访问 HDFS 需完成 [部署 OceanBase 数据库 JAVA SDK 环境](../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md) 配置。
+
+## 示例
+
+### 创建本地 CSV 文件外表
+
+假设本地机器的 `/home/admin/oceanbase/` 下存放了一个 `data.csv` 文件，文件中的内容如下。
+
+```shell
+1,"lin",98
+2,"hei",90
+3,"ali",95
+```
+
+1. 在 OBServer 节点上，租户管理员通过本地 Unix Socket 连接集群的 Oracle 租户。
+
+   连接示例如下：
+
+   ```shell
+   obclient -S /home/admin/oceanbase/run/sql.sock -uroot@sys -p********
+   ```
+
+   通过本地 Unix Socket 连接 OceanBase 数据库的具体操作及说明，请参见 [secure_file_priv](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/12000.secure_file_priv-global.md)。
+
+2. 配置数据库可以访问的路径 `/home/admin/oceanbase/`。
+
+    ```sql
+    SET GLOBAL secure_file_priv = "/home/admin/oceanbase/";
+    ```
+
+    命令执行成功后，需要重启会话后，修改才能生效。
+
+3. 重新连接数据库后，创建外表 `ext_t3`。
+
+    ```sql
+    CREATE EXTERNAL TABLE ext_t3(ID NUMBER(32), NAME VARCHAR2(30),SCORE NUMBER(32))
+    LOCATION = '/home/admin/oceanbase/'
+    FORMAT = (
+      TYPE = 'CSV'
+      FIELD_DELIMITER = ','
+      FIELD_OPTIONALLY_ENCLOSED_BY ='"'
+    )
+    PATTERN = 'data.csv';
+    ```
+
+外表创建成功后，可以像普通表一样使用 `SHOW CREATE TABLE` 语句来查看表的定义。
+
+```sql
+SHOW CREATE TABLE ext_t3;
+```
+
+查询结果如下：
+
+```shell
++--------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| TABLE  | CREATE TABLE                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
++--------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| EXT_T3 | CREATE EXTERNAL TABLE "EXT_T3" (
+  "ID" NUMBER(32) GENERATED ALWAYS AS (METADATA$FILECOL1),
+  "NAME" VARCHAR2(30) GENERATED ALWAYS AS (METADATA$FILECOL2),
+  "SCORE" NUMBER(32) GENERATED ALWAYS AS (METADATA$FILECOL3)
+)
+LOCATION='file:///home/admin/oceanbase/'
+PATTERN='data.csv'
+FORMAT (
+  TYPE = 'CSV',
+  FIELD_DELIMITER = ',',
+  FIELD_OPTIONALLY_ENCLOSED_BY = '"',
+  ENCODING = 'utf8mb4'
+)COMPRESS FOR ARCHIVE REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
++--------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set
+```
+
+也可以像普通表一样进行访问。查询外表时，系统通过外表的驱动层直接读取外部文件，并按照文件格式进行解析，转换成 OceanBase 数据库内部的数据类型后返回数据行。查询刚刚创建的外表 `ext_t3` 的示例如下。
+
+```sql
+SELECT * FROM ext_t3;
+```
+
+查询结果如下：
+
+```shell
++----+------+-------+
+| id | name | score |
++----+------+-------+
+|  1 | lin  |    98 |
+|  2 | hei  |    90 |
+|  3 | ali  |    95 |
++----+------+-------+
+3 rows in set
+```
+
+此外，外表也可以与普通表进行组合查询操作。假设当前数据库中有一个普通表 `info`，表中的数据如下所示：
+
+```shell
++------+--------+------+
+| name | sex    | age  |
++------+--------+------+
+| lin  | male   |    8 |
+| hei  | male   |    9 |
+| li   | female |    8 |
++------+--------+------+
+3 rows in set
+```
+
+将外部表 `ext_t3` 与普通表 `info` 组合查询的示例如下。
+
+```sql
+SELECT info.* FROM info, ext_t3 WHERE info.name = ext_t3.name AND ext_t3.score > 90;
+```
+
+查询结果如下：
+
+```shell
++------+--------+------+
+| name | sex    | age  |
++------+--------+------+
+| lin  | male   |    8 |
+| li   | female |    8 |
++------+--------+------+
+2 rows in set
+```
+
+更多查询操作，请参见 [读取数据](../../../../../300.develop/100.application-development-of-mysql-mode/500.read-data-of-mysql-mode/100.single-table-query-of-mysql-mode.md)。
+
+## 后续操作
+
+* 刷新文件列表：`ALTER EXTERNAL TABLE table_name REFRESH;`，参见 [管理外部文件](300.manage-external-files-of-oracle-mode.md) 与 [ALTER EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/100.alter-external-table-of-oracle-mode.md)。
+
+
+## 相关文档
+
+* [关于外表与外部文件](100.about-external-tables-of-oracle-mode.md)
+* [CREATE EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1600.create-external-table-of-oracle-mode.md)
+* [FILES 表函数](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/500.functions-of-oracle-mode/550.table-functions-of-oracle-mode/200.files-table-function-of-oracle-mode.md)
+* [管理外部文件](300.manage-external-files-of-oracle-mode.md)

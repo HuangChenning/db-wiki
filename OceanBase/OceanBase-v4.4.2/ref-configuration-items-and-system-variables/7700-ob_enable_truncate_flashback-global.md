@@ -1,0 +1,31 @@
+---
+title: ob_enable_truncate_flashback
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285507.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# ob_enable_truncate_flashback
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该变量已不再使用。在 V4.x 版本中，执行 TRUNCATE TABLE 操作不再支持进入回收站。尽管在 V4.x 版本中，该变量仍可查询和设置，但相关功能并不会生效。</p>
+</main>
+
+## 功能描述
+
+`ob_enable_truncate_flashback` 用于设置是否启用表截断的闪回。
+
+## 属性说明
+
+| **属性** |    **描述**      |
+|----------|------------------|
+| 参数类型   | Bool                         |
+| 默认值     | OFF                          |
+| 取值范围   | <ul><li>OFF（0）：不启用</li><li>ON（1）：启用</li></ul>     |
+| 生效范围   | <ul><li>Global</li><li>Session</li></ul>          |
+| 是否可修改 | 是，支持通过 `SET` 语句修改。|

@@ -1,0 +1,25 @@
+---
+title: tcp_keepintvl
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702110.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# tcp_keepintvl
+
+tcp_keepintvl 
+==================================
+
+`tcp_keepintvl` 用于设置开启客户端连接的探活机制后，前后两次探测之间的时间间隔，单位为秒。
+
+
+|        属性        |    描述    |
+|------------------|----------|
+| 参数类型             | 时间类型     |
+| 默认值              | 6s       |
+| 取值范围             | \[1s,+∞) |
+| 是否重启 OBServer 节点生效 | 否        |

@@ -1,0 +1,34 @@
+---
+title: data_dir
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685664.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# data_dir
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`data_dir` 用于展示存储 SSTable 等数据的目录。
+
+## 权限要求
+
+`sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+## 属性说明
+
+| **属性** | **描述** |
+|--------|--------|
+| 参数类型   | String    |
+| 默认值    | store  |
+| 是否可修改  | 否，不支持通过 `ALTER SYSTEM SET` 语句修改。      |
+| 是否重启 OBServer 节点生效 | 否，仅支持只读。  |

@@ -1,0 +1,77 @@
+---
+title: "预留关键字（Oracle 模式）"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001499708.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 预留关键字（Oracle 模式）
+
+<main id="notice" type="">
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供了 MySQL 模式。</p>
+  </main>
+
+目前，OceanBase 数据库 Oracle 模式下的预留关键字如下所示。
+
+| | | | | |
+|------------|------------|------------|-----------|---------|
+| A                                                      |||||
+| ACCESS     | ADD        | ALL        | ALTER     | AND     |
+| ANY        | AS         | ASC        | AUDIT              ||
+| B                                                      |||||
+| BETWEEN    | BY                                         ||||
+| C                                                      |||||
+| CHAR       | CHECK      | CLUSTER    | COLUMN    | COMMENT |
+| COMPRESS   | CONNECT    | CREATE     | CURRENT   | CASE    |
+| CONNECT_BY_ROOT                                   |CROSS||||
+| D                                                      |||||
+| DATE       | DECIMAL    | DEFAULT    | DELETE    | DESC    |
+| DISTINCT   | DROP       | DUAL                           |||
+| E                                                      |||||
+| ELSE       | EXCLUSIVE  | EXISTS                         |||
+| F                                                      |||||
+| FILE       | FLOAT      | FOR        | FROM           |FULL|
+| G                                                      |||||
+| GRANT      | GROUP                                      ||||
+| H                                                      |||||
+| HAVING                                                 |||||
+| I                                                      |||||
+| IDENTIFIED | IMMEDIATE  | IN         | INCREMENT | INDEX   |
+| INITIAL    | INSERT     | INTEGER    | INTERSECT | INTO    |
+| IS                                                |INNER||||
+| J                                                      |||||
+| JOIN                                                   |||||
+| L                                                      |||||
+| LEVEL      | LIKE       | LOCK       | LONG          | LEFT|
+| M                                                      |||||
+| MAXEXTENTS | MINUS      | MODE       | MODIFY             ||
+| N                                                      |||||
+| NOAUDIT    | NOCOMPRESS | NOT        | NOTFOUND  | NOWAIT  |
+| NULL       | NUMBER                            | NATURAL |||
+| O                                                      |||||
+| OF         | OFFLINE    | ON         | ONLINE    | OPTION  |
+| OR         | ORDER                                      ||||
+| P                                                      |||||
+| PCTFREE    | PRIOR      | PRIVILEGES | PUBLIC    | RAW     |
+| R                                                      |||||
+| RENAME     | RESOURCE   | REVOKE     | ROW       | ROWID   |
+| ROWLABEL   | ROWNUM     | ROWS      | RETURN | RIGHT |
+| RETURNING  |            |           |      |
+| S                                                      |||||
+| START      | SELECT     | SESSION    | SET       | SHARE   |
+| SIZE       | SMALLINT   | SUCCESSFUL | SYNONYM   | SYSDATE |
+| SQL_CALC_FOUND_ROWS                                    |||||
+| T                                                      |||||
+| TABLE      | THEN       | TO         | TRIGGER            ||
+| U                                                      |||||
+| UID        | UNION      | UNIQUE     | UPDATE | USER      ||
+|USING|
+| V                                                      |||||
+| VALIDATE   | VALUES     | VARCHAR    | VARCHAR2  | VIEW    |
+| W                                                      |||||
+| WHENEVER   | WHERE      | WITH                           |||

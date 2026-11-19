@@ -1,0 +1,34 @@
+---
+title: "删除触发器"
+book: "数据库对象管理"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004476692.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 删除触发器
+
+您可以通过 `DROP TRIGGER` 语句来删除触发器。
+
+删除触发器的用户需要具备该触发器相关的表的权限。如果您删除了一个表，则与该表相关的触发器也会被删除。
+
+删除触发器的语法如下：
+
+```sql
+obclient> DROP TRIGGER [IF EXISTS] [database_name.]trigger_name;
+```
+
+其中：
+
+* `IF EXISTS` 表示如果创建的触发器已经存在，则重新创建触发器。
+
+* `database_name` 表示数据库名称，是可选参数，如果不指定则表示从当前数据库中删除触发器。
+
+示例：
+
+```sql
+obclient> DROP TRIGGER test.test_trg;
+```

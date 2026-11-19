@@ -1,0 +1,161 @@
+---
+title: "查看 Catalog"
+book: "数据库对象管理"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005683170.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 查看 Catalog
+
+创建 Catalog 后，可以通过 SQL 语句查看 Catalog 的相关信息。
+
+## 查看创建 Catalog 的语句
+
+可以使用 `SHOW CREATE CATALOG external_catalog_name;` 查看 Catalog 的创建语句。
+
+**示例如下：**
+
+```shell
+obclient> SHOW CREATE CATALOG test_odps_catalog;
+```
+
+## 查看当前租户包含的 Catalog
+
+可以使用 `SHOW CATALOGS;` 查看当前租户包含的 Catalog。
+
+**示例如下：**
+
+```shell
+obclient> SHOW CATALOGS;
+```
+
+返回结果如下：
+
+```shell
++-------------------+
+| Catalog           |
++-------------------+
+| internal          |
+| test_odps_catalog |
++-------------------+
+2 rows in set
+```
+
+## 查看当前 Catalog 环境
+
+可以使用函数 `CATALOG()` 查看当前 Catalog 环境。
+
+**示例如下：**
+
+```shell
+obclient> SELECT CATALOG();
+```
+
+返回结果如下：
+
+```shell
++-----------+
+| CATALOG() |
++-----------+
+| internal  |
++-----------+
+1 row in set
+```
+
+## 查看 Catalog 中的数据
+
+在 Catalog 中，可以和数据库内的表一样执行任意查询操作，也可以跨 Catalog 进行联合查询。
+
+**示例如下：**
+
+```shell
+obclient> SELECT * FROM internal.test.t1, odps_catalog.default.t1;
+```
+
+### 查询 Iceberg 表历史数据
+
+OceanBase 数据库支持查询 Iceberg 表历史数据的功能（Time Travel），即查询表在过去某个快照时的状态，即使这些数据在之后被修改或删除，也仍然可以访问当时的内容。
+
+Time Travel 语句格式如下：
+
+```sql
+SELECT select_expr_list
+    FROM iceberg_table_name {VERSION AS OF 'version_identifier' 
+                            | TIMESTAMP AS OF 'timestamp'};
+
+version_identifier:
+    branch_name
+    | tag_name
+    | snapshot_id
+```
+
+**参数说明：**
+
+* `select_expr_list`：指定要在查询结果中显示的列或表达式列表。有关 `SELECT` 语句的详细信息，参见 [SELECT](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/8100.select-of-mysql-mode/100.select-of-mysql-mode.md)。
+* `iceberg_table_name`：指定 Iceberg 表名。
+* `branch_name`：指定分支名称（字符串类型），查询将 Time Travel 到该分支的头部快照。
+* `tag_name`：指定标签名称（字符串类型），查询将 Time Travel 到标签所对应的快照。
+* `snapshot_id`：指定 snapshot id（整数类型），查询将 Time Travel 到 snapshot id 所对应的快照。
+* `timestamp`：指定时间戳（时间戳类型），查询将返回早于或等于该时间点的最新快照。
+
+    <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>如果指定的时间点（<code>timestamp</code>）该表还没有创建，查询将报错并反馈错误消息：Table snapshot does not exist。</p>
+    </main>
+
+**示例如下：**
+
+* Time Travel 到分支为 `audit-branch` 的头部快照。
+
+    ```shell
+    obclient> SELECT * FROM prod.db.table VERSION AS OF 'audit-branch';
+    ```
+
+* Time Travel 到标签为 `historical-snapshot` 所对应的快照。
+
+    ```shell
+    obclient> SELECT * FROM prod.db.table VERSION AS OF 'historical-snapshot';
+    ```
+
+* Time Travel 到 snapshot id 为 10963874102873 的快照。
+
+    ```shell
+    obclient> SELECT * FROM prod.db.table VERSION AS OF 10963874102873;
+    ```
+
+* Time Travel 到 1986 年 10 月 26 日 01:21:00 的最新快照。
+
+    ```shell
+    obclient> SELECT * FROM prod.db.table TIMESTAMP AS OF '1986-10-26 01:21:00';
+    ```
+
+## Catalog 切换
+
+可以使用 `SET CATALOG catalog_name;` 语句切换 Catalog。
+
+也可以使用 `USE internal.test;` 或 `USE odps_catalog.default` 一次性完成切换 Catalog 和数据库的操作。
+
+**示例如下：**
+
+* 切换成系统内部 Catalog。
+
+    ```shell
+    obclient> SET CATALOG internal;
+    ```
+
+* 切换成外部 Catalog。
+
+    ```shell
+    obclient> SET CATALOG external_catalog_name;
+    ```
+
+## 相关文档
+
+* [Catalog 概述](100.catalog-overview-of-mysql-mode.md)
+* [创建 External Catalog](200.create-catalog-of-mysql-mode.md)
+* [删除 Catalog](400.delete-catalog-of-mysql-mode.md)
+* [SHOW](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/8700.show-of-mysql-mode.md)

@@ -1,0 +1,34 @@
+---
+title: TIMESTAMP_TO_SCN
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504645.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# TIMESTAMP_TO_SCN
+
+## 语法声明
+
+```sql
+TIMESTAMP_TO_SCN(timestamp)
+```
+
+## 说明
+
+`TIMESTAMP_TO_SCN()` 函数将时间戳类型的参数作为输入并返回对应的 SCN（System Change Number）。该函数输入参数类型为 `DATETIME` 类型，返回的数据类型为 `UINT64_T`。
+
+## 示例
+
+```sql
+obclient> SELECT TIMESTAMP_TO_SCN("2023-02-21 00:00:01");
++-----------------------------------------+
+| timestamp_to_scn("2023-02-21 00:00:01") |
++-----------------------------------------+
+|                     1676908801000000000 |
++-----------------------------------------+
+1 row in set
+```

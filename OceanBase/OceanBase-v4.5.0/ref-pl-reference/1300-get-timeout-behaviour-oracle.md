@@ -1,0 +1,26 @@
+---
+title: GET_TIMEOUT_BEHAVIOUR
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480223.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# GET_TIMEOUT_BEHAVIOUR
+
+`GET_TIMEOUT_BEHAVIOUR` 函数用于返回当前超时行为。此调用是在目标会话中进行的。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_DEBUG.GET_TIMEOUT_BEHAVIOUR
+RETURN BINARY_INTEGER;
+```

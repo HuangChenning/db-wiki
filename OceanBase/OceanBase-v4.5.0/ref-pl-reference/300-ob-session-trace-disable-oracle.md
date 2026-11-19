@@ -1,0 +1,31 @@
+---
+title: OB_SESSION_TRACE_DISABLE
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480103.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# OB_SESSION_TRACE_DISABLE
+
+`OB_SESSION_TRACE_DISABLE` 用于关闭 session 级别全链路追踪。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_MONITOR.OB_SESSION_TRACE_DISABLE(session_id   IN  BINARY_INTEGER);
+```
+
+## 参数解释
+
+| **参数**      | **解释**                                              |
+|--------------|-------------------------------------------------------|
+| session_id   | 关闭全链路追踪的 `session_id`。如果为空，则表示当前 session 的 `session_id`。 |

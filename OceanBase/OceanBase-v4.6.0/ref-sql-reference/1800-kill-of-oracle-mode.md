@@ -1,0 +1,70 @@
+---
+title: KILL
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687589.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# KILL
+
+## 描述
+
+该语句用来终止一个会话。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>Oracle 模式下，普通用户只能查看和终止自己的会话。租户管理员可以查看和终止所有会话。如果普通用户拥有 <code>SHOW PROCESS</code> 权限，则可以查看所有会话。</p>
+  </main>
+
+## 语法
+
+```sql
+KILL [CONNECTION | QUERY] 'session_id'
+```
+
+## 参数解释
+
+|       参数      |    描述    |
+|-----------------|----------------------|
+| KILL CONNECTION | 与不含修改符的 `KILL` 一样，可终止指定的 Client Session ID。 |
+| KILL QUERY      | 可终止连接当前正在执行的语句，但是会保持会话的连接状态。    |
+| session_id      | 当前会话的 Client Session ID，该 ID 是会话在客户端中的唯一标识。可以通过 `SHOW PROCESSLIST` 或者 `SHOW FULL PROCESSLIST` 命令查询。|
+
+## 示例
+
+查询已连接的会话，再终止会话。
+
+```sql
+obclient> SHOW PROCESSLIST;
+```
+
+预期返回结果：
+
+```sql
++------------+------+----------------------+------+---------+------+--------+------------------+
+| ID         | USER | HOST                 | DB   | COMMAND | TIME | STATE  | INFO             |
++------------+------+----------------------+------+---------+------+--------+------------------+
+| 3221849635 | SYS  | 10.10.10.10:49142 | SYS  | Sleep   |  426 | SLEEP  | NULL             |
+| 3221656012 | SYS  | 10.10.10.10:57140 | SYS  | Sleep   |  426 | SLEEP  | NULL             |
+| 3221671483 | SYS  | 10.10.10.10:43154 | SYS  | Query   |    0 | ACTIVE | show processlist |
++------------+------+----------------------+------+---------+------+--------+------------------+
+3 rows in set
+```
+
+终止会话：
+
+```sql
+obclient> KILL 3221849635;
+
+obclient> KILL QUERY 3221656012;
+
+obclient> KILL CONNECTION 3221671483;
+```
+
+## 相关文档
+
+更多有关查询当前数据库中会话的数量和会话的 ID，详细信息，请参见 [查看租户会话](../../../../../1200.database-proxy/1500.view-tenant-sessions.md)。

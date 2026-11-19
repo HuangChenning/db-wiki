@@ -1,0 +1,146 @@
+---
+title: CREATE TRIGGER
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478385.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CREATE TRIGGER
+
+`CREATE TRIGGER` 语句用于创建一个新触发器。触发器是与表关联的数据库对象，当表发生指定事件时会激活触发器。
+
+## 语法
+
+```sql
+CREATE
+    [DEFINER = user]
+    TRIGGER trigger_name
+    trigger_time trigger_event
+    ON table_name FOR EACH ROW
+    [trigger_order]
+    trigger_body
+
+trigger_time: { BEFORE | AFTER }
+
+trigger_event: { INSERT | UPDATE | DELETE }
+
+trigger_order: { FOLLOWS | PRECEDES } other_trigger_name
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| DEFINER | 可选，指定触发器的定义者（创建者）。如果省略，默认为执行 `CREATE TRIGGER` 语句的用户。可以指定为 `'user_name'@'host_name'` 或 `CURRENT_USER`。 |
+| trigger_name | 触发器的名称，在 Schema 中必须唯一。不同 Schema 中的触发器可以具有相同的名称。 |
+| trigger_time | 触发器激活时间：`BEFORE`（在操作之前）或 `AFTER`（在操作之后）。列值的基础检查在触发器激活之前进行，因此不能使用 `BEFORE` 触发器将不符合列类型的值转换为有效值。 |
+| trigger_event | 激活触发器的事件类型：`INSERT`、`UPDATE` 或 `DELETE`。<br>- `INSERT`：每当在表中插入新行时激活，例如通过 `INSERT`、`LOAD DATA` 和 `REPLACE` 语句。<br>- `UPDATE`：只要行被修改时激活。<br>- `DELETE`：每当从表中删除一行时激活，例如通过 `DELETE` 和 `REPLACE` 语句。`DROP TABLE` 和 `TRUNCATE TABLE` 语句不会激活此触发器。 |
+| table_name | 与触发器关联的表名，必须是非临时表，不能将触发器与临时表或视图关联。 |
+| trigger_order | 可选，指定具有相同触发事件和操作时间的触发器顺序。`FOLLOWS` 表示在现有触发器之后激活，`PRECEDES` 表示在现有触发器之前激活。可以为具有相同触发器事件和操作时间的表定义多个触发器，默认情况下按创建的先后顺序被激活。 |
+| trigger_body | 触发器激活时要执行的语句。可以使用 `BEGIN ... END` 复合语句执行多个语句。在触发器主体中，可以使用别名 `OLD` 和 `NEW` 来引用主表中的列。`OLD.column_name` 是指更新或删除当前行之前的列，`NEW.column_name` 是指要插入的新行或更新后的当前行的列。触发器不能使用 `NEW.col_name` 和 `OLD.column_name` 来引用生成列。 |
+
+`CREATE TRIGGER` 要求与触发器关联的表具有 `TRIGGER` 权限。如果存在 `DEFINER` 子句，则所需的权限取决于 `user` 值。
+
+在检查触发器权限时会涉及 `DEFINER` 用户：
+
+* 使用 `CREATE TRIGGER` 语句创建触发器的用户必须具有 `TRIGGER` 权限。
+
+* 在触发激活时，将根据 `DEFINER` 用户检查权限。此用户必须具有以下权限：
+
+  * 主表的 `TRIGGER` 权限。
+
+  * 如果使用触发器主体中的 `OLD.col_name` 或者 `NEW.col_name` 引用表列，则要具有主表的 `SELECT` 权限。
+
+  * 如果表列是由触发器主体中 `SET NEW.col_name = value` 来赋值的，则要具有主表的 `UPDATE` 权限。
+
+  * 触发器执行的语句通常所需要的其他权限。
+
+在触发器主体中，通过 `CURRENT_USER()` 函数返回用于在触发器激活时检查权限的账号属于 `DEFINER` 用户，而不是其操作导致触发器被激活的用户。
+
+## 示例
+
+创建一个 BEFORE INSERT 触发器，在插入数据前设置默认值。
+
+```sql
+obclient> CREATE TABLE employee_audit(
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    salary DECIMAL(10,2),
+    created_at DATETIME
+);
+
+obclient> DELIMITER //
+
+obclient> CREATE TRIGGER before_employee_insert
+    BEFORE INSERT ON employee_audit
+    FOR EACH ROW
+    BEGIN
+        IF NEW.created_at IS NULL THEN
+            SET NEW.created_at = NOW();
+        END IF;
+    END //
+
+obclient> DELIMITER ;
+
+obclient> INSERT INTO employee_audit(emp_id, emp_name, salary) VALUES (1, 'Alice', 8000.00);
+
+obclient> SELECT * FROM employee_audit;
+```
+
+查询结果如下：
+
+```sql
++--------+----------+---------+---------------------+
+| emp_id | emp_name | salary  | created_at          |
++--------+----------+---------+---------------------+
+|      1 | Alice    | 8000.00 | 2025-12-23 15:30:06 |
++--------+----------+---------+---------------------+
+1 row in set
+```
+
+创建一个 AFTER UPDATE 触发器，记录更新日志。
+
+```sql
+obclient> CREATE TABLE salary_log(
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_id INT,
+    old_salary DECIMAL(10,2),
+    new_salary DECIMAL(10,2),
+    update_time DATETIME
+);
+
+obclient> DELIMITER //
+
+obclient> CREATE TRIGGER after_salary_update
+    AFTER UPDATE ON employee_audit
+    FOR EACH ROW
+    BEGIN
+        IF OLD.salary != NEW.salary THEN
+            INSERT INTO salary_log(emp_id, old_salary, new_salary, update_time)
+            VALUES (NEW.emp_id, OLD.salary, NEW.salary, NOW());
+        END IF;
+    END //
+
+obclient> DELIMITER ;
+
+obclient> UPDATE employee_audit SET salary = 9000.00 WHERE emp_id = 1;
+
+obclient> SELECT * FROM salary_log;
+```
+
+查询结果如下：
+
+```sql
++--------+--------+------------+------------+---------------------+
+| log_id | emp_id | old_salary | new_salary | update_time         |
++--------+--------+------------+------------+---------------------+
+|      1 |      1 |    8000.00 |    9000.00 | 2025-12-23 15:30:48 |
++--------+--------+------------+------------+---------------------+
+1 row in set
+```
+
+有关创建触发器的详细示例信息，请参见 [触发器](../200.storage-object-mysql/500.pl-trigger-mysql.md)。

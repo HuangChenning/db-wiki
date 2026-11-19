@@ -1,0 +1,63 @@
+---
+title: oceanbase.DBA_RSRC_PLANS
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285126.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_RSRC_PLANS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V3.1.2 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示系统定义的所有资源管理计划。
+
+## 字段说明
+
+|           字段名称            |       类型       | 是否可以为 NULL |                         描述                         |
+|---------------------------|----------------|------------|----------------------------------------------------|
+| PLAN_ID                   | decimal(10,0)         | NO         | 资源计划的 ID                                          |
+| PLAN                      | varchar(128)  | NO         | 资源计划名                                             |
+| NUM_PLAN_DIRECTIVES       | decimal(10,0)         | NO         | 当前资源计划定义的指令数。仅用于兼容，目前值固定为 `NULL` |
+| CPU_METHOD                | varchar(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`                               |
+| MGMT_METHOD               | varchar(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`                               |
+| ACTIVE_SESS_POOL_MTH      | varchar(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`                               |
+| PARALLEL_DEGREE_LIMIT_MTH | varchar(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`                               |
+| QUEUING_MTH               | varchar(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`                               |
+| SUB_PLAN                  | varchar(3)    | NO         | 仅用于兼容，目前值固定为 `NULL`                               |
+| COMMENTS                  | varchar(2000) | YES        | 资源计划的备注信息                                         |
+| STATUS                    | varchar(128)  | NO         | 仅用于兼容，目前值固定为 `NULL`                               |
+| MANDATORY                 | varchar(3)    | NO         | 仅用于兼容，目前值固定为 `NULL`                               |
+
+## 查询示例
+
+用户租户查询系统定义的所有资源管理计划。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_RSRC_PLANS;
+```
+
+查询结果如下：
+
+```shell
++---------+---------+---------------------+------------+-------------+----------------------+---------------------------+-------------+----------+----------+--------+-----------+
+| PLAN_ID | PLAN    | NUM_PLAN_DIRECTIVES | CPU_METHOD | MGMT_METHOD | ACTIVE_SESS_POOL_MTH | PARALLEL_DEGREE_LIMIT_MTH | QUEUING_MTH | SUB_PLAN | COMMENTS | STATUS | MANDATORY |
++---------+---------+---------------------+------------+-------------+----------------------+---------------------------+-------------+----------+----------+--------+-----------+
+|    NULL | daytime |                NULL | NULL       | NULL        | NULL                 | NULL                      | NULL        | NULL     | TPFirst  | NULL   | NULL      |
++---------+---------+---------------------+------------+-------------+----------------------+---------------------------+-------------+----------+----------+--------+-----------+
+1 row in set
+```
+
+## 相关视图或文档
+
+* 查看 Resource Manager 中的各类资源配置参数：[DBA_OB_RSRC_DIRECTIVES](11020.o-dba_ob_rsrc_directives-of-mysql-mode.md)
+
+* 查看当前活跃租户的资源管理计划：[V$RSRC_PLAN](../300.performance-view-of-mysql-mode/33500.v-ob_rsrc_plan-mysql.md)

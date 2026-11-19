@@ -1,0 +1,35 @@
+---
+title: auto_broadcast_location_cache_rate_limit
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478987.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# auto_broadcast_location_cache_rate_limit
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于 V4.x 版本进行了架构的变更升级，该配置项已不再适用，从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`auto_broadcast_location_cache_rate_limit` 用于设置每个 OBServer 每秒可广播的位置信息变化的分区的最大数量。
+
+## 属性说明
+
+|      **属性**      |    **描述**     |
+|------------------|---------------|
+| 参数类型             | Int            |
+| 默认值              | 1000          |
+| 取值范围             | \[1, 100000\] |
+| 是否重启 OBServer 节点生效 | 否             |
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p> 该配置项需要在开启自动刷新位置缓存信息逻辑功能后才能生效。</p>
+</main>

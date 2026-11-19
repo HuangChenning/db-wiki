@@ -1,0 +1,29 @@
+---
+title: "DBMS_VECTOR 概述"
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286797.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DBMS_VECTOR 概述
+
+`DBMS_VECTOR` 系统包用于管理向量索引。
+
+## DBMS_VECTOR 子程序概览
+
+下表列出了 OceanBase 数据库当前版本所支持的 `DBMS_VECTOR` 子程序和简要描述。
+
+| **子程序** | **描述** |
+| --- | --- |
+| [REBUILD_INDEX](300.rebuild-index-mysql.md) | 重建向量索引。 |
+| [INDEX_VECTOR_MEMORY_ESTIMATE](400.index-vector-memory-estimate-mysql.md) | 向量索引内存使用情况估算。 |
+| [INDEX_VECTOR_MEMORY_ADVISOR](500.index-vector-memory-advisor-mysql.md) | 向量索引内存使用情况分析。 |
+| [SET_ATTRIBUTE](800.set-attribute-mysql.md) | 设置向量索引自动重建的并行度、触发阈值与触发周期。 |
+
+## 相关文档
+
+* 向量索引内存与段合并相关配置，请参见 [向量索引内存管理](../../../../../640.ob-vector-search/200.ob-vector-index/200.ob-vector-index-memory-management.md)。

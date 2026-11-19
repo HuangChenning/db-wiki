@@ -1,0 +1,528 @@
+---
+title: "监控项总览"
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005282634.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# 监控项总览
+
+涵盖 OceanBase 数据库及其集群、租户、主机等所有核心组件的关键监控指标。
+
+## 监控项查询
+
+可在系统租户下通过 SQL 语句查询所有监控项的定义信息。示例如下：
+
+```shell
+obclient> SELECT STAT_ID, CLASS, NAME FROM V$STATNAME;
+```
+
+许多监控项与内部实现相关联，因此可能会有更改或删除，具体以实际情况为准，有关具体监控项类别查询请参见 [监控项](../../600.manage/700.monitor/200.monitor-items-introduction/100.system-monitor/200.monitor-items.md)。
+
+## 监控项类别
+
+OceanBase 数据库 V4.x 版本支持的监控项有 15 个大类，600 多个监控项，涵盖网络、请求队列、事务、SQL、缓存、存储、资源配额、日志等所有关键的执行信息。具体分类如下：
+
+| 监控项类别 ID | 监控项类别 | 监控项类别描述  |
+| ------------- | ---------- | -------------- |
+| 1             | NETWORK    | 网络           |
+| 2             | QUEUE      | 请求队列       |
+| 4             | TRANS      | 事务           |
+| 8             | SQL        | SQL            |
+| 16            | CACHE      | 缓存           |
+| 32            | STORAGE    | 存储           |
+| 64            | RESOURCE   | 资源           |
+| 128           | DEBUG      | 日志           |
+| 256           | CLOG       | CLOG           |
+| 512           | ELECT      | 选举           |
+| 1024          | OBSERVER   | 系统       |
+| 2048          | RS         | Root Service   |
+| 3072          | Time Model | 时间模型           |
+| 4096          | TABLEAPI   | TableAPI       |
+| 8192          | WR         | WR           |
+
+### 网络
+
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|   10000 |     1 | rpc packet in                                                  | 租户累计接收到的 RPC 包个数。租户接收到一个 RPC 请求，或者在发送一个 RPC 请求之后，接收到了回包，计数加 1。 |
+|   10001 |     1 | rpc packet in bytes                                            | 租户累计接收到的 RPC 包的字节数，单位为 Bytes。租户接收到一个 RPC 请求，或者在发送一个 RPC 之后，接收到了回包，累加上 RPC 请求或者回包的字节数大小。 |
+|   10002 |     1 | rpc packet out                                                 | 租户累计发送的 RPC 包个数。租户发送一个 RPC 请求，或者接收到一个 RPC 请求之后，进行了回包，计数加 1。 |
+|   10003 |     1 | rpc packet out bytes                                           | 租户累计发送的 RPC 包的字节数，单位为 Bytes。租户发送一个 RPC 请求，或者接收到一个 RPC 请求之后，进行了回包，累加上 RPC 请求或者回包的字节数大小。 |
+|   10004 |     1 | rpc deliver fail                                               | RPC 请求转发到租户工作队列的总的失败次数。RPC IO 转发 RPC 请求到租户队列的时候，如果转发失败了，就会计数加 1。 |
+|   10005 |     1 | rpc net delay                                                  | 租户下接收的 RPC 请求累计的网络传输延迟，单位为微秒。RPC IO 线程解析到一个 RPC 请求之后，获取当前时间戳，减去从包的头部获取到发送时间戳得到差值，累加到 RPC_NET_DELAY 上。 |
+|   10006 |     1 | rpc net frame delay                                            | 租户下接收的 RPC 请求累计的网络框架处理耗时，单位为微秒。RPC IO 转发 RPC 请求到租户队列的时候，获取当前时间戳，减去解析到一个 RPC 包的时候记下的时间戳得到差值，累加到 RPC_NET_FRAME_DELAY 上。 |
+|   10007 |     1 | mysql packet in                                                | 租户收到的 SQL 请求包的累计个数。在网络线程解码出一个完整的 SQL 请求包后，将该值加 1。 |
+|   10008 |     1 | mysql packet in bytes                                          | 租户收到的 SQL 请求包的累计值，单位为 Bytes。网络线程收到的原始数据包的大小，根据协议规则获得。 |
+|   10009 |     1 | mysql packet out                                               | 租户对于 SQL 请求回包个数的累计值。网络线程回包时，对于编码好的一个完整回包，计数值加 1。 |
+|   10010 |     1 | mysql packet out bytes                                         | 租户对于 SQL 请求回包字节数的累计值，单位为 Bytes。对于回包结果集编码时，将编码大小值进行累加。 |
+|   10011 |     1 | mysql deliver fail                                             | 租户 SQL 登录请求放入登录队列失败次数和其他请求放入工作线程队列失败次数的累计次数。对于登录请求，如果登录请求线程队列满，则该值加 1，对于其他请求，如果租户工作线程队列满，该值加 1。 |
+|   10012 |     1 | rpc compress original packet cnt                               | 租户发送的 RPC 请求，其中指定需要传输压缩的请求的累计次数。在发送 RPC 的时候，如果这个 RPC 设置了 compressor_type，就会计数加 1。 |
+|   10013 |     1 | rpc compress compressed packet cnt                             | 租户发送的被压缩了的 RPC 请求的累计次数。在发送 RPC 的时候，如果这个 RPC 设置了 compressor_type，并且压缩成功了（压缩后的字节数小于压缩前的字节数），计数加 1。 |
+|   10014 |     1 | rpc compress original size                                     | 租户发送的 RPC 请求，其中指定需要传输压缩的请求的原始字节数大小，单位为 Bytes。在发送 RPC 的时候，如果这个 RPC 设置了 compressor_type，就会把压缩前的 RPC 包的原始字节数大小累加到 RPC_COMPRESS_ORIGINAL_SIZE 指标上。 |
+|   10015 |     1 | rpc compress compressed size                                   | 租户发送的被压缩了的 RPC 请求，累计的压缩后的字节数大小，单位为 Bytes。在发送 RPC 的时候，如果这个 RPC 设置了 compressor_type，并且压缩成功了，压缩后的字节数大小累加到 RPC_COMPRESS_COMPRESSED_SIZE 指标上。 |
+|   10016 |     1 | rpc stream compress original packet cnt                        | V4.x 版本已弃用，仅在代码中保留，单位为次。 |
+|   10017 |     1 | rpc stream compress compressed packet cnt                      | V4.x 版本已弃用，仅在代码中保留，单位为次。 |
+|   10018 |     1 | rpc stream compress original size                              | V4.x 版本已弃用，仅在代码中保留，单位为 Bytes。 |
+|   10019 |     1 | rpc stream compress compressed size                            | V4.x 版本已弃用，仅在代码中保留，单位为 Bytes。 |
+|  110000 |     1 | standby fetch log bytes                                        | OBServer 节点网络备库同步的 RPC 累计接收到的数据量，单位为 Bytes。网络备库同步通过 RPC 接收数据的时候，将接收的字节数累加到 STANDBY_FETCH_LOG_BYTES 指标上。 | 
+|  110001 |     1 | standby fetch log bandwidth limit                              | 启用备库同步网络限速的情况下，OBServer 节点分配到的限速带宽，单位为 Bytes。启用备库网络限速后，RS 节点会按照设定的策略给集群中的节点分配带宽，OBServer 节点获取到 RS 分配的限速带宽之后，会记录到 STANDBY_FETCH_LOG_BANDWIDTH_LIMIT 指标上。|
+
+### 请求队列
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|   20000 |     2 | request enqueue count                                          | 表示租户有请求进入队列的总次数。每有一个请求被放进工作线程队列，计数累加 1 次。 |
+|   20001 |     2 | request dequeue count                                          | 表示租户有请求从队列中出来的总次数。每有一个请求从工作线程队列出来，计数累加 1 次。 |
+|   20002 |     2 | request queue time                                             | 表示租户所有请求等待队列的总时间，单位为微秒。租户工作线程每拿到一个请求时通过当前时间减去这个请求进入队列的时间，得到请求等待队列时间，累计入 REQUEST_QUEUE_TIME 指标里面。 |
+
+### 事务
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|   30000 |     4 | trans commit log sync time                                     | 该租户在该机器上事务 clog 提交成功到多数派成功为止消耗的时间累计，单位为微秒。在 clog 多数派成功，回调事务层时，用当前时间减去提交 clog 成功时的时间，计算出多数派耗费的时间，累加到该统计项上。 |
+|   30001 |     4 | trans commit log sync count                                    | 该租户在该机器上提交成功并完成多数派的 clog 次数。每次 clog 多数派成功后，回调事务层，事务层收到回调时增加计数。 |
+|   30002 |     4 | trans commit log submit count                                  | 该租户在该机器上提交过的 clog 次数。每次提交成功 clog 后（不保证多数派成功），增加 1 次计数。 |
+|   30005 |     4 | trans start count                                              | 该租户在该机器上开启的事务数量。创建 Session 的 OBServer 节点上每次开启事务成功，增加该统计项的计数。|
+|   30006 |     4 | trans total used time                                          | 该租户在该机器上的事务耗时累计，单位为微秒。创建 Session 的 OBServer 节点上每次事务结束后，累计事务耗时到该统计项。 |
+|   30007 |     4 | trans commit count                                             | 该租户在该机器上的 Commit 成功的事务次数。在 Session 连接的 OBServer 节点上每次成功提交一个事务，增加 1 个计数。 |
+|   30008 |     4 | trans commit time                                              | 该租户在该机器上的事务 Commit 耗时累计，单位为微秒。创建 Session 的 OBServer 节点上每次提交事务成功后，累计 Commit 耗时到该统计项。 |
+|   30009 |     4 | trans rollback count                                           | 该租户在该机器上 Rollback 成功的事务数量。创建 Session 的 OBServer 节点上每次 Rollback 事务成功，增加该统计项的计数。 |
+|   30010 |     4 | trans rollback time                                            | 该租户在该机器上的事务 Rollback 耗时，单位为微秒。创建 Session 的 OBServer 节点上每次 Rollback 成功后，累计 Rollback 耗时到该统计项。 |
+|   30011 |     4 | trans timeout count                                            | 该租户在该机器上超时的事务数量。创建 Session 的 OBServer 节点上每次事务超时，增加该统计项的计数。 |
+|   30012 |     4 | trans local trans count                                        | 该租户在该机器上结束的单机事务的数量（包含 Commit 和 Rollback 两种结束方式）。创建 Session 的 OBServer 节点上每次结束事务后，查看参与者数量，当参与者等于 1 的时候增加该计数。 |
+|   30013 |     4 | trans distribute trans count                                   | 该租户在该机器上结束的分布式事务的数量（包含 Commit 和 Rollback 两种结束方式）。创建 Session 的 OBServer 节点上每次结束事务后，查看参与者数量，当参与者大于 1 的时候增加该计数。 |
+|   30017 |     4 | trans without participant count                                | 该租户在该机器上结束的只读事务的数量（包含 Commit 和 Rollback 两种结束方式）。创建 Session 的 OBServer 节点上每次结束事务后，查看参与者数量，当参与者等于 0 的时候增加该计数。 |
+|   30018 |     4 | redo log replay count                                          | 租户内回放过的事务 Redo 日志次数。每次回放到事务的 Redo 日志时，增加 1 个计数。 |
+|   30019 |     4 | redo log replay time                                           | 租户内事务 Redo 日志回放耗时的累计，单位为微秒。每次回放 Redo 日志时，统计单次回放的耗时，累加到该统计项中。 |
+|   30020 |     4 | prepare log replay count                                       | 租户内回放过的事务 Prepare 日志个数。每次回放到事务的 Prepare 日志时，增加 1 个计数。 |
+|   30021 |     4 | prepare log replay time                                        | 租户内事务 Prepare 日志回放耗时的累计，单位为微秒。每次回放 Prepare 日志时，统计单次回放的耗时，累加到该统计项中。 |
+|   30022 |     4 | commit log replay count                                        | 租户内回放过的事务 Commit 日志次数。每次回放到事务的 Commit 日志时，增加 1 个计数。 |
+|   30023 |     4 | commit log replay time                                         | 租户内事务 Commit 日志回放耗时的累计。每次回放 Commit 日志时，统计单次回放的耗时，累加到该统计项中。 |
+|   30024 |     4 | abort log replay count                                         | 租户内回放过的事务 Abort 日志数量。每次回放到事务的 Abort 日志时，增加 1 个计数。 |
+|   30025 |     4 | abort log replay time                                          | 租户内事务 Abort 日志回放耗时的累计，单位为微秒。每次回放 Abort 日志时，统计单次回放的耗时，累加到该统计项中。 |
+|   30026 |     4 | clear log replay count                                         | 租户内回放过的事务 Clear 日志数量。每次回放到事务的 Clear 日志时，增加 1 个计数。 |
+|   30027 |     4 | clear log replay time                                          | 租户内事务 Clear 日志回放耗时的累计，单位为微秒。每次回放 Clear 日志时，统计单次回放的耗时，累加到该统计项中。 |
+|   30053 |     4 | gts request total count                                        | GTS 服务端处理 GTS 请求的总次数。当 GTS 服务端处理完 GTS 请求的时候，计数加 1。 |
+|   30054 |     4 | gts acquire total time                                         | 针对获取 GTS 异步场景，获取 GTS 等待总时间，单位为微秒。当获取到 GTS 时，增加等待时间。功能暂未实现，该指标暂无意义。 |
+|   30056 |     4 | gts acquire total wait count                                   | 针对获取 GTS 异步场景，获取 GTS 的总次数。当获取到 GTS 时，计数加 1。 |
+|   30063 |     4 | gts wait elapse total time                                     | 针对获取 GTS 异步场景，等待 GTS 推过的等待总时间，单位为微秒。当满足 GTS 推过时，增加等待时间。 |
+|   30065 |     4 | gts wait elapse total wait count                               | 针对获取 GTS 异步场景，等待 GTS 推过的等待总次数。单位为微秒。当满足 GTS 推过时，计数加 1。 |
+|   30077 |     4 | trans early lock release enable count                          | 从 V4.4.1 版本开始弃用，单位为次数。 |
+|   30078 |     4 | trans early lock release unable count                          | 从 V4.4.1 版本开始弃用，单位为次数。 |
+|   30079 |     4 | read elr row count                                             | MemTable 写入中产生提前解行锁的总行数。在 MemTable 写入过程中，提前解行锁加锁数据成功的数据行数量。 |
+|   30080 |     4 | local trans total used time                                    | 该租户在该机器上结束的单机事务的耗时累计（包含 Commit 和 Rollback 两种结束方式），单位为微秒。创建 Session 的 OBServer 节点上每次结束事务后，查看参与者数量，当参与者等于 1 的时候累加事务耗时到该统计项。 |
+|   30081 |     4 | distributed trans total used time                              | 该租户在该机器上结束的分布式事务的耗时累计（包含 Commit 和 Rollback 两种结束方式），单位为微秒。创建 Session 的 OBServer 节点上每次结束事务后，查看参与者数量，当参与者大于 1 的时候累加事务耗时到该统计项。 |
+|   30082 |     4 | tx data hit mini cache count                                   | 读事务数据表时，命中 MINI Cache 的次数。MINI Cache 是 TxData 的最高速缓存，命中次数越多性能越好。（MINI Cache 为请求级的缓存，每个 Access Context 有一个）。每次从 MINI Cache 中读到一个 TxData 都对计数器加 1。 |
+|   30083 |     4 | tx data hit kv cache count                                     | 读事务数据时，命中 KVCache 的次数。KVCache 的性能稍弱于 MINI Cache。大部分的读预期是会命中 KV 或 MINI Cache。每次从 KVCache 中读到一个 TxData 都对计数器加 1。 |
+|   30084 |     4 | tx data read tx ctx count                                      | 读事务数据时，命中事务上下文表的次数。每次从事务上下文表中读到一个 TxData 都对计数器加 1。 | 
+|   30085 |     4 | tx data read tx data memtable count                            | 读事务数据时，没有命中 Cache，从事务数据表 Memtable 中读的次数。每次从事务数据表 Memtable 中读一个 TxData 都对计数器加 1。 |
+|   30086 |     4 | tx data read tx data sstable count                             | 读事务数据时，从事务数据表 SSTable 中读到 TxData 的次数。（从 SSTable 中读 TxData 是性能最差的读，预期该项指标不会太高）。每次从事务数据表的 SSTable 中读一个 TxData 都对计数器加 1。 |
+|   30200 |     4 | xa start total count                                           | 针对 XA 事务，XA_START 语句总个数，包含成功的以及失败的。事务侧执行完 XA_START 逻辑后，计数加 1。 |
+|   30201 |     4 | xa start total used time                                       | 针对 XA 事务，XA_START 语句执行总耗时，包含成功的以及失败的，单位为微秒。事务侧执行完 XA_START 逻辑后，增加本地处理的消耗时间。 |
+|   30202 |     4 | xa start with rpc total count                                  | 针对 XA 事务，XA_START 语句远程执行的总个数，仅包含成功的。事务侧执行完 XA_START 逻辑后，如果该 XA_START 为远程执行且成功，则计数加 1。 |
+|   30203 |     4 | failed xa start total count                                    | 针对 XA 事务，XA_START 语句执行失败的总个数。事务侧执行完 XA_START 逻辑后，如果执行失败，则计数加 1。 |
+|   30204 |     4 | xa end total count                                             | 针对 XA 事务，XA_END 语句执行的总次数，包含成功的和失败的。事务侧执行完 XA_END 逻辑后，计数加 1。 |
+|   30205 |     4 | xa end total used count                                        | 针对 XA 事务，XA_END 语句执行的总耗时，单位为微秒。事务侧执行完 XA_END 逻辑后，增加本地处理的消耗时间。 |
+|   30206 |     4 | xa end with rpc total count                                    | 针对 XA 事务，远程执行 XA_END 语句的总个数，仅包含成功的。事务侧执行完 XA_END 逻辑后，如果是远程执行且执行成功，则计数加 1。 |
+|   30207 |     4 | failed xa end total count                                      | 针对 XA 事务，XA_END 语句执行失败的总个数。事务侧处理 XA_END 时，如果执行报错，则计数加 1。 |
+|   30208 |     4 | xa prepare total count                                         | 针对 XA 事务，XA_PREPARE 语句总个数，包含成功的以及失败的，单位为次数。事务侧执行完 XA_PREPARE 逻辑后，计数加 1。 |
+|   30209 |     4 | xa prepare total used time                                     | 针对 XA 事务，XA_PREPARE 语句执行总耗时，包含成功的以及失败的，单位为微秒。事务侧执行完 XA_PREPARE 逻辑后，增加本地处理的消耗时间。 |
+|   30210 |     4 | xa prepare with rpc total count                                | 针对 XA 事务，XA_PREPARE 语句远程执行的总个数，仅包含成功的。事务侧执行完 XA_START 逻辑后，如果该 XA_PREPARE 为远程执行且成功，则计数加 1。 |
+|   30211 |     4 | failed xa prepare total count                                  | 针对 XA 事务，XA_PREPARE 语句执行失败的总个数。事务侧执行完 XA_PREPARE 逻辑后，如果执行失败，则计数加 1。 |
+|   30212 |     4 | xa commit total count                                          | 针对 XA 事务，XA_COMMIT 语句执行的总个数，包含成功的和失败的。事务侧执行完 XA_COMMIT 逻辑后，计数加 1。|
+|   30213 |     4 | xa commit total used time                                      | 针对 XA 事务，XA_COMMIT 语句执行的总耗时，单位为微秒。事务侧执行完 XA_COMMIT 逻辑后，增加本地处理的消耗时间。 |
+|   30214 |     4 | xa commit with rpc total count                                 | 针对 XA 事务，远程执行 XA_COMMIT 语句的总个数，仅包含成功的。事务侧执行完 XA_COMMIT 逻辑后，如果是远程执行且执行成功，则计数加 1。 |
+|   30215 |     4 | failed xa commit total count                                   | 针对 XA 事务，XA_COMMIT 语句执行失败的总个数。事务侧处理 XA_COMMIT 时，如果执行报错，则计数加 1。 |
+|   30216 |     4 | xa rollback total count                                        | 针对 XA 事务，XA_ROLLBACK 语句总个数，包含成功的以及失败的。事务侧执行完 XA_ROLLBACK 逻辑后，计数加 1。 |
+|   30217 |     4 | xa rollback total used time                                    | 针对 XA 事务，XA_ROLLBACK 语句执行总耗时，包含成功的以及失败的，单位为微秒。事务侧执行完 XA_ROLLBACK 逻辑后，增加本地处理的消耗时间。 |
+|   30218 |     4 | xa rollback with rpc total count                               | 针对 xa 事务，XA_ROLLBACK 语句远程执行的总个数，仅包含成功的。事务侧执行完 XA_START 逻辑后，如果该 XA_ROLLBACK 为远程执行且成功，则加 1。 |
+|   30219 |     4 | failed xa rollback total count                                 | 针对 XA 事务，XA_ROLLBACK 语句执行失败的总个数。事务侧执行完 XA_ROLLBACK 逻辑后，如果执行失败，则计数加 1。 |
+|   30220 |     4 | started xa trans count                                         | 针对 XA 事务，已经成功开启的 XA 事务总个数。事务侧成功开启 XA 事务后，计数加 1。 |
+|   30221 |     4 | read only xa trans total count                                 | 针对 XA 事务，只读 XA 事务总个数。事务侧在提交 XA 事务的时候，如果该 XA 事务为只读事务，则计数加 1。 |
+|   30222 |     4 | xa trans with one phase commit total count                     | 针对 XA 事务，一阶段提交的 XA 事务的总个数。事务侧提交 XA 事务时，如果采用了一阶段提交，则计数加 1。 |
+|   30223 |     4 | inner sql total count in xa statement                          | 针对 XA 事务，XA 逻辑在执行过程中INNER SQL 的总个数。事务侧执行 XA 逻辑时，当执行完 INNER SQL 时，计数加 1。 |
+|   30224 |     4 | total count of inner sql (latency >= 10ms) in xa statement     | 针对 XA 事务，XA 逻辑在执行过程中超过 10ms 的 INNER SQL 的总个数。事务侧执行 XA 逻辑时，如果 INNER SQL 执行时间超过 10ms，则计数加 1。 |
+|   30225 |     4 | total count of inner sql (latency >= 20ms) in xa statement     | 针对 XA 事务，XA 逻辑在执行过程中超过 20ms 的 INNER SQL 的总个数。事务侧执行 XA 逻辑时，如果 INNER SQL 执行时间超过 20ms，则计数加 1。 |
+|   30226 |     4 | inner sql total used time in xa statement                      | 针对 XA 事务，XA 逻辑在执行过程中 INNER SQL 的总耗时，单位为微秒。事务侧执行 XA 逻辑时，当执行完 INNER SQL 时，增加 INNER SQL 的耗时。 |
+|   30227 |     4 | inner rpc total count in xa statement                          | 针对 XA 事务，XA 逻辑在执行过程中 RPC 的总次数。事务侧执行 XA 逻辑时，调用 RPC 时，计数加 1。 |
+|   30228 |     4 | total count of inner rpc (latency >= 10ms) in xa statement     | 针对 XA 事务，XA 逻辑在执行过程中超过 10ms 的 RPC 的总次数。事务侧执行 XA 逻辑时，如果 RPC 执行时间超过 10ms，则计数加 1。 |
+|   30229 |     4 | total count of inner rpc (latency >= 20ms) in xa statement     | 针对 XA 事务，XA 逻辑在执行过程中超过 20ms 的 RPC 的总个数。事务侧执行 XA 逻辑时，如果 RPC 执行时间超过 20ms，则计数加 1。 |
+|   30230 |     4 | inner rpc total used time in xa statement                      | 针对 XA 事务，XA 逻辑在执行过程中 RPC 的总耗时，单位为微秒。事务侧执行 XA 逻辑时，当调用完 1 次 RPC，增加 RPC 的消耗时间。 |
+|   30231 |     4 | dblink trans total count                                       | 针对 DBlink 事务，DBlink 事务的总次数。当开启 DBlink 事务时，计数加 1。 |
+|   30232 |     4 | failed dblink trans total count                                | 针对 DBlink 事务，DBlink 事务失败的总次数。当开启 DBlink 事务时且执行失败，计数加 1。 |
+|   30233 |     4 | dblink trans promotion total count                             | 针对 DBlink 事务，普通事务升级为 DBlink 事务的总次数。当普通事务升级为 DBlink 事务时，计数加 1。 |
+|   30234 |     4 | dblink trans callback total count                              | 针对 DBlink 事务，反向链路恢复事务调用的总次数。当执行反向链路恢复事务时，计数加 1。 |
+|   30235 |     4 | dblink trans commit total count                                | 针对 DBlink 事务，DBlink 事务提交的总次数。当 DBlink 事务执行 Commit 语句时，计数加 1。 |
+|   30236 |     4 | dblink trans commit total used time                            | 针对 DBlink 事务，DBlink 事务提交的总耗时，单位为微秒。当 DBlink 事务执行完 commit 语句时，增加本次 commit 耗时。 |
+|   30237 |     4 | failed dblink trans commit total count                         | 针对 DBlink 事务，DBlink 事务提交失败的总次数。当 DBlink 事务执行 commit 语句且执行失败，计数加 1。 |
+|   30238 |     4 | dblink trans rollback total count                              | 针对 DBlink 事务，DBlink 事务回滚的总次数。当 DBlink 事务执行 Rollback 语句时，计数加 1。 |
+|   30239 |     4 | dblink trans rollback total used time                          | 针对 DBlink 事务，DBlink 事务回滚的总耗时，单位为微秒。当 DBlink 事务执行完 Rollback 语句时，增加本次 Rollback 耗时。 |
+|   30240 |     4 | failed dblink trans rollback total count                       | 针对 DBlink 事务，DBlink 事务回滚失败的总次数。当 DBlink 事务执行 Rollback 语句且执行失败，计数加 1。 |
+
+
+### SQL
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|   40000 |     8 | sql select count                                               | SQL SELECT 执行次数。 |
+|   40001 |     8 | sql select time                                                | SQL SELECT 执行总时间，单位为微秒。 |
+|   40002 |     8 | sql insert count                                               | 用户下发的 insert 语句的总次数。 |
+|   40003 |     8 | sql insert time                                                | 用户下发的 insert 语句的总耗时。 |
+|   40004 |     8 | sql replace count                                              | 用户下发的 replace 语句的总次数。 |
+|   40005 |     8 | sql replace time                                               | 用户下发的 replace 语句的总耗时。 |
+|   40006 |     8 | sql update count                                               | 用户下发的 update 语句的总次数。 |
+|   40007 |     8 | sql update time                                                | 用户下发的 update 语句的总耗时，单位为微秒。 |
+|   40008 |     8 | sql delete count                                               | 用户下发的 delete 语句的总次数。 |
+|   40009 |     8 | sql delete time                                                | 用户下发的 delete 语句的总耗时，单位为微秒。 |
+|   40010 |     8 | sql local count                                                | SQL LOCAL 执行的次数。 |
+|   40011 |     8 | sql remote count                                               | SQL REMOTE 执行次数。 |
+|   40012 |     8 | sql distributed count                                          | SQL 语句分布式执行的次数。 |
+|   40013 |     8 | active sessions                                                | 活跃的 Session 数量。活跃的 Session 数量，新连接计数加 1，断开连接减 1。 |
+|   40014 |     8 | single query count                                             | 以非 multiple query 协议发过来的语句总数。 |
+|   40015 |     8 | multiple query count                                           | 以 multiple query 协议发过来的语句总数。 |
+|   40016 |     8 | multiple query with one stmt count                             | 以 multiple query 协议发过来，但实际只包含一条 SQL 的语句的个数。以 multiple query 协议发过来，但实际只包含一条 SQL 的语句的个数。 |
+|   40018 |     8 | sql other count                                                | 除 SELECT/INSERT/REPLACE/UPDATE/DELETE/COMMIT/ROLLBACK 之外的 SQL 执行次数。 |
+|   40019 |     8 | sql other time                                                 | 除 SELECT/INSERT/REPLACE/UPDATE/DELETE/COMMIT/ROLLBACK 之外的 SQL 执行总时间，单位为微秒。 |
+|   40020 |     8 | ps prepare count                                               | PREPARE STATEMENT 执行 PREPARE 的次数。 |
+|   40021 |     8 | ps prepare time                                                | PREPARE STATEMENT 执行 PREPARE 的总时间，单位为微秒。 |
+|   40022 |     8 | ps execute count                                               | PREPARE STATEMENT 执行 EXECUTE 的次数。 |
+|   40023 |     8 | ps close count                                                 | PREPARE STATEMENT 执行 close 的次数。 |
+|   40024 |     8 | ps close time                                                  | PREPARE STATEMENT 执行 close 的总时间，单位为微秒。 |
+|   40025 |     8 | sql commit count                                               | SQL 语句执行 COMMIT 的次数。 |
+|   40026 |     8 | sql commit time                                                | 执行 COMMIT 的总时间，单位为微秒。累加 COMMIT 执行时间。 |
+|   40027 |     8 | sql rollback count                                             | Rollback 执行次数。 |
+|   40028 |     8 | sql rollback time                                              | Rollback 执行总时间，单位为微秒。 |
+|   40030 |     8 | opened cursors current                                         | 当前打开的 cursor 数量。当前打开的 cursor 数量，打开一个 cursor 计数加 1，关闭一个 cursor 计数减 1。 |
+|   40031 |     8 | opened cursors cumulative                                      | 累计打开的 cursor 数量。累计打开的 cursor 数量，打开一个 cursor 计数加 1。 |
+|   40102 |     8 | sql inner insert count                                         | INNER SQL 下发的 insert 语句的总次数<sup><a href="#note1">1</a></sup>。 |
+|   40103 |     8 | sql inner insert time                                          | INNER SQL 下发的 insert 语句的总耗时，单位为微秒<sup><a href="#note1">1</a></sup>。  |
+|   40104 |     8 | sql inner replace count                                        | INNER SQL 下发的 replace 语句的总次数<sup><a href="#note1">1</a></sup>。 |
+|   40105 |     8 | sql inner replace time                                         | INNER SQL 下发的 replace 语句的总耗时，单位为微秒<sup><a href="#note1">1</a></sup>。 |
+|   40106 |     8 | sql inner update count                                         | INNER SQL 下发的 update 语句总数<sup><a href="#note1">1</a></sup>。 |
+|   40107 |     8 | sql inner update time                                          | INNER SQL 下发的 update 语句总耗时，单位为微秒<sup><a href="#note1">1</a></sup>。 |
+|   40108 |     8 | sql inner delete count                                         | INNER SQL 下发的 delete 语句总数<sup><a href="#note1">1</a></sup>。 |
+|   40109 |     8 | sql inner delete time                                          | INNER SQL 下发的 delete 语句总耗时，单位为微秒<sup><a href="#note1">1</a></sup>。 |
+|   40112 |     8 | user logons cumulative                                         | 用户累计登录次数。 |
+|   40113 |     8 | user logouts cumulative                                        | 用户累计注销次数。每次用户断开会话链接，次数加 1。 |
+|   40114 |     8 | user logons failed cumulative                                  | 用户累计登录失败次数。用户链接 OBServer 节点，建立会话的过程失败。 |
+|   40115 |     8 | user logons time cumulative                                    | 用户累计登录时间，单位为微秒。用户登录，创建会话的过程耗时累计。 |
+|   40117 |     8 | sql remote execute time                                        | SQL REMOTE 执行总时间，单位为微秒。SQL REMOTE 执行总时间。 |
+|   40118 |     8 | sql distributed execute time                                   | SQL 语句分布式执行的总时间，单位为微秒。分布式执行的总时间，累加分布式执行的时间。 |
+|   40119 |     8 | sql fail count                                                 | SQL 执行失败的次数。 |
+|   40120 |     8 | inner sql local count                                          | INNER SQL LOCAL 执行的次数。 |
+|   40121 |     8 | inner sql remote count                                         | INNER SQL 远程执行的次数。 |
+|   40122 |     8 | inner sql distributed count                                    | INNER SQL 分布式执行的次数。 |
+|   40123 |     8 | inner sql local execute time                                   | 从 V4.4.1 版本开始弃用，单位为微秒。 |
+|   40124 |     8 | inner sql remote execute time                                  | 从 V4.4.1 版本开始弃用，单位为微秒。 |
+|   40125 |     8 | inner sql distributed execute time                             | 从 V4.4.1 版本开始弃用，单位为微秒。 |
+|   40126 |     8 | try insert duplicate count                                     | INSERT UP 或 REPLACE 语句中实际发生冲突的行数。发生实际冲突时可能会影响性能，单位为次。 |
+|   40127 |     8 | das wait remote response time                                  | 执行分布式查询时，等待 DAS 远端任务执行结果的总时间，单位为微秒。 |
+|   40128 |     8 | tmp file write bytes                                           | SQL 执行过程中写临时文件的累计大小，单位为 Bytes。 |
+|   40129 |     8 | java udf call count                                            | 本 OBServer 节点上开始执行的 Java UDF 逻辑调用总次数，单位为次。一个向量化批次记为一次调用。 |
+|   40130 |     8 | java udf row count                                             | Java UDF 逻辑调用的输入行总数，单位为行。 |
+|   40131 |     8 | java udf success count                                         | 本 OBServer 节点上成功完成的 Java UDF 逻辑调用总次数，单位为次。 |
+|   40132 |     8 | java udf fail count                                            | 本 OBServer 节点上执行出错的 Java UDF 逻辑调用总次数，包含超时和被中断的调用，单位为次。 |
+|   40133 |     8 | java udf timeout count                                         | 因超时而失败的 Java UDF 逻辑调用次数，是 <code>java udf fail count</code> 的子集，单位为次。 |
+|   40134 |     8 | java udf interrupt count                                       | 因 kill 或取消操作而中断的 Java UDF 逻辑调用次数，是 <code>java udf fail count</code> 的子集，单位为次。 |
+|   40135 |     8 | java udf total time                                            | 已完成的 Java UDF 逻辑调用的端到端总耗时，单位为微秒。 |
+|   40136 |     8 | java udf dispatch time                                         | 已完成的 Java UDF 调用中，从输入准备就绪到获取 JNI 结果或沙箱最终响应的耗时总和，单位为微秒。 |
+|   40137 |     8 | java udf serialize time                                        | 将 OceanBase 参数转换为 Java 参数或沙箱请求内容的耗时总和，单位为微秒。 |
+|   40138 |     8 | java udf deserialize time                                      | 将 Java 或沙箱结果转换为 OceanBase 结果的耗时总和，单位为微秒。 |
+|   40139 |     8 | java udf stat evict dropped count                              | 每个租户的 Java UDF 明细统计表达到容量上限后，已删除 UDF 的明细统计被淘汰的总次数，单位为次。 |
+|   40140 |     8 | java udf stat evict lru count                                  | 每个租户的 Java UDF 明细统计表达到容量上限后，按 LRU 规则淘汰的明细统计总条数，单位为条。 |
+|   40141 |     8 | java udf stat insert drop count                                | 因没有可用空位而未能写入的 Java UDF 明细统计总条数，单位为条。不影响 Java UDF 的执行。 |
+
+<main id="notice" type='explain'>
+ <h4>说明</h4>
+ <p><a id="note1"></a><b>注释 1</b>：INNER SQL 指不是由用户发送的，而是由 OceanBase 数据库内部发送的 SQL 语句，通常用以查询或更改内部表。</p>
+</main>
+
+### 缓存
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|   50000 |    16 | row cache hit                                                  | table get 算子，预取数据行时，命中 cache 的次数。lookup_in_cache 函数中，判断数据行是否在 cache 中，如果命中 cache，该项加 1。 |
+|   50001 |    16 | row cache miss                                                 | table get 算子，预取数据行时，没有命中 cache 的次数。lookup_in_cache 函数中，判断数据行是否在 cache 中，如果没有命中 cache，该项加 1。 |
+|   50004 |    16 | bloom filter cache hit                                         | 宏块布隆过滤器缓存命中数，表示 SQL 语句使用到了已经构建的宏块布隆过滤器<sup><a href="#note2">2</a></sup>。 |
+|   50005 |    16 | bloom filter cache miss                                        | 宏块布隆过滤器缓存不命中数，表示对应的宏块布隆过滤器并未构建<sup><a href="#note2">2</a></sup>。 |
+|   50006 |    16 | bloom filter filts                                             | 宏块布隆过滤器有效过滤次数，即行对应行并不存在<sup><a href="#note2">2</a></sup>。 |
+|   50007 |    16 | bloom filter passes                                            | 宏块布隆过滤器未过滤次数，即对应行可能存在<sup><a href="#note2">2</a></sup>。 |
+|   50008 |    16 | block cache hit                                                | 取微块时命中 block cache 的次数。在取微块时，判断微块是否在 cache 中，如果命中 cache，该项加 1。 |
+|   50009 |    16 | block cache miss                                               | 取微块时没有命中 block cache 的次数。在取微块时，判断微块是否在 cache 中，如果没有命中 cache，该项加 1。 |
+|   50010 |    16 | location cache hit                                             | location cache 命中次数。ls_location_cache 和 tablet_ls_cache 缓存命中次数。当查询 tablet 到 logstream 的映射关系或 logstream 位置信息时，如果从本地缓存中成功获取到有效数据，则统计值加 1。在 ObTabletLSService 和 ObLSLocationService 的 get 方法中触发。 |
+|   50011 |    16 | location cache miss                                            | location cache 未命中次数。ls_location_cache 和 tablet_ls_cache 缓存未命中次数。当查询 tablet 到 logstream 的映射关系或 logstream 位置信息时，如果从本地缓存中无法获取到有效数据（缓存不存在、已过期或无效），则统计值加 1。在 ObTabletLSService 和 ObLSLocationService 的 get 方法中，当 is_cache_hit 为 false 时统计项加 1。 |
+|   50012 |    16 | location cache wait                                            | 在 OceanBase Location Cache 并发获取位置（location）时，由于并发数达到上限，线程被阻塞等待的次数。当 Location Cache 并发获取位置信息时，如果当前并发数已达到最大限制（max_count），线程需要在信号量上等待。每次线程在 ObLocationSem::acquire 方法中进入等待状态时，统计值加 1。在 has_wait 为 true 时触发，用于控制位置信息获取的并发度，防止过多并发请求对系统造成压力。 |
+|   50013 |    16 | location cache get hit from proxy virtual table                | 从 `__all_virtual_proxy_schema` 获取 location cache 命中次数。当通过代理虚拟表（ObAllVirtualProxySchema）查询 tablet 位置信息时，如果能够成功从缓存中获取到 tablet 到 logstream 的映射关系和 logstream location 信息，则统计值加 1。 |
+|   50014 |    16 | location cache get miss from proxy virtual table               | 从 `__all_virtual_proxy_schema` 获取 location cache 未命中次数。当通过代理虚拟表（ObAllVirtualProxySchema）查询 tablet 位置信息时，如果无法从缓存中获取到 tablet 到 logstream 的映射关系或 logstream 位置信息，则统计值加 1。 |
+|   50017 |    16 | location nonblock get hit                                      | 标识非阻塞读取 ls_location_cache 和 tablet_ls_cache 命中次数。当使用 nonblock_get 方法查询 tablet 到 logstream 的映射关系或 logstream 位置信息时，如果从本地缓存中成功获取到有效数据，则统计值加 1。在 `ObTabletLSService::nonblock_get` 和 `ObLSLocationService::nonblock_get` 方法中，当 OB_SUCC(ret) 为 true 时触发。与普通 get 方法不同，nonblock_get 不会等待缓存更新，立即返回结果。 |
+|   50028 |    16 | kvcache sync wash time                                         | 内存不够时，同步刷 cache 的内存的耗时，单位为微秒。try_flush_washable_mb 被调用且执行了刷 cache 时，该项加上对应的耗时。 |
+|   50029 |    16 | kvcache sync wash count                                        | 内存不够时，同步刷 cache 的内存的次数。try_flush_washable_mb 被调用且执行了刷 cache 时，该项加 1。 |
+|   50033 |    16 | fuse row cache hit                                             | table get 算子，读取非 memtable 行时，命中 cache 的次数。get_fuse_row_cache 函数中，判断 rowkey 对应的行是否在 cache 中，如果命中 cache，该项加 1。 |
+|   50034 |   16 | fuse row cache miss                                            | table get 算子，读取非 memtable 行时，没有命中 cache 的次数。get_fuse_row_cache 函数中，判断 rowkey 对应的行是否在 cache 中，如果没有命中 cache，该项加 1。 |
+|   50035 |    16 | schema cache hit                                               | 通过 Schema cache 成功获取 Schema 的次数。当查询 Schema 时，如果从本地缓存中成功获取到对应的 Schema 信息，则统计值加 1。在 `ObSchemaCache::get_schema` 方法中，当 `cache_.get()` 调用成功时触发。 |
+|   50036 |    16 | schema cache miss                                              | 通过 Schema cache 未成功获取 Schema 的次数。当查询 Schema 时，如果从本地缓存中无法获取到对应的 Schema 信息（缓存不存在、已过期或无效），则统计值加 1。在 `ObSchemaCache::get_schema` 方法中，当 `cache_.get()` 调用失败时触发。 |
+|   50037 |    16 | tablet ls cache hit                                            | 读取 tablet 时命中 cache 的次数。get_from_cache_ 函数中，判断 tablet 是否在 cache 中，如果命中 cache，该项加 1。 |
+|   50038 |    16 | tablet ls cache miss                                           | 读取 tablet 时没有命中 cache 的次数。get_from_cache 函数中，判断 tablet 是否在 cache 中，如果没有命中 cache，该项加 1。 |
+|   50045 |    16 | opt table stat cache hit                                       | 表级/分区级统计信息缓存的命中率，若命中，直接读取内存中的统计信息，单位为百分比。KVCache 统计表级/分区级统计信息缓存命中率。 |
+|   50046 |    16 | opt table stat cache miss                                      | 表级/分区级统计信息缓存的未命中率，若未命中，需要从内部表中加载统计信息到内存，单位为百分比。KVCache 统计表级/分区级统计信息缓存未命中率。 |
+|   50047 |    16 | opt column stat cache hit                                      | 列级统计信息缓存的命中率，若命中，直接读取内存中的统计信息，单位为百分比。KVCache 统计列级统计信息缓存命中率。 |
+|   50048 |    16 | opt column stat cache miss                                     | 列级统计信息缓存的未命中率，若未命中，需要从内部表中加载统计信息到内存，单位为百分比。KVCache 统计列级统计信息缓存未命中率。 |
+|   50049 |    16 | tmp page cache hit                                             | 读取临时文件时，临时文件页缓存命中的次数。读取数据前先查询 KVCache，命中则从 KVCache 读取，命中次数加 1。 |
+|   50050 |    16 | tmp page cache miss                                            | 读取临时文件时，临时文件页缓存未命中的次数。读取数据前先查询 KVCache，未命中则发 IO，未命中次数加 1。 |
+|   50051 |    16 | tmp block cache hit                                            | 读取临时文件时，临时文件 2MB 块缓存命中的次数。临时文件从磁盘读取数据前，先从 KVCache 中查询数据是否在缓存中，若命中则直接从缓存读取，命中次数加 1。 |
+|   50052 |    16 | tmp block cache miss                                           | 读取临时文件时，临时文件块缓存未命中的次数。 |
+|   50055 |    16 | opt ds stat cache hit                                          | 动态采样采集的统计信息缓存命中率，若命中，直接读取内存中的结果，单位为百分比。KVCache 统计动态采样统计信息缓存命中率。 |
+|   50056 |    16 | opt ds stat cache miss                                         | 动态采样采集的统计信息缓存未命中率，若未命中，需要发起采样 SQL 采集，单位为百分比。KVCache 统计动态采样统计信息缓存命中率。 |
+|   50057 |    16 | storage meta cache hit                                         | 存储二三级元数据缓存命中次数。存储数据分片 tablet 上会记录一些比较大的元数据（超过 1K），例如表的 Schema，多个 sstable。并且这些元数据可以按需访问，不需要常驻内存。因此我们会以 KVCache 的方式来管理这些结构体的内存生命周期。这两个指标就是元数据 KVCache 的命中统计。 |
+|   50058 |    16 | storage meta cache miss                                        | 存储二三级元数据缓存不命中次数。存储数据分片 tablet 上会记录一些比较大的元数据（超过 1K），例如表的 Schema，多个 sstable。并且这些元数据可以按需访问，不需要常驻内存。因此我们会以 KVCache 的方式来管理这些结构体的内存生命周期。这两个指标就是元数据 KVCache 的命中统计。 |
+|   50059 |    16 | tablet cache hit                                               | 存储 tablet 分片缓存命中次数。tablet 即数据分片，是许多流程的通用结构。当租户支持的分区数较多时，有限的内存无法保证所有 tablet 都常驻内存。因此我们使用 KVCache 来管理维护 tablet 的内存生命周期。这些指标就是有关 tablet 的缓存命中率。 |
+|   50060 |    16 | tablet cache miss                                              | 存储 tablet 分片缓存不命中次数。tablet 即数据分片，是许多流程的通用结构。当租户支持的分区数较多时，有限的内存无法保证所有tablet都常驻内存。因此我们使用 KVCache 来管理维护 tablet 的内存生命周期。这些指标就是有关 tablet 的缓存命中率。 |
+|   50061 |    16 | schema history cache hit                                       | Schema history cache 命中次数。Schema history cache 存储 `schema_type, tenant_id, schema_id, schema_version` 到 precise_schema_version 的映射关系，避免重复查询系统表获取精确版本号。如果从 history cache 中成功获取到对应的精确 Schema 版本号，则统计值加 1。 |
+|   50062 |    16 | schema history cache miss                                      | Schema history cache 未命中次数。Schema history cache存储 `schema_type, tenant_id, schema_id, schema_version` 到 precise_schema_version 的映射关系，避免重复查询系统表获取精确版本号。如果从 history cache 中无法获取到对应的精确 Schema 版本号（缓存不存在、已过期或无效），则统计值加 1。 |
+|   50063 |    16 | opt system stat cache hit                                      | 代价模型系统参数缓存命中率，若命中，直接读取内存中的缓存结果，单位为百分比。KVCache 统计代价模型参数缓存命中率。 |
+|   50064 |    16 | opt system stat cache miss                                     | 代价模型系统参数缓存命中率，若未命中，需要从内部表中加载代价模型相关的参数到内部表，单位为百分比。KVCache 统计代价模型参数缓存未命中率。 |
+|   50065 |    16 | log kv cache hit                                               | cold cache 的命中次数。向 PALF 读日志时，如果 hot cache 没有命中，会尝试读取 cold cahce，如果要读的日志命中 cold cahce，就会为该统计项计数加 1。 |
+|   50066 |    16 | log kv cache miss                                              | cold cache 的未命中次数。向 PALF 读日志时，如果 hot cache 没有命中，会尝试读取 cold cahce，如果要读的日志不在 cold cahce 中，就会为该统计项计数加 1。 |
+|   50067 |    16 | data block cache miss                                          | 取数据微块时没有命中 block cache 的次数。在取数据微块时，判断数据微块是否在 cache 中，如果没有命中 cache，该项加 1。 |
+|   50068 |    16 | index block cache miss                                         | 取中间层索引微块时没有命中 block cache 的次数。在取中间层索引微块时，判断数据微块是否在 cache 中，如果没有命中 cache，该项加 1。 |
+|   50069 |    16 | multi version fuse row cache hit                               | table get 算子，读取物化视图中的行时，命中 cache 的次数。`get_fuse_row_cache` 函数中，如果表是物化视图，并且判断 rowkey 对应的行是否在 cache 中，如果命中 cache，该项加 1。 |
+|   50070 |    16 | multi version fuse row cache miss                              | table get 算子，读取物化视图中的行时，没有命中 cache 的次数。`get_fuse_row_cache` 函数中，如果表是物化视图，并且判断 rowkey 对应的行是否在 cache 中，如果没有命中 cache，该项加 1。 |
+|   50071 |    16 | backup index cache hit                                         | 备份索引缓存命中次数。将备份索引放到缓存中，恢复时候先读取缓存，读不到再读备份介质。 |
+|   50072 |    16 | backup index cache miss                                        | 备份索引缓存未命中次数。将备份索引放到缓存中，恢复时候先读取缓存，读不到再读备份介质。 |
+|   50073 |    16 | backup meta cache hit                                          | 备份元信息缓存命中次数。将备份元信息放到缓存中，恢复时候先读取缓存，读不到再读备份介质。 |
+|   50074 |    16 | backup meta cache miss                                         | 备份元信息缓存命中次数。将备份元信息放到缓存中，恢复时候先读取缓存，读不到再读备份介质。 |
+|   50075 |    16 | truncate info cache hit                                        | 读取 truncate info 时，命中 cache 的次数。get_truncate_info_array 函数中，判断 truncate info 是否在 cache 中，如果命中 cache，该项加 1。 |
+|   50076 |    16 | truncate info cache miss                                       | 读取 truncate info 时，没有命中 cache 的次数。get_truncate_info_array 函数中，判断 truncate info 是否在 cache 中，如果没有命中 cache，该项加 1。 |
+|  120001 |    16 | tablet ls cache size                                           | tablet 的 cache 大小，单位为 Bytes。`get_from_cache` 函数中，使用了 tablet 的 cache。 |
+|  120002 |    16 | table stat cache size                                          | 表级/分区级统计信息缓存占用的内存空间，单位为 Bytes。KVCache 模块统计。 |
+|  120003 |    16 | table col stat cache size                                      | 列级统计信息缓存占用的内存空间，单位为 Bytes。KVCache 模块统计列级统计信息缓存占用的内存空间。 |
+|  120004 |    16 | index block cache size                                         | 中间层索引微块使用的 cache 大小，单位为 Bytes。get_micro_block_handle 函数中，使用了中间层索引微块的 `index_block_cache_`。 |
+|  120006 |    16 | user block cache size                                          | 数据微块使用的 cache 大小，单位为 Bytes。get_micro_block_handle 函数中，使用了中间层索引微块的 `index_block_cache_`。 |
+|  120008 |    16 | user row cache size                                            | table get 算子，预取数据行时使用的 cache 大小，单位为 Bytes。lookup_in_cache 函数中，使用了该cache。 |
+|  120009 |    16 | bloom filter cache size                                        | 宏块布隆过滤器缓存总大小。单位为 Bytes。用户的插入语句会需要检查主键冲突。当检查的数据在磁盘上时，为了避免发送IO，一种常用的性能优化手段就是对涉及的数据范围构建布隆过滤器。这里的一系列指标就是布隆过滤器缓存相关。 |
+|  120010 |    16 | log kv cache size                                              | 从 cold cache 中读取的日志大小，单位为 Bytes。向 PALF 读日志时，如果 hot cache 没有命中，会尝试读取 cold cahce，如果要读的日志在 cold cahce 中，就会累加成功从 cold cache 中读取的日志大小。 |
+|  245054 |    16 | external table disk cache hit count                            | 外表数据磁盘缓存的命中次数。外表每次查询时，如果开启了磁盘缓存(默认开启)功能，每次命中一个宏块该值加 1。启用外表磁盘缓存后，外表数据会按照宏块大小切分，存储于磁盘。 |
+|  245055 |    16 | external table disk cache miss count                           | 外表数据磁盘缓存的未命中次数。外表每次查询时，如果开启了磁盘缓存(默认开启)功能，每次未命中一个宏块该值加 1。 |
+|  245056 |    16 | external table disk cache hit bytes                            | 外表数据磁盘缓存的命中总大小，单位为 Bytes。外表每次查询时，如果开启了磁盘缓存(默认开启)功能，每次命中一个宏块该值加上读取的大小。 |
+|  245057 |    16 | external table disk cache miss bytes                           | 外表数据磁盘缓存的未命中总大小，单位为 Bytes。外表每次查询时，如果开启了磁盘缓存(默认开启)功能，每次未命中一个宏块该值加上读取的大小。 |
+
+<main id="notice" type='explain'>
+ <h4>说明</h4>
+ <ul><li><a id="note2"></a><b>注释 2</b>：用户的插入语句会需要检查主键冲突。当检查的数据在磁盘上时，为了避免发送 IO，一种常用的性能优化手段就是对涉及的数据范围构建布隆过滤器。这里的一系列指标就是布隆过滤器缓存相关。 </li><li><a id="note3"></a><b>注释 3</b>：宏块缓存中按照缓存类型，可以分为 META/TMP_FILE/MACRO/HOT_MCARO，其中 META 类型为所有的 Meta 类型宏块，TMP_FILE 为临时文件类型宏块；如果用户指定了某个 Tablet 为热点 Tablet，那么它对应的所有宏块都是 HOT_MACRO 类型，除这三种类型外的其他宏块为 MACRO 缓存类型。宏块缓存中各类型缓存支持相互挤占，因此该值等于租户分配的宏块缓存磁盘大小减去部分预留大小。  </li></ul>
+</main>
+
+### 存储
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|   60000 |    32 | io read count                                                  | 表示读 IO 的总 IOPS。每个读 IO 执行完，会将 IO_READ_COUNT 指标加 1。 |
+|   60001 |    32 | io read delay                                                  | 表示读 IO 的总延时，单位为微秒。IO_READ_DELAY 指标累积了每次读 IO 操作的硬件服务延时。该延时从请求被分派至磁盘时开始计时，直至磁盘完成处理并返回。|
+|   60002 |    32 | io read bytes                                                  | 表示读 IO 的总带宽。这里统计的是读 IO 的总量，单位是 Bytes，可以根据一段时间的变化量来统计每秒的读 IO 的平均值。每个读 IO 执行完，会统计其读的带宽，累积计入 IO_READ_BYTES 指标。 |
+|   60003 |    32 | io write count                                                 | 表示写 IO 的总 IOPS，每个写 IO 执行完，会将 IO_WRITE_COUNT 加 1。 |
+|   60004 |    32 | io write delay                                                 | 表示写 IO 的总延时，单位为微秒。IO_READ_DELAY 指标累积了每次写 IO 操作的硬件服务延时。该延时从请求被分派至磁盘时开始计时，直至磁盘完成处理并返回。 |
+|   60005 |    32 | io write bytes                                                 | 表示写 IO 的总带宽。这里统计的是写 IO 的总量，单位为 Bytes。可以根据一段时间的变化量来统计平均值。每个写 IO 执行完，会统计其写的带宽，累积计入 IO_WRITE_BYTES 指标。 |
+|   60006 |    32 | memstore scan count                                            | MemTable 范围查询的次数。MemTable 范围查询开始时此值加 1。 |
+|   60007 |    32 | memstore scan succ count                                       | MemTable 范围查询成功的次数。MemTable 范围查询成功后此值加 1。 |
+|   60008 |    32 | memstore scan fail count                                       | MemTable 范围查询失败的次数。MemTable 因为任何原因在范围查询过程中失败此值加 1。 |
+|   60009 |    32 | memstore get count                                             | MemTable 点查的次数。MemTable 点查开始时此值加 1。 |
+|   60010 |    32 | memstore get succ count                                        | MemTable 点查成功的次数。MemTable 点查成功后此值加 1。 |
+|   60011 |    32 | memstore get fail count                                        | MemTable 点查失败的次数。MemTable 因为任何原因在点查过程中失败此值加 1。 |
+|   60012 |    32 | memstore apply count                                           | MemTable 写入的次数。MemTable 写入开始时此值加 1。 |
+|   60013 |    32 | memstore apply succ count                                      | MemTable 写入成功的次数。MemTable 写入成功后此值加 1。 |
+|   60014 |    32 | memstore apply fail count                                      | MemTable 写入失败的次数。MemTable 因为任何原因在写入过程中失败此值加 1。 |
+|   60016 |    32 | memstore get time                                              | MemTable 点查的耗时，单位为微秒。MemTable 点查后无论是否成功，此值增加点查的耗时。 |
+|   60017 |    32 | memstore scan time                                             | MemTable 范围查询的耗时，单位为微秒。MemTable 范围查询后无论是否成功，此值增加范围查询的耗时。 |
+|   60018 |    32 | memstore apply time                                            | MemTable 写入的耗时，单位为微秒。MemTable 写入后无论是否成功，此值增加写入的耗时。 |
+|   60019 |    32 | memstore read lock succ count                                  | MemTable 读取成功的行数。MemTable 读取成功一行后此值加 1。 |
+|   60020 |    32 | memstore read lock fail count                                  | MemTable 读取因读锁冲突超时失败的行数。在 MemTable 读取过程中，若读取的数据处于提交中但是提交状态和版本号未确定（比如说处于提交日志未决或者分布式事务未决的状态，因此次状态很短），则会等待在读锁上，若因为此冲突超时后导致失败此值加 1。 |
+|   60021 |    32 | memstore write lock succ count                                 | MemTable 写入成功的行数。在 MemTable 写入过程中，会校验锁冲突，丢失更新以及主键冲突，若无上述冲突则值加 1。<main id="notice" type='explain'><h4>说明</h4><p>MemTable 上校验成功依旧可能失败在 SSTable 上。</p></main> |
+|   60022 |    32 | memstore write lock fail count                                 | MemTable 写入因冲突而失败的行数。在 MemTable 写入过程中，会校验锁冲突，丢失更新以及主键冲突，若存在上述冲突则值加 1。<main id="notice" type='explain'><h4>说明</h4><p>不包含 SSTable 上的校验。</p></main> |
+|   60023 |    32 | memstore wait write lock time                                  | MemTable 写入锁冲突后唤醒的等待时间，单位为微秒。在 MemTable 写入过程中，若产生锁冲突，此请求会被放入锁冲突队列，此值会加上从放入锁冲突队列开始到唤醒的时间。 |
+|   60024 |    32 | memstore wait read lock time                                   | MemTable 读锁冲突的等待时间，单位为微秒。在 MemTable 读取过程中，若读取的数据处于提交但是提交状态和版本号未确定（比如说处于提交日志未决或者分布式事务未决的状态，因此次状态很短），则会等待在读锁上，此值会加上等待时间。 |
+|   60027 |    32 | io prefetch micro block count                                  | 微块缓存 IO 总次数。查询路径优化，会将需要访问的磁盘上的微块，通过预取，加载到内存，即微块缓存。本指标是系统加载磁盘微块的总次数。结合内部表上微块缓存命中率，可以衡量系统中查询性能优化效果。 |
+|   60028 |    32 | io prefetch micro block bytes                                  | 微块缓存 IO 总字节数，单位为 Bytes。查询路径优化，会将需要访问的磁盘上的微块，通过预取，加载到内存，即微块缓存。本指标是系统加载磁盘微块的总字节数。结合内部表上微块缓存命中率，可以衡量系统中查询性能优化效果。 |
+|   60031 |    32 | storage read row count                                         | table scan 算子的非下压路径下，对 fuse 后的行进行处理的次数，单位为行数。`process_fuse_row` 函数被调用时，该项加 1。 |
+|   60032 |    32 | storage delete row count                                       | DML 语句 affected row 细分项，指实际删除的有效行数。每次行在存储引擎上被删除，统计项加 1。 |
+|   60033 |    32 | storage insert row count                                       | DML 语句 affected row 细分项，指实际插入的有效行数。每次行在存储引擎上被插入，统计项加 1。 |
+|   60034 |    32 | storage update row count                                       | update 操作更新的行数。update_rows 函数被调用时，该项加上被更新的行数。 |
+|   60037 |    32 | memstore row purge count                                       | V4.4.1 版本开始弃用。|
+|   60038 |    32 | memstore row compaction count                                  | MemTable 行上稀疏多版本合并成紧凑版本的次数。MemTable 行上存在着只记录变更列的稀疏多版本，当多版本变多以后，MemTable 会生成一个紧凑单版本来提高读性能，每次生成一个紧凑单版本此值加 1。 |
+|   60056 |    32 | memstore read row count                                        | 做 filter 前从 MemTable 读取的行数。从 MemTable 中读取一行时，该项加 1。 |
+|   60057 |    32 | ssstore read row count                                         | 查询下压/非下压路径下读取的 major sstable、minor sstable、mini sstable 行数；下压路径下包括被过滤的行，相当于走下压路径的 sstable 在 range 范围内的总行数，行存包括 skip index 跳过预取的行，列存不包括 skip index 跳过预取的行，非下压路径下包括被过滤的行，不包括未提交行、回滚行、微块内多版本行。 |
+|   60058 |    32 | memstore write bytes                                           | MemTable 写入成功的数据量，单位为 Bytes。在 MemTable 写入成功后，会统计并增加主键和数据量的大小。 |
+|   60068 |    32 | memstore write lock wakenup count in lock_wait_mgr             | MemTable 写入锁冲突后唤醒的次数。在 MemTable 写入过程中，若产生锁冲突，此请求会被放入锁冲突队列，若请求被唤醒后值加 1。 |
+|   60077 |    32 | get row effect read                                            | table get 算子，从微块中读取的有效行数。`ObMicroBlockRowGetter::get_block_row` 函数中，读取的行的 row flag 不为 DF_NOT_EXIST 时，该项加 1。 |
+|   60078 |    32 | get row empty read                                             | table get 算子，从微块中读取的无效行数，单位为行数。`ObMicroBlockRowGetter::get_block_row` 函数中，读取的行的 row flag 为 DF_NOT_EXIST 时，该项加 1。 |
+|   60083 |    32 | memstore write lock wait timeout count                         | MemTable 写入锁冲突未唤醒超时的次数。在 MemTable 写入过程中，若产生锁冲突，此请求会被放入锁冲突队列，若请求在唤醒前就超时了则值加 1。 |
+|   60084 |    32 | accessed data micro block count by io                          | 取数据微块时，没命中 cache 而需要 IO 的微块数量。在取数据微块时，如果不是从 cache 中取的，而是执行了 IO，该项加 1。 |
+|   60085 |    32 | data micro block cache hit                                     | 取数据微块时命中 block cache 的数量。在取数据微块时，判断数据微块是否在 cache 中，如果命中 cache，该项加 1。 |
+|   60086 |    32 | accessed index micro block count by io                         | 取中间层索引微块时，没命中 cache 而需要 IO 的微块数量。在取中间层索引微块时，如果不是从 cache 中取的，而是执行了 IO，该项加 1。 |
+|   60087 |    32 | index micro block cache hit                                    | 取中间层索引微块时命中 block cache 的数量。在取中间层索引微块时，判断微块是否在 cache 中，如果命中 cache，该项加 1。 |
+|   60088 |    32 | blockscaned data micro block count                             | 下压路径下打开的微块数，行存和列存都包括 skip index 跳过预取的微块数，列存表多个 CG 的微块数要累加，单位为微块数。行存：打开微块时判断是否能走下压路径，如果可以，该项加 1；列存：下压路径打开微块时，该项加 1。 |
+|   60089 |    32 | blockscaned row count                                          | 下压路径下打开的微块在 range 范围内的总行数。包括被过滤的行（能下压的微块不存在未提交行、回滚行、微块内多版本行，行存不存在微块间多版本行，也就是 rowkey 交叉，列存可能存在微块间多版本行），行存包括 skip index 跳过预取的行，列存不包括 skip index 跳过预取的行，列存表多个 CG 的行数不累加，单位为行数。<ul><li>行存：打开微块时判断是否能走下压路径，如果可以，该项会加上这个微块的总行数。 </li><li>列存：Filter 结束或投影结束后，会在该项上加上处理的总行数。 </li></ul>|
+|   60090 |    32 | storage filtered row count                                     | 下压/非下压 Filter 过滤的总行数；做 filter 时，该项加上过滤掉的行数，行存包括 skip index 跳过预取的行，列存不包括 skip index 跳过预取的行。|
+|   60091 |    32 | minor ssstore read row count                                   | 查询下压/非下压路径下读取的 minor sstable、mini sstable 行数，单位为行数。下压路径下包括被过滤的行，相当于走下压路径的 minor/mini sstable 在 range 范围内的总行数，非下压路径下包括被过滤的行，不包括未提交行、回滚行、微块内多版本行。 |
+|   60092 |    32 | major ssstore read row count                                   | 查询下压/非下压路径下读取的 major sstable 行数；下压路径下包括被过滤的行，相当于走下压路径的 major sstable 在 range 范围内的总行数，行存包括 skip index 跳过预取的行，列存不包括 skip index 跳过预取的行，非下压路径下包括被过滤的行，不包括未提交行、回滚行、微块内多版本行。 |
+|   60093 |    32 | storage waiting throttle time                                  | 为了动态匹配系统的转储速度，当转储速度跟不上内存写入速度时，部分模块的内存分配会被限速。该配置项统计了这些内存分配被限速的总时长，单位为微秒。当 MemTable（TxData、Mds）等模块的内存占用超过一定阈值后，每次内存分配后线程都会sleep一段时间，这些sleep的总时长都会被累加到这个统计值上。 |
+|   69000 |    32 | backup io read count                                           | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69001 |    32 | backup io read bytes                                           | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69002 |    32 | backup io write count                                          | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69003 |    32 | backup io write bytes                                          | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69010 |    32 | backup delete count                                            | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69012 |    32 | backup io read delay                                           | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69013 |    32 | backup io write delay                                          | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69017 |    32 | backup delete delay                                            | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69019 |    32 | backup io list count                                           | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69020 |    32 | backup io read failed count                                    | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69021 |    32 | backup io write failed count                                   | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69022 |    32 | backup io delete failed count                                  | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69023 |    32 | backup io list failed count                                    | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69024 |    32 | backup io tagging count                                        | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|   69025 |    32 | backup io tagging failed count                                 | V4.4.1 版本开始弃用。请在 I/O manager 中检查此指标。 |
+|  130000 |    32 | active memstore used                                           | 节点活跃 memstore 大小，单位为 Bytes。节点回放或者写入会使用 memstore，当 memstore 使用量达到一定程度以后，会触发冻结。所有未冻结的 memstore 称为 active memstore。 |
+|  130001 |    32 | total memstore used                                            | 节点上租户 memstore 使用内存的总量，单位为 Bytes。该内存占用包括 active 和 frozen 的 memstore，即，该租户在该节点上所有的 memstore 内存使用量。 |
+|  130002 |    32 | major freeze trigger                                           | 触发冻结的 memstore 大小，单位为 Bytes。get_tenant_memstore_cond 函数中，通过 memstore_freeze_trigger 与 max_cached_memstore_size 相加得到。 |
+|  130004 |    32 | memstore limit                                                 | 节点上租户 memstore 可以使用的内存上限，单位为 Bytes。用户指定用户租户内存上限，通过 `memstore_limit_percentage` 和 `_memstore_limit_percentage` 配置 memstore 可以使用的最大上限。其中，`memstore_limit_percentage` 是集群级别的，`_memstore_limit_percentage` 是租户级别的。`_memstore_limit_percentage` 的优先级高于`memstore_limit_percentage`。当两者均未设置时，小于 8G 的租户其 memstore 可用比例为 40%，大于 8G 的租户其 memstore 可用比例为 50%。 |
+|  240022 |    32 | object storage io head count                                   | 对象存储 HEAD 操作计数。当发起对象存储 head 请求时，计数增加 1。 |
+|  240023 |    32 | object storage io head fail count                              | 对象存储 HEAD 操作失败计数。当对象存储 head 请求失败时，计数增加 1。 |
+
+### 资源
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|  140001 |    64 | min memory size                                                | 租户的内存规格，决定租户的内存上限。OmtNodeBalancer 后台线程定期从 `DBA_OB_UNIT_CONFIGS` 表获取租户最新的 min_memory，然后更新到 ObTenantMemoryMgr 的 Limit。 |
+|  140002 |    64 | max memory size                                                | 租户的内存规格，决定租户的内存上限，单位为 Bytes。OmtNodeBalancer 后台线程定期从 `DBA_OB_UNIT_CONFIGS` 表获取租户最新的 min_memory，然后更新到 ObTenantMemoryMgr 的 Limit。 |
+|  140003 |    64 | memory usage                                                   | 租户占用的内存，单位为 Bytes。ObTenantMemoryMgr 会实时维护一个内存值，记录租户实际的内存占用。 |
+|  140004 |    64 | min cpus                                                       | 表示租户的 CPU 规格。决定租户常驻的工作线程数目，决定一些后台模块的线程数。OmtNodeBalancer 后台线程定期从 `DBA_OB_UNIT_CONFIGS` 表获取最新的 max_cpu 并同步给多租户。OmtNodeBalancer 后台线程定期根据同步的 max_cpu 调整工作线程数目。 |
+|  140005 |    64 | max cpus                                                       | 表示租户的 CPU 规格。决定租户常驻的工作线程数目，决定一些后台模块的线程数。开 cgroup 时决定租户线程 CPU 使用率上限。OmtNodeBalancer 后台线程定期从 `DBA_OB_UNIT_CONFIGS` 表获取最新的 max_cpu 并同步给多租户。OmtNodeBalancer 后台线程定期根据同步的 max_cpu 调整工作线程数目。 |
+|  140006 |    64 | cpu usage                                                      | 表示租户工作线程的线程使用率，反映租户工作线程的繁忙程度，单位为百分比。OmtNodeBalancer 后台线程每 10 秒统计一次租户工作线程处理请求的时间占总时间的比例，并进行归一化处理后乘上租户 min_cpu 作为 cpu_usage 统计值。 |
+|  140008 |    64 | observer memory used size                                      | OBServer 节点实际使用的内存，单位为 Bytes。AChunkMgr 会实时维护一个内存值，记录 OBServer 节点的实际使用的内存（小于等于实际的内存占用）。 |
+|  140009 |    64 | observer memory free size                                      | OBServer 节点的 chunk 缓存。AChunkMgr 会实时维护一个内存值，记录 OBServer 节点的缓存大小。缓存表示 OBServer 节点分配出但并未实际使用的内存大小。 |
+|  140010 |    64 | is mini mode                                                   | OBServer 节点进程是否处于 mini mode。OBServer 节点内存小于 12G，则认为属于 mini mode。 |
+|  140011 |    64 | observer memory hold size                                      | OBServer 节点占用的内存，包括缓存和全部用户实际使用的内存，单位为 Bytes。AChunkMgr 会实时维护一个内存值，记录 OBServer 节点的占用的内存大小。 |
+|  140012 |    64 | worker time                                                    | 表示租户工作线程繁忙的总时间，单位为微秒。OmtNodeBalancer 后台线程每 10 秒统计一次租户工作线程处理请求的总时间，累计入 worker_time 值。 |
+|  140013 |    64 | cpu time                                                       | 表示租户工作线程加后台线程使用的 CPU总时间，单位为微秒。<ul><li>开 cgroup：读取租户 cgroup 目录下的 cpuacct.usage 文件，即可获取租户线程的 CPU 总时间。 </li><li>不开 cgroup：OmtNodeBalancer 后台线程每 10 秒遍历一次租户所有线程，计算两次遍历之间 <code>/proc/[pid]/task/[tid]/stat</code> 的差值，统计其 CPU 时间增量并累加求和。 </li></ul> |
+|  140014 |    64 | effective observer memory limit                                | OBServer 节点的内存上限，单位为 Bytes。仅 sys 租户可以查询，该值为节点级。<ul><li>默认设置配置项 <code>memory_limit_percentage</code>，OBServer 节点的内存上限为 <code>memory_limit_percentage * 机器的物理内存</code>。 </li><li>用户可以通过设置配置项 <code>memory_limit</code>，确定 OBServer 节点的内存上限。 </li></ul>|
+|  140015 |    64 | effective system memory                                        | 500 租户的预留内存和隐藏 sys 内存，单位为 Bytes。默认根据配置项 <code>memory_limit</code> 自适应一个内存值；可通过配置项 <code>system_memory</code> 显示指定。 |
+|  140016 |    64 | effective hidden sys memory                                    | 隐藏 sys 租户的内存上限，单位为 Bytes。每个 OBServer 节点均有一部分内存被分配给 sys 租户使用。默认根据内存配置项 <code>system_memory</code> 自适应一个内存值；用户也可以通过配置项 <code>_hidden_sys_tenant_memory</code> 显示指定。|
+|  140017 |    64 | max session num                                                | 租户允许的最大会话数。根据租户的内存大小，计算租户允许的最大会话数。 |
+|  140018 |    64 | kvcache hold                                                   | KVCache 占用的内存大小，单位为 Bytes。内存管理器统计 KVCache 内存的占用。 |
+|  140019 |    64 | unmanaged memory size                                          | 库函数直接从 mmap 读取的内存，单位为 Bytes。全局的内存值，实时记录库函数调用mmap/unmap申请的内存。指 OBServer 节点调用的三方库函数调用 mmap 申请的内存。 |
+
+### 日志
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|   70000 |   128 | refresh schema count                                           | Schema 成功刷新次数。当 OceanBase 数据库需要刷新 Schema 时，每次成功完成 Schema 刷新操作后统计值加。在 `ObServerSchemaService::refresh_schema` 方法中。该操作包括全量刷新 `refresh_full_schema` 和增量刷新 `refresh_increment_schema` 两种模式，用于保持本地元数据缓存与系统表的一致性。 |
+|   70001 |   128 | refresh schema time                                            | Schema 成功刷新耗时累加，单位为微秒。当 OceanBase 数据库刷新 Schema 时，统计整个刷新过程的总耗时。在 `ObServerSchemaService::refresh_schema` 方法中，当OB_SUCC(ret) 为 True 时，累加从方法开始到结束的时间差。包括包括全量刷新 `refresh_full_schema` 和增量刷新 `refresh_increment_schema` 两种模式的所有开销。 |
+|   70002 |   128 | inner sql connection execute count                             | INNER SQL 执行次数。每执行一条INNER SQL，计数加 1。 |
+|   70003 |   128 | inner sql connection execute time                              | INNER SQL 执行总时间，单位为微秒。INNER SQL 执行总时间，累加 INNER SQL 执行时间。 |
+|   70006 |   128 | log stream table operator get count                            | 从 `__all_ls_meta_table` 表成功读取加载的 LS 信息次数。当通过 `ObLSTableOperator` 从 `__all_ls_meta_table` 表获取日志流信息时，每次成功获取到 `ls_info` 后统计值加 1。在 `ObLSTableOperator::get` 方法中。Operator 支持从内存、RPC 或持久化表中获取日志流信息，用于位置缓存和元数据管理。 |
+|   70007 |   128 | log stream table operator get time                             | 从 `__all_ls_meta_table` 表成功读取加载的 LS 信息所消耗时间累加，单位为微秒。当通过 `ObLSTableOperator` 从 `__all_ls_meta_table` 表获取日志流信息时，统计整个获取过程的总耗时。在 `ObLSTableOperator::get` 方法中，累加从方法开始到结束的时间差。包括从内存、RPC 或持久化表中获取日志流信息的所有开销。 |
+|  160001 |   128 | oblogger log bytes                                             | 累积打印日志的总大小，单位为 Bytes。指 observer.log 等系统日志的输出打印过程。 |
+|  160002 |   128 | election log bytes                                             | 累积打印选举日志的总大小，单位为 Bytes。指 election.log 日志的累积打印大小。 |
+|  160004 |   128 | oblogger total log count                                       | 累积打印日志的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160019 |   128 | async error log dropped count                                  | ERROR 日志打印失败（被限流等原因）的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160020 |   128 | async warn log dropped count                                   | WARN 日志打印失败的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160021 |   128 | async info log dropped count                                   | INFO 日志打印失败（被限流等原因）的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160022 |   128 | async trace log dropped count                                  | TRACE 日志打印失败的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160023 |   128 | async debug log dropped count                                  | DEBUG 日志打印失败（被限流等原因）的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160024 |   128 | async log flush speed                                          | 平均每秒写入的日志条数。指 observer.log 等系统日志的输出打印过程。 |
+|  160025 |   128 | async generic log write count                                  | 默认日志打印成功的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160026 |   128 | async user request log write count                             | 已弃用，仅在代码中保留。指 observer.log 等系统日志的输出打印过程。 |
+|  160027 |   128 | async data maintain log write count                            | 转储合并日志打印成功的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160028 |   128 | async root service log write count                             | RS 日志打印成功的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160029 |   128 | async schema log write count                                   | Schema 日志打印失败（被限流等原因）的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160030 |   128 | async force allow log write count                              | 强制日志打印成功的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160031 |   128 | async generic log dropped count                                | 默认日志打印失败（被限流等原因）的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160032 |   128 | async user request log dropped count                           | 已弃用，仅在代码中保留。指 observer.log 等系统日志的输出打印过程。 |
+|  160033 |   128 | async data maintain log dropped count                          | 转储合并日志打印失败（被限流等原因）的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160034 |   128 | async root service log dropped count                           | RS 日志打印失败（被限流等原因）的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160035 |   128 | async schema log dropped count                                 | Schema 日志打印失败（被限流等原因）的次数。指 observer.log 等系统日志的输出打印过程。 |
+|  160036 |   128 | async force allow log dropped count                            | 强制日志打印失败（被限流等原因）的次数。指 observer.log 等系统日志的输出打印过程。 |
+
+### CLOG
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|   80001 |   256 | palf write io count to disk                                    | clog 写盘次数。clog 成功写盘时，会为该统计项计数加 1。 |
+|   80002 |   256 | palf write size to disk                                        | clog 写盘大小，单位为 Bytes。clog 成功写盘时，会累加本次成功写盘的大小。 |
+|   80003 |   256 | palf write total time to disk                                  | clog 写盘的耗时，单位为微秒。当 clog 成功写盘时，会累加本次写盘的耗时。 |
+|   80004 |   256 | palf read count from hot cache                                 | 读 hot cache 的命中次数。向 PALF 读日志时，会尝试先读取 hot cache，如果要读的日志命中 hot cahce，则该统计项计数加 1。 |
+|   80005 |   256 | palf read size from hot cache                                  | 从 hot cache 中读取的 clog 大小，单位为 Bytes。向 PALF 读日志时，会尝试先读取 hot cache，如果要读的日志命中 hot cahce，就会累加本次从 hot cache 读取的日志大小。 |
+|   80006 |   256 | palf read total time from hot cache                            | 从 hot cache 中读取的 clog 的耗时，单位为微秒。向 PALF 读日志时，会尝试先读取 hot cache，如果要读的日志命中 hot cahce，就会累加本次从 hot cache 读取日志的耗时大小。 |
+|   80007 |   256 | palf read io count from disk                                   | clog 的读盘次数。成功从磁盘读取 clog 时，会为该统计项值计数加 1。 |
+|   80008 |   256 | palf read size from disk                                       | clog 的读盘大小，单位为 Bytes。成功从磁盘读取 clog 时，会累加本次读取的 clog 大小。 |
+|   80009 |   256 | palf read total time from disk                                 | clog 的读盘耗时，单位为微秒。成功从磁盘读取 clog 时，会累加本次读取的 clog 耗时。 |
+|   80010 |   256 | palf handle rpc request count                                  | PALF 层处理的 RPC 数。PALF 每处理完一个 RPC 后，会为该统计项计数加 1。 |
+|   80011 |   256 | archive read log size                                          | 日志归档读取的 clog 总量，单位为字节。周期性统计归档拉日志模块在单位时间内读取的日志总量，然后进行累加。统计周期为 10s，统计单位为字节。 |
+|   80012 |   256 | archive write log size                                         | 日志归档写到归档介质的 clog 总量，单位为字节。周期性统计归档写日志模块在单位时间内写到归档介质的日志总量，然后进行累加。统计周期为 10s，统计单位为字节。 |
+|   80013 |   256 | restore read log size                                          | 日志恢复模块读取的 clog 总量，单位为 Bytes。日志恢复模块每次触发读远程日志时，将读取日志量进行累加统计。统计单位为字节。 |
+|   80014 |   256 | restore write log size                                         | 日志恢复模块提交的 clog 总量，单位为 Bytes。日志恢复模块每次触发提交日志时，将提交日志量进行累加统计。统计单位为字节。 |
+|   80057 |   256 | clog trans log total size                                      | 事务提交到 PALF 的数据量，单位为 Bytes。事务会提交日志到 PALF，提交日志完成后此值增加日志量大小。 |
+|   80058 |   256 | log storage compress original size                             | 上层向 PALF 层提交的日志压缩前的原始大小(累计值)，单位为 Bytes。开启日志压缩时，上层每调用 PALF 层的 APPEND 接口提交日志时会进行压缩，累加统计压缩前的日志大小。 |
+|   80059 |   256 | log storage compress compressed size                           | 上层向 PALF 层提交的日志压缩后的大小(累计值)，单位为 Bytes。开启日志压缩时，上层每调用 PALF 层的 APPEND 接口提交日志时会进行压缩，累加统计压缩后的日志大小。 |
+|   81001 |   256 | external log service fetch log size                            | 日志同步链路（OBCDC、网络备库等）从这个节点拉取的日志的大小，单位为 Bytes。每处理完成一个下游同步链路发送的 RPC，就会统计这个 RPC 返回的日志的大小，并且加到 [G]V$SYSSTAT 统计中。 |
+|   81002 |   256 | external log service fetch log count                           | 日志同步链路（OBCDC、网络备库等）从这个节点拉取的日志的数量，单位为数目。每处理完成一个下游同步链路发送的 RPC，就会统计这个 RPC 返回的日志的数量，并且加到 [G]V$SYSSTAT 统计中。 |
+|   81003 |   256 | external log service fetch rpc count                           | 日志同步链路（OBCDC、网络备库等）从这个节点拉取日志所发送的 RPC 数量，单位为数目。每处理完成一个下游同步链路发送的 RPC，就会为这个统计项计数加 1。 |
+
+### Root Service
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|  110015 |  2048 | success rpc process                                            | RS 成功处理 RPC 请求次数。每次 Root Service 成功处理一个 RPC 请求时，统计值计数加 1。包含所有发送到 Root Service 并成功执行的 RPC 请求。 |
+|  110016 |  2048 | failed rpc process                                             | RS 处理 RPC 请求失败的次数。每次 Root Service 处理 RPC 请求失败时，统计值计数加 1。包含所有发送到 Root Service 但执行失败的 RPC 请求。 |
+|  110017 |  2048 | balancer succ execute count                                    | RS Unit 均衡成功执行的次数。每次 Root Service 负载均衡器执行 Unit 均衡操作成功时，统计值计数加 1。 |
+|  110018 |  2048 | balancer failed execute count                                  | RS Unit 均衡执行失败的次数。每次 Root Service 负载均衡器执行 Unit 均衡操作失败时，统计值计数加 1。 |
+
+### ASH
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|  200001 |  3072 | DB time                                                        | 前台进程执行数据库操作的总时间，包括 CPU 和非空闲等待时间的累加值，单位为微秒。OceanBase 数据库内部会周期性的更新 Time Model 相关统计项。当一个线程处于活跃状态时，它一定处于 ON_CPU 状态或等待事件状态，根据它处于各状态的时长，累加 Time Model 相关统计项。 |
+|  200002 |  3072 | DB CPU                                                         | 前台进程消耗的 CPU 时间，单位为微秒。OceanBase 数据库内部会周期性的更新 Time Model 相关统计项。当一个线程处于活跃状态时，它一定处于 ON_CPU 状态或等待事件状态，根据它处于各状态的时长，累加 Time Model 相关统计项。 |
+|  200005 |  3072 | background elapsed time                                        | 后台进程执行的总时间，单位为微秒。OceanBase 数据库内部会周期性的更新 Time Model 相关统计项。当一个线程处于活跃状态时，它一定处于 ON_CPU 状态或等待事件状态，根据它处于各状态的时长，累加 Time Model 相关统计项。 |
+|  200006 |  3072 | background cpu time                                            | 后台进程消耗的 CPU 时间，单位为微秒。OceanBase 数据库内部会周期性的更新 Time Model 相关统计项。当一个线程处于活跃状态时，它一定处于 ON_CPU 状态或等待事件状态，根据它处于各状态的时长，累加 Time Model 相关统计项。 |
+|  200010 |  3072 | non idle wait time                                             | 前台进程非空闲等待的时间，即会话处于等待状态但不是空闲等待的总时间，单位为微秒。OceanBase 数据库内部会周期性的更新 Time Model 相关统计项。当一个线程处于活跃状态时，它一定处于 ON_CPU 状态或等待事件状态，根据它处于各状态的时长，累加 Time Model 相关统计项。 |
+|  200011 |  3072 | idle wait time                                                 | 前台进程空闲等待的时间，即会话处于空闲等待状态的总时间，单位为微秒。OceanBase 数据库内部会周期性的更新 Time Model 相关统计项。当一个线程处于活跃状态时，它一定处于 ON_CPU 状态或等待事件状态，根据它处于各状态的时长，累加 Time Model 相关统计项。 |
+|  200012 |  3072 | background database time                                       | 后台进程执行数据库操作的总时间，单位为微秒。OceanBase 数据库内部会周期性的更新 Time Model 相关统计项。当一个线程处于活跃状态时，它一定处于 ON_CPU 状态或等待事件状态，根据它处于各状态的时长，累加 Time Model 相关统计项。 |
+|  200013 |  3072 | background database non-idle wait time                         | 后台进程在非空闲等待状态下执行数据库操作的时间，单位为微秒。OceanBase 数据库内部会周期性的更新 Time Model 相关统计项。当一个线程处于活跃状态时，它一定处于 ON_CPU 状态或等待事件状态，根据它处于各状态的时长，累加 Time Model 相关统计项。 |
+|  200014 |  3072 | background database idle wait time                             | 后台进程在空闲等待状态下执行数据库操作的时间，单位为微秒。OceanBase 数据库内部会周期性的更新 Time Model 相关统计项。当一个线程处于活跃状态时，它一定处于 ON_CPU 状态或等待事件状态，根据它处于各状态的时长，累加 Time Model 相关统计项。 |
+|  200015 |  3072 | diagnostic info object allocated count                         | 分配诊断对象的总数量。OBServer 节点诊断对象用以存储数据库前后台任务（包括 SQL、RPC 等）的诊断统计信息，它通常在任务开始时被分配，任务结束时被回收。 |
+|  200016 |  3072 | diagnostic info object allocate failure count                  | 分配诊断对象失败的总次数，单位为数目。OBServer 节点诊断对象用以存储数据库前后台任务（包括 SQL、RPC 等）的诊断统计信息，它通常在任务开始时被分配，任务结束时被回收。  |
+|  200017 |  3072 | diagnostic info object returned count                          | 回收的诊断对象的总次数，单位为数目。OBServer 节点诊断对象用以存储数据库前后台任务（包括 SQL、RPC 等）的诊断统计信息，它通常在任务开始时被分配，任务结束时被回收。 |
+|  200018 |  3072 | diagnostic info object return failure count                    | 回收诊断对象失败的总次数。OBServer 节点诊断对象用以存储数据库前后台任务（包括 SQL、RPC 等）的诊断统计信息，它通常在任务开始时被分配，任务结束时被回收。 |
+|  220001 |  3072 | concurrency wait total time                                    | 因 Concurrency 并发类别等待事件导致的等待时间总和，例如由于资源锁定而等待的时间，单位为微秒。由 OceanBase 数据库对应类比的等待事件累加汇总得来。 |
+|  220002 |  3072 | user io wait total time                                        | 用户进程在等待 I/O 操作（如读取数据或写入数据到磁盘）完成的总时间，单位为微秒。由 OceanBase 数据库对应类比的等待事件累加汇总得来。 |
+|  220003 |  3072 | application wait total time                                    | 由用户应用程序代码产生的等待时间总和（例如，由行级锁定或显式锁定命令引起的锁等待），单位为微秒。由 OceanBase 数据库对应类比的等待事件累加汇总得来。 |
+|  220004 |  3072 | schedule wait total time                                       | SCHEDULER 类别的等待事件消耗的总时间，单位为微秒。由 OceanBase 数据库对应类比的等待事件累加汇总得来。 |
+|  220005 |  3072 | network wait total time                                        | 网络类等待事件消耗的总时间，单位为微秒。由 OceanBase 数据库对应类比的等待事件累加汇总得来。 |
+
+### TableAPI
+
+有关 TableAPI 监控项的详细信息，请参见 OBKV 文档中的 [OBKV-Table 监控指标](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000003983662)。
+### WR
+
+| 监控项 ID | 监控项所属类型 | 监控项名称 |   描述    |
+|---------|-------|----------------------------------------------------------------|-------------------|
+|  210001 |  8192 | wr snapshot task elapse time                                   | 收集 WR(Workload Repository) 快照消耗的总时间，单位为微秒。WR 通过对 OceanBase 数据库的内部视图进行定期采集，记录系统的状态，并提供相关视图对用户展示和 DBMS_WORKLOAD_REPOSITORY 包进行管理操作。 |
+|  210002 |  8192 | wr snapshot task cpu time                                      | 收集 WR(Workload Repository) 快照消耗的总 CPU 时间，单位为微秒。WR 通过对 OceanBase 数据库的内部视图进行定期采集，记录系统的状态，并提供相关视图对用户展示和 DBMS_WORKLOAD_REPOSITORY 包进行管理操作。 |
+|  210003 |  8192 | wr purge task elapse time                                      | WR(Workload Repository) 删除 WR 快照任务消耗的总时间，单位为微秒。WR 通过对 OceanBase 数据库的内部视图进行定期采集，记录系统的状态，并提供相关视图对用户展示和 DBMS_WORKLOAD_REPOSITORY 包进行管理操作。 |
+|  210004 |  8192 | wr purge task cpu time                                         | WR(Workload Repository) 删除 WR 快照任务消耗的总 CPU 时间，单位为微秒。WR 通过对 OceanBase 数据库的内部视图进行定期采集，记录系统的状态，并提供相关视图对用户展示和 DBMS_WORKLOAD_REPOSITORY 包进行管理操作。 |
+|  210005 |  8192 | wr schedular elapse time                                       | WR(Workload Repository) 调度任务消耗的总时间，单位为微秒。WR 通过对 OceanBase 数据库的内部视图进行定期采集，记录系统的状态，并提供相关视图对用户展示和 DBMS_WORKLOAD_REPOSITORY 包进行管理操作。 |
+|  210006 |  8192 | wr schedular cpu time                                          | WR(Workload Repository) 调入任务消耗的总 CPU 时间，单位为微秒。WR 通过对 OceanBase 数据库的内部视图进行定期采集，记录系统的状态，并提供相关视图对用户展示和DBMS_WORKLOAD_REPOSITORY包进行管理操作。 |
+|  210007 |  8192 | wr user submit snapshot elapse time                            | 由用户下发的收集 WR(Workload Repository) 快照消耗的总时间，单位为微秒。WR 通过对 OceanBase 数据库的内部视图进行定期采集，记录系统的状态，并提供相关视图对用户展示和 DBMS_WORKLOAD_REPOSITORY 包进行管理操作。 |
+|  210008 |  8192 | wr user submit snapshot cpu time                               | 由用户下发的收集 WR(Workload Repository) 快照消耗的总 CPU 时间，单位为微秒。 WR 通过对 OceanBase 的内部视图进行定期采集，记录系统的状态，并提供相关视图对用户展示和 DBMS_WORKLOAD_REPOSITORY 包进行管理操作。 |
+|  210009 |  8192 | wr collected active session history row count                  | WR(Workload Repository) 收集的 ASH(ob_active_session_history) 总行数，单位为行数。WR 通过对 OceanBase 的内部视图进行定期采集，记录系统的状态，并提供相关视图对用户展示和 DBMS_WORKLOAD_REPOSITORY 包进行管理操作。 |
+|  210010 |  8192 | ash schedular elapse time                                      | ASH 采样线程执行的总时间，单位为微秒。ASH 是基于 OceanBase 数据库内部所有活跃会话采样记录的诊断机制，使用后台线程以 1 秒为周期采样记录活跃会话的运行状态。 |
+|  210011 |  8192 | ash schedular cpu time                                         | ASH 采样线程消耗的所有 CPU 时间，单位为微秒。ASH 是基于 OceanBase 数据库内部所有活跃会话采样记录的诊断机制，使用后台线程以 1 秒为周期采样记录活跃会话的运行状态。 |
+
+## 相关文档
+
+有关具体监控项概述介绍，请参见 [系统监控指标概述](../../600.manage/700.monitor/200.monitor-items-introduction/100.system-monitor/100.system-monitor-overview.md)。

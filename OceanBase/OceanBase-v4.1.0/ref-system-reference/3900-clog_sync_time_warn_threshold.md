@@ -1,0 +1,30 @@
+---
+title: clog_sync_time_warn_threshold
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702085.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# clog_sync_time_warn_threshold
+
+`clog_sync_time_warn_threshold` 用于设置事务日志同步耗时告警阈值，同步耗时超过该值产生 WARN 日志。
+
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul>
+  <li>从 V3.2.3 版本开始默认值由 100ms 调整为 1s。   </li>
+  <li>从 V4.0.0 版本开始默认值由 1s 调整为 100ms。  </li>
+  </ul>
+</main>
+
+|      **属性**      |      **描述**      |
+|------------------|------------------|
+| 参数类型             | 时间类型             |
+| 默认值              | 100ms            |
+| 取值范围             | \[1ms, 10000ms\] |
+| 是否重启 OBServer 节点生效 | 否                |

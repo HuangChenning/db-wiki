@@ -1,0 +1,90 @@
+---
+title: ALL_USERS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501036.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# ALL_USERS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V2.2.30 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前用户可见的所有数据库用户。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该视图仅适用于 OceanBase 数据库企业版。</p>
+  </main>
+
+## 字段说明
+
+| **字段名称** |    **类型**    | **是否可以为 NULL** | **描述**  |
+|----------|--------------|----------------|---------|
+| USERNAME | VARCHAR2(30) | NO             | 用户名     |
+| USERID   | NUMBER(38)   | NO             | 用户 ID   |
+| CREATED  | DATE         | NO             | 创建用户的时间 |
+| COMMON            | VARCHAR2(3)   | NO   | 是否是公共用户 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.1 BP2 版本开始引入。</p></main>|
+| ORACLE_MAINTAINED | VARCHAR2(1)   | NO   | 是否由 Oracle 模式提供的脚本创建和维护<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.1 BP2 版本开始引入。</p></main>|
+| INHERITED         | VARCHAR2(3)   | NO   | 用户是否继承自其他容器 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.1 BP2 版本开始引入。</p></main>|
+| DEFAULT_COLLATION | VARCHAR2(100) | NO   | 默认字符集 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.1 BP2 版本开始引入。</p></main>|
+| IMPLICIT          | VARCHAR2(3)   | NO   | 是否由隐式应用程序创建的用户 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.1 BP2 版本开始引入。</p></main>|
+| ALL_SHARD         | VARCHAR2(3)   | NO   | 是否在启用分片的情况下创建 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.1 BP2 版本开始引入。</p></main>|
+
+## 查询示例
+
+查看当前用户可见的所有数据库用户。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.ALL_USERS\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+         USERNAME: SYS
+           USERID: 200003
+          CREATED: 23-JUL-24
+           COMMON: NO
+ORACLE_MAINTAINED: N
+        INHERITED: NO
+DEFAULT_COLLATION: USING_NLS_COMP
+         IMPLICIT: NO
+        ALL_SHARD: NO
+*************************** 2. row ***************************
+         USERNAME: LBACSYS
+           USERID: 200004
+          CREATED: 23-JUL-24
+           COMMON: NO
+ORACLE_MAINTAINED: N
+        INHERITED: NO
+DEFAULT_COLLATION: USING_NLS_COMP
+         IMPLICIT: NO
+        ALL_SHARD: NO
+*************************** 3. row ***************************
+         USERNAME: ORAAUDITOR
+           USERID: 200005
+          CREATED: 23-JUL-24
+           COMMON: NO
+ORACLE_MAINTAINED: N
+        INHERITED: NO
+DEFAULT_COLLATION: USING_NLS_COMP
+         IMPLICIT: NO
+        ALL_SHARD: NO
+3 rows in set
+```
+
+## 相关视图或文档
+
+* 查看当前租户下的所有用户：[DBA_USERS](21700.dba_users-of-oracle-mode.md)
+* 查看当前用户信息：[USER_USERS](30600.user_users-of-oracle-mode.md)
+* 有关用户和权限的详细介绍，参见 [用户和权限概述](../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/100.user-and-permission-overview.md)。

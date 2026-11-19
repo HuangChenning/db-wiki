@@ -1,0 +1,70 @@
+---
+title: "关于外表与外部文件"
+book: "数据库对象管理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286241.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 关于外表与外部文件
+
+外表（External Table）的数据存储在 OceanBase 集群外部的存储系统中（本地目录、对象存储、HDFS、MaxCompute 等），数据库内仅保存元数据与访问路径。创建成功后，可像普通表一样用于 `SELECT`、JOIN、聚合等，但**只读**，不支持 DML、约束与索引。
+
+与普通表的差异：
+
+| 特性 | 外表 | 普通表 |
+| ---- | ---- | ------ |
+| 数据位置 | 外部存储 | OceanBase 内部 |
+| 读写 | 外表**只读**：可 `SELECT`，不能对其执行 `INSERT`、`UPDATE`、`DELETE` 等 DML。 | 读写 |
+| 约束与索引 | **不支持**主键、唯一、外键等约束，**不支持**创建索引。 | 支持 |
+| 典型性能 | 受网络与外部系统影响 | 本地访问更快 |
+
+## 注意事项
+
+* 创建外表时，系统根据 `LOCATION` 与 `PATTERN` 将匹配的文件列表写入系统表；扫描时按该列表访问外部文件。
+* **外部目录新增文件**不会自动出现在列表中，需执行 [更新外表文件列表](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/1300.alter-external-table-of-mysql-mode.md) 或参见 [管理外部文件](300.manage-external-files-of-mysql-mode.md)。
+* 外部文件**已删除**时，查询通常不报错，对应文件返回空结果。
+* 外部文件**被修改**时，查询读到最新内容；查询与外部文件并发修改可能导致结果不符合预期，应避免在查询期间修改文件。
+
+## 外部数据访问方式
+
+OceanBase 提供多种访问外部数据的方式。请先根据是否需要**持久化表对象**、是否**频繁重复查询同一批文件**来选择：
+
+| 方式 | 是否创建表对象 | 典型场景 | 语法与文档入口 |
+| ---- | -------------- | -------- | -------------- |
+| **外表（CREATE EXTERNAL TABLE）** | 是，元数据持久化 | 需反复查询、需 JOIN 内表、需管理文件列表与分区 | [CREATE EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2200.create-external-table-of-mysql-mode.md)、[创建和查询外表](200.create-a-external-table-of-mysql-mode.md) |
+| **FILES 表函数** | 否，即席查询 | 临时探查、一次性读取、LOAD DATA 数据源 | [FILES 表函数](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/400.functions-of-mysql-mode/760.table-functions-of-mysql-mode/200.files-table-function-of-mysql-mode.md)、[URL 外表（无元数据）](../../../../../620.obap/400.data-lake/300.url-external-table.md) |
+| **External Catalog** | 连接外部目录 | 查询 Hive / Iceberg / ODPS 等湖仓表，元数据由 Catalog 同步 | [CREATE EXTERNAL CATALOG 语法](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2150.create-external-catalog-of-mysql-mode.md)、[Catalog 与外部表](../../../../../620.obap/400.data-lake/200.data-lake-integration/150.catalog-externaltable.md) |
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>无元数据场景下，除 <code>FILES()</code> 外，还可使用 <code>SELECT</code> 中的 Location URL 形式直接读文件，详见 <a href="../../../../../620.obap/400.data-lake/300.url-external-table.md">URL 外表</a>。文件格式（<code>FORMAT</code>）的完整参数说明以 <a href="../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2200.create-external-table-of-mysql-mode.md">CREATE EXTERNAL TABLE</a> 为准。</p>
+</main>
+
+## HDFS 外表 与 ODPS 外部表
+
+OceanBase 数据库支持通过外表访问不同类型的外部数据源，包括外部存储系统中的文件数据以及外部数据平台中的表数据。其中，HDFS 属于外部存储系统，ODPS（MaxCompute）属于外部数据平台。
+
+### HDFS 外表
+
+Hadoop 分布式文件系统（HDFS）是 Hadoop 生态系统中的分布式存储系统。OceanBase 数据库自 V4.3.5 BP1 版本起支持通过外表访问 HDFS 中的数据。
+
+使用 HDFS 外表前，需部署 [部署 OceanBase 数据库 JAVA SDK 环境](../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md)，并配置 [ob_enable_java_env](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/300.cluster-level-configuration-items/16630.ob_enable_java_env.md) 等相关参数。有关语法说明，参见 [CREATE EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2200.create-external-table-of-mysql-mode.md) 中 `LOCATION`、`FORMAT` 相关内容。
+
+### ODPS（MaxCompute）外部表
+
+ODPS（MaxCompute）是面向大规模数据处理的数据平台。OceanBase 数据库支持通过外表访问 ODPS 中的数据。
+
+使用时，可通过外表的 `PROPERTIES (TYPE = 'ODPS' ...)` 指定外部数据源，`API_MODE` 支持 `storage_api` 或 `tunnel_api`。有关语法说明，参见 [CREATE EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2200.create-external-table-of-mysql-mode.md) 中 `properties_type_options` 相关内容。有关使用说明和示例，参见 [ODPS 外部表](../../../../../620.obap/400.data-lake/200.data-lake-integration/300.odps/200.odps-external-table.md)。
+
+## 相关文档
+
+* [创建和查询外表](200.create-a-external-table-of-mysql-mode.md)
+* [创建外表分区](210.create-table-partition-of-mysql-mode.md)
+* [管理外部文件](300.manage-external-files-of-mysql-mode.md)
+* [数据类型映射](400.data-type-mapping-of-mysql-mode.md)
+* [CREATE EXTERNAL TABLE 语法](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2200.create-external-table-of-mysql-mode.md)
+* [FILES 表函数](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/400.functions-of-mysql-mode/760.table-functions-of-mysql-mode/200.files-table-function-of-mysql-mode.md)

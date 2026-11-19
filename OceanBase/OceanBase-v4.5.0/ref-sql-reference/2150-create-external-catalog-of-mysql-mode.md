@@ -1,0 +1,305 @@
+---
+title: CREATE EXTERNAL CATALOG
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479595.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE EXTERNAL CATALOG
+
+## 描述
+
+该语句用来在数据库中创建外部数据目录（External Catalog），用于连接外部数据源，获取外部数据的元信息。可以通过它直接查询外部数据，无需进行数据导入或迁移。
+
+## 使用限制及注意事项
+
+* 当前支持创建 `ODPS` 和 `HMS` 类型的 External Catalog。
+* 创建 HMS Catalog 前，如果 HMS 预期访问底层存储的文件数据在 HDFS 上，则需要完成 Java SDK 环境部署。有关配置 JAVA SDK 环境的详细信息，参见 [部署 OceanBase 数据库 JAVA SDK 环境](../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md)。
+
+## 权限要求
+
+执行 `CREATE EXTERNAL CATALOG` 语句，需要当前用户拥有 `CREATE CATALOG` 权限。有关 OceanBase 数据库权限的详细介绍，参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 语法
+
+```sql
+CREATE EXTERNAL CATALOG [IF NOT EXISTS] external_catalog_name
+    PROPERTIES [=] (properties_type_options);
+
+properties_type_options:
+    odps_type_list
+    | hms_type_list
+
+odps_type_list:
+    TYPE = 'ODPS',
+    [ACCESSTYPE = 'accesstype_string',]
+    ACCESSID = 'string',
+    ACCESSKEY = 'string',
+    STSTOKEN = 'string',
+    ENDPOINT = 'string',
+    TUNNEL_ENDPOINT = 'string',
+    PROJECT_NAME = 'string',
+    [QUOTA_NAME = 'string',]
+    [COMPRESSION = 'compression_string',]
+    REGION = 'string'
+
+hms_type_list:
+    TYPE = 'HMS',
+    URI = "string"
+    [, KRB5CONF = "string"]
+    [, KEYTAB = "string"]
+    [, PRINCIPAL = "string"]
+    [, MAX_CLIENT_POOL_SIZE = 20]
+    [, SOCKET_TIMEOUT = 10000000]
+
+accesstype_string:
+    aliyun
+    | sts
+    | app
+
+compression_string:
+    zlib
+    | zstd
+    | lz4
+    | odps_lz4
+```
+
+## 参数说明
+
+|    **参数**     | **描述** |
+|-----------------|----------|
+| IF NOT EXISTS   | 可选项，如果指定该子句，即使要创建的外部数据目录在当前租户中已存在，也不会报错，系统会提示一条 Warning 信息；如果不指定，则会报错。|
+| external_catalog_name | 表示要创建的外部数据目录的名称。|
+| PROPERTIES [=] (properties_type_options) | 用于指定外部数据目录类型的相关属性选项，详细介绍可参见下文 [properties_type_options](#properties_type_options)。|
+
+### properties_type_options
+
+* `odps_type_list`：表示 ODPS 类型外部数据目录（ODPS Catalog）的相关属性列表。详细介绍可参见下文 [odps_type_list](#odps_type_list)。
+* `hms_type_list`：表示 HMS 类型外部数据目录（HMS Catalog）的相关属性列表。详细介绍可参见下文 [hms_type_list](#hms_type_list)。
+
+### odps_type_list
+
+* `TYPE`：用于指定外部数据目录的类型取值为 `ODPS`，即外表读写 MaxCompute 数据时，取值为 `ODPS`。
+* `ACCESSTYPE`：可选项，用于指定 MaxCompute 的账号类型，默认值为 `aliyun`。账号类型取值（不区分大小写）如下：
+
+  * `aliyun`
+  * `sts`
+  * `app`
+
+* `ACCESSID`：用于指定 AccessKey ID。当 `ACCESSTYPE` 的值是 `aliyun`/`app` 账号类型或者为空时，`aliyun`/`app` 账号或者具备 MaxCompute 访问权限的 RAM 用户的 AccessKey ID。
+* `ACCESSKEY`：用于指定 AccessKey Secret。当 `ACCESSTYPE` 的值是 `aliyun`/`app` 账号类型或者为空时，`aliyun`/`app` 账号或者具备 MaxCompute 访问权限的 RAM 用户的 AccessKey Secret。
+* `STSTOKEN`：用于指定 token。当 `ACCESSTYPE` 的值是 `sts` 账号类型时，这里是访问 MaxCompute 服务的 token。
+* `ENDPOINT`：用于指定 MaxCompute 的 EndPoint（域名节点）。
+* `TUNNEL_ENDPOINT`：用于指定 Tunnel Endpoint，MaxCompute Catalog 使用 Tunnel SDK 获取数据。
+* `PROJECT_NAME`：用于指定 MaxCompute 中的项目空间名称。项目空间（Project）是 MaxCompute 的基本组织单元，它类似于传统数据库的 Database 或 Schema 的概念。
+* `QUOTA_NAME`：可选项，用于指定 Quota。Quota 在 MaxCompute 中代表计算资源池（计算、访问、写入），如果用户配置了对应的 Quota，通过该参数指定特定的 Quota。
+* `COMPRESSION`：可选项，用于指定数据源的压缩格式，不设置表示不开启压缩。取值（不区分大小写）如下：
+
+  * `zlib`
+  * `zstd`
+  * `lz4`
+  * `odps_lz4`
+
+* `REGION`：用于指定 MaxCompute 开通的地域。
+
+### hms_type_list
+
+* `TYPE`：用于指定外部数据目录的类型取值为 `HMS`，即外表读取通过 hive 组织管理的数据，取值 `HMS`。
+* `URI`：用于指定需要访问的 `HMS` 的服务的 `thrift` URI 链接，格式为：`thrift://$host:$port`，其中：
+
+  * `$host`：表示 `thrift`  IP 地址。
+  * `$port`：表示 `thrift` 端口。`HMS` 的默认 `thrift` 端口为 9083。
+
+* `KRB5CONF`：可选项，用于指定访问启用 Kerberos 认证的 `HMS` 服务时，所需的 Kerberos 配置文件路径。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>仅在 <code>HMS</code> 启用 Kerberos 认证时，需要设置参数 <code>KRB5CONF</code>。</p>
+    </main>
+
+* `KEYTAB`：可选项，用于指定访问启用 Kerberos 认证的 `HMS` 服务时，所需的 `KEYTAB` 密钥文件路径。如果 OceanBase 集群为分布式部署，那么相关的 OBServer 对应机器节点，相关路径都需要存在该文件。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>仅在 <code>HMS</code> 启用 Kerberos 认证时，需要设置参数 <code>KEYTAB</code>。</p>
+    </main>
+
+* `PRINCIPAL`：可选项，用于指定访问启用 Kerberos 认证的 `HMS` 服务时，所需的 Kerberos 主体（Principal）名称。通常以 `service/HOST@REGION.com` 形式存在，例如 `hive/hadoop@QA.COM`。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>仅在 <code>HMS</code> 启用 Kerberos 认证时，需要设置参数 <code>PRINCIPAL</code>。</p>
+    </main>
+
+* `MAX_CLIENT_POOL_SIZE`：可选项，用于指定当前的 Catalog 可用的客户端队列的最大可用大小。默认值为 20，表示当前的 HMS Catalog 最多可启动 20 个对接 `HMS` 服务的客户端。
+* `SOCKET_TIMEOUT`：可选项，用于指定当前的 Catalog 可用的客户端访问超时时间，默认为 10000000（10s）。
+
+## 示例
+
+* 创建 `ODPS` 类型的 External Catalog。
+
+    ```shell
+    obclient> CREATE EXTERNAL CATALOG test_odps_catalog
+        PROPERTIES = (
+            TYPE = 'ODPS',
+            ACCESSID = '$odps_accessid',
+            ACCESSKEY = '$odps_accesskey',
+            ENDPOINT = '$odps_endpoint',
+            TUNNEL_ENDPOINT = 'http://xxx.maxcompute.aliyun.com',
+            PROJECT_NAME = 'mysqltest_regression_sqlqa',
+            QUOTA_NAME = '',
+            COMPRESSION_CODE = ''
+        );
+    ```
+
+* 创建 `HMS` 类型的 External Catalog。
+
+  * 创建 SIMPLE 认证的 HMS Catalog，普通认证模式，不需要设置 Location 认证。
+
+      ```shell
+      obclient> CREATE EXTERNAL CATALOG test_hms_catalog 
+          PROPERTIES = (
+              TYPE = 'HMS',
+              URI = "thrift://xxx.xxx.xxx.xxx:xxxx"
+          );
+      ```
+
+  * 创建 Kerberos 认证 HMS Catalog。
+
+      ```shell
+      obclient> CREATE EXTERNAL CATALOG test_hms_catalog_kerberos
+          PROPERTIES = (
+              TYPE = 'HMS',
+              URI = "thrift://xxx.xxx.xxx.xxx:xxxx",
+              PRINCIPAL = "hive/xxx@xxx.COM",
+              KEYTAB = "/xxx/xxx/xxx/hadoop.keytab",
+              KRB5CONF = "/etc/xxx.conf"
+          );
+      ```
+
+## Location 认证
+
+OceanBase 数据库 HMS Catalog 支持通过 External Location 进行密钥管理，实现对外部存储的安全访问。当访问 HMS 中的表时，系统会根据表路径自动匹配对应的 External Location，如果能匹配到则使用其密钥进行认证访问。
+
+### Location 认证场景
+
+根据存储类型和安全要求，Location 认证分为以下几种场景：
+
+| **存储类型** | **认证方式** |
+|-------------|---------------|
+| OSS         | AK/SK 认证。|
+| HDFS        | HDFS 有以下认证方式：<ul><li>无认证（无需 Kerberos，且无需指定 HDFS 用户）。</li><li>用户认证（无需 Kerberos，但需以特定 HDFS 用户身份访问）。</li><li>Kerberos 认证，HDFS 为单 NameNode（非 HA 模式）。</li><li>Kerberos 认证，HDFS 为高可用（HA）模式。</li><li>未启用 Kerberos，但 HDFS 为高可用（HA）模式。</li></ul>|
+
+### 配置步骤
+
+1. 确定 Location 认证场景。
+
+    根据存储类型和安全要求，选择对应的认证场景。
+
+2. 创建 Location 对象。
+
+    使用 `CREATE LOCATION` 语句创建对应场景的 Location 对象。有关创建 Location 的详细介绍，参见 [CREATE LOCATION](2230.create-location-of-mysql-mode-in-sql.md)。
+
+3. 关联 Catalog。
+
+    创建 Catalog 时无需额外配置，系统会自动根据对应表的存储路径来匹配 Location。
+
+### Location 认证场景配置示例
+
+#### OSS 存储认证
+
+创建一个适用于阿里云 OSS 对象存储访问的 Location 对象。
+
+```shell
+CREATE LOCATION oss_credential
+    URL = 'oss://bucket-name/path'
+    CREDENTIAL = (
+        ACCESSID = 'your-access-key-id'
+        ACCESSKEY = 'your-access-key-secret'
+        HOST = 'oss-region.aliyuncs.com'
+    );
+```
+
+#### HDFS 存储认证
+
+* 场景 1：无认证模式。
+
+    无需创建 Location，适用于 HDFS 集群未启用 Kerberos 认证（即 `hadoop.security.authentication=simple`）的开发或测试环境。
+
+* 场景 2：用户认证模式。
+
+    无需 Kerberos，但需以特定 HDFS 用户身份访问。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>适用于未开启 Kerberos 权限认证的集群，但相关 HDFS 路径需要特定用户才能访问的场景。</p>
+    </main>
+
+    创建 Location：指定 HDFS 用户。
+
+    ```shell
+    CREATE LOCATION hdfs_user
+        URL = 'hdfs://namenode:8020/'
+        CREDENTIAL (
+            USER = 'hdfs_user_name'
+        );
+    ```
+
+* 场景 3：启用 Kerberos，HDFS 为单 NameNode（非 HA 模式）。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p><code>CONFIGS</code> 中的 <code>dfs.data.transfer.protection</code> 必须与 HDFS 集群配置一致。</p>
+    </main>
+
+    创建 Location：Kerberos 认证 + 单点 HDFS。
+
+    ```shell
+    CREATE LOCATION hdfs_kerberos_single
+        URL = 'hdfs://namenode.example.com:8020/'
+        CREDENTIAL (
+            PRINCIPAL = "hdfs/xxx@xxx.COM",
+            KEYTAB = "/data/hdfs.keytab",
+            KRB5CONF = "/data/krb5.conf",
+            CONFIGS = 'dfs.data.transfer.protection=integrity'
+        );
+    ```
+
+* 场景 4：启用 Kerberos，HDFS 为高可用（HA）模式。
+
+    ```shell
+    CREATE LOCATION hdfs_kerberos_ha
+        URL = 'hdfs://${nameservice id}'
+        CREDENTIAL (
+            PRINCIPAL = "hdfs/xxx@xxx.COM",
+            KEYTAB = "/etc/ob/hdfs.keytab",
+            KRB5CONF = "/etc/krb5.conf",
+            CONFIGS = 'dfs.data.transfer.protection=${string}#dfs.nameservices=${nameservice id}#dfs.ha.namenodes.${nameservice id}=${namenode1}, ${namenode2}#dfs.namenode.rpc-address.${nameservice id}.${namenode1}=${namenode 1 address}#dfs.namenode.rpc-address.${nameservice id}.${namenode2}=${namenode 2 address}#dfs.ha.automatic-failover.enabled.${nameservice id}=true#dfs.client.failover.proxy.provider.${nameservice id}=org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider'
+            );
+    ```
+
+* 场景 5：未启用 Kerberos，但 HDFS 为高可用（HA）模式。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>未启用 Kerberos，但 HDFS 为高可用（HA）模式，无需设置 <code>PRINCIPAL</code>、<code>KEYTAB</code> 和 <code>KRB5CONF</code> 参数。</p>
+    </main>
+
+    ```shell
+    CREATE LOCATION hdfs_location_ha
+        URL = 'hdfs://${nameservice id}'
+        CREDENTIAL (
+            CONFIGS = 'dfs.nameservices=${nameservice id}#dfs.ha.namenodes.${nameservice id}=${namenode1}, ${namenode2}#dfs.namenode.rpc-address.${nameservice id}.${namenode1}=${namenode 1 address}#dfs.namenode.rpc-address.${nameservice id}.${namenode2}=${namenode 2 address}#dfs.ha.automatic-failover.enabled.${nameservice id}=true#dfs.client.failover.proxy.provider.${nameservice id}=org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider'
+            );
+    ```
+
+## 相关文档
+
+* [Catalog 概述](../../../../300.database-object-management/100.manage-object-of-mysql-mode/1000.manage-catalog-of-mysql-mode/100.catalog-overview-of-mysql-mode.md)
+* [创建 Catalog](../../../../300.database-object-management/100.manage-object-of-mysql-mode/1000.manage-catalog-of-mysql-mode/200.create-catalog-of-mysql-mode.md)
+* [查看 Catalog](../../../../300.database-object-management/100.manage-object-of-mysql-mode/1000.manage-catalog-of-mysql-mode/300.view-catalog-of-mysql-mode.md)
+* [删除 Catalog](../../../../300.database-object-management/100.manage-object-of-mysql-mode/1000.manage-catalog-of-mysql-mode/400.delete-catalog-of-mysql-mode.md)

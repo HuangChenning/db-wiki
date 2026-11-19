@@ -1,0 +1,44 @@
+---
+title: log_restore_concurrency
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702136.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# log_restore_concurrency
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.1.0 版本开始生效范围由集群级调整为租户级。</p>
+</main>
+
+## 功能描述
+
+`log_restore_concurrency` 用于设置恢复日志的并发度。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>恢复工作线程仅在恢复租户或者备租户时创建。</p>
+</main>
+
+## 属性说明
+
+| **属性** | **描述** |
+| -------- | ------- |
+| 参数类型      | Int |
+| 默认值        | 1 |
+| 取值范围      | [1，100] <main id="notice" type='explain'><h4>说明</h4><p>该配置项从 V4.1.0 版本开始取值范围由 [1, +∞] 调整为 [1, 100]，取值大于 10 时默认以 10 生效。</p></main>|
+| 是否可修改    | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否 |
+
+## 配置示例
+
+设置恢复日志的并发度为 5。
+
+```shell
+obclient> ALTER SYSTEM SET log_restore_concurrency = 5;
+```

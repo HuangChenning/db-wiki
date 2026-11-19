@@ -1,0 +1,28 @@
+---
+title: "DBMS_BALANCE 概述"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503769.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DBMS_BALANCE 概述
+
+`DBMS_BALANCE` 系统包用于提供分区均衡相关的方法。
+
+## DBMS_BALANCE 权限说明
+
+拥有执行 PL SQL 权限的用户租户可以使用该功能。sys 租户调用报错 `OB_OP_NOT_ALLOW`。
+
+## DBMS_BALANCE 子程序概览
+
+下表列出了 OceanBase 数据库当前版本所支持的 `DBMS_BALANCE` 子程序及对应描述。
+
+| 子程序 | 描述 |
+| --- | --- |
+|[SET_BALANCE_WEIGHT](../2700.dbms-balance-oracle/150.set-balance-weight-oracle.md)              |用于手动设置分区权重。|
+|[CLEAR_BALANCE_WEIGHT](../2700.dbms-balance-oracle/160.clear-balance-weight-oracle.md)          |用于手动清除分区权重。|
+|[TRIGGER_PARTITION_BALANCE](../2700.dbms-balance-oracle/200.trigger-paptition-balance-oracle.md)|用于手动触发分区均衡。|

@@ -1,0 +1,27 @@
+---
+title: "DBMS_SESSION 概述"
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006306461.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DBMS_SESSION 概述
+
+`DBMS_SESSION` 系统包提供从 PL 访问 `ALTER SESSION` SQL 语句以及其他会话信息。您可以使用 `DBMS_SESSION` 设置客户端标识符。
+
+## DBMS_SESSION 权限说明
+
+`DBMS_SESSION` 系统包调用用户的权限，不需要 `SYS` 的权限。
+
+## DBMS_SESSION 子程序概览
+
+下表列出了 OceanBase 数据库当前版本所支持的 `DBMS_SESSION` 子程序以及简要描述。
+
+|        子程序            |      描述       |
+|--------------------------|---------------|
+| [SET_IDENTIFIER](200.set-identifier-mysql.md) | 在会话中设置客户端 ID。    |
+| [CLEAR_IDENTIFIER](300.clear-identifier-mysql.md)  | 清除标识符。        |

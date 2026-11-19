@@ -1,0 +1,21 @@
+---
+title: backup_data_file_size
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702076.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# backup_data_file_size
+
+`backup_data_file_size` 用于控制单个数据备份文件的文件大小上限。
+
+|      **属性**      |   **描述**    |
+|------------------|-------------|
+| 参数类型             | 容量单位        |
+| 默认值              | 4G          |
+| 取值范围             | \[512M,4G\] |
+| 是否重启 OBServer 节点生效 | 否           |

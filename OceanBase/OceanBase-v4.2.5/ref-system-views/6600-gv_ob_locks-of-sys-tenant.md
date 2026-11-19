@@ -1,0 +1,62 @@
+---
+title: "GV$OB_LOCKS"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501402.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$OB_LOCKS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.2.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+用于展示所有 OBServer 节点上当前用户各表持锁或请求锁的情况。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| SVR_IP | varchar(46) | NO | 持锁或请求锁的 OBServer 节点的 IP 地址 |
+| SVR_PORT | bigint(20) | NO | 持锁或请求锁的 OBServer 节点的端口号 |
+| TENANT_ID | bigint(20) | NO | 持锁或请求锁的租户的 ID |
+| TRANS_ID | bigint(20) | NO | 持锁或请求锁的事务 ID |
+| SESSION_ID | bigint(20)   | NO   | 持锁或请求锁的会话 ID <ul><li>对于 V4.3.x 版本，该字段从 V4.3.2 版本开始引入。<ul><li> V4.3.5 BP2 之前版本：<br>在所有连接方式（直连模式/ODP 模式）下，该字段均表示 Server Session ID。</li><li> V4.3.5 BP2 及之后版本：<ul><li>在直连模式下：<br>该字段表示 Server Session ID。</li> <li>在 ODP 模式下：</li><ul><li>当 ODP 中的配置项 <code>client_session_id_version = 2</code> 时，该字段表示 Client Session ID。 </li> <li>当 <code>client_session_id_version = 1</code> 时，该字段表示 Server Session ID。</li></ul></ul></li></ul> </li><li>对于 V4.2.x 版本，该字段从 V4.2.5 版本开始引入。<ul><li> V4.2.5 BP4 之前版本：<br>在所有连接方式（直连模式/ODP 模式）下，该字段均表示 Server Session ID。</li><li> V4.2.5 BP4 及之后版本：<ul><li>在直连模式下：<br>该字段表示 Server Session ID。</li> <li>在 ODP 模式下：</li><ul><li>当 ODP 中的配置项 <code>client_session_id_version = 2</code> 时，该字段表示 Client Session ID。 </li> <li>当 <code>client_session_id_version = 1</code> 时，该字段表示 Server Session ID。</li></ul></ul></li></ul></li></ul>|
+| TYPE | varchar(9) | NO | 锁类型：<ul><li>TM：表锁</li><li>TX：事务锁</li><li>TR：行锁</li></ul> |
+| ID1 | bigint(20) | NO | 锁标识符 1：<ul><li>表锁：可能是 TABLE_ID，也可能是 TABLET_ID</li><li>事务锁：TX_ID</li><li>行锁：TABLET_ID</li></ul> |
+| ID2 | varchar(533) | NO | 锁标识符 2：<ul><li>表锁：NULL</li><li>事务锁：NULL</li><li>行锁：TX_ID + 行 rowkey</li></ul> |
+| ID3 | varchar(512) | NO | 锁标识符 3：<ul><li>TM：TABLE_ID / TABLET_ID</li><li>TX：NULL</li><li>TR：TABLET_ID + 行 rowkey</li></ul> <main id="notice" type='explain'><h4>说明</h4><p><ul><li>在 V4.3.x 版本中，该字段从 V4.3.2 版本开始引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.5 版本开始引入。</li></ul></p></main>|
+| LMODE | varchar(4) | NO | 当前持有锁的模式：<ul><li>NONE：表示未持有任何锁 </li><li>RS：ROW SHARE</li><li>RX：ROW EXCLUSIVE</li><li>S：SHARE</li><li>SRX：SHARE ROW EXCLUSIVE</li><li>X：EXCLUSIVE</li></ul> |
+| REQUEST | varchar(8) | NO | 当前请求锁的模式：<ul><li>NONE：表示未请求任何锁 </li><li>RS：ROW SHARE</li><li>RX：ROW EXCLUSIVE</li><li>S：SHARE</li><li>SRX：SHARE ROW EXCLUSIVE</li><li>X：EXCLUSIVE</li></ul> |
+| CTIME | bigint(20) | NO | 持有或等待锁的时间，单位为微秒 |
+| BLOCK | bigint(1) | NO | 表示当前事务请求的锁是否被其他事务持有：<ul><li>0：表示请求的锁未被其他事务持有，即该事务持有锁  </li><li>1：表示请求的锁被其他事务持有，即该事务被阻塞 </li></ul>|
+
+## 查询示例
+
+查看所有 OBServer 节点上当前用户各表持锁或请求锁的情况。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.GV$OB_LOCKS;
+```
+
+查询结果如下：
+
+```shell
++----------------+----------+-----------+----------+------------+------+---------+------------+------+-------+---------+---------+-------+
+| SVR_IP         | SVR_PORT | TENANT_ID | TRANS_ID | SESSION_ID | TYPE | ID1     | ID2        | ID3  | LMODE | REQUEST | CTIME   | BLOCK |
++----------------+----------+-----------+----------+------------+------+---------+------------+------+-------+---------+---------+-------+
+| 11.xxx.xxx.xxx |    28825 |         1 |  9720694 | 3221516966 | TM   | 9720177 | 4294967295 | NULL | NONE  | N       | 3120758 |     1 |
++----------------+----------+-----------+----------+------------+------+---------+------------+------+-------+---------+---------+-------+
+1 row in set
+```
+
+## 相关视图或文档
+
+有关表锁的详细操作及介绍，参见 [锁表（MySQL 模式）](../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/900.lock-a-table-of-mysql-mode.md) 和 [锁表（Oracle 模式）](../../../300.database-object-management/200.manage-object-of-oracle-mode/100.manage-tables-of-oracle-mode/900.lock-a-table-of-oracle-mode.md)。

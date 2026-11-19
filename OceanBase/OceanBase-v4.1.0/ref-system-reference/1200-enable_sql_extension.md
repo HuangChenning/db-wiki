@@ -1,0 +1,31 @@
+---
+title: enable_sql_extension
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700957.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# enable_sql_extension
+
+enable_sql_extension 
+=========================================
+
+`enable_sql_extension` 用于设置是否开启租户的 SQL 扩展功能。
+
+
+|      **属性**      |                                                    **描述**                                                     |
+|------------------|---------------------------------------------------------------------------------------------------------------|
+| 参数类型             | 布尔类型                       |
+| 默认值              | False                      |
+| 取值范围             | <li> True：开启   <li> False：不开启    |
+| 是否重启 OBServer 节点生效 | 否                          |
+
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该配置项当前仅在 MySQL 模式下生效。</p>
+  </main>

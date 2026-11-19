@@ -1,0 +1,50 @@
+---
+title: schema_history_recycle_interval
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685586.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# schema_history_recycle_interval
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<ul><li>由于内部改造优化，对于 V5.x 版本，该配置项从 V5.0.1 版本开始删除不再使用（对于 V4.4.2 版本，从 V4.4.2 BP1 版本开始删除）。后续 Schema 多版本历史数据的回收将由定时任务 <code>SCHEDULED_RECYCLE_SCHEMA_HISTORY</code> 控制，其回收任务调度的时间间隔可以通过 <code>DBMS_SCHEDULER</code> 中的 <code>SET ATTRIBUTE</code> 子程序进行修改。</li>
+<li>该配置项从 V1.4 版本开始引入。</li></ul>
+</main>
+
+## 功能描述
+
+`schema_history_recycle_interval` 用于设置系统内部执行 `schema` 多版本记录回收任务的时间间隔。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|      **属性**      |  **描述**   |
+|------------------|-----------|
+| 参数类型             | Time      |
+| 默认值               | 10m，表示 10 分钟       |
+| 取值范围             | [0s, +∞)<main id="notice" type='explain'><h4>说明</h4><ul><li>取值为 0 时，表示关闭 <code>schema</code> 多版本记录回收任务功能。</li> <li>取值为非 0 时，表示执行 <code>schema</code> 多版本记录回收任务的时间间隔。</li></ul></main> |
+| 是否可修改           | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。      |
+
+## 配置示例
+
+设置系统内部执行 `schema` 多版本记录回收任务的时间间隔为 10m。
+
+```shell
+obclient> ALTER SYSTEM SET schema_history_recycle_interval = '10m';
+```

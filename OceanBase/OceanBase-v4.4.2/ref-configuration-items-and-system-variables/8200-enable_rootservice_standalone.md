@@ -1,0 +1,30 @@
+---
+title: enable_rootservice_standalone
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286086.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# enable_rootservice_standalone
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于 V4.x 版本对存储架构进行了优化升级，系统租户内仅存储集群私有数据，不再存放用户租户的数据，该配置项已不再适用，从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`enable_rootservice_standalone` 用于设置是否让系统租户和 RootService 独占 OBServer 节点。
+
+## 属性说明
+
+|      **属性**    |       **描述**      |
+|------------------|---------------------|
+| 参数类型             | Bool                                                                                                  |
+| 默认值               | False                                                                                                  |
+| 取值范围             | <ul><li>True：开启 </li><li>False：不开启 </li></ul>   |
+| 是否重启 OBServer 节点生效 | 否                                                                                                      |

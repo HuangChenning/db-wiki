@@ -1,0 +1,572 @@
+---
+title: "V3.x 与 V4.x 视图变更"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001499692.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V3.x 与 V4.x 视图变更
+
+在 OceanBase 数据库 V4.x 版本我们对内部表和虚拟表做了很多改造，同时提供了很多视图展示系统的信息。V4.x 版本最大的变化是内部信息的查询全面转向视图，统一定义好的视图会保持版本间兼容，信息也更清晰。
+
+比如之前常用的记录每个分区位置信息的 `__all_tenant_meta_table`，由于 V4.x 版本中分区不再独立拥有位置信息，而是属于某个日志流，分区的位置信息由其所属的日志流位置决定，日志流位置使用视图 `DBA_OB_LS_LOCATIONS` 查看。其次用于查看集群合并状态的 `__all_zone`，V4.x 版本中系统租户只在 `__all_zone` 表中存储集群的 Zone、Region 等信息，而将合并状态拆分到专门的内部表，可以使用视图 `DBA_OB_MAJOR_COMPACTION` 查看整体的合并状态，视图 `DBA_OB_ZONE_MAJOR_COMPACTION` 查看每个 Zone 的合并状态。特别的是，不同于之前版本合并是整个集群的状态，V4.x 版本中每个租户各自执行合并工作，所以每个租户都有 `DBA_OB_MAJOR_COMPACTION` 和 `DBA_OB_ZONE_MAJOR_COMPACTION` 可以查看各自租户的合并状态。
+
+此外，在 V4.x 版本根据视图定义规范，对存量自有视图进行了一些改造，改造点包括：
+
+* “ 移除 ” 了不必要的视图。
+* 视图名统一加上 `OB_` 前缀。
+* 视图名统一改为大写，视图列名也改为大写。
+* 如果是租户级别的视图，用户租户下只展示本租户的数据，系统租户展示所有租户的数据。
+
+## 常用内部表和视图的对应关系
+
+在 OceanBase 数据库 V4.x 版本中补充了大量的视图，您可以通过以下内部表和视图的对应关系，通过视图查询您需要的信息。
+
+<table>
+  <thead>
+    <tr>
+      <th>实体表/虚拟表</th>
+      <th>视图/命令</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tr>
+    <td>__all_collation</td>
+    <td>information_schema.COLLATIONS</td>
+    <td>展示每个字符集的比对方法信息</td>
+  </tr>
+    <tr>
+    <td>__all_tenant</td>
+    <td>DBA_OB_TENANTS </td>
+    <td>展示租户的基础信息 </td>
+  </tr>
+    <tr>
+    <td>gv$tenant (V4.x 废弃)</td>
+    <td>在MySQL 租户或 Oracle 租户下采用以下命令获取当前租户信息：<ul><li>show tenant;  </li><li>show tenant status; </li><li>select effective_tenant(); </li><li>select effective_tenant_id(); </li></ul></td>
+    <td>展示用户租户下查询租户基本信息 </td>
+  </tr>
+    <tr>
+    <td>__all_unit_config</td>
+    <td>DBA_OB_UNIT_CONFIGS </td>
+    <td>展示 Unit Config 信息 </td>
+  </tr>
+    <tr>
+    <td>__all_resource_pool </td>
+    <td>DBA_OB_RESOURCE_POOLS </td>
+    <td>展示 Resource Pool 信息 </td>
+  </tr>
+    <tr>
+    <td>__all_server </td>
+    <td>DBA_OB_SERVERS </td>
+    <td>展示 Server  信息 </td>
+  </tr>
+    <tr>
+    <td>__all_zone </td>
+    <td>DBA_OB_ZONES </td>
+    <td>展示 Zone 信息 </td>
+  </tr>
+    <tr>
+    <td>__all_rootservice_event_history </td>
+    <td>DBA_OB_ROOTSERVICE_EVENT_HISTORY </td>
+    <td>展示 Root Service 的事件历史 </td>
+  </tr>
+  <tr>
+    <td>__all_rootservice_job </td>
+    <td>DBA_OB_UNIT_JOBS<br>DBA_OB_TENANT_JOBS<br>DBA_OB_SERVER_JOBS </td>
+    <td>将 RootService Job 信息拆分成多张视图，根据展示的类型不同进行区分，方便结构化查询 </td>
+  </tr>
+    <tr>
+    <td>__all_virtual_core_all_table </td>
+    <td>DBA_OB_LS_LOCATIONS </td>
+    <td>展示本租户的日志流（ LS ）副本分布信息 </td>
+  </tr>
+    <tr>
+    <td>gv$database(V4.x 废弃)<br>__all_database </td>
+    <td>CDB_OB_DATABASES<br>DBA_OB_DATABASES<br> information_schema.SCHEMATA<br>SYS.DBA_USERS</td>
+    <td>数据库信息 </td>
+  </tr>
+    <tr>
+    <td rowspan="8">gv$table(V4.x 废弃)<br>__all_table<br>__all_virtual_table </td>
+    <td>CDB_OBJECTS<br>CDB_TABLES<br>CDB_INDEXES<br>CDB_IND_COLUMNS <br>CDB_PART_TABLES<br>CDB_TAB_PARTITIONS</td>
+    <td>系统租户下访问所有租户的 Schema 信息 </td>
+  </tr>
+    <tr>
+    <td>information_schema.tables<br> information_schema.statistics</td>
+    <td>MySQL 租户下访问所有的表和索引信息 </td>
+  </tr>
+    <tr>
+    <td>SYS.DBA_TABLES<br> SYS.DBA_INDEXES </td>
+    <td>Oracle 租户下访问表和索引信息 </td>
+  </tr>
+    <tr>
+    <td>SYS.DBA_PART_TABLES<br> SYS.DBA_PART_INDEXES </td>
+    <td>Oracle 租户下获取分区表信息 </td>
+  </tr>
+    <tr>
+    <td>oceanbase.DBA_PART_TABLES <br> oceanbase.DBA_PART_INDEXES </td>
+    <td>MySQL 租户下获取分区表信息 </td>
+  </tr>
+    <tr>
+    <td>SYS.DBA_OBJECTS </td>
+    <td>Oracle 租户下获取分区表信息 </td>
+  </tr>
+    <tr>
+    <td>oceanbase.DBA_OBJECTS </td>
+    <td>MySQL 租户下获取分区表信息 </td>
+  </tr>
+    <tr>
+    <td>oceanbase.DBA_OB_TABLEGROUP_TABLES<br> SYS.DBA_OB_TABLEGROUP_TABLES</td>
+    <td>展示获取表的 Tablegroup 信息 </td>
+  </tr>
+    <tr>
+    <td rowspan="3">__all_virtual_sys_variable <br> __all_sys_variable </td>
+    <td>CDB_OB_SYS_VARIABLES </td>
+    <td>系统租户下访问所有租户的系统变量信息 </td>
+  </tr>
+    <tr>
+    <td>MySQL 租户下相关视图：<ul><li>information_schema.session_variables  </li><li>information_schema.global_variables </li></ul>MySQL 租户下相关命令：<ul><li>show variables; </li><li>show global variables; </li></ul></td>
+    <td>MySQL 租户下获取系统变量信息 </td>
+  </tr>
+    <tr>
+    <td>Oracle 租户下相关命令：<ul><li>show variables; </li><li>show global variables; </li></ul></td>
+    <td>Oracle 租户下获取系统变量信息 </td>
+  </tr>
+      <tr>
+    <td rowspan="2">__tenant_virtual_table_index </td>
+    <td>information_schema.STATISTICS </td>
+    <td>MySQL 租户下获取索引键信息 </td>
+  </tr>
+      <tr>
+    <td>SYS.DBA_CONS_COLUMNS </td>
+    <td>Oracle 租户下获取索引键信息 </td>
+  </tr>
+      <tr>
+    <td rowspan="3">__all_part<br>  __all_virtual_part<br>  __all_def_sub_part<br>  __all_virtual_def_sub_part</td>
+    <td>CDB_TAB_PARTITIONS<br>  CDB_TAB_SUBPARTITIONS<br>  CDB_IND_PARTITIONS<br>  CDB_IND_SUBPARTITIONS<br>   CDB_SUBPARTITION_TEMPLATES</td>
+    <td>系统租户下，获取所有租户的分区信息 </td>
+  </tr>
+    <tr>
+    <td>SYS.DBA_TAB_PARTITIONS<br>  SYS.DBA_TAB_SUBPARTITIONS<br>  SYS.DBA_IND_PARTITIONS<br>  SYS.DBA_IND_SUBPARTITIONS<br>  SYS.DBA_SUBPARTITION_TEMPLATES </td>
+    <td>Oracle 租户下获取分区信息</td>
+  </tr>
+    <tr>
+    <td>DBA_TAB_PARTITIONS<br>  DBA_TAB_SUBPARTITIONS<br>  DBA_IND_PARTITIONS<br>  DBA_IND_SUBPARTITIONS<br>  DBA_SUBPARTITION_TEMPLATES </td>
+    <td>MySQL 租户下获取分区信息 </td>
+  </tr>
+    <tr>
+    <td>__all_virtual_outline<br>  __all_outline<br> </td>
+    <td>DBA_OB_OUTLINES<br>  DBA_OB_CONCURRENT_LIMIT_SQL </td>
+    <td>展示 Outline 信息 </td>
+  </tr>
+    <tr>
+    <td>__all_root_table<br>  __all_meta_table<br>  __all_tenant_meta_table<br>  __all_virtual_tenant_meta_table </td>
+    <td>DBA_OB_LS_LOCATIONS<br>  CDB_OB_LS_LOCATIONS<br>  DBA_OB_TABLET_TO_LS<br>  CDB_OB_TABLET_TO_LS<br>  DBA_OBJECTS CDB_OBJECTS </td>
+    <td>展示 LOCATION 相关信息 </td>
+  </tr>
+      <tr>
+    <td>__all_virtual_server_stat<br>  __all_virtual_disk_stat </td>
+    <td>GV$OB_SERVERS </td>
+    <td>展示 Server 统计信息 </td>
+  </tr>
+    <tr>
+    <td>__all_virtual_tenant_parameter_stat<br>  __all_virtual_sys_parameter_stat<br>  __all_virtual_tenant_parameter_stat<br> __all_virtual_sys_parameter_stat<br>__all_virtual_tenant_parameter_info</td>
+    <td>GV$OB_PARAMETERS </td>
+    <td>展示配置项信息 </td>
+  </tr>
+    <tr>
+    <td>__all_virtual_processlist </td>
+    <td>GV$OB_PROCESSLIST </td>
+    <td>展示会话信息 </td>
+  </tr>
+    <tr>
+    <td>__all_virtual_kvcache_info	 </td>
+    <td>GV$OB_KVCACHE </td>
+    <td>展示 KVCACHE 信息 </td>
+  </tr>
+    <tr>
+    <td>GV$MEMSTORE(V4.x 废弃)<br>__all_virtual_tenant_memstore_info  </td>
+    <td>GV$OB_MEMSTORE </td>
+    <td>展示 MemStore 信息</td>
+  </tr>
+    <tr>
+    <td rowspan="5">__all_virtual_column</td>
+    <td>CDB_TAB_COLUMNS<br> CDB_TAB_COLS</td>
+    <td> 系统租户下访问所有租户视图</td>
+  </tr>
+    <tr>
+    <td>information_schema.COLUMNS </td>
+    <td> 展示列信息</td>
+  </tr>
+    <tr>
+    <td>SYS.DBA_TAB_COLUMNS<br> SYS.DBA_TAB_COLS </td>
+    <td>展示列信息 </td>
+  </tr>
+  <tr>
+    <td>DBA_OB_TABLET_TO_LS<br> CDB_OB_TABLET_TO_LS</td>
+    <td>所有 Tablet 列表及所属的日志流信息 </td>
+  </tr>
+  <tr>
+    <td>DBA_OB_TABLET_REPLICAS<br> CDB_OB_TABLET_REPLICAS </td>
+    <td>所有 Tablet 副本信息 </td>
+  </tr>    
+  <tr>
+    <td>__all_virtual_trans_stat </td>
+    <td>GV$OB_TRANSACTION_PARTICIPANTS<br> V$OB_TRANSACTION_PARTICIPANTS</td>
+    <td>所有 Server 上的事务参与者信息 </td>
+  </tr>
+  <tr>
+    <td>- </td>
+    <td>相关视图：<ul><li>oceanbase.DBA_RECYCLEBIN  </li><li> SYS.DBA_RECYCLEBIN</li></ul>相关命令：show recyclebin;</td>
+    <td>展示回收站的信息 </td>
+  </tr>
+  <tr>
+    <td rowspan="2">__all_zone </td>
+    <td>DBA_OB_MAJOR_COMPACTION </td>
+    <td>展示整体的合并状态 </td>
+  </tr>
+      <tr>
+    <td>DBA_OB_ZONE_MAJOR_COMPACTION </td>
+    <td>展示每个 Zone 的合并状态 </td>
+  </tr>
+</table>
+
+## V4.x 版本中更改名称的视图
+
+视图更改名称主要是为了规范视图内容，方便您在使用的过程中更加高效的进行有关操作，在 V3.x 版本和 V4.x 版本中视图名的更改有以下区别：
+
+* OceanBase 数据库 V4.0 以前版本，部分自有视图不加 `OB_*` 前缀，例如 v$plan_cache_stat、v$obrpc_outgoing 等视图。
+* OceanBase 数据库 V4.0 及以后版本，统一增加 `OB_*` 前缀，例如 V$OB_PLAN_CACHE_STAT、V$OB_RPC_OUTGOING 等视图。
+
+下表罗列出 V4.x 版本视图名调整的视图。
+
+| **视图名（V3.x）** | **视图名（V4.x）** |
+| ----- | ------ |
+| GV$ACTIVE_SESSION_HISTORY    | GV$OB_ACTIVE_SESSION_HISTORY<main id="notice" type='explain'><h4>说明</h4><p>原视图并未删除，仍可进行查询，但不建议使用。</p></main> |
+| V$ACTIVE_SESSION_HISTORY     | V$OB_ACTIVE_SESSION_HISTORY <main id="notice" type='explain'><h4>说明</h4><p>原视图并未删除，仍可进行查询，但不建议使用。</p></main> |
+| gv$plan_cache_stat           | GV$OB_PLAN_CACHE_STAT |
+| gv$plan_cache_plan_stat      | GV$OB_PLAN_CACHE_PLAN_STAT |
+| gv$sql_audit                 | GV$OB_SQL_AUDIT |
+| gv$memory                    | GV$OB_MEMORY |
+| v$memory                     | V$OB_MEMORY |
+| gv$memstore                  | GV$OB_MEMSTORE |
+| v$memstore                   | V$OB_MEMSTORE |
+| gv$merge_info                | GV$OB_MERGE_INFO |
+| v$merge_info                 | V$OB_MERGE_INFO |
+| gv$memstore_info             | GV$OB_MEMSTORE_INFO |
+| v$memstore_info              | V$OB_MEMSTORE_INFO |
+| v$plan_cache_stat            | V$OB_PLAN_CACHE_STAT |
+| v$plan_cache_plan_stat       | V$OB_PLAN_CACHE_PLAN_STAT |
+| gv$plan_cache_plan_explain   | GV$OB_PLAN_CACHE_PLAN_EXPLAIN |
+| v$plan_cache_plan_explain    | V$OB_PLAN_CACHE_PLAN_EXPLAIN |
+| v$sql_audit                  | V$OB_SQL_AUDIT |
+| gv$obrpc_outgoing            | GV$OB_RPC_OUTGOING |
+| v$obrpc_outgoing             | V$OB_RPC_OUTGOING |
+| gv$obrpc_incoming            | GV$OB_RPC_INCOMMING |
+| v$obrpc_incoming             | V$OB_RPC_INCOMMING |
+| gv$outline                   | DBA_OB_OUTLINES |
+| gv$concurrent_limit_sql      | DBA_OB_CONCURRENT_LIMIT_SQL |
+| gv$tenant_sequence_object    | DBA_OB_SEQUENCE_OBJECTS |
+| gv$tenant_px_worker_stat     | GV$OB_PX_WORKER_STAT |
+| v$tenant_px_worker_stat      | V$OB_PX_WORKER_STAT |
+| gv$ps_stat                   | GV$OB_PS_STAT |
+| v$ps_stat                    | V$OB_PS_STAT |
+| gv$ps_item_info              | GV$OB_PS_ITEM_INFO |
+| v$ps_item_info               | V$OB_PS_ITEM_INFO |
+| gv$plan_cache_reference_info | GV$OB_PLAN_CACHE_REFRENCE_INFO |
+| v$plan_cache_reference_info  | V$OB_PLAN_CACHE_REFRENCE_INFO |
+| gv$sstable                   | GV$OB_SSTABLES |
+| v$sstable                    | V$OB_SSTABLES |
+| gv$server_schema_info        | GV$OB_SERVER_SCHEMA_INFO |
+| v$server_schema_info         | V$OB_SERVER_SCHEMA_INFO |
+| v$encrypted_tables           | V$OB_ENCRYPTED_TABLES |
+| gv$tenant_memory_info        | GV$OB_TENANT_MEMORY |
+| v$tenant_memory_info         | V$OB_TENANT_MEMORY |
+| gv$px_target_monitor         | GV$OB_PX_TARGET_MONITOR |
+| v$px_target_monitor          | V$OB_PX_TARGET_MONITOR |
+| GV$SERVER_MEMSTORE           | GV$OB_MEMSTORE |
+| V$SERVER_MEMSTORE            | V$OB_MEMSTORE |
+| GV$SQL_AUDIT                 | GV$OB_SQL_AUDIT |
+| V$SQL_AUDIT                  | V$OB_SQL_AUDIT |
+| GV$PLAN_CACHE_PLAN_STAT      | GV$OB_PLAN_CACHE_PLAN_STAT |
+| V$PLAN_CACHE_PLAN_STAT       | V$OB_PLAN_CACHE_PLAN_STAT |
+| GV$PLAN_CACHE_PLAN_EXPLAIN   | GV$OB_PLAN_CACHE_PLAN_EXPLAIN |
+| V$PLAN_CACHE_PLAN_EXPLAIN    | V$OB_PLAN_CACHE_PLAN_EXPLAIN |
+| GV$MEMORY                    | GV$OB_MEMORY |
+| V$MEMORY                     | V$OB_MEMORY |
+| GV$MEMSTORE                  | GV$OB_MEMSTORE |
+| V$MEMSTORE                   | V$OB_MEMSTORE |
+| GV$PLAN_CACHE_STAT           | GV$OB_PLAN_CACHE_STAT |
+| V$PLAN_CACHE_STAT            | V$OB_PLAN_CACHE_STAT |
+| GV$CONCURRENT_LIMIT_SQL      | GV$OB_CONCURRENT_LIMIT_SQL |
+| GV$TENANT_PX_WORKER_STAT     | GV$OB_PX_WORKER_STAT |
+| V$TENANT_PX_WORKER_STAT      | V$OB_PX_WORKER_STAT |
+| GV$PS_STAT                   | GV$OB_PS_STAT |
+| V$PS_STAT                    | V$OB_PS_STAT |
+| GV$PS_ITEM_INFO              | GV$OB_PS_ITEM_INFO |
+| V$PS_ITEM_INFO               | V$OB_PS_ITEM_INFO |
+| GV$PLAN_CACHE_REFERENCE_INFO | GV$OB_PLAN_CACHE_REFRENCE_INFO |
+| V$PLAN_CACHE_REFERENCE_INFO  | V$OB_PLAN_CACHE_REFRENCE_INFO |
+| GV$SSTABLE                   | GV$OB_SSTABLES |
+| V$SSTABLE                    | V$OB_SSTABLES |
+| GV$SERVER_SCHEMA_INFO        | GV$OB_SERVER_SCHEMA_INFO |
+| V$SERVER_SCHEMA_INFO         | V$OB_SERVER_SCHEMA_INFO |
+| V$ENCRYPTED_TABLES           | V$OB_ENCRYPTED_TABLES |
+| GV$TENANT_MEMORY_INFO        | GV$OB_TENANT_MEMORY |
+| V$TENANT_MEMORY_INFO         | V$OB_TENANT_MEMORY |
+| GV$PX_TARGET_MONITOR         | GV$OB_PX_TARGET_MONITOR |
+| V$PX_TARGET_MONITOR          | V$OB_PX_TARGET_MONITOR |
+
+## V4.x 版本中新增的视图
+
+下表罗列出 V4.x 版本新增的视图。
+
+| **视图名** | **引入版本**| **描述** |
+| ------ | ------ | ------ |
+| ALL_PLSQL_TYPES              | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | Oracle 租户下新增，展示 package type 总体信息。|
+| DBA_PLSQL_TYPES              | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | Oracle 租户下新增，展示本租户下 package type 总体信息。|
+| USER_PLSQL_TYPES             | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | Oracle 租户下新增，展示当前用户下 package type 总体信息。|
+| ALL_PLSQL_COLL_TYPES         | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | Oracle 租户下新增，展示 package 中定义的 collection type 总体信息。|
+| DBA_PLSQL_COLL_TYPES         | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | Oracle 租户下新增，展示当前租户 package 中定义的 collection type 总体信息。|
+| USER_PLSQL_COLL_TYPES        | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | Oracle 租户下新增，展示当前用户 package 中定义的 collection type 总体信息。|
+| ALL_PLSQL_TYPE_ATTRS         | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | Oracle 租户下新增，展示 package 中定义的 record type 总体信息。|
+| DBA_PLSQL_TYPE_ATTRS         | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | Oracle 租户下新增，展示 package 中定义的 record type 总体信息。|
+| USER_PLSQL_TYPE_ATTRS        | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | Oracle 租户下新增，展示当前用户 package 中定义的 record type 总体信息。|
+| CDB_WR_SQLSTAT	             | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys` 租户下新增，展示所有租户执行过的 SQL 的基本性能统计数据。|
+| DBA_WR_SQLSTAT	             | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示本租户执行过的 SQL 的基本性能统计数据。|
+| CDB_WR_SQLTEXT	             | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys` 租户下新增，展示所有租户 WR 采集的 SQL 文本。|
+| DBA_WR_SQLTEXT	             | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示本租户 WR 采集的 SQL 文本。|
+| CDB_WR_SYS_TIME_MODEL        | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys` 租户下新增，展示所有租户 Time Model 统计项的 WR 数据。|
+| DBA_WR_SYS_TIME_MODEL        | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示租户 Time Model 统计项的 WR 数据。|
+| CDB_WR_SYSTEM_EVENT          | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys` 租户下新增，展示所有租户的持久化后的租户级等待事件信息。|
+| DBA_WR_SYSTEM_EVENT          | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示租户的持久化后的租户级等待事件信息。|
+| CDB_WR_EVENT_NAME            | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys` 租户下新增，展示所有租户的持久化后的租户级等待事件名称。|
+| DBA_WR_EVENT_NAME            | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示租户的持久化后的租户级等待事件名称。|
+| V$STATNAME                   | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | Oracle 租户下新增，展示统计项的名称。|
+| <ul><li>GV\$OB_RES_MGR_SYSSTAT </li><li>V\$OB_RES_MGR_SYSSTAT </li></ul>                       | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示所有租户下所有 OBServer 中资源组的统计项信息。|
+| <ul><li>GV\$OB_LOG_TRANSPORT_DEST_STAT </li><li>V\$OB_LOG_TRANSPORT_DEST_STAT </li></ul>       | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示租户下所有 OBServer 下游日志同步链路（OBCDC/网络备库）的信息。|
+| <ul><li>GV\$OB_ACTIVE_SESSION_HISTORY </li><li>V\$OB_ACTIVE_SESSION_HISTORY </li></ul>         | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示租户下 OBServer 节点的活跃会话历史记录。|
+| <ul><li>GV\$OB_SESS_TIME_MODEL </li><li>V\$OB_SESS_TIME_MODEL </li></ul>                       | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示节点上 Session 级别的 Time Model 统计项。|
+| <ul><li>GV\$OB_SYS_TIME_MODEL </li><li>V\$OB_SYS_TIME_MODEL </li></ul>                         | <ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示节点上租户级别的 Time Model 统计项。|
+| <ul><li>GV\$OB_QUERY_RESPONSE_TIME_HISTOGRAM</li><li>V\$OB_QUERY_RESPONSE_TIME_HISTOGRAM</li></ul>|<ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.1 版本，从 V4.2.1 BP7 版本开始引入；对于 V4.2.x 其他版本，从 V4.2.5 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，统计租户的节点 Query 执行时间的直方图信息。|
+| <ul><li>GV\$OB_KV_CLIENT_INFO </li><li>V\$OB_KV_CLIENT_INFO </li></ul>                         |<ul><li>对于 V4.3.x 版本，从 V4.3.4 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.5 版本开始引入。</li></ul> | `sys`/MySQL 租户下新增，访问节点本 OBKV 租户客户端连接的配置参数信息。|
+| information_schema.role_column_grants                                                          | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.4 版本开始引入。</li></ul> | `sys`/MySQL 租户下新增，展示了用户在当前会话中被授予的已激活的角色的列权限信息，以及这些角色被授予的其他角色的列权限信息。|
+| information_schema.role_routine_grants                                                         | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.4 版本开始引入。</li></ul> | `sys`/MySQL 租户下新增，展示了用户在当前会话中被授予的已激活的角色的例程权限信息，以及这些角色被授予的其他角色的例程权限信息。|
+| mysql.audit_log_filter                                                                         | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.4 版本开始引入。</li></ul> | `sys`/MySQL 租户下新增，展示审计过滤器的定义。|
+| mysql.audit_log_user                                                                           | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.4 版本开始引入。</li></ul> | `sys`/MySQL 租户下新增，展示审计过滤器和用户的映射关系。|
+| CDB_SCHEDULER_JOB_RUN_DETAILS        | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.1 版本，从 V4.2.1 BP9 版本开始引入；对于 V4.2.x 其他版本，从 V4.2.4 版本开始引入。</li></ul> | `sys` 租户下新增，展示所有租户下所有调度程序作业的信息。|
+| DBA_SCHEDULER_JOB_RUN_DETAILS        | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.1 版本，从 V4.2.1 BP9 版本开始引入；对于 V4.2.x 其他版本，从 V4.2.4 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示当前租户中所有调度程序作业的信息。|
+| CDB_OB_SERVICES                      | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.1 版本，从 V4.2.1 BP9 版本开始引入；对于 V4.2.x 其他版本，从 V4.2.4 版本开始引入。</li></ul> | `sys` 租户下新增，展示所有租户下所有的 SERVICE_NAME 有关信息。|
+| DBA_OB_SERVICES                      | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.1 版本，从 V4.2.1 BP9 版本开始引入；对于 V4.2.x 其他版本，从 V4.2.4 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示租户下所有的 SERVICE_NAME 有关信息。|
+| CDB_OB_LS_REPLICA_TASK_HISTORY       | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.1 版本，从 V4.2.1 BP8 版本开始引入；对于 V4.2.x 其他版本，从 V4.2.3 版本开始引入。</li></ul> | `sys` 租户下新增，展示容灾任务执行历史。|
+| DBA_OB_LS_REPLICA_TASK_HISTORY       | <ul><li>对于 V4.3.x 版本，从 V4.3.3 版本开始引入。</li> <li>对于 V4.2.1 版本，从 V4.2.1 BP8 版本开始引入；对于 V4.2.x 其他版本，从 V4.2.3 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示容灾任务执行历史。|
+|  information_schema.events           |<ul><li>对于 V4.3.x 版本，从 V4.3.2 版本开始引入。</li> <li>对于 V4.2.1 版本，从 V4.2.1 BP5 版本开始引入；对于 V4.2.x 其他版本，从 V4.2.5 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，记录 Server 中创建的 Session 信息。|
+| DBA_OB_SYS_VARIABLES                 | <ul><li>对于 V4.3.x 版本，从 V4.3.1 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示当前租户系统变量的配置。|
+| <ul><li>GV\$OB_SESSION </li><li>V\$OB_SESSION </li></ul>                                                     |<ul><li>对于 V4.3.x 版本，从 V4.3.0 版本开始引入。</li> <li>对于 V4.2.1 版本，从 V4.2.1 BP5 版本开始引入；对于 V4.2.x 其他版本，从 V4.2.4 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，记录 Server 中创建的 Session 信息。|
+| <ul><li>GV\$OB_SQLSTAT </li><li>V\$OB_SQLSTAT </li></ul>                                                     |<ul><li>对于 V4.3.x 版本，从 V4.3.5 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示节点上 SQL 的基本性能统计数据。|
+| PROXY_USERS                           | <ul><li>对于 V4.3.x 版本，从 V4.3.2 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.3 版本开始引入。</li></ul> | Oracle 租户下新增，展示用户之间的代理信息。|
+| V$OB_COMPATIBILITY_CONTROL            | <ul><li>对于 V4.3.x 版本，从 V4.3.2 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.3 版本开始引入。</li></ul> | `sys`/MySQL 租户下新增，展示所有可以按 OceanBase 数据库发行版本进行产品行为兼容控制的功能。|
+| mysql.role_edges                      | <ul><li>对于 V4.3.x 版本，从 V4.3.1 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.3 版本开始引入。</li></ul> | `sys`/MySQL 租户下新增，展示角色和用户之间的授予关系。|
+| mysql.default_roles                   | <ul><li>对于 V4.3.x 版本，从 V4.3.1 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.3 版本开始引入。</li></ul> | `sys`/MySQL 租户下新增，展示用户默认启用的角色信息。|
+| mysql.columns_priv                    | <ul><li>对于 V4.3.x 版本，从 V4.3.1 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.3 版本开始引入。</li></ul> | `sys`/MySQL 租户下新增，查看用户被授予的列权限。|
+| <ul><li>GV\$OB_PL_CACHE_OBJECT </li><li>V\$OB_PL_CACHE_OBJECT </li></ul>                                     |<ul><li>对于 V4.3.x 版本，从 V4.3.1 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.2 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示租户下本 Server 中 PL 相关的缓存对象的基础信息。|
+| <ul><li>GV\$OB_TENANT_RESOURCE_LIMIT </li><li>V\$OB_TENANT_RESOURCE_LIMIT </li></ul>                         |<ul><li>对于 V4.3.x 版本，从 V4.3.1 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.4 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示租户在 OBServer 上的逻辑资源使用量、上限值、生效限制条件、宕机重启后的最大曾用量。|
+| <ul><li>GV\$OB_TENANT_RESOURCE_LIMIT_DETAIL </li><li>V\$OB_TENANT_RESOURCE_LIMIT_DETAIL </li></ul>           |<ul><li>对于 V4.3.x 版本，从 V4.3.1 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.4 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示租户在 OBServer 上的逻辑资源所受的限制，以及每种限制的上限值。|
+| CDB_OB_AUX_STATISTICS                | <ul><li>对于 V4.3.x 版本，从 V4.3.0 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.3 版本开始引入。</li></ul> | `sys` 租户下新增，展示所有租户的辅助统计信息。|
+| DBA_OB_AUX_STATISTICS                | <ul><li>对于 V4.3.x 版本，从 V4.3.0 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.3 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示每个租户的辅助统计信息。|
+| CDB_INDEX_USAGE                      | <ul><li>对于 V4.3.x 版本，从 V4.3.0 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.3 版本开始引入。</li></ul> | `sys` 租户下新增，展示索引使用数据信息。|
+| DBA_INDEX_USAGE                      | <ul><li>对于 V4.3.x 版本，从 V4.3.0 版本开始引入。</li> <li>对于 V4.2.x 版本，从 V4.2.3 版本开始引入。</li></ul> | `sys`/MySQL/Oracle 租户下新增，展示索引使用数据信息。|
+| CDB_OB_TENANT_FLASHBACK_LOG_SCN	     | V4.2.5 BP4 | `sys` 租户下新增，用于记录日志裁剪操作的相关记录。|
+| DBA_OB_TENANT_FLASHBACK_LOG_SCN	     | V4.2.5 BP4 | `sys`/MySQL/Oracle 租户下新增，用于记录日志裁剪操作的相关记录。|
+| DBA_OB_TABLE_SPACE_USAGE             | V4.2.5 BP3 | `sys`/MySQL/Oracle 租户下新增，展示所有用户表（多副本环境下以 Leader 副本为准）的大小。|
+| CDB_OB_OBJECT_BALANCE_WEIGHT         | V4.2.5 BP2 | `sys` 租户下新增，展示用户租户下所有设置过特殊权重的分区。 |
+| DBA_OB_OBJECT_BALANCE_WEIGHT         | V4.2.5 BP2 | `sys`/MySQL/Oracle 租户下新增，展示用户租户下所有设置过特殊权重的分区。 |
+| USER_SCHEDULER_JOBS                  | V4.2.5 BP1 | Oracle 租户下新增，展示当前用户可访问的调度程序作业信息。 |
+| CDB_OB_SPM_EVO_RESULT                | V4.2.5 | `sys` 租户下新增，展示所有租户的 SPM 计划演进信息。 |
+| DBA_OB_SPM_EVO_RESULT                | V4.2.5 | `sys`/MySQL/Oracle 租户下新增，展示租户的 SPM 计划演进信息。|
+| CDB_OB_KV_REDIS_TABLE                | V4.2.5 | `sys` 租户下新增，用于存储所有租户 Redis 各种数据结构的特有命令及其对应的存储表名。|
+| DBA_OB_KV_REDIS_TABLE                | V4.2.5 | `sys`/MySQL 租户下新增，用于存储本租户 Redis 各种数据结构的特有命令及其对应的存储表名。|
+| CDB_OB_KV_TTL_TASKS                  | V4.2.5 | `sys` 租户下新增， |
+| DBA_OB_KV_TTL_TASKS                  | V4.2.5 | `sys`/MySQL/Oracle 租户下新增，|
+| CDB_WR_SQL_PLAN                      | V4.2.5 | `sys` 租户下新增，展示 WR 采集的 GV$OB_SQL_PLAN 数据。 |
+| DBA_WR_SQL_PLAN                      | V4.2.5 | `sys`/MySQL/Oracle 租户下新增，展示 WR 采集的 GV$OB_SQL_PLAN 数据。|
+| <ul><li>GV\$OB_SESSION_PS_INFO </li><li>V\$OB_SESSION_PS_INFO </li></ul>                       | V4.2.3 | `sys`/MySQL/Oracle 租户下新增，展示当前租户所有 Session 打开的 PS 信息。 |
+| <ul><li>GV\$OB_CGROUP_CONFIG </li><li>V\$OB_CGROUP_CONFIG </li></ul>                           | V4.2.2 | `sys`/MySQL/Oracle 租户下新增，快捷查询 OBServer 的 cgroup 配置。|
+| USER_USERS                                  | V4.2.1 BP2 | Oracle 租户下新增，展示当前用户的信息。|
+| CDB_OB_TRANSFER_PARTITION_TASKS             | V4.2.1 BP2 | `sys` 租户下新增，展示了所有租户当前正在处理的 Transfer Partition 任务。|
+| DBA_OB_TRANSFER_PARTITION_TASKS             | V4.2.1 BP2 | `sys`/MySQL/Oracle 租户下新增，展示了本租户当前正在处理的分区 Transfer 任务。|
+| CDB_OB_TRANSFER_PARTITION_TASK_HISTORY      | V4.2.1 BP2 | `sys` 租户下新增，展示了所有租户已执行的 Transfer Partition 任务历史。|
+| DBA_OB_TRANSFER_PARTITION_TASK_HISTORY      | V4.2.1 BP2 | `sys`/MySQL/Oracle 租户下新增，展示了本租户已执行的 Transfer Partition 任务历史。|
+| <ul><li>GV\$OB_KV_CONNECTIONS </li><li>V\$OB_KV_CONNECTIONS </li></ul>                         | V4.2.1 BP1 | `sys`/MySQL 租户下新增，查看 Server 的 OBKV 持有连接的统计信息。|
+| CDB_WR_CONTROL                              | V4.2.1 | `sys` 租户下新增，展示 WR 相关的配置信息。|
+| DBA_WR_CONTROL                              | V4.2.1 | `sys`/MySQL/Oracle 租户下新增，展示 WR 相关的配置信息。|
+| <ul><li>GV\$OB_TRANSACTION_SCHEDULERS </li><li>V\$OB_TRANSACTION_SCHEDULERS </li></ul>         | V4.2.1 | `sys`/MySQL/Oracle 租户下新增，展示 Server 的事务 Scheduler 信息。|
+| <ul><li>GV\$OB_TENANT_RUNTIME_INFO </li><li>V\$OB_TENANT_RUNTIME_INFO </li></ul>               | V4.2.1 | `sys`/MySQL/Oracle 租户下新增，展示 OBServer 节点上租户线程中队列和线程限额相关的信息。|
+| CDB_OB_DATA_DICTIONARY_IN_LOG               | V4.2.0 | `sys` 租户下新增，记录数据字典在系统日志流中的位置范围，方便 CDC 消费数据字典。|
+| DBA_OB_DATA_DICTIONARY_IN_LOG               | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，记录数据字典在系统日志流中的位置范围，方便 CDC 消费数据字典。|
+| DBA_OB_TASK_OPT_STAT_GATHER_HISTORY         | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，查询历史收集任务执行情况。|
+| DBA_OB_TABLE_OPT_STAT_GATHER_HISTORY        | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，查询表的历史收集执行情。|
+| CDB_OB_LOG_RESTORE_SOURCE                   | V4.2.0 | `sys` 租户下新增，展示物理恢复租户、备租户的日志恢复源。|
+| DBA_OB_LOG_RESTORE_SOURCE                   | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示本租户的日志恢复源。|
+| DBA_OB_TABLE_STAT_STALE_INFO                | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示自上次收集统计信息以来每个表发生的 DML 操作次数，以及当前统计信息是否已过期。|
+| DBA_OB_EXTERNAL_TABLE_FILES                 | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示当前租户下所有已创建的外表所对应的文件列表。|
+| ALL_OB_EXTERNAL_TABLE_FILES                 | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示当前用户所拥有访问权限的外部表的文件列表。|
+| CDB_OB_EXTERNAL_TABLE_FILES                 | V4.2.0 | `sys` 租户下新增，展示所有租户创建的外部表的文件列表。|
+| DBA_OB_BALANCE_JOBS                         | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示租户当前正在执行的负载均衡工作。|
+| CDB_OB_BALANCE_JOBS                         | V4.2.0 | `sys` 租户下新增，展示所有租户当前正在执行的负载均衡工作 。|
+| DBA_OB_BALANCE_JOB_HISTORY                  | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示租户下所有执行负载均衡工作的历史。|
+| CDB_OB_BALANCE_JOB_HISTORY                  | V4.2.0 | `sys` 租户下新增，展示所有租户已执行的负载均衡工作历史。|
+| DBA_OB_BALANCE_TASKS                        | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示租户当前正在执行的负载均衡任务。  |
+| DBA_OB_BALANCE_TASK_HISTORY                 | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示租户下所有执行负载均衡任务的历史。|
+| CDB_OB_BALANCE_TASKS                        | V4.2.0 | `sys` 租户下新增，展示所有租户当前正在执行的负载均衡任务。|
+| CDB_OB_BALANCE_TASK_HISTORY                 | V4.2.0 | `sys` 租户下新增，展示所有租户已执行的负载均衡任务历史。|
+| DBA_OB_TRANSFER_TASKS                       | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示租户下当前正在执行的 Transfer 任务。|
+| DBA_OB_TRANSFER_TASK_HISTORY                | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示租户下所有执行 Transfer 任务的历史。|
+| CDB_OB_TRANSFER_TASKS                       | V4.2.0 | `sys` 租户下新增，展示所有租户当前正在执行的 Transfer 任务。|
+| CDB_OB_TRANSFER_TASK_HISTORY                | V4.2.0 | `sys` 租户下新增，展示所有租户已执行的 Transfer 任务历史。|
+| CDB_OB_ACCESS_POINT                         | V4.2.0 | `sys` 租户下新增，展示租户入口的 Server 列表。|
+| DBA_OB_ACCESS_POINT                         | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示租户入口的 Server 列表。|
+| DBA_DB_LINKS                                | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示当前租户下所有已创建的 DBLINK。  |
+| CDB_OB_LS_HISTORY                           | V4.2.0 | `sys` 租户下新增，展示所有租户历史上存在过的日志流。 |
+| DBA_OB_LS_HISTORY                           | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示本租户历史上存在过的日志流。 |
+| CDB_OB_TENANT_EVENT_HISTORY                 | V4.2.0 | `sys` 租户下新增，用于展示本集群中所有租户的历史操作记录。 |
+| DBA_OB_TENANT_EVENT_HISTORY                 | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，用于展示本租户的历史操作记录。 |
+| <ul><li>GV\$OB_THREAD  </li><li>V$OB_THREAD </li></ul>                                        | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，用于显示 observer 进程中的所有线程的状态信息。 |
+| <ul><li>GV\$OB_ARBITRATION_SERVICE_STATUS  </li><li>V$OB_ARBITRATION_SERVICE_STATUS </li></ul>| V4.2.0 | `sys`/MySQL/Oracle 租户下新增，用于展示集群和仲裁服务之间的通信状态。  |
+| <ul><li>GV\$OB_ARBITRATION_MEMBER_INFO  </li><li>V$OB_ARBITRATION_MEMBER_INFO </li></ul>      | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，用于展示本集群的仲裁成员信息。 |
+| <ul><li>GV\$OB_OPT_STAT_GATHER_MONITOR  </li><li>V$OB_OPT_STAT_GATHER_MONITOR </li></ul>      | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，查询统计信息收集任务的实时状态。 |
+| <ul><li>GV\$OB_LOCKS  </li><li>V$OB_LOCKS </li></ul>                                          | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，用于显示当前用户各表持锁或请求锁的情况。 |
+| V$OB_LS_LOG_RESTORE_STATUS                  | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示日志流级别日志恢复状态。 |
+| V$OB_TIMESTAMP_SERVICE                      | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，显示租户时钟服务的 GTS/STS 值、时钟服务所在的节点信息和时钟源类型。  |
+| <ul><li>GV\$OB_PX_P2P_DATAHUB </li><li>V$OB_PX_P2P_DATAHUB </li></ul>                         | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，展示并行执行的数据传输操作的相关信息。 |
+| <ul><li>GV\$SQL_JOIN_FILTER  </li><li> V$SQL_JOIN_FILTER</li></ul>                            | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，动态展示 Join Filter 执行相关信息。  |
+| <ul><li>GV\$OB_SQL_PLAN  </li><li>V$OB_SQL_PLAN </li></ul>                                    | V4.2.0 | `sys`/MySQL/Oracle 租户下新增，显示用户通过执行 EXPLAIN PLAN 收集到的计划信息。|
+| DBA_OB_USER_DEFINED_RULES                   | V4.1.0 | `sys`/MySQL/Oracle 租户下新增，记录了自定义改写 SQL 语句的规则。 |
+| CDB_OB_LS_LOG_ARCHIVE_PROGRESS              | V4.1.0 | `sys` 租户下新增，为系统租户展示所有租户的日志流归档进度。 |
+| DBA_OB_LS_LOG_ARCHIVE_PROGRESS              | V4.1.0 | `sys`/MySQL/Oracle 租户下新增，为本租户展示租户的日志流归档进度。 |
+| DBA_OB_ARBITRATION_SERVICE                  | V4.1.0 | 仅系统租户可访问，展示当前集群的仲裁服务配置信息。 |
+| CDB_OB_LS_ARB_REPLICA_TASKS                 | V4.1.0 | 仅系统租户可访问，展示当前租户及对应用户租户正在运行中的仲裁服务任务。  |
+| DBA_OB_LS_ARB_REPLICA_TASKS                 | V4.1.0 | `sys`/MySQL/Oracle 租户下新增，展示当前租户及对应用户租户正在运行中的仲裁服务任务。 |
+| CDB_OB_LS_ARB_REPLICA_TASK_HISTORY          | V4.1.0 | 仅系统租户可访问，展示当前租户及对应用户租户执行过的仲裁服务任务历史。 |
+| DBA_OB_LS_ARB_REPLICA_TASK_HISTORY          | V4.1.0 | `sys`/MySQL/Oracle 租户下新增，展示当前租户及对应用户租户执行过的仲裁服务任务历史。|
+| DBA_OB_CLUSTER_EVENT_HISTORY                | V4.1.0 | 仅系统租户可访问，展示集群级别重要事件，当前仅支持展示集群升级相关事件。|
+| DBA_OB_RSRC_IO_DIRECTIVES                   | V4.1.0 | `sys`/MySQL/Oracle 租户下新增，展示 Resource Manager 中的 IO 资源配置情况。|
+| V$OB_ARCHIVE_DEST_STATUS                    | V4.1.0 | `sys`/MySQL/Oracle 租户下新增，展示租户级各个归档目的端状态。 |
+| DBA_OB_TENANTS                              | V4.1.0 | `sys`/MySQL/Oracle 租户下新增，展示租户的基本信息。 |
+| ALL_POLICIES                                | V4.1.0 | Oracle 租户下新增，展示了对某一个表进行访问控制时，一个表上可以创建多个策略。|
+| DBA_POLICIES                                | V4.1.0 | Oracle 租户下新增，展示了对某一个表进行访问控制时，一个表上可以创建多个策略。|
+| USER_POLICIES                               | V4.1.0 | Oracle 租户下新增，展示了对某一个表进行访问控制时，一个表上可以创建多个策略。|
+| ALL_POLICY_GROUPS                           | V4.1.0 | Oracle 租户下新增，展示策略组信息，配合策略上下文实现对不同的用户生效不同的策略。 |
+| DBA_POLICY_GROUPS                           | V4.1.0 | Oracle 租户下新增，展示策略组信息，配合策略上下文实现对不同的用户生效不同的策略。 |
+| USER_POLICY_GROUPS                          | V4.1.0 | Oracle 租户下新增，展示策略组信息，配合策略上下文实现对不同的用户生效不同的策略。 |
+| ALL_POLICY_CONTEXTS                         | V4.1.0 | Oracle 租户下新增，展示访问视图时会根据上下文的取值选择对应的策略组生效。|
+| DBA_POLICY_CONTEXTS                         | V4.1.0 | Oracle 租户下新增，展示访问视图时会根据上下文的取值选择对应的策略组生效。|
+| USER_POLICY_CONTEXTS                        | V4.1.0 | Oracle 租户下新增，展示访问视图时会根据上下文的取值选择对应的策略组生效。|
+| ALL_SEC_RELEVANT_COLS                       | V4.1.0 | Oracle 租户下新增，将某一列和列级策略关联起来，当访问这一列时对应策略生效。  |
+| DBA_SEC_RELEVANT_COLS                       | V4.1.0 | Oracle 租户下新增，将某一列和列级策略关联起来，当访问这一列时对应策略生效。  |
+| USER_SEC_RELEVANT_COLS                      | V4.1.0 | Oracle 租户下新增，将某一列和列级策略关联起来，当访问这一列时对应策略生效。  |
+| ALL_TRIGGER_ORDERING                        | V4.1.0 | Oracle 租户下新增，用于查看当前数据库下所有触发器的排序。 |
+| DBA_TRIGGER_ORDERING                        | V4.1.0 | Oracle 租户下新增，用于查看当前数据库下所有触发器的排序。 |
+| USER_TRIGGER_ORDERING                       | V4.1.0 | Oracle 租户下新增，用于查看当前数据库下所有触发器的排序。 |
+| ALL_DB_LINKS                                | V4.1.0 | Oracle 租户下新增，展示当前用户可访问的所有 DBLINK。 |
+| DBA_DB_LINKS                                | V4.1.0 | Oracle 租户下新增，展示当前租户下所有已创建的 DBLINK。 |
+| USER_DB_LINKS                               | V4.1.0 | Oracle 租户下新增，展示当前用户所创建的 DBLINK。 |
+| DBA_OB_UNITS                                | V4.0.0 |  `sys` 租户下新增，展示所有租户的 Unit 信息。  |
+| GV$OB_UNITS                                 | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示租户所在的 OBServer 节点的 Unit 信息，系统租户看到本集群所有 OBServer 节点的 Unit 信息。  |
+| DBA_OB_UNIT_CONFIGS                         | V4.0.0 |  `sys` 租户下新增，展示所有租户的 Unit 规格信息。 |
+| DBA_OB_RESOURCE_POOLS                       | V4.0.0 |  `sys` 租户下新增，展示所有租户的资源池信息。  |
+| DBA_OB_SERVERS                              | V4.0.0 |  `sys` 租户下新增，展示所有 OBServer 节点的信息。  |
+| DBA_OB_ZONES                                | V4.0.0 |  `sys` 租户下新增，展示所有 Zone 的信息。  |
+| DBA_OB_ROOTSERVICE_EVENT_HISTORY            | V4.0.0 |  `sys` 租户下新增，展示 Root Service 事件历史。  |
+| DBA_OB_UNIT_JOBS                            | V4.0.0 |  `sys` 租户下新增，展示所有 Unit 相关任务。  |
+| DBA_OB_TENANT_JOBS                          | V4.0.0 |  `sys` 租户下新增，展示租户级别的任务信息。  |
+| DBA_OB_SERVER_JOBS                          | V4.0.0 |  `sys` 租户下新增，展示所有 OBServer 节点相关任务。  |
+| DBA_OB_LS_LOCATIONS                         | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示租户的日志流（ LS ）副本分布信息。  |
+| DBA_OB_DATABASES                            | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示租户的数据库元信息。  |
+| CDB_OB_DATABASES                            | V4.0.0 |  `sys` 租户下新增，展示所有租户的数据库元信息。  |
+| information_schema.schemata                 | V4.0.0 |  `sys`/MySQL 租户下新增，展示租户的数据库元信息。  |
+| DBA_USERS                                   | V4.0.0 | Oracle 租户下新增，展示查看数据库的所有用户。  |
+| CDB_OBJECTS                                 | V4.0.0 |  `sys` 租户下新增，展示所有租户的对象信息。 |
+| CDB_TABLES                                  | V4.0.0 |  `sys` 租户下新增，展示所有租户的 TABLE 信息。 |
+| CDB_INDEXES                                 | V4.0.0 |  `sys` 租户下新增，展示所有租户的 INDEX 信息。 |
+| CDB_IND_COLUMNS                             | V4.0.0 |  `sys` 租户下新增，展示所有租户的索引表的索引列信息。 |
+| CDB_PART_TABLES                             | V4.0.0 |  `sys` 租户下新增，展示所有租户的分区表的分区信息。 |
+| CDB_TAB_PARTITIONS                          | V4.0.0 |  `sys` 租户下新增，展示所有租户的分区表的一级分区信息。 |
+| information_schema.tables                   | V4.0.0 |  `sys`/MySQL 租户下新增，展示表的信息。  |
+| information_schema.statistics               | V4.0.0 |  `sys`/MySQL 租户下新增，记录表索引信息。  |
+| DBA_PART_TABLES                             | V4.0.0 |  `sys`/MySQL 租户下新增，展示租户的分区表的分区信息。 |
+| DBA_PART_INDEXES                            | V4.0.0 |  `sys`/MySQL 租户下新增，展示租户所有分区索引的分区信息。 |
+| DBA_OBJECTS                                 | V4.0.0 |  `sys`/MySQL 租户下新增，展示数据库所有数据库对象。  |
+| DBA_OB_TABLEGROUP_TABLES                    | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示本租户表组、表的关联关系。不展示不在表组中的表。  |
+| CDB_OB_SYS_VARIABLES                        | V4.0.0 |  `sys` 租户下新增，展示所有租户的系统变量信息。  |
+| CDB_TAB_SUBPARTITIONS                       | V4.0.0 |  `sys` 租户下新增，展示所有租户的分区表的二级分区信息，包含二级分区名称、表和所属分区的名称、其存储属性以及 DBMS_STATS 包生成的统计信息。  |
+| CDB_IND_PARTITIONS                          | V4.0.0 |  `sys` 租户下新增，展示所有租户的索引表的一级分区信息。  |
+| CDB_IND_SUBPARTITIONS                       | V4.0.0 |  `sys` 租户下新增，展示数据库中所有索引子分区的信息。  |
+| CDB_SUBPARTITION_TEMPLATES                  | V4.0.0 |  `sys` 租户下新增，展示所有租户的分区表的模板二级分区信息。  |
+| DBA_TAB_PARTITIONS                          | V4.0.0 |  `sys`/MySQL 租户下新增，展示当前租户的所有分区表的一级分区信息。  |
+| DBA_TAB_SUBPARTITIONS                       | V4.0.0 |  `sys`/MySQL 租户下新增，展示当前租户的分区表的二级分区信息，包含二级分区名称、表和所属分区的名称、其存储属性以及 DBMS_STATS 包生成的统计信息。  |
+| DBA_IND_PARTITIONS                          | V4.0.0 |  `sys`/MySQL 租户下新增，展示当前租户下所有索引的一级/二级分区信息。  |
+| DBA_IND_SUBPARTITIONS                       | V4.0.0 |  `sys`/MySQL 租户下新增，展示数据库中所有索引子分区的信息。  |
+| DBA_SUBPARTITION_TEMPLATES                  | V4.0.0 |  `sys`/MySQL 租户下新增，展示本租户的分区表的模板化二级分区信息。  |
+| DBA_OB_OUTLINES                             | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示本租户的 Outline 相关信息。  |
+| DBA_OB_CONCURRENT_LIMIT_SQL                 | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示当前租户的限流规则 Outline 相关信息。  |
+| CDB_OB_LS_LOCATIONS                         | V4.0.0 |  `sys` 租户下新增，展示所有租户的日志流（ LS ）副本分布信息。用户根据 DBA_OBJECTS 获取表和分区对应的 data_object_id。将 data_object_id 作为 tablet_id 访问 DBA_OB_TABLET_TO_LS 和 DBA_OB_LS_LOCATIONS 获取具体的分布信息。  |
+| CDB_TAB_COLS                                | V4.0.0 |  系统租户下展示所有租户的表、视图对象的列信息。  |
+| DBA_OB_TABLET_TO_LS                         | V4.0.0 | `sys`/MySQL/Oracle 租户下新增，展示本租户的所有 Tablet 列表以及 Tablet 所属的日志流信息。  |
+| CDB_OB_TABLET_TO_LS                         | V4.0.0 |  `sys` 租户下新增，展示所有租户的 Tablet 列表以及 Tablet 所属的日志流信息。  |
+| DBA_OB_TABLET_REPLICAS                      | V4.0.0 | `sys`/MySQL/Oracle 租户下新增，展示租户的所有 Tablet 副本信息。  |
+| CDB_OB_TABLET_REPLICAS                      | V4.0.0 | `sys` 租户下新增，展示租户的所有 Tablet 副本信息。  |
+| DBA_RECYCLEBIN                              | V4.0.0 | `sys`/MySQL 租户下新增，展示当前租户下所有回收站对象的信息。  |
+| <ul><li>GV\$OB_TRANSACTION_PARTICIPANTS </li><li> V\$OB_TRANSACTION_PARTICIPANTS</li></ul>                     | V4.0.0 | `sys`/MySQL/Oracle 租户下新增，展示 OBServer 节点上活跃事务的参与者信息。 |
+| <ul><li>GV\$OB_COMPACTION_PROGRESS </li> <li> V\$OB_COMPACTION_PROGRESS </li></ul>                             | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示租户 OBServer 节点级合并进度信息。  |
+| <ul><li> GV\$OB_TABLET_COMPACTION_PROGRESS </li><li> V\$OB_TABLET_COMPACTION_PROGRESS </li> </ul>              | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示租户在节点上 Tablet 级 Compaction 的进度信息。  |
+| <ul><li> GV\$OB_TABLET_COMPACTION_HISTORY </li><li>V\$OB_TABLET_COMPACTION_HISTORY  </li></ul>                 | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示 Tablet 级 Compaction 的历史信息。  |
+| <ul><li> GV\$OB_COMPACTION_DIAGNOSE_INFO  </li><li> V\$OB_COMPACTION_DIAGNOSE_INFO </li></ul>                  | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示节点上 Compaction 的诊断信息。  |
+| <ul><<li> GV\$OB_COMPACTION_SUGGESTIONS </li><li>V\$OB_COMPACTION_SUGGESTIONS</li></ul>                        | V4.0.0 |  `sys`/MySQL/Oracle 租户下新增，展示节点上 Compaction 的建议信息。  |
+| <ul><li>GV\$OB_SERVERS </li><li>V\$OB_SERVERS </li></ul>                                                       | V4.0.0 | `sys` 租户下新增，展示 OBServer 节点的信息。  |
+| <ul><li>GV\$OB_PARAMETERS </li><li>V\$OB_PARAMETERS </li></ul>                                                 | V4.0.0 | `sys`/MySQL/Oracle 租户下新增，展示 OBServer 节点上的配置项信息。  |
+| <ul><li>GV\$OB_PROCESSLIST </li><li>V\$OB_PROCESSLIST </li></ul>                                               | V4.0.0 | `sys`/MySQL/Oracle 租户下新增，展示 OBServer 节点的会话信息。 |
+| <ul><li>GV\$OB_KVCACHE </li><li>V\$OB_KVCACHE </li></ul>                                                       | V4.0.0 | `sys`/MySQL/Oracle 租户下新增，展示租户在 OBServer 节点上的 KVcache 信息。  |
+| <ul><li>GV\$OB_MEMSTORE </li><li>V\$OB_MEMSTORE </li></ul>                                                     | V4.0.0 | `sys`/MySQL/Oracle 租户下新增，展示节点上租户的 MemStore 统计信息。  |
+| <ul><li>GV\$OB_LOG_STAT </li><li>V\$OB_LOG_STAT </li></ul>                                                     | V4.0.0 | `sys`/MySQL/Oracle 租户下新增，展示租户日志流 Palf 的状态。  |
+
+
+## V4.x 版本中废弃的视图
+
+下表罗列出 V4.x 版本废弃的视图。
+
+| **视图名** | **描述** |
+| ----- | ------ |
+| GV$LATCH                                  | 功能变更，该视图已不再记录数据，从 V4.2.5 版本开始不再展示数据。 |
+| V$LATCH                                   | 功能变更，该视图已不再记录数据，从 V4.2.5 版本开始不再展示数据。 |
+| CDB_OB_TABLEGROUP_SUBPARTITIONS           | 实现逻辑变更，该视图已不适用，从 V4.2.0 版本开始不再展示数据。 |
+| DBA_OB_TABLEGROUP_SUBPARTITIONS           | 实现逻辑变更，该视图已不适用，从 V4.2.0 版本开始不再展示数据。 |
+| CDB_OB_TABLEGROUP_PARTITIONS              | 实现逻辑变更，该视图已不适用，从 V4.2.0 版本开始不再展示数据。 |
+| DBA_OB_TABLEGROUP_PARTITIONS              | 实现逻辑变更，该视图已不适用，从 V4.2.0 版本开始不再展示数据。 |
+| gv$sql                                    | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| v$sql                                     | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| gv$unit_load_balance_event_history        | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| gv$tenant                                 | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| gv$database                               | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| gv$table                                  | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| gv$unit                                   | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| v$unit                                    | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| gv$partition                              | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| v$partition                               | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| gv$tenant_memstore_allocator_info         | 架构升级变更，该视图信息不对外展示，从 V4.0.0 版本开始删除。 |
+| v$tenant_memstore_allocator_info          | 架构升级变更，该视图信息不对外展示，从 V4.0.0 版本开始删除。 |
+| gv$minor_merge_info                       | 架构升级变更，该视图的统计功能已不再适用，从 V4.0.0 版本开始删除。 |
+| gv$partition_audit                        | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| v$partition_audit                         | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| gv$ob_trans_table_status                  | 实现逻辑变更，不再有脏事务的概念，从 V4.0.0 版本开始删除。 |
+| v$ob_trans_table_status                   | 实现逻辑变更，不再有脏事务的概念，从 V4.0.0 版本开始删除。 |
+| v$restore_point                           | 实现逻辑变更，该视图所对应的功能在 V4.x 版本不支持，从 V4.0.0 版本开始删除。 |
+| GV$OUTLINE                                | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| GV$TENANT_MEMSTORE_ALLOCATOR_INFO         | 架构升级变更，该视图信息不对外展示，从 V4.0.0 版本开始删除。 |
+| V$TENANT_MEMSTORE_ALLOCATOR_INFO          | 架构升级变更，该视图信息不对外展示，从 V4.0.0 版本开始删除。 |
+| V$RESTORE_POINT                           | 实现逻辑变更，该视图所对应的功能在 V4.x 版本不支持，从 V4.0.0 版本开始删除。 |
+| DBA_OUTLINES                              | 架构升级变更，从 V4.0.0 版本开始删除。 |
+| CDB_CKPT_HISTORY                          | 架构升级变更，从 V4.0.0 版本开始删除。 |

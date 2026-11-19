@@ -1,0 +1,36 @@
+---
+title: query_cache_type
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685113.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# query_cache_type
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该变量从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`query_cache_type` 用于设置查询缓存类型。
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该变量当前暂不生效。</p>
+</main>
+
+## 属性说明
+
+| **属性**  |                           **描述**                             |
+|-----------|----------------------------------------------------------------|
+| 参数类型   | Varchar                                                     |
+| 默认值     | OFF                                                         |
+| 取值范围   | <ul><li>OFF：不缓存或检索结果。 </li><li>ON：缓存除了 `SELECT SQL_NO_CACHE ...`查询的所有结果。 </li><li>DEMAND：只缓存 `SELECT SQL_CACHE ...` 查询的结果。 </li></ul>    |
+| 生效范围    | Global |
+| 是否可修改  | 否，该变量仅支持在创建租户时指定，租户创建后不能通过 SQL 语句修改。 |

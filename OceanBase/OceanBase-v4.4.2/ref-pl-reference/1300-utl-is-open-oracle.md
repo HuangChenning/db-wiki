@@ -1,0 +1,50 @@
+---
+title: IS_OPEN
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005719943.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# IS_OPEN
+
+`IS_OPEN` 函数用于测试文件句柄是否标识一个已打开的文件。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+UTL_FILE.IS_OPEN (
+   file  IN FILE_TYPE)
+  RETURN BOOLEAN;
+```
+
+## 参数解释
+
+| 参数 | 解释 |
+|------|------|
+| file | 由 `FOPEN` 或 `FOPEN_NCHAR` 调用返回的活动文件句柄。 |
+
+## 返回值
+
+`IS_OPEN` 返回类型为 `BOOLEAN`。
+
+* 返回 `TRUE`：表示传入的文件句柄有效，且对应的文件正处于打开状态。
+* 返回 `FALSE`：表示文件已关闭，或者传入的句柄无效。
+
+## 异常情况
+
+* `INVALID_FILEHANDLE`
+
+## 使用说明
+
+* 传入 `IS_OPEN` 的句柄必须来源于一次成功的 `FOPEN` 或 `FOPEN_NCHAR` 调用。未初始化或已释放的句柄将导致函数返回 `FALSE`。
+* `IS_OPEN` 仅报告文件句柄是否表示一个已打开但尚未关闭的文件，并不保证在使用该文件句柄时不会出现操作系统错误。
+* 与 `UTL_FILE` 包中大多数过程不同，`IS_OPEN` 通常不会抛出异常。其设计目的就是安全地查询状态，因此即使句柄无效，它也会返回 `FALSE` 而非报错。

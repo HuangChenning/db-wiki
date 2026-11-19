@@ -1,0 +1,69 @@
+---
+title: SET_TABLEGROUP_BALANCE_WEIGHT
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686375.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# SET_TABLEGROUP_BALANCE_WEIGHT
+
+子程序 `SET_TABLEGROUP_BALANCE_WEIGHT` 用于设置 `Sharding = 'NONE'` 类型表组的权重。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该子程序从 V4.4.1 版本开始引入。</p>
+</main>
+
+## 使用限制
+
+仅支持为 `SHARDING = 'NONE'` + `SCOPE = 'SERVER'` 和 `SHARDING = 'NONE'` + `SCOPE = 'ZONE'` 的表组设置权重，不支持为 `SHARDING = 'NONE'` + `SCOPE = 'CLUSTER'` 的表组设置权重。
+
+## 语法
+
+```sql
+DBMS_BALANCE.SET_TABLEGROUP_BALANCE_WEIGHT(
+    weight                INT,
+    tablegroup_name       VARCHAR(65535)
+    ); 
+```
+
+## 参数说明
+
+| 参数 | 说明 |
+|------|------|
+| weight | 表组权重值（整数），取值范围 [1, +∞)。值越大，分配的资源比例越高。|
+| tablegroup_name | 表组名称。|
+
+## 使用说明
+
+* `enable_database_sharding_none = true` 时，新创建 DataBase 时一同创建的默认绑定表组的权重为 1。其他没设置过权重的`SHARDING NONE` 表组默认权重为 0，不参与权重均衡。
+* 带权重的表组中，表组中的表级、分区级权重无效。
+* 推荐最多划分三档表组权重：
+
+  * 大权重 = 100% * `SHARDING NONE` 表组总数。
+  * 中权重 = 50% * `SHARDING NONE` 表组总数。
+  * 小权重 = 1。
+
+## 示例
+
+* 在 sys 租户中调用，设置租户 `mysql` 下表组 `TG_TD_test` 的权重为 10。
+
+    ```shell
+    obclient> CALL DBMS_BALANCE.SET_TABLEGROUP_BALANCE_WEIGHT(10, 'TG_TD_test') TENANT = 'mysql';
+    ```
+
+* 在用户租户调用，设置本租户下表组 `TG_TD_test` 的权重为 10。
+
+    ```shell
+    obclient> CALL DBMS_BALANCE.SET_TABLEGROUP_BALANCE_WEIGHT(10, 'TG_TD_test');
+    ```
+
+## 相关文档
+
+* 有关删除 `Sharding = 'NONE'` 类型表组的权重的介绍信息，参见 [CLEAR_TABLEGROUP_BALANCE_WEIGHT](400.clear-tablegroup-balance-weight-of-mysql-mode.md)。
+* 有关查询各个表组的权重的介绍信息，参见 [oceanbase.CDB_OB_DATABASES](../../../../700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/8300.o-cdb_ob_databases-of-sys-tenant.md) 或 [oceanbase.DBA_OB_DATABASES](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/8500.o-dba_ob_databases-of-mysql-mode.md)。
+* 有关控制创建 DataBase 时用户表是否开启自动聚合的介绍信息，参见 [enable_database_sharding_none](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2450.enable_database_sharding_none.md)。

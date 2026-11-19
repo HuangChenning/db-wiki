@@ -1,0 +1,106 @@
+---
+title: "身份鉴别"
+book: "管理数据库"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682882.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 身份鉴别
+
+本文介绍了 OceanBase 数据库 Oracle 模式下的身份标识与鉴别机制，包括用户鉴权、身份标识组成以及认证插件的使用。
+
+身份标识与鉴别功能用于对登录数据库的用户进行身份验证，确认其是否能够与数据库用户进行关联，并基于关联用户的权限对数据访问活动进行安全控制。认证插件（Authentication Plugin）则用于用户密码验证环节。在 Oracle 模式下，OceanBase 数据库支持通过认证插件来控制密码的哈希计算和验证方式。
+
+<main id="notice" >
+   <h4>功能适用性</h4>
+   <p>本文档仅适用于 OceanBase 数据库 Oracle 模式。目前 OceanBase 数据库社区版仅提供了 MySQL 模式，有关 MySQL 模式下的身份鉴别，参见 <a href="../100.identification-and-authentication-of-mysql-mode/100.identification-of-mysql-mode.md">身份鉴别</a>。</p>
+</main>
+
+## 用户鉴权
+
+Oracle 模式下，OceanBase 用户鉴权是指为 OceanBase 用户名和密码鉴定，以便识别用户的身份以及用户的所能访问的功能、资源等。在 OceanBase 数据库中，所有的用户都需要使用正确的用户名和密码来登录，以此来保护数据库的安全。
+
+## 身份标识
+
+Oracle 模式中，用户名称在租户内是唯一的，不同租户的用户可以同名，所以通过 `用户名@租户名` 的形式在系统全局唯一确定一个用户。这里直接给出一个示例：
+
+1. 使用 `SYS` 用户登录集群的 Oracle 租户。
+
+   ```shell
+   obclient -usys@oracle -h10.xxx.xxx.1 - P2881 -P*******
+   ```
+
+2. 执行以下命令，创建用户 `u1`。
+
+   ```shell
+   obclient> CREATE USER u1 IDENTIFIED BY ******;
+   Query OK, 0 rows affected (0.064 sec)
+   ```
+
+3. 执行以下命令，授予用户 `u1` 连接数据库的权限。
+
+   ```shell
+   obclient>GRANT CREATE SESSION TO u1;
+   Query OK, 0 rows affected (0.045 sec)
+   ```
+
+4. 使用 `u1` 用户登录集群。
+
+   ```shell
+   $obclient -h10.xxx.xxx.1 -P2881 -uu1@oracle001 -p****** -A
+   Welcome to the OceanBase.  Commands end with ; or \g.
+   Your OceanBase connection id is 3221707914
+   Server version: OceanBase 4.0.0.0 (r101000022022120716-0d7927892ad6d830e28437af099f018b0ad9a322) (Built Dec  7 2022 16:22:15)
+
+   Copyright (c) 2000, 2018, OceanBase and/or its affiliates. All rights reserved.
+
+   Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+   obclient [U1]>
+   ```
+
+## 认证插件
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>OceanBase 数据库在 Oracle 模式下从 V5.0.1 版本开始支持密码认证插件机制。</p>
+</main>
+
+用户可以在创建或修改用户时显式指定使用 `caching_sha2_password` 认证插件（基于 SHA-256 算法），具有更高的安全防护等级。
+
+创建用户时，不指定认证插件的情况下默认使用 `ob_native_password`（等效于 `mysql_native_password`，使用 SHA-1 算法）。如需将 `caching_sha2_password` 设为默认认证插件，可通过设置系统变量 [default_authentication_plugin](../../../../700.reference/800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/2100.default_authentication_plugin-global.md) 实现。
+
+### 组件与驱动版本要求
+
+使用 `caching_sha2_password` 认证插件时，数据库组件与客户端驱动需满足以下版本要求：
+
+| 组件/驱动 | 版本要求 |
+|-----------|----------|
+| OceanBase 数据库代理（ODP） | V4.4.0 及以上版本 |
+| OBClient | V2.2.13 及以上版本 |
+| OB-JDBC | V2.4.18 及以上版本 |
+| OBCI | V2.1.1.3 及以上版本 |
+
+### 示例
+
+在创建或修改用户时，可以通过 `IDENTIFIED WITH auth_plugin` 语法指定认证插件。
+
+```sql
+-- 不指定时默认使用 ob_native_password
+CREATE USER user1 IDENTIFIED BY "******";
+
+-- 显式指定使用 caching_sha2_password
+CREATE USER user2 IDENTIFIED WITH caching_sha2_password BY "******";
+
+-- 修改用户的认证插件
+ALTER USER user1 IDENTIFIED WITH caching_sha2_password BY "******";
+
+-- 查看用户的认证插件信息
+SELECT username, plugin FROM dba_users WHERE username LIKE 'USER_%';
+```
+
+有关 Oracle 模式下 `IDENTIFIED WITH` 语法的详细介绍，请参见 [CREATE USER](../../../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/2700.create-user-of-oracle-mode.md)。

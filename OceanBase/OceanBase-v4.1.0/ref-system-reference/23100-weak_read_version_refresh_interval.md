@@ -1,0 +1,27 @@
+---
+title: weak_read_version_refresh_interval
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702121.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# weak_read_version_refresh_interval
+
+`weak_read_version_refresh_interval` 用于设置弱一致性读版本号的刷新周期，影响弱一致性读数据的延时。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始默认值由 50ms 调整为 100ms，取值范围由 [0ms，+∞) 调整为 [50ms, +∞)。</p>
+</main>
+
+
+|      **属性**      |   **描述**    |
+|------------------|-------------|
+| 参数类型             | 时间类型        |
+| 默认值              | 100ms          |
+| 取值范围             | \[50ms, +∞) |
+| 是否重启 OBServer 节点生效 | 否           |

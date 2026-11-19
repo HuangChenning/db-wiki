@@ -1,0 +1,109 @@
+---
+title: "V$OB_LOG_STAT"
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700851.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# V$OB_LOG_STAT
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示 Palf 的状态。常见使用场景如下：
+
+* 查询日志流是否有 Leader（Leader 所在的副本）。
+* 查询日志流的成员列表（Paxos 副本数）。
+* 查询副本同步状态。
+* 查询日志流日志的可回收位点。
+* 查询日志流允许提供日志消费服务的范围（包括：LSN/SCN）。
+* 查询 Palf 的访问模式。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| TENANT_ID | bigint(20) | NO | 租户 ID |
+| LS_ID | bigint(20) | NO | 日志流 ID |
+| SVR_IP | varchar(46) | NO | 服务器 IP 地址 |
+| SVR_PORT | bigint(20) | NO | 服务器端口号 |
+| ROLE | varchar(32) | NO | 副本角色：<li>LEADER<li>FOLLOWER |
+| PROPOSAL_ID | bigint(20) | NO | Paxos 的 Proposal ID |
+| CONFIG_VERSION | varchar(128) | NO | 配置变更对应的版本号（如：修改成员列表、修改副本数、修改访问模式等） |
+| ACCESS_MODE | varchar(32) | NO | 访问模式：<li>APPEND<li>RAW_WRITE |
+| PAXOS_MEMBER_LIST | varchar(1024) | NO | Paxos 成员列表 |
+| PAXOS_REPLICA_NUM | bigint(20) | NO | Paxos 副本数 |
+| IN_SYNC | varchar(3) | NO | 副本与 Leader 是否完全同步 |
+| BASE_LSN | bigint(20) unsigned | NO | 最大可回收位点 |
+| BEGIN_LSN | bigint(20) unsigned | NO | 最小可消费位点（LSN） |
+| BEGIN_SCN | bigint(20) unsigned | NO | 最小可消费位点（SCN） |
+| END_LSN | bigint(20) unsigned | NO | 最大连续多数派的位点/最大可消费位点（LSN） |
+| END_SCN | bigint(20) unsigned | NO | 最大连续多数派的位点/最大可消费位点（SCN） |
+| MAX_LSN | bigint(20) unsigned | NO | 最大写入点（LSN） |
+| MAX_SCN | bigint(20) unsigned | NO | 最大写入点（SCN） |
+| ARBITRATION_MEMBER | varchar(128) | NO | 仲裁成员的 Server 地址  <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.1.0 版本开始引入。</p></main> |
+| DEGRADED_LIST | varchar(1024) | NO | 开启仲裁场景下被降级的全功能副本列表  <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.1.0 版本开始引入。</p></main>  |
+
+## 查询示例
+
+用户租户查看本租户的日志流副本情况。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.V$OB_LOG_STAT\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+         TENANT_ID: 1002
+             LS_ID: 1
+            SVR_IP: 172.xx.xx.xx
+          SVR_PORT: 2882
+              ROLE: LEADER
+       PROPOSAL_ID: 1
+    CONFIG_VERSION: {proposal_id:1, config_seq:2}
+       ACCESS_MODE: APPEND
+ PAXOS_MEMBER_LIST: 172.xx.xx.xx:2882:1
+ PAXOS_REPLICA_NUM: 1
+           IN_SYNC: YES
+          BASE_LSN: 0
+         BEGIN_LSN: 0
+         BEGIN_SCN: 2
+           END_LSN: 24884153
+           END_SCN: 1722414605317741258
+           MAX_LSN: 24884153
+           MAX_SCN: 1722414605317741258
+ARBITRATION_MEMBER:
+     DEGRADED_LIST:
+*************************** 2. row ***************************
+         TENANT_ID: 1002
+             LS_ID: 1001
+            SVR_IP: 172.xx.xx.xx
+          SVR_PORT: 2882
+              ROLE: LEADER
+       PROPOSAL_ID: 1
+    CONFIG_VERSION: {proposal_id:1, config_seq:2}
+       ACCESS_MODE: APPEND
+ PAXOS_MEMBER_LIST: 172.xx.xx.xx:2882:1
+ PAXOS_REPLICA_NUM: 1
+           IN_SYNC: YES
+          BASE_LSN: 0
+         BEGIN_LSN: 0
+         BEGIN_SCN: 1722408563312874532
+           END_LSN: 6978615
+           END_SCN: 1722414605317741258
+           MAX_LSN: 6978615
+           MAX_SCN: 1722414605317741258
+ARBITRATION_MEMBER:
+     DEGRADED_LIST:
+2 rows in set
+```

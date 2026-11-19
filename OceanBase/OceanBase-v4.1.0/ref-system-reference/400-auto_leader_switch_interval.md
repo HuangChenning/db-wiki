@@ -1,0 +1,29 @@
+---
+title: auto_leader_switch_interval
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002174541.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# auto_leader_switch_interval
+
+auto_leader_switch_interval
+================================================
+
+auto_leader_switch_interval 用于设置自动切主后台线程工作间隔时间。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始弃用。</p>
+</main>
+
+|     **属性**     |  **描述**  |
+|----------------|----------|
+| 参数类型           | 时间类型     |
+| 默认值            | 30s      |
+| 取值范围           | \[1s，+∞) |
+| 是否需要重启OBserver | 否        |

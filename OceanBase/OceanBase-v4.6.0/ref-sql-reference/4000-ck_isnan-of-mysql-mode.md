@@ -1,0 +1,74 @@
+---
+title: ISNAN
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687296.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ISNAN
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该函数从 V4.6.0 版本开始引入。</p>
+</main>
+
+## 声明
+
+```sql
+ISNAN(number)
+```
+
+## 说明
+
+该函数用于判断数值 `number` 是否为 “非数字”（NaN）。如果是 NaN 则返回 `NULL`（真），否则返回 0（假）。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>该函数为 ClickHouse 兼容函数，默认不开放，使用前需设置配置项 <code>sql_func_extension_mode</code> 来启用，详细信息参见 <a href="../../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7470.sql_func_extension_mode.md">sql_func_extension_mode</a>。</p>
+</main>
+
+## 示例
+
+1. 启用 ClickHouse 扩展函数模式。
+
+    ```shell
+    obclient> ALTER SYSTEM SET sql_func_extension_mode = "ClickHouse";
+    ```
+
+2. 返回 0。
+
+    ```shell
+    obclient> SELECT ISNAN(1.5);
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------------+
+    | ISNAN(1.5) |
+    +------------+
+    |          0 |
+    +------------+
+    1 row in set
+    ```
+
+3. 返回 `NULL`。
+
+    ```shell
+    obclient> SELECT ISNAN(1/0);
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------------+
+    | ISNAN(1/0) |
+    +------------+
+    |       NULL |
+    +------------+
+    1 row in set
+    ```

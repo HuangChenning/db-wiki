@@ -1,0 +1,75 @@
+---
+title: "V$STATNAME"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501455.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$STATNAME
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前租户所有统计事件的相关定义。
+
+## 字段说明
+
+|   **字段名称**   |   **类型**    | **是否可以为 NULL** |   **描述**    |
+|--------------|-------------|----------------|-------------|
+| CON_ID       | bigint(20)  | NO             | 租户的 ID      |
+| STAT_ID      | bigint(20)  | NO             | 统计事件的 ID    |
+| STATISTICS#  | bigint(20)  | NO             | 统计事件的下标     |
+| NAME         | varchar(64) | NO             | 统计事件的名称     |
+| DISPLAY_NAME | varchar(64) | NO             | 统计事件的别名     |
+| CLASS        | bigint(20)  | NO             | 统计事件所属类型别名称 |
+
+## 查询示例
+
+查看所有统计事件的相关定义，展示前 10 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.V$STATNAME LIMIT 10;
+```
+
+查询结果如下：
+
+```shell
++--------+---------+------------+-----------------------+-----------------------+-------+
+| CON_ID | STAT_ID | STATISTIC# | NAME                  | DISPLAY_NAME          | CLASS |
++--------+---------+------------+-----------------------+-----------------------+-------+
+|      1 |   10000 |          0 | rpc packet in         | rpc packet in         |     1 |
+|      1 |   10001 |          1 | rpc packet in bytes   | rpc packet in bytes   |     1 |
+|      1 |   10002 |          2 | rpc packet out        | rpc packet out        |     1 |
+|      1 |   10003 |          3 | rpc packet out bytes  | rpc packet out bytes  |     1 |
+|      1 |   10004 |          4 | rpc deliver fail      | rpc deliver fail      |     1 |
+|      1 |   10005 |          5 | rpc net delay         | rpc net delay         |     1 |
+|      1 |   10006 |          6 | rpc net frame delay   | rpc net frame delay   |     1 |
+|      1 |   10007 |          7 | mysql packet in       | mysql packet in       |     1 |
+|      1 |   10008 |          8 | mysql packet in bytes | mysql packet in bytes |     1 |
+|      1 |   10009 |          9 | mysql packet out      | mysql packet out      |     1 |
++--------+---------+------------+-----------------------+-----------------------+-------+
+10 rows in set
+```
+
+## 相关视图或文档
+
+* 查看 Session 级别的统计事件信息：
+
+  * [GV$SESSTAT](5300.gv-sesstat-of-sys-tenant.md)
+  * [V$SESSTAT](35900.v-sesstat-of-sys-tenant.md)
+
+* 查看租户级别的统计事件信息：
+
+  * [GV$SYSSTAT](6100.gv-sysstat-of-sys-tenant.md)
+
+  * [V$SYSSTAT](36900.v-sysstat-of-sys-tenant.md)
+
+* 有关统计事件的详细说明，参见 [常见统计事件说明](../../../700.system-views/510.statistical-event-description.md)。

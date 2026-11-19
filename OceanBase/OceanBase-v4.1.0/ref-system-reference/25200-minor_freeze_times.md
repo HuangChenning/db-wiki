@@ -1,0 +1,34 @@
+---
+title: minor_freeze_times
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002180042.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# minor_freeze_times
+
+`minor_freeze_times` 用于设置多少次转储触发一次全局合并。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始弃用。</p>
+</main>
+
+|      **属性**      |    **描述**    |
+|------------------|--------------|
+| 参数类型             | 整型           |
+| 默认值              | 100          |
+| 取值范围             | \[0, 65535\] |
+| 是否重启 OBServer 节点生效 | 否            |
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul>
+  <li> 该配置项的取值为 0 时，表示无论转储多少次都不会自动触发合并。 </li>
+  <li> 该配置项与 <code>major_compact_trigger</code> 配置项具有相同功能。 </li>
+  </ul>
+</main>

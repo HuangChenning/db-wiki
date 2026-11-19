@@ -1,0 +1,61 @@
+---
+title: FREEPARSER
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354596.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# FREEPARSER
+
+`FREEPARSER` 过程用于释放 `PARSER` 解析器句柄及其占用的系统资源。释放后，请勿继续使用该句柄，以免引发悬空引用或资源泄漏问题。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该子程序从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_XMLPARSER.FREEPARSER (
+   parser IN DBMS_XMLPARSER.PARSER);
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| parser | 待释放的 `DBMS_XMLPARSER.PARSER` 句柄。 |
+
+## 返回值
+
+无返回值。
+
+## 使用说明
+
+若已通过 `GETDOCUMENT` 取得 `DBMS_XMLDOM.DOMDOCUMENT` 句柄，文档仍须单独调用 `FREEDOCUMENT` 释放。
+
+## 示例
+
+该示例通过 `DBMS_XMLPARSER` 系统包释放解析器句柄：
+
+```sql
+DECLARE
+  p DBMS_XMLPARSER.PARSER;
+BEGIN
+  -- 创建解析器实例
+  p := DBMS_XMLPARSER.NEWPARSER;
+  -- 释放解析器句柄
+  DBMS_XMLPARSER.FREEPARSER(p);
+END;
+/
+```

@@ -1,0 +1,28 @@
+---
+title: oceanbase.DBA_OB_BACKUP_DELETE_POLICY
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501276.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_BACKUP_DELETE_POLICY
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示租户下为过期清理/自动清理设置的备份清理策略。`sys` 租户和 Meta 租户不支持物理备份。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| POLICY_NAME | varchar(256) | NO | 清理策略名 |
+| RECOVERY_WINDOW | varchar(64) | NO | 可恢复时间窗口，默认值：0 |

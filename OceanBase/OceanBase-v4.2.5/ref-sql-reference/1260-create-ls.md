@@ -1,0 +1,133 @@
+---
+title: CREATE LS
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002064684.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE LS
+
+## 描述
+
+该语句用于创建一个用户日志流。
+
+## 使用限制及注意事项
+
+* 对于 V4.2.5 版本，V4.2.5 BP2 及以上版本支持创建日志流操作。
+* 在 V4.x 之前版本中，OceanBase 数据库仅支持租户的同构 Zone 模式。在 V4.2.5 版本中，从 V4.2.5 BP5 版本开始支持租户的异构 Zone 模式。其中：
+
+  * 同构 Zone 模式下，需要通过指定 Unit Group 来创建日志流。
+  * 异构 Zone 模式下，需要通过指定 UNIT_LIST 来创建日志流。
+
+  有关同构 Zone 模式和异构 Zone 模式的详细区别，参见 [数据分布](../../../../../600.manage/300.replica-management/400.data-distribution.md)。
+
+* 当前仅支持创建普通的用户日志流，不支持创建广播日志流。
+
+* 创建日志流操作仅支持在主租户上完成。且待创建日志流的租户的 `STATUS` 和 `SWITCHOVER_STATUS` 需要为 `NORMAL`。
+
+* 创建日志流时：
+
+  * 同构 Zone 模式下，要求目标 `UNIT_GROUP` 的状态必须为 `ACTIVE`，且视图 `DBA_OB_UNITS` 中目标 `UNIT_GROUP_ID` 的值不能为 0。
+  * 异构 Zone 模式下，要求目标 `UNIT_LIST` 的状态必须为 `ACTIVE`，且指定的目标 `UNIT_LIST` 不能为空。
+
+* 为待创建的日志流指定 `PRIMARY_ZONE` 时，需要保证指定的 Zone 在租户的 `ZONE_LIST` 中。对于日志流而言，设置日志流的 `PRIMARY_ZONE` 与设置租户的 `PRIMARY_ZONE` 略有不同，日志流仅允许设置一个 Zone，例如 `z1` 或`z2`，不能像租户一样设置 `z1,z2`、`z1; z2` 或 `RANDOM`。
+* 负载均衡相关的配置项建议为关闭状态，即值为 `False`，否则：
+
+  * 当租户级配置项 [enable_rebalance](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2900.enable_rebalance.md) 为开启状态，即值为 `True` 时，创建的日志流会被系统从目标 `UNIT_GROUP` 中迁移到其他 `UNIT_GROUP` 中。
+
+  * 当租户级配置项 [enable_transfer](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/3100.enable_transfer.md) 为开启状态，即值为 `True` 时，创建的日志流可能会被删除。
+
+## 权限要求
+
+执行该语句的用户需要拥有 `ALTER SYSTEM` 权限。有关 OceanBase 数据库权限的详细介绍，请参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md) 和 [Oracle 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/000.permission-classification-of-oracle-mode.md)。
+
+## 语法
+
+```sql
+ALTER SYSTEM CREATE LS
+    {UNIT_GROUP [=] unit_group_id} | {UNIT_LIST [=] (unit_id_list) }
+    [,PRIMARY_ZONE [=] 'zone_name']
+    [TENANT [=] 'tenant_name'];
+```
+
+## 参数说明
+
+|     **参数**      |             **描述**               |
+|-------------------|------------------------------------|
+| unit_group_id     | 指定待创建日志流的目标 `UNIT_GROUP` 的 ID。仅适用于同构 Zone 模式。|
+| unit_id_list      | 指定待创建的日志流分布的 Unit 列表，多个 unit_id 之间使用英文逗号（,）分隔。仅适用于异构 Zone 模式。<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该参数从 V4.2.5BP5 版本开始支持。</p></main>|
+| zone_name         | 指定待创建的日志流的目标主 Zone。如果不指定 `PRIMARY_ZONE`，则由系统自动选择一个 Zone 分配。|
+| tenant_name       | 可选项，指定待操作的租户。<main id="notice" type='notice'><h4>注意</h4><p>仅系统租户可以指定其他租户，用户租户只能指定本租户。本语句不支持使用 <code>ALL</code>、<code>ALL_USER</code>、<code>ALL_META</code> 等指定所有租户、用户租户以及所有 Meta 租户。</p></main>|
+
+## 示例
+
+:::tab
+tab 同构 Zone 模式
+
+* 系统租户
+
+  系统租户为租户 `obtenant` 在 ID 为 1001 的 `UNIT_GROUP` 上创建一个日志流。
+
+  ```shell
+  obclient> ALTER SYSTEM CREATE LS UNIT_GROUP 1001 TENANT = obtenant;
+  ```
+
+  系统租户为租户 `obtenant` 在 ID 为 1001 的 `UNIT_GROUP` 上创建一个日志流，并且设置该日志流的 `PRIMARY_ZONE` 为 `z1`。
+
+  ```shell
+  obclient> ALTER SYSTEM CREATE LS UNIT_GROUP 1001, PRIMARY_ZONE 'z1' TENANT = obtenant;
+  ```
+
+* 用户租户
+
+  用户租户为本租户在 ID 为 1001 的 `UNIT_GROUP` 上创建一个日志流。
+
+  ```shell
+  obclient> ALTER SYSTEM CREATE LS UNIT_GROUP 1001;
+  ```
+
+  用户租户为本租户在 ID 为 1001 的 `UNIT_GROUP` 上创建一个日志流，并且设置该日志流的 `PRIMARY_ZONE` 为 `z1`。
+
+  ```shell
+  obclient> ALTER SYSTEM CREATE LS UNIT_GROUP 1001, PRIMARY_ZONE 'z1';
+  ```
+
+tab 异构 Zone 模式
+
+* 系统租户
+
+  系统租户为租户 `obtenant` 在 ID 为 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流。
+
+  ```shell
+  obclient> ALTER SYSTEM CREATE LS UNIT_LIST = (1001,1002,1003) TENANT = obtenant;
+  ```
+
+  系统租户为租户 `obtenant` 在 ID 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流，并且设置该日志流的 `PRIMARY_ZONE` 为 `z1`。
+
+  ```shell
+  obclient> ALTER SYSTEM CREATE LS UNIT_LIST = (1001,1002,1003), PRIMARY_ZONE 'z1' TENANT = obtenant;
+  ```
+
+* 用户租户
+
+  用户租户为本租户在 ID 为 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流。
+
+  ```shell
+  obclient> ALTER SYSTEM CREATE LS UNIT_LIST = (1001,1002,1003);
+  ```
+
+  用户租户为本租户在 ID 为 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流，并且设置该日志流的 `PRIMARY_ZONE` 为 `z1`。
+
+  ```shell
+  obclient> ALTER SYSTEM CREATE LS UNIT_LIST = (1001,1002,1003), PRIMARY_ZONE 'z1';
+  ```
+
+:::
+
+## 相关文档
+
+有关创建日志流的详细操作，参见 [创建日志流](../../../../../600.manage/230.logstream-management/100.create-a-logstream.md)。

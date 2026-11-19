@@ -1,0 +1,294 @@
+---
+title: "开启安全审计"
+book: "管理数据库"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682885.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 开启安全审计
+
+通过一系列过滤器实现对特定事件进行安全审计。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版，OceanBase 数据库社区版暂不支持审计功能。</p>
+</main>
+
+## 审计范围
+
+过滤器可以过滤的维度包括：账号、事件类型、事件属性等。每个过滤器可以选择对过滤出来的事件是否进行审计。
+
+## 使用限制及注意事项
+
+* 表达式必须直接且唯一地放置在一个 `SELECT` 语句的输出列（即 select item）中，且没有父表达式（parent expr）限制。
+* 表达式不能写在子查询中。
+* 过滤器定义好之后，还需要设置到用户上才能够最终生效。
+* 过滤器和用户是一对多的关系，即一个过滤器可以设置到多个用户上，一个用户上只能设置一个过滤器。
+* 建立连接时会确定当前 Session 使用哪个审计过滤器（Audit Filter），在整个 Session 生命周期内不变。
+
+## 审计日志加密
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>审计日志加密功能从 V4.6.1 版本开始支持。</p>
+</main>
+
+MySQL 租户审计日志支持以明文或加密方式落盘及对外输出。具体配置方式参见文末相关文档。
+
+## 创建过滤器
+
+通过创建过滤器开启 MySQL 租户的审计模式。过滤器在事件类型（Class）上控制是否记录，在此基础上，还支持事件类型细分（Event Type）、事件字段（Event Field）过滤，以及对事件字段条件使用 `AND` / `OR` 的逻辑组合。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>事件类型细分，字段过滤和逻辑组合运算能力从 V4.6.1 版本开始支持，之前版本仅支持事件类型过滤。</p>
+</main>
+
+### 语法
+
+通过 `AUDIT_LOG_FILTER_SET_FILTER` 函数创建过滤器，命令如下：
+
+```sql
+AUDIT_LOG_FILTER_SET_FILTER('filter_name', 'definition_of_filters');
+```
+
+参数说明如下：
+
+| 字段 | 说明 |
+|------|-----|
+| filter_name           | 用于指定过滤器名称。 <main id="notice" type='explain'><h4>说明</h4><p><code>AUDIT_LOG_FILTER_SET_FILTER</code> 是 <code>CREATE OR REPLACE</code> 语义，对已存在的对象执行 DDL 会覆盖。</p></main> |
+| definition_of_filters | 用于定义审计过滤器的具体配置，采用 JSON 字符串格式进行表述。在 事件类型之上，可配置事件类型细分、事件字段及字段条件间的 `AND` / `OR` 组合。 |
+
+具体配置项说明如下：
+
+* 事件类型细分（Event Type）：用于对指定事件类型进行进一步细分和过滤。在 JSON 字符串中，通过 `class` 下的 `event` 下的 `name` 参数指定相关字段，如`{"class": [{"name": "connection", "event": [{"name": "disconnect"}]}]}`。
+* 事件字段（Event Field）过滤：事件字段用于对指定事件类型进行进一步细分和过滤。可通过设置 `field` 参数，实现对 connection、general 和 table_access 三类事件的具体字段（field）进行筛选。在 JSON 字符串中，通过 `event` 下的 `log` 参数指定相关字段，如 `"event": [{"name": "read", "log": {"field": {"name": "table_name", "value": "t1"}}}]`。
+* 逻辑组合：支持通过 `AND` / `OR` 对多个 field 进行逻辑组合。
+
+事件类型细分支持的子类型：
+
+| 事件类型（Class） | 说明 | 可细分的子类型（Event Type） |
+|------------------|------|------------------------------|
+| connection | 包含登录登出语句 | <ul><li>connect：建立连接</li><li>disconnect：断开连接</li></ul> |
+| general | 包含全部非 DML 语句 | <ul><li>status：会话状态</li></ul> |
+| table_access | 仅可用于 DML | <ul><li>read：审计读操作</li><li>insert：具体会审计写操作</li><li>delete：具体会审计删除操作</li><li>update：具体会审计更新操作</li></ul> |
+
+事件字段过滤支持的字段：
+
+包含 `connection`、`general`、`table_access` 三个事件类型，每个事件类型下支持多个事件字段，详见下表：
+
+| 事件类型       | 事件字段（Event Field） | 数据类型       | 说明                           |
+|---------------|----------------------|------------|--------------------------------|
+| connection    | connection_id        | Int        | 连接唯一标识                     |
+| connection    | user                 | String     | 需要审计的登录用户名               |
+| connection    | database             | String     | 连接时指定的数据库名               |
+| connection    | ip                   | String     | 连接指定的用户使用的客户端 IP 地址   |
+| connection    | server_ip            | String     | 连接的 OBServer 的服务端 IP 地址   |
+| connection    | server_host          | String     | 连接的 OBServer 的服务端主机名     |
+| general       | general_user         | String     | 审计指定的用户名        |
+| general       | general_sql_command  | String     | 审计指定的 SQL 命令类型。当前可覆盖所有非 DML 语句类型，具体语句参见表格下方说明。 |
+| table_access  | table_database       | String     | 事件所属的数据库名称 |
+| table_access  | table_name           | String     | 事件相关的表。支持两种用法：<ul><li>仅指定表名时，不区分数据库，将审计所有数据库中同名的表；</li><li>与 table_database 字段配合，通过下方 `AND` / `OR` 逻辑组合，可精准指定某库下的特定表。</li></ul> |
+
+**查看 `general_sql_command` 支持的完整 SQL 类型，请参考文末相关文档**。
+
+#### `log` 字段的层级、差异与默认行为
+
+日志记录行为取决于 `log` 的取值，以及是否指定了 `class` 或 `event` 项。
+
+| 层级 | 取值 | 说明 | 未指定时行为 |
+|------|------|------|-------------|
+| `filter.log` | true/false | 过滤器总开关，控制默认记录/不记录。 | 若未指定 `class` 或 `event`，默认按 `true` 处理。 |
+| `filter.class[].log` | true/false/JSON 字符串 | 针对单个 `class` 条目进行局部开关或条件过滤。 | 可显式配置；未配置时按上层规则处理。 |
+| `filter.class[].event[].log` | true/false/JSON 字符串 | 针对单个 `event` 条目进行局部开关或条件过滤。 | 可显式配置；未配置时按上层规则处理。 |
+
+其他说明：
+
+* 表格中**层级**一列是路径表示法的简写，其中：
+  * `filter.log` 表示 `filter` 对象下的 `log` 属性，例如 `{"filter": {"log": true}}`。
+  * `filter.class[].log` 表示 `filter` 对象下的 `class` 数组中的单个元素的 `log` 属性，例如 `{"filter": {"class": [{"log": true}]}}`。
+  * `filter.class[].event[].log` 表示 `filter` 对象下的 `class` 数组中的单个元素的 `event` 数组中的单个元素的 `log` 属性，例如 `{"filter":{"class":[{"name":"table_access","event":[{"name":"read","log":true}]}]}}`。
+* 文档中 “JSON 外层 `log`” 与 “`class`/`event` 层 `log`” 不是重复配置：前者是总开关，后者是局部覆盖或条件过滤。
+
+以下为过滤器 JSON 极简示例，更多示例请参见文末相关文档中 `AUDIT_LOG_FILTER_SET_FILTER` 函数的参考文档：
+
+* 记录所有事件：`log` 为 `true` 即可（等价于记录全部 Class）。
+
+    ```sql
+    { "filter": { "log": true } }
+    ```
+
+* 记录事件类型细分为 `connect` 的事件（在 `connection` 类型下只保留建立连接，不包含 `disconnect`）：
+
+    ```sql
+    {
+      "filter": {
+        "log": true,
+        "class": [ { "name": "connection", "event": [ { "name": "connect" } ] } ]
+      }
+    }
+    ```
+
+### 示例
+
+本节给出一个完整示例。
+
+1. 创建记录所有事件的过滤器 `log_all`。
+
+    ```shell
+    obclient [test]>SELECT AUDIT_LOG_FILTER_SET_FILTER('log_all', '{ "filter": { "log": true } }');
+    ```
+
+    * 当 DDL 执行成功时，表达式返回 `OK`。
+
+        ```shell
+        +-------------------------------------------------------------------------+
+        | AUDIT_LOG_FILTER_SET_FILTER('log_all', '{ "filter": { "log": true } }') |
+        +-------------------------------------------------------------------------+
+        | OK                                                                      |
+        +-------------------------------------------------------------------------+
+        1 row in set
+        ```
+
+    * 当 DDL 失败时，`SELECT` 语句仍然执行成功，表达式的输出结果为错误信息。
+
+        ```shell
+        obclient [test]>SELECT AUDIT_LOG_FILTER_SET_FILTER('log_err', '1');
+        ```
+
+        返回结果如下：
+
+        ```shell
+        +---------------------------------------------+
+        | AUDIT_LOG_FILTER_SET_FILTER('log_err', '1') |
+        +---------------------------------------------+
+        | ERROR: JSON parsing error.                  |
+        +---------------------------------------------+
+        1 row in set
+    ```
+
+2. 通过 `mysql.audit_log_filter` 视图查看审计过滤器的定义。视图完整语法和示例请参见文末相关文档。
+
+    ```shell
+    obclient [test]> select * from mysql.audit_log_filter;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +---------+-------------------------------+
+    | NAME    | FILTER                        |
+    +---------+-------------------------------+
+    | log_all | { "filter": { "log": true } } |
+    +---------+-------------------------------+
+    1 row in set (0.003 sec)
+    ```
+
+    各字段解释如下：
+
+    | 字段名称 | 描述   |
+    |--------------|------------|
+    | NAME   | 过滤器名称 |
+    | FILTER | 过滤器定义 |
+
+## 配置过滤器
+
+通过配置过滤器给对应的用户后，后台线程才能打印审计日志。
+
+### 语法
+
+通过 `AUDIT_LOG_FILTER_SET_USER` 函数将过滤器设置到用户上。
+
+```sql
+AUDIT_LOG_FILTER_SET_USER('user_name', 'filter_name');
+```
+
+各字段解释如下：
+
+| 字段 | 说明 |
+|------|-----|
+| user_name   | 用于指定用户名称。<main id="notice" type='explain'><h4>说明</h4><p><code>AUDIT_LOG_FILTER_SET_USER</code> 指定的 <code>user@host</code> 不要求是已存在的用户，可以写通配符或不存在的用户。当指定不存在的用户时，可以在登录审计的时候起作用。<code>user_name</code> 有以下限制：<ul><li><code>user</code> 只支持对整个字段进行通配，即 <code>%</code>。</li><li>不支持指定 <code>host</code> 字段或 <code>test_%</code> 这种部分通配符的写法。若指定 <code>host</code> 或 <code>test_%</code>，则无法创建过滤器。</li></ul></p></main>|
+| filter_name | 用于指定过滤器名称。<main id="notice" type='explain'><h4>说明</h4><p><code>AUDIT_LOG_FILTER_SET_USER</code> 是 <code>CREATE OR REPLACE</code> 语义，对已存在的对象执行 DDL 会覆盖。指定的 <code>filter_name</code> 不存在时，DDL 不生效但也不报错。</p></main>|
+
+### 示例
+
+1. 将过滤器 `log_all` 设置到用户 `user001` 上。
+
+    ```shell
+    obclient [test]> SELECT AUDIT_LOG_FILTER_SET_USER('user001', 'log_all');
+    ```
+
+    * 当 DDL 执行成功时，表达式返回 `OK`。
+
+        ```shell
+        +-------------------------------------------------+
+        | AUDIT_LOG_FILTER_SET_USER('user001', 'log_all') |
+        +-------------------------------------------------+
+        | OK                                              |
+        +-------------------------------------------------+
+        1 row in set
+        ```
+
+    * 当 DDL 执行失败时，`SELECT` 语句仍然执行成功，表达式的输出结果为错误信息。
+
+        ```shell
+        obclient [test]>SELECT AUDIT_LOG_FILTER_SET_USER('log_err', '1');
+        ```
+
+        返回结果如下：
+
+        ```shell
+        +--------------------------------------------+
+        | AUDIT_LOG_FILTER_SET_USER('log_err', '1')  |
+        +--------------------------------------------+
+        | ERROR: Invalid character in the user name. |
+        +--------------------------------------------+
+        1 row in set (0.001 sec)
+        ```
+
+2. 通过 `mysql.audit_log_user` 视图查看审计过滤器和用户的映射关系。视图完整语法和示例请参见文末相关文档。
+
+    ```shell
+    obclient [test]> select * from mysql.audit_log_user;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +---------+------+------------+
+    | USER    | HOST | FILTERNAME |
+    +---------+------+------------+
+    | user001 | %    | log_all    |
+    +---------+------+------------+
+    1 row in set (0.003 sec)
+    ```
+
+    各字段解释如下：
+
+    | 字段名称 | 描述   |
+    |--------------|------------|
+    | USER       | 用户名 |
+    | HOST       | 主机名 |
+    | FILTERNAME | 过滤器名称 |
+
+## 开启审计
+
+通过配置项 `audit_log_enable` 开启 MySQL 租户下的审计功能。配置项完整说明请参见文末相关文档。
+
+```shell
+obclient> ALTER SYSTEM SET audit_log_enable=TRUE;
+```
+
+## 相关文档
+
+* 设置审计日志策略，包含写入、压缩、轮转、清理、加密等：[设置审计规则](300.set-up-audit-rules-of-mysql-mode.md)
+* 过滤器创建函数：[AUDIT_LOG_FILTER_SET_FILTER](../../../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/400.functions-of-mysql-mode/970.audit-functions-of-mysql-mode/400.audit-log-filter-set-filter-of-mysql-mode.md)
+* 过滤器配置函数：[AUDIT_LOG_FILTER_SET_USER](../../../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/400.functions-of-mysql-mode/970.audit-functions-of-mysql-mode/500.audit-log-filter-set-user-of-mysql-mode.md)
+* 过滤器查看视图：[mysql.audit_log_filter](../../../../700.reference/700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/3170.mysql-audit_log_filter-of-mysql-mode.md)
+* 过滤器用户映射视图：[mysql.audit_log_user](../../../../700.reference/700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/3175.mysql.audit_log_user-of-mysql-mode.md)
+* 开启审计配置项：[audit_log_enable](../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/230.audit_log_enable.md)
+* `general_sql_command` 语句类型清单：[附录：general_sql_command 支持的完整 SQL 类型](600.general-sql-command-supported-sql-types-of-mysql-mode.md)

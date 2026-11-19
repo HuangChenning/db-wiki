@@ -1,0 +1,53 @@
+---
+title: DBA_OB_LOG_RESTORE_SOURCE
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284035.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_LOG_RESTORE_SOURCE
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.2.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户的日志恢复源。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| TENANT_ID | NUMBER(38) | NO | 租户 ID |
+| ID | NUMBER(38) | NO | 日志恢复源编号 |
+| TYPE | VARCHAR2(32) | NO |日志恢复源类型 <ul><li>`SERVICE`：网络直连日志恢复源  </li><li>`LOCATION`：归档日志恢复源 </li><li>`RAWPATH`：用户管理日志恢复源 </li></ul> |
+| VALUE | CLOB | NO | 日志恢复源入口地址 <ul><li>SERVICE 类型：主租户访问入口，如 "IP_LIST=xxx.xxx.xxx.xxx:44803,USER=user@mysql,PASSWORD=******,TENANT_ID=1002,CLUSTER_ID=1,COMPATIBILITY_MODE=ORACLE,IS_ENCRYPTED=true"  </li><li>LOCATION：日志归档目录，如 "file:///data/1/archive/" </li><li>RAWPATH：用户自定义目录 </li></ul>|
+| RECOVERY_UNTIL_SCN | NUMBER(38) | NO | 日志获取上限，可以为 INT64_MAX 或者大于 0 的有限值 |
+| RECOVERY_DELAY      | NUMBER(38) | NO | 租户的同步延迟配置，单位为微秒，默认值为 0，表示无延迟 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main> |
+
+## 查询示例
+
+用户租户查询本租户的日志恢复源。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_OB_LOG_RESTORE_SOURCE;
+```
+
+查询结果如下所示：
+
+```shell
+*************************** 1. row ***************************
+         TENANT_ID: 1002
+                ID: 1
+              TYPE: SERVICE
+             VALUE: IP_LIST=6.xx.xx.92:2881+2882,USER=rep_user@oracle001,PASSWORD=DFB**********************************,TENANT_ID=1004,CLUSTER_ID=10001,COMPATIBILITY_MODE=ORACLE,IS_ENCRYPTED=true
+RECOVERY_UNTIL_SCN: 4611686018427387903
+    RECOVERY_DELAY: 1800000000
+1 row in set
+```

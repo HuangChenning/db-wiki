@@ -1,0 +1,43 @@
+---
+title: DELETE_PLAN_DIRECTIVE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503702.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DELETE_PLAN_DIRECTIVE
+
+`DELETE_PLAN_DIRECTIVE` 过程用于删除资源计划指令。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 语法 
+
+```sql
+DBMS_RESOURCE_MANAGER.DELETE_PLAN_DIRECTIVE (
+    plan              IN VARCHAR2, 
+    group_or_subplan  IN VARCHAR2);
+```
+
+## 参数说明 
+
+|        参数       |     说明     |
+|------------------|------------|
+| plan             | 资源计划的名称。   |
+| group_or_subplan | 小组或子计划的名称。 |
+
+
+## 示例 
+
+```shell
+obclient> BEGIN
+  DBMS_RESOURCE_MANAGER.DELETE_PLAN_DIRECTIVE('NIGHT','group2');
+END ;
+```

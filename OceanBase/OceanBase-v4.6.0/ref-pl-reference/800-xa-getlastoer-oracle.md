@@ -1,0 +1,30 @@
+---
+title: XA_GETLASTOER
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686624.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# XA_GETLASTOER
+
+当之前的 XA 调用失败时，XA_GETLASTOER 将获取最后的 OceanBase 数据库错误代码。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_XA.XA_GETLASTOER
+RETURN PLS_INTEGER;
+```
+
+## 返回值
+
+返回值为最后一个 OceanBase 数据库错误代码。

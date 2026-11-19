@@ -1,0 +1,14 @@
+---
+title: "统计信息管理概述"
+book: "性能调优"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702475.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 统计信息管理概述
+
+统计信息的管理功能是 OceanBase 数据库的优化器兼容 Oracle 的 DBMS_STATS 包相关统计信息管理函数而实现的相关功能，主要包括统计信息删除、统计信息设置、统计信息导入导出、统计信息锁定、统计信息历史版本管理及统计信息收集策略 Prefs 配置等功能模块。

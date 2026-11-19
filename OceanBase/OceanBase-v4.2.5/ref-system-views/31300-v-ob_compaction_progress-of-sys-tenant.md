@@ -1,0 +1,64 @@
+---
+title: "V$OB_COMPACTION_PROGRESS"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501416.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_COMPACTION_PROGRESS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前节点上所有租户的合并进度信息。
+
+## 字段说明
+
+|          字段名称           |      类型      | 是否可以为 NULL |                                            描述                                            |
+|-------------------------|--------------|------------|--------|
+|SVR_IP              |varchar(46)    |NO   |服务器IP    |
+|SVR_PORT            |bigint(20)    |NO   |服务器端口号    |
+|TENANT_ID           |bigint(20)    |NO   |租户ID    |
+|TYPE                |varchar(64)    |NO   |Compaction 的类型： <ul><li>`MDS_TABLE_MERGE`：将系统的元数据按照 SSTable 的格式持久化到磁盘里。</li> <li>`MAJOR_MERGE`：租户级合并</li> <li>`MEDIUM_MERGE`：分区级合并</li> <li>`MINI_MERGE`：Mini Compaction，将 MemTable 转变成 Mini SSTable。</li> <li>`MINOR_MERGE`：Minor Compaction，多个 Mini SSTable 合成一个新的 Mini SSTable 或者多个 Mini SSTable 与一个 Minor SSTable 合成一个新的 Minor SSTable。</li> <li>`META_MAJOR_MERGE`：一种特殊的 Compaction 类型，是将某个指定时间点之前的数据合成一个 Meta Major SSTable，其数据格式与 Major SSTable 一样，不包含多版本数据和未提交事务数据。</li></ul>   |
+|ZONE                 |varchar(128)  |NO   |Zone信息    |
+|COMPACTION_SCN       |bigint(20) unsigned|NO   |合并版本信息    |
+|STATUS               |varchar(10)   |NO   |状态信息    |
+|TOTAL_TABLET_CNT     |bigint(20)    |NO   |tablet 总数    |
+|UNFINISHED_TABLET_CNT|bigint(20)    |NO   |未完成的 tablet 数量    |
+|DATA_SIZE            |bigint(20)    |NO   |需要 Compaction 的总数据量，单位为字节  |
+|UNFINISHED_DATA_SIZE |bigint(20)    |NO   |未完成 Compaction 的数据量，单位为字节   |
+|COMPRESSION_RATIO    |bigint(20)    |NO   |新数据的压缩率（仅记录上一个 major version 点之后新写入数据的压缩率）    |
+|START_TIME           |timestamp(6)  |NO   |开始时间    |
+|ESTIMATED_FINISH_TIME|timestamp(6)  |NO   |预计完成时间（若 compaction_progress 为100，则展示结束时间）    |
+|COMMENTS             |varchar(1024) |NO   |注释信息。合并进行中的时候是记录当前最新的 compaction 事件。如果合并结束了，记录总体的耗时情况    |
+
+## 查询示例
+
+系统租户查询当前节点上所有租户的合并进度信息，展示前 5 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.V$OB_COMPACTION_PROGRESS LIMIT 5;
+```
+
+查询结果如下：
+
+```shell
++----------------+----------+-----------+-------------+-------+---------------------+--------+--------------------+-------------------------+-----------+----------------------+-------------------+----------------------------+----------------------------+--------------------------------------------------------------+
+| SVR_IP         | SVR_PORT | TENANT_ID | TYPE        | ZONE  | COMPACTION_SCN      | STATUS | TOTAL_TABLET_COUNT | UNFINISHED_TABLET_COUNT | DATA_SIZE | UNFINISHED_DATA_SIZE | COMPRESSION_RATIO | START_TIME                 | ESTIMATED_FINISH_TIME      | COMMENTS                                                     |
++----------------+----------+-----------+-------------+-------+---------------------+--------+--------------------+-------------------------+-----------+----------------------+-------------------+----------------------------+----------------------------+--------------------------------------------------------------+
+| 172.xx.xxx.xxx |     2882 |         1 | MAJOR_MERGE | zone1 | 1735668001977989000 | FINISH |                998 |                       0 |  52950720 |                    0 |                 1 | 2025-01-01 02:00:03.437780 | 2025-01-01 02:06:08.668990 | EXECUTE=2.77s|(0.40)|UPDATE_TABLET=3.65s|(0.53)|total=6.91s; |
+| 172.xx.xxx.xxx |     2882 |         1 | MAJOR_MERGE | zone1 | 1735754403442116000 | FINISH |                998 |                       0 | 383450742 |                    0 |                 1 | 2025-01-02 02:00:05.586452 | 2025-01-02 02:04:40.953585 | EXECUTE=4.27s|(0.48)|UPDATE_TABLET=4.08s|(0.46)|total=8.87s; |
+| 172.xx.xxx.xxx |     2882 |      1001 | MAJOR_MERGE | zone1 | 1735668001678185000 | FINISH |                  0 |                       0 |         0 |                    0 |                 1 | 2025-01-01 02:00:03.771773 | 2025-01-01 02:01:27.731708 | total=0us;                                                   |
+| 172.xx.xxx.xxx |     2882 |      1001 | MAJOR_MERGE | zone1 | 1735754403233853000 | FINISH |                  0 |                       0 |         0 |                    0 |                 1 | 2025-01-02 02:00:04.882274 | 2025-01-02 02:01:28.675352 | total=0us;                                                   |
+| 172.xx.xxx.xxx |     2882 |      1001 | MAJOR_MERGE | zone1 | 1735840804806112001 | FINISH |                  0 |                       0 |         0 |                    0 |                 1 | 2025-01-03 02:00:07.804602 | 2025-01-03 02:01:29.610499 | total=0us;                                                   |
++----------------+----------+-----------+-------------+-------+---------------------+--------+--------------------+-------------------------+-----------+----------------------+-------------------+----------------------------+----------------------------+--------------------------------------------------------------+
+5 rows in set
+```

@@ -1,0 +1,79 @@
+---
+title: "V$OB_TRANSACTION_PARTICIPANTS"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500635.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_TRANSACTION_PARTICIPANTS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前租户在当前 OBServer 节点上的活跃事务的参与者上下文信息。
+
+## 字段说明
+
+|       字段名称       |                类型                 | 是否可以为 NULL |    描述     |
+|------------------|-----------------------------------|------------|-----------|
+| TENANT_ID        | NUMBER(38)                        | NO         | 租户 ID     |
+| SVR_IP           | VARCHAR2(46)                      | NO         | 服务器 IP 地址 |
+| SVR_PORT         | NUMBER(38)                        | NO         | 服务器端口号    |
+| SESSION_ID       | NUMBER(38)                        | NO         | 对于 V4.2.x 版本：<ul><li> V4.2.5 BP4 之前版本：<br>在所有连接方式（直连模式/ODP 模式）下，该字段均表示 Server Session ID。</li><li> V4.2.5 BP4 及之后版本：<ul><li>在直连模式下：<br>该字段表示 Server Session ID。</li> <li>在 ODP 模式下：</li><ul><li>当 ODP 中的配置项 <code>client_session_id_version = 2</code> 时，该字段表示 Client Session ID。 </li> <li>当 <code>client_session_id_version = 1</code> 时，该字段表示 Server Session ID。</li></ul></ul></li></ul>       |
+| SCHEDULER_ADDR   | VARCHAR2(64)                      | NO         | 调度者所属节点地址 |
+| TX_TYPE          | VARCHAR2(11)                      | NO         | 事务类型      |
+| TX_ID            | NUMBER(38)                        | NO         | 事务ID      |
+| LS_ID            | NUMBER(38)                        | NO         | 所属日志流ID   |
+| PARTICIPANTS     | VARCHAR2(1024)                    | NO         | 参与者列表     |
+| CTX_CREATE_TIME  | TIMESTAMP(6) WITH LOCAL TIME ZONE | YES        | 上下文创建时间点  |
+| TX_EXPIRED_TIME  | TIMESTAMP(6) WITH LOCAL TIME ZONE | YES        | 事务超时时间点   |
+| STATE            | VARCHAR2(9)                       | NO         | 上下文提交状态   |
+| ACTION           | VARCHAR2(10)                      | NO         | 上一个已执行动作  |
+| PENDING_LOG_SIZE | NUMBER(38)                        | NO         | 待持久化数据大小  |
+| FLUSHED_LOG_SIZE | NUMBER(38)                        | NO         | 已持久化数据大小  |
+| IS_EXITING       | VARCHAR2(3)                       | NO         | 是否正在退出    |
+| ROLE             | VARCHAR2(8)                       | NO         | 上下文角色     |
+
+## 查询示例
+
+用户租户下，查看本租户在所有节点上活跃事务的参与者信息。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.V$OB_TRANSACTION_PARTICIPANTS\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+        TENANT_ID: 1004
+           SVR_IP: 11.xxx.xxx.xxx
+         SVR_PORT: 28825
+       SESSION_ID: 3221613842
+   SCHEDULER_ADDR: "11.xxx.xxx.xxx:28825"
+          TX_TYPE: UNDECIDED
+            TX_ID: 1928779
+            LS_ID: 1001
+     PARTICIPANTS: NULL
+  CTX_CREATE_TIME: 26-MAR-25 03.26.35.414104 PM
+  TX_EXPIRED_TIME: 27-MAR-25 03.26.35.414104 PM
+            STATE: ACTIVE
+           ACTION: START
+ PENDING_LOG_SIZE: 57
+ FLUSHED_LOG_SIZE: 0
+             ROLE: LEADER
+            COORD: -1
+LAST_REQUEST_TIME: 26-MAR-25 03.26.35.414104 PM
+         FORMATID: -1
+         GLOBALID: NULL
+         BRANCHID: NULL
+1 row in set
+```

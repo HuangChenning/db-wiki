@@ -1,0 +1,34 @@
+---
+title: "闪回查询"
+book: "系统原理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000003150059.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-oceanbase-database-concepts
+---
+
+# 闪回查询
+
+## UNDO_RETENTION
+
+`undo retention` 字面意思是 Undo 的保留位点，即从当前时间回溯多长时间的 Undo 日志是保留下来的。对于 OceanBase 数据库来说，是将该段时间的所有数据多版本保留下来。可以通过租户级配置项 `undo_retention` 进行设置，默认单位为秒。
+
+## Flashback Query
+
+闪回查询（Flashback Query）允许用户查询某个历史版本的数据。OceanBase 数据库提供了如下语法进行查询：
+
+- Oracle 模式：`AS OF SCN` 和 `AS OF TIMESTAMP`。
+
+- MySQL 模式：`AS OF SNAPSHOT`。
+
+用户配置租户级配置项 `undo_retention` 后，可以使用 Flashback Query 查询 `T - undo_retention` 到当前时间 `T` 时间范围内的任意多版本。
+
+## 注意事项
+
+如果在 `T - undo_retention` 时间段内有 DDL 操作，则：
+
+- 对于添加列操作，闪回查询操作发生前的数据时，所有新添加的列均为 Default 值。
+
+- 对于创建表、删除表或删除列等操作，闪回查询操作发生前的数据时，系统会报错。

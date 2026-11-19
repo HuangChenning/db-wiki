@@ -1,0 +1,194 @@
+---
+title: "删除分区"
+book: "数据库对象管理"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004476677.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 删除分区
+
+您可以根据业务需要，删除分区表中的分区。删除分区时，会同时删除该分区的定义和数据。
+
+## 分区表对删除分区操作的支持情况
+
+OceanBase 数据库的 Oracle 模式中：
+
+* 对于一级分区表，当前仅支持对 Range 分区和 List 分区执行删除分区操作，暂不支持对 Hash 分区执行删除分区操作。
+
+* 对于二级分区表，当前仅支持对 Range/List 类型（组合）的分区执行删除分区操作。
+
+OceanBase 数据库的 Oracle 模式中，一级分区表和二级分区表对删除分区操作的具体支持情况如下表所示。
+
+|   分区表  |        分区类型                           | 删除一级分区 | 删除二级分区 |
+|-----------|------------------------------------------|-------------|------------|
+| 一级分区表 | Range / List                             | 支持     | -      |
+| 一级分区表 | Hash                                     | 不支持    | -      |
+| 二级分区表 | Range + Range / Range + List             | 支持     | 支持     |
+| 二级分区表 | Range + Hash                             | 支持    | 不支持    |
+| 二级分区表 | List + Range / List + List               | 支持     | 支持     |
+| 二级分区表 | List + Hash                              | 支持    | 不支持    |
+| 二级分区表 | Hash + Range / Hash + List               | 不支持    | 支持    |
+| 二级分区表 | Hash + Hash                              | 不支持    | 不支持    |
+
+## 删除分区操作说明
+
+删除分区时，请尽量保证待删除的分区上不存在活动的事务或查询，否则可能会导致 SQL 语句报错，或者出现一些异常情况。您可以在 `sys` 租户下，通过视图 `oceanbase.GV$OB_TRANSACTION_PARTICIPANTS` 查询当前还未结束的事务上下文状态。
+
+### 删除分区对全局索引的影响
+
+Oracle 模式下，对于有全局索引的一级分区表或二级分区表，删除分区时，需要通过在 `ALTER TABLE` 语句中添加 `UPDATE GLOBAL INDEXES` 关键字的方式来更新全局索引信息。如果未添加 `UPDATE GLOBAL INDEXES` 关键字，则删除分区后，该分区表上的全局索引会处于不可用状态。
+
+对于使用 Range 或 List 分区（包括一级分区和二级分区）且支持删除分区操作的表，当指定 `UPDATE GLOBAL INDEXES` 时，系统不会重建全局索引，而是通过后台合并删除数据的方式，以 lazy（延迟）维护策略保持索引有效，从而避免因索引失效导致的查询中断或性能下降。需要注意的是，该优化仅适用于普通全局索引。以下场景无法触发该优化：
+
+* 一级分区为 Hash 分区（即使二级分区为 Range 或 List），此时对二级分区执行 Truncate 操作。
+* 分区键为表达式而非普通列。
+
+#### 控制分区 DDL 时全局索引行为的隐藏配置项
+
+对于 V4.3.5 版本，OceanBase 数据库从 V4.3.5 BP2 版本开始引入租户级隐藏配置项 `_ob_enable_truncate_partition_preserve_global_index`，用于控制是否允许在 `TRUNCATE`/`DROP` 主表分区（以下简称分区 DDL）时，全局索引不失效。对于升级上来的租户，该隐藏配置项默认值为 `False`，对于新建租户默认值为 `True`，取值行为对比如下：
+
+| 配置项值 | 分区 DDL 执行期间的行为 | 分区 DDL 执行完成后的结果 |
+|----------|-----------------------|-------------------------|
+| True | 只有 `TRUNCATE`/`DROP` 的主表分区不允许 DML，主表的其他分区可以正常 DML。| 全局索引不失效：主表和所有的索引表都可以执行 DML 操作，并且主表相关的全局索引不失效。|
+| False | 只有 `TRUNCATE`/`DROP` 的主表分区不允许 DML，主表的其他分区可以正常 DML。| 全局索引失效：主表和所有的索引表都可以执行 DML 操作，主表相关的全局索引会失效或者重建。|
+
+**示例如下：**
+
+* 索引维持。
+
+    ```shell
+    obclient> ALTER SYSTEM SET "_ob_enable_truncate_partition_preserve_global_index" = True;
+    ```
+
+* 索引失效。
+
+    ```shell
+    obclient> ALTER SYSTEM SET "_ob_enable_truncate_partition_preserve_global_index" = False;
+    ```
+
+### 删除分区对并发 DDL/DML/查询 的影响
+
+删除分区属于 Offline DDL 操作。在删除分区时，OceanBase 数据库会在目标分区上加一个分区级别的排他锁。
+
+| 操作类型 | 在删除分区执行期间的影响 |
+|----------|------------------------------------------|
+| 并发 DDL | 被禁止或阻塞。针对同一张表的任何其他 DDL 操作都无法同时执行。|
+| 并发 DML | <ul><li>对目标分区：完全阻塞。</li><li>对其他分区：通常可并发，前提是语句能明确访问其他分区。</li></ul>|
+| 并发查询（`SELECT`）| 不受影响，可正常执行。|
+
+## 删除一级分区
+
+您可以根据业务需要，删除一级分区表或二级分区表中的一级分区。
+
+### 语法
+
+```sql
+ALTER TABLE table_name DROP PARTITION partition_name_list [UPDATE GLOBAL INDEXES];
+
+partition_name_list:
+  partition_name [, partition_name ...]
+```
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <ul>
+    <li>
+    <p>删除一级分区时，可以删除一个或多个分区，但不能删除全部分区。</p>
+    </li>
+    <li>
+    <p>删除分区会同时删除分区中的数据。如果您只需要删除数据，可以使用 <code>TRUNCATE</code> 语句。</p>
+    </li>
+    </ul>
+  </main>
+
+### 示例
+
+* 删除一级分区表 `tbl1_r` 中的 `M202005` 和 `M202006`。
+
+  ```sql
+  obclient> CREATE TABLE tbl1_r(log_id INT,log_date DATE NOT NULL DEFAULT SYSDATE)
+         PARTITION BY RANGE(log_date) 
+          (PARTITION M202001 VALUES LESS THAN(TO_DATE('2020/02/01','YYYY/MM/DD'))
+           , PARTITION M202002 VALUES LESS THAN(TO_DATE('2020/03/01','YYYY/MM/DD'))
+           , PARTITION M202003 VALUES LESS THAN(TO_DATE('2020/04/01','YYYY/MM/DD'))
+           , PARTITION M202004 VALUES LESS THAN(TO_DATE('2020/05/01','YYYY/MM/DD'))
+           , PARTITION M202005 VALUES LESS THAN(TO_DATE('2020/06/01','YYYY/MM/DD'))
+           , PARTITION M202006 VALUES LESS THAN(TO_DATE('2020/07/01','YYYY/MM/DD'))
+           , PARTITION M202007 VALUES LESS THAN(TO_DATE('2020/08/01','YYYY/MM/DD'))
+           , PARTITION M202008 VALUES LESS THAN(TO_DATE('2020/09/01','YYYY/MM/DD'))
+           , PARTITION M202009 VALUES LESS THAN(TO_DATE('2020/10/01','YYYY/MM/DD'))
+           , PARTITION M202010 VALUES LESS THAN(TO_DATE('2020/11/01','YYYY/MM/DD'))
+           , PARTITION M202011 VALUES LESS THAN(TO_DATE('2020/12/01','YYYY/MM/DD'))
+           , PARTITION M202012 VALUES LESS THAN(TO_DATE('2021/01/01','YYYY/MM/DD'))
+           , PARTITION MMAX VALUES LESS THAN (MAXVALUE)
+           );
+  Query OK, 0 rows affected
+  
+  obclient> ALTER TABLE tbl1_r DROP PARTITION M202005,M202006;
+  Query OK, 0 rows affected
+  ```
+
+* 删除分区表 `t2_f_rr` 的一级分区 `p0`。
+
+  ```sql
+  obclient> CREATE TABLE t2_f_rr(col1 INT,col2 INT)
+         PARTITION BY RANGE(col1)
+         SUBPARTITION BY RANGE(col2)
+          (PARTITION p0 VALUES LESS THAN(100)
+            (SUBPARTITION sp0 VALUES LESS THAN(2020),
+             SUBPARTITION sp1 VALUES LESS THAN(2021)
+            ),
+           PARTITION p1 VALUES LESS THAN(200)
+            (SUBPARTITION sp2 VALUES LESS THAN(2020),
+             SUBPARTITION sp3 VALUES LESS THAN(2021),
+             SUBPARTITION sp4 VALUES LESS THAN(2022)
+             )
+           );
+  Query OK, 0 rows affected
+  
+  obclient> ALTER TABLE t2_f_rr DROP PARTITION p0;
+  Query OK, 0 rows affected
+  ```
+
+## 删除二级分区
+
+您可以根据业务需要，删除二级分区表中的二级分区，删除二级分区会同时删除该分区的定义和其中的数据。
+
+### 语法
+
+```sql
+ALTER TABLE table_name DROP SUBPARTITION subpartition_name_list [ UPDATE GLOBAL INDEXES ];
+
+subpartition_name_list:
+  subpartition_name[, subpartition_name ...]
+```
+
+### 示例
+
+删除分区表 `t2_f_rr` 中一级分区 `p1` 下的二级分区 `sp5` 和 `sp6` 并更新全局索引信息。
+
+```sql
+obclient> CREATE TABLE t2_f_rr(col1 INT,col2 INT)
+       PARTITION BY RANGE(col1)
+       SUBPARTITION BY RANGE(col2)
+        (PARTITION p0 VALUES LESS THAN(100)
+          (SUBPARTITION sp0 VALUES LESS THAN(2020),
+           SUBPARTITION sp1 VALUES LESS THAN(2021)
+          ),
+         PARTITION p1 VALUES LESS THAN(200)
+          (SUBPARTITION sp2 VALUES LESS THAN(2020),
+           SUBPARTITION sp3 VALUES LESS THAN(2021),
+           SUBPARTITION sp4 VALUES LESS THAN(2022),
+           SUBPARTITION sp5 VALUES LESS THAN(2023),
+           SUBPARTITION sp6 VALUES LESS THAN(2024)
+           )
+         );
+Query OK, 0 rows affected
+
+obclient> ALTER TABLE t2_f_rr DROP SUBPARTITION sp5,sp6 UPDATE GLOBAL INDEXES;
+Query OK, 0 rows affected
+```

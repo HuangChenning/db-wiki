@@ -1,0 +1,24 @@
+---
+title: ODCIStatsOptions.Options
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686878.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# ODCIStatsOptions.Options
+
+`ODCIStatsOptions.Options` 常量及其描述。
+
+|     常量名称      |  常量类型   | 默认值 |     描述      |
+|---------------|---------|-----|-------------|
+| PercentOption | INTEGER | 1   | 通过抽样计算统计数据  |
+| RowOption     | INTEGER | 2   | 根据所有行计算统计信息 |
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>

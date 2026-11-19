@@ -1,0 +1,110 @@
+---
+title: ANALYZE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503339.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ANALYZE
+
+## 描述
+
+该语句用于收集表或表分区的统计信息。
+
+## 语法
+
+- 更新一个表特定列的直方图，指定桶的数量，你可以使用如下语法：
+
+```sql
+ANALYZE TABLE table_name UPDATE HISTOGRAM ON column_name_list WITH INT_NUM BUCKETS;
+```
+
+- 删除一个表特定列的直方图，你可以使用如下语法：
+
+```sql
+ANALYZE TABLE table_name DROP HISTOGRAM ON column_name_list;
+```
+
+- 收集一个表的统计信息，包括行计数和列数据，你可以使用如下语法：
+
+```sql
+ANALYZE TABLE table_name [use_partition] analyze_statistics_clause;
+```
+
+- 收集多个表的统计信息，你可以使用如下语法：
+
+```sql
+ANALYZE TABLE tbl_name1 [, tbl_name2]...
+```
+
+当租户级配置项 `enable_sql_extension` 为 `TRUE` 的时候，可以使用 Oracle 模式下的语法，如下:
+
+```sql
+ANALYZE TABLE table_name [use_partition] COMPUTE STATISTICS [ for_clause ];
+
+use_partition:
+    PARTITION (parition_name [,partition_name,....])
+   | SUBPARTITION(subpartition_name, [,subpartition_name,...])
+
+analyze_statistics_clause:
+    COMPUTE STATISTICS [analyze_for_clause]
+    | ESTIMATE STATISTICS [analyze_for_clause] [SAMPLE INTNUM {ROWS | PERCENTAGE}]
+
+analyze_for_clause:
+    FOR TABLE
+    | FOR ALL [INDEXED | HIDDEN] COLUMNS [size_clause]
+    | FOR COLUMNS [size clause] column [size_clause] [,column [size_clause]...]
+
+size_clause:
+    SIZE integer
+    | SIZE REPEAT
+    | SIZE AUTO
+    | SIZE SKEWONLY
+
+column:
+    column_name
+    | (column_name [, column_name])
+
+```
+
+## 参数解释
+
+|  参数             |       描述        |
+|----------------------------|----------|
+| table_name |目标表的名称。在这个表上将进行分析操作，以收集统计信息。|
+| tbl_name1 [, tbl_name2]... |进行批量表分析时的语法，允许同时指定多个表进行分析。表名之间用逗号分隔。|
+|UPDATE HISTOGRAM ON column_name_list| 这个子句用于指定哪些列需要更新直方图。直方图是统计信息的一种，它帮助优化器了解数据分布的细节。|
+|DROP HISTOGRAM ON column_name_list | 此子句用于从指定列中删除直方图。如果认为直方图不再反映数据的真实分布，或者直方图不再需要，可以使用此子句。|
+| INT_NUM | 整数，即 Buckets 的个数。有关 Buckets 的取值，请参见 [method_opt](../../../../1000.performance-tuning-guide/500.sql-optimization/400.sql-optimization/400.optimizer-statistics/200.statistics-collection-methods/300.collect-statistics-manually.md)。|
+|WITH INT_NUM BUCKETS|这个子句用于指定直方图中所需的桶（buckets）数量。桶是直方图中的区间，每个桶代表数据的一个范围。|
+| use_partition | 可选参数，指定分区名。如果表是分区表，此参数可以用于指定分析操作仅针对特定的分区或子分区。如果未指定，则分析操作将涵盖所有分区。如果指定为表名，则不收集分区统计信息。 |
+| compute_statistics_clause  | 指定 `COMPUTE STATISTICS` 可以计算分析对象的精确统计信息，并将其存储在数据字典中。分析表时，会同时统计表和列的统计信息。 |
+| for_clause                 | 指定要分析整个表，或者只分析特定的列。 <ul><li> `FOR TABLE`：指定仅收集表的统计信息。   <li> `FOR COLUMNS`：指定仅收集指定列和标量对象属性列的统计信息。其中，`attribute` 指定对象中的特定列名。   <li> `FOR ALL COLUMNS`：指定收集所有列和标量对象属性列的统计信息。   <li> `FOR ALL INDEXED COLUMNS`：指定收集所有索引列的列统计信息。列统计信息可以基于完整的列，也可以通过指定 `SIZE` 使用直方图。   <li> `FOR ALL HIDDEN COLUMNS`：指定收集所有隐藏列的列统计信息。列统计信息可以基于完整的列，也可以通过指定 `SIZE` 使用直方图。   <li> `SIZE`：指定直方图中的最大存储桶数。取值范围是 \[1,2048]，默认值是 `256`。 </ul>   |
+| estimate_statistics_clause | 指定 `ESTIMATE STATISTICS` 可以估计分析对象的统计信息，并将其存储在数据字典中。   |
+| SAMPLE                     | 指定用于估计统计信息使用的分析对象中的采样数据量。如果省略该参数，则会根据数据库优化器自动选择一个合适的比例进行采样。 <ul><li> `ROWS`：对表中的 `integer` 行进行采样。   <li> `PERCENT`：对表中行的 `integer` 百分比进行采样。</ul>   |
+
+## 示例
+
+* 收集 `test` 表的统计信息，列的桶个数为 30 个。
+
+```sql
+obclient> CREATE TABLE test (c1 NUMBER(30) PRIMARY KEY,c2 VARCHAR(50));
+Query OK, 0 rows affected
+
+obclient> ANALYZE TABLE test UPDATE HISTOGRAM ON c1,c2 with 30 buckets;
+Query OK, 0 rows affected
+```
+
+* 当租户级配置项 `enable_sql_extension` 为 `TRUE` 的时候，使用 Oracle 模式下的语法收集用户 `user01` 的表 `test` 的统计信息，所有列的桶个数设定为 128。
+
+```sql
+obclient> ALTER SYSTEM SET enable_sql_extension = TRUE;
+Query OK, 0 rows affected
+
+obclient> ANALYZE TABLE test COMPUTE STATISTICS FOR ALL COLUMNS SIZE 128;
+Query OK, 0 rows affected
+```

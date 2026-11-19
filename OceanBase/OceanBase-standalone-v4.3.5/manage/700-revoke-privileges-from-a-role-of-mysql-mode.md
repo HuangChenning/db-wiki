@@ -1,0 +1,54 @@
+---
+title: "撤销角色中的权限"
+book: "管理数据库"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000003578388.html"
+tags:
+  - oceanbase
+  - standalone
+  - manage
+---
+
+# 撤销角色中的权限
+
+您可以撤销角色中的权限。
+
+## 前提条件
+
+撤销角色的权限时，当前用户必须拥有被撤销的权限，并且拥有 `GRANT OPTION` 权限，才能撤销成功。查看当前用户所拥有的权限的详细操作，请参见 [查看用户权限](400-view-user-permissions-of-mysql-mode.md)。
+
+## 操作示例
+
+- 撤销角色 `role1` 中的 `ALTER SYSTEM` 权限。
+
+  ```
+  obclient [oceanbase]> REVOKE ALTER SYSTEM ON *.* FROM role1;
+  ```
+
+- 撤销角色 `role1` 中数据库 `dbtest` 下的所有对象的 `SELECT` 权限。
+
+  ```
+  obclient [oceanbase]> REVOKE SELECT ON dbtest.* FROM role1;
+  ```
+
+  支持将撤销多个角色中的一个或多个权限。
+
+  ```
+  obclient [oceanbase]> REVOKE SELECT,UPDATE ON dbtest.* FROM role1,role2;
+  ```
+
+- 撤销角色 `role1` 中表 `test1.tbl1` 的 `SELECT` 对象权限。
+
+  ```
+  obclient [oceanbase]> REVOKE SELECT ON test1.tbl1 FROM role1;
+  ```
+
+- 撤销角色 `role1` 中表 `test1.tbl1` 的 `c1` 列的 `SELECT` 权限。
+
+  ```
+  obclient [oceanbase]> REVOKE SELECT(c1) ON test1.tbl1 FROM role1;
+  ```
+
+## 相关文档
+
+有关 `REVOKE` 语句的详细说明，请参见 [REVOKE](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002017006)。

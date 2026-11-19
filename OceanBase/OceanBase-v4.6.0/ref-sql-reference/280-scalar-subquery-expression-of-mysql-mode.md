@@ -1,0 +1,40 @@
+---
+title: "标量子查询表达式"
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006306448.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 标量子查询表达式
+
+标量子查询表达式（Scalar Subquery Expression）是返回一行单列值的子查询。
+
+标量子查询表达式的语法如下：
+
+```sql
+( subquery )
+```
+
+如果子查询返回 0 行，则标量子查询表达式的值是 NULL。如果子查询返回多行，则数据库返回一个错误。大多数表达式都可以使用标量子查询表达式作为参数。
+
+标量子查询在以下情形中是无效的表达式：
+
+* 作为列的默认值。
+* 在 `GROUP BY` 子句中。
+* 在 `ORDER BY` 子句中（仅限某些场景）。
+* 在 `CHECK` 约束中。
+
+## 示例
+
+```sql
+obclient> CREATE TABLE employees (name VARCHAR(20), salary DECIMAL(10, 2));
+obclient> INSERT INTO employees VALUES ('Alice', 8000), ('Bob', 5000), ('Carol', 8000);
+
+obclient> SELECT name, (SELECT MAX(salary) FROM employees) AS max_salary
+FROM employees
+WHERE salary = (SELECT MAX(salary) FROM employees);
+```

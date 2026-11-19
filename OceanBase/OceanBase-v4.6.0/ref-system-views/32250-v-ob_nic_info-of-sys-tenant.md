@@ -1,0 +1,52 @@
+---
+title: "V$OB_NIC_INFO"
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684426.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_NIC_INFO
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.3.1 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `V$OB_NIC_INFO` 用于展示本 OBServer 节点的网卡信息，目前主要展示网卡速率。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| ------------ | ------- | ------------------- | -------- |
+| SVR_IP     | varchar(46)  | NO   | OBSerber 的 IP 地址    |
+| SVR_PORT   | bigint(20)   | NO   | OBServer 的 RPC PORT    |
+| DEVNAME    | varchar(128) | NO   | OBServer 所在机器的网卡名称     |
+| SPEED_MBPS | bigint(20)   | NO   | 网卡速率，单位为 Mbps     |
+
+## 查询示例
+
+查询本 OBServer 节点的网卡信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.V$OB_NIC_INFO;
+```
+
+查询结果如下：
+
+```shell
++----------------+----------+---------+------------+
+| SVR_IP         | SVR_PORT | DEVNAME | SPEED_MBPS |
++----------------+----------+---------+------------+
+| xx.xx.xx.xx    |     2882 | eth0    |      10000 |
++----------------+----------+---------+------------+
+```
+
+## 相关视图或文档
+
+[GV$OB_NIC_INFO](1850.gv-ob_nic_info-of-sys-tenant.md)

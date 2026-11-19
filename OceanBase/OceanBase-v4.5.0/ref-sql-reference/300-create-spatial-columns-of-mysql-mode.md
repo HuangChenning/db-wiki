@@ -1,0 +1,85 @@
+---
+title: "创建空间列"
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004481472.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 创建空间列
+
+本文档介绍了如何在 OceanBase 数据库中创建空间列。
+
+## 准备工作
+
+使用 GIS 功能前，需在业务租户配置 GIS 元数据。在连接到服务器后，执行如下命令将  `default_srs_data_mysql.sql` 文件导入到数据库中：
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>仅支持在 SYS 租户下执行该导入命令，该命令执行时会将数据写入到主租户，并且会同步到备租户中。</p></main>
+
+```shell
+-- module 表示待导入的模块。
+-- tenant 表示待导入的租户。
+-- infile 表示待导入 sql 文件的相对路径。
+ALTER SYSTEM LOAD MODULE DATA module=gis tenant=mysql infile = 'etc/default_srs_data_mysql.sql';
+```
+
+语句语法具体说明请参见 [LOAD MODULE DATA](../../../../100.system-tenants/200.alter-system/1280.load-module-data.md)。
+
+返回以下结果代表导入数据文件成功：
+
+```shell
+Query OK, 0 rows affected
+```
+
+## 示例
+
+OceanBase 数据库支持使用 `CREATE TABLE` 或 `ALTER TABLE` 创建空间列。
+
+使用 `CREATE TABLE` 语句创建具有空间列的表，语法示例如下：
+
+```sql
+CREATE TABLE geom (g GEOMETRY);
+```
+
+使用 `ALTER TABLE` 语句在现有表中添加或删除空间列，语法示例如下：
+
+```sql
+ALTER TABLE geom ADD pt POINT;
+ALTER TABLE geom DROP pt;
+```
+
+以下示例展示如何创建带有各种几何类型的表：
+
+```sql
+-- 创建一张带有各种几何类型的表
+CREATE TABLE spatial_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    geom_point POINT,                    -- 点类型
+    geom_linestring LINESTRING not NULL SRID 4326,          -- 线类型
+    geom_polygon POLYGON,                -- 多边形类型
+    geom_multipoint MULTIPOINT,          -- 多点类型
+    geom_multilinestring MULTILINESTRING,-- 多线类型
+    geom_multipolygon MULTIPOLYGON,      -- 多多边形类型
+    geom_geometrycollection GEOMETRYCOLLECTION, -- 几何集合类型
+    geom_geometry GEOMETRY               -- 通用几何类型，可以存储任意几何值。
+);
+```
+
+创建空间列的相关约束如下：
+
+* 定义空间列的时候，可以显式指定 SRID。如果列上没有定义 SRID，查询的时候优化器不会选择空间索引，但是插入/更新的时候，仍然会生成索引记录。
+
+* 空间列在指定 `NOT NULL` 约束以及指定了 SRID 之后，可以在空间列上定义空间索引，也即只有定义了 SRID 的列才能使用空间索引。
+
+* 在空间列上定义了 SRID 之后，插入其它 SRID 值会报错。
+
+`SRID` 的相关约束如下：
+
+* 空间列上显示指定了 `SRID`。
+
+* 列上所有对象的 `SRID` 必须一样。

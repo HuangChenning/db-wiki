@@ -1,0 +1,64 @@
+---
+title: oceanbase.DBA_OB_BACKUP_TASK_HISTORY
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684003.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_BACKUP_TASK_HISTORY
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示租户自身的 Task 级备份任务的历史记录。OceanBase 数据库不支持对 `sys` 租户和 Meta 租户执行物理备份。
+
+## 字段说明
+
+| 字段名称                       | 字段名称        | 是否可以为 NULL | 字段名称                         |
+|-------------------------------|----------------|-----------------|----------------------------------|
+| TASK_ID | bigint(20) | NO | Task 级备份任务 ID，对应一个备份集的任务 |
+| JOB_ID | bigint(20) | NO | 该 Task 任务所属的 JOB_ID |
+| INCARNATION | bigint(20) | NO | 表示 Flashback Database 后的第几次分身 |
+| BACKUP_SET_ID | bigint(20) | NO | 该 Task 对应的备份集 ID |
+| START_TIMESTAMP | timestamp(6) | NO | Task 任务的开始时间 |
+| END_TIMESTAMP | timestamp(6) | NO | Task 任务的结束时间 |
+| STATUS | varchar(4096) | NO | 备份的状态 |
+| START_SCN | bigint(20) unsigned | NO | 备份开始的 SCN |
+| END_SCN | bigint(20) unsigned | NO | 备份结束的 SCN |
+| USER_LS_START_SCN | bigint(20) unsigned | NO | 备份日志流 META 的 SCN |
+| ENCRYPTION_MODE | varchar(4096) | YES | 加密模式：<ul><li>None：表示不加密</li><li>Password：表示只使用密码保护</li><li>Password Encryption ：表示加密，并且使用密码保护</li><li>Transparent Encryption：表示使用 TDE 加密</li><li>Dual mode Encryption ：表示使用 TDE 加密以及密码保护</li></ul> </br>目前仅支持 None 和 Password 两种模式 |
+| PASSWD | varchar(4096) | YES | 密码 |
+| INPUT_BYTES | bigint(20) | YES | 输入字节数 |
+| OUTPUT_BYTES | bigint(20) | YES | 输出字节数 |
+| OUTPUT_RATE_BYTES | decimal(28,4) | NO | 每秒输出字节数 |
+| EXTRA_META_BYTES | bigint(20) | YES | 额外字节数 |
+| TABLET_COUNT | bigint(20) | YES | TABLET 总量 |
+| FINISH_TABLET_COUNT | bigint(20) | YES | 完成备份的 TABLET 总量 |
+| MACRO_BLOCK_COUNT | bigint(20) | YES | 宏块数 |
+| FINISH_MACRO_BLOCK_COUNT | bigint(20) | YES | 完成备份的宏块数 |
+| FILE_COUNT | bigint(20) | YES | 备份文件数 |
+| META_TURN_ID | bigint(20) | YES | 备份 META 的轮次 |
+| DATA_TURN_ID | bigint(20) | YES | 备份 DATA 的轮次 |
+| RESULT | bigint(20) | YES | 备份错误码结果 |
+| COMMENT | varchar(4096) | YES | 错误码描述 |
+| PATH | varchar(4096) | YES | 备份路径 |
+| MINOR_TURN_ID                 | bigint(20)     | NO              | 转储数据备份结束的轮次      |
+| MAJOR_TURN_ID                 | bigint(20)     | NO              | 基线数据备份结束的轮次      |
+
+## 相关视图或文档
+
+* 查看备份 Job 任务的历史记录：[CDB_OB_BACKUP_JOB_HISTORY](6900.o-cdb_ob_backup_job_history-of-sys-tenant.md)
+
+* 查看所有租户的备份 Job 任务：[CDB_OB_BACKUP_JOBS](7000.o-cdb_ob_backup_jobs-of-sys-tenant.md)
+
+* 查看备份 Task 任务的执行进度：[CDB_OB_BACKUP_TASKS](7600.o-cdb_ob_backup_tasks-of-sys-tenant.md)
+
+* 查看备份结果的详细操作，参见 [查看数据备份结果](../../../../600.manage/600.backup-and-recovery/400.data-backup/600.view-data-backup-history.md)。

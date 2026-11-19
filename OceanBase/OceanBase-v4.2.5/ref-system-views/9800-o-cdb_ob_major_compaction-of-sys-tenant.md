@@ -1,0 +1,93 @@
+---
+title: oceanbase.CDB_OB_MAJOR_COMPACTION
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501173.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_MAJOR_COMPACTION
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+系统租户下展示所有租户的合并全局信息。
+
+## 字段说明
+
+|           字段名称           |     类型      | 是否可以为 NULL |        描述         |
+|--------------------------|-------------|------------|---------------------------------------------|
+| TENANT_ID                | bigint(20)  | NO         | 租户 ID             |
+| FROZEN_SCN           | bigint(20) unsigned  | NO         | 最近一次合并的版本号           |
+| FROZEN_TIME              | timestamp(6)  | NO         | 最近一次合并发起的时间（将 FROZEN_SCN 以可读的形式展示）           |
+| GLOBAL_BROADCAST_SCN | bigint(20) unsigned  | NO         | 全局广播的合并版本         |
+| LAST_SCN             | bigint(20) unsigned  | NO         | 上一个已经完成合并的版本      |
+| LAST_FINISH_TIME         | timestamp(6)  | NO         | 上一次合并结束时间         |
+| START_TIME               | timestamp(6)  | NO         | 合并开始时间            |
+| STATUS                   | varchar(10) | NO         | <ul><li>`IDLE`：没有在合并中</li><li> `COMPACTION`：正在合并中 </li><li>`CHECKSUM`：校验checksum </li></ul>  |
+| IS_ERROR                 | varchar(3)  | NO         | <ul><li>`YES`：合并过程存在错误 </li><li>`NO`：合并过程没有报错  </li></ul> |
+| IS_SUSPENDED             | varchar(3)  | NO         | <ul><li>`YES`：暂停合并状态 </li><li> `NO`：没有暂停合并  </li></ul> |
+| INFO                     | varchar(14) | NO         | 展示合并信息。例如：合并失败原因  |
+
+## 查询示例
+
+系统租户查看所有租户的合并信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OB_MAJOR_COMPACTION;
+```
+
+查询结果如下所示：
+
+```shell
++-----------+---------------------+----------------------------+----------------------+---------------------+----------------------------+----------------------------+--------+----------+--------------+------+
+| TENANT_ID | FROZEN_SCN          | FROZEN_TIME                | GLOBAL_BROADCAST_SCN | LAST_SCN            | LAST_FINISH_TIME           | START_TIME                 | STATUS | IS_ERROR | IS_SUSPENDED | INFO |
++-----------+---------------------+----------------------------+----------------------+---------------------+----------------------------+----------------------------+--------+----------+--------------+------+
+|         1 | 1736359201793995000 | 2025-01-09 02:00:01.793995 |  1736359201793995000 | 1736359201793995000 | 2025-01-09 02:05:56.738721 | 2025-01-09 02:00:01.822737 | IDLE   | NO       | NO           |      |
+|      1001 | 1736359204148730000 | 2025-01-09 02:00:04.148730 |  1736359204148730000 | 1736359204148730000 | 2025-01-09 02:02:38.682242 | 2025-01-09 02:00:04.176391 | IDLE   | NO       | NO           |      |
+|      1002 | 1736359203243332000 | 2025-01-09 02:00:03.243332 |  1736359203243332000 | 1736359203243332000 | 2025-01-09 02:02:26.912138 | 2025-01-09 02:00:03.270335 | IDLE   | NO       | NO           |      |
+|      1003 | 1736359202785343000 | 2025-01-09 02:00:02.785343 |  1736359202785343000 | 1736359202785343000 | 2025-01-09 02:04:06.924096 | 2025-01-09 02:00:02.807081 | IDLE   | NO       | NO           |      |
+|      1004 | 1736359202149291000 | 2025-01-09 02:00:02.149291 |  1736359202149291000 | 1736359202149291000 | 2025-01-09 02:03:45.486421 | 2025-01-09 02:00:02.174093 | IDLE   | NO       | NO           |      |
+|      1009 | 1736359203939785000 | 2025-01-09 02:00:03.939785 |  1736359203939785000 | 1736359203939785000 | 2025-01-09 02:02:38.476264 | 2025-01-09 02:00:03.961791 | IDLE   | NO       | NO           |      |
+|      1010 | 1736359203089228000 | 2025-01-09 02:00:03.089228 |  1736359203089228000 | 1736359203089228000 | 2025-01-09 02:02:46.819113 | 2025-01-09 02:00:03.120682 | IDLE   | NO       | NO           |      |
+|      1015 | 1736359202029840000 | 2025-01-09 02:00:02.029840 |  1736359202029840000 | 1736359202029840000 | 2025-01-09 02:03:26.119103 | 2025-01-09 02:00:02.054206 | IDLE   | NO       | NO           |      |
+|      1016 | 1736359203243332000 | 2025-01-09 02:00:03.243332 |  1736359203243332000 | 1736359203243332000 | 2025-01-09 02:05:33.693375 | 2025-01-09 02:01:59.454704 | IDLE   | NO       | NO           |      |
++-----------+---------------------+----------------------------+----------------------+---------------------+----------------------------+----------------------------+--------+----------+--------------+------+
+9 rows in set
+```
+
+## 相关视图或文档
+
+* 查看所有租户各个 Zone 的合并信息：[CDB_OB_ZONE_MAJOR_COMPACTION](11800.o-cdb_ob_zone_major_compaction-of-sys-tenant.md)
+
+* 查看 Tablet 级的合并基础统计信息：
+
+  * [GV$OB_MERGE_INFO](../300.performance-view-of-sys-tenant/700.gv-merge_info-of-sys-tenant.md)
+
+  * [V$OB_MERGE_INFO](../300.performance-view-of-sys-tenant/30800.v-merge_info-of-sys-tenant.md)
+
+* 查看 Tablet 级的合并的详细历史信息：
+
+  * [GV$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-sys-tenant/3400.gv-ob_tablet_compaction_history-of-sys-tenant.md)
+  * [V$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-sys-tenant/33800.v-ob_tablet_compaction_history-of-sys-tenant.md)
+
+* 合并相关的操作，参见以下文档：
+
+  * [自动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/200.automatic-merge-triggering.md)
+
+  * [定时触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/300.scheduled-trigger-merge.md)
+
+  * [自适应合并](../../../200.system-management/500.manage-data-storage/200.merge-management/320.adaptive-compavtion.md)
+
+  * [手动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/400.manually-trigger-a-merge.md)
+
+  * [手动控制合并](../../../200.system-management/500.manage-data-storage/200.merge-management/500.manually-control-a-merge.md)
+
+  * [查看合并信息](../../../200.system-management/500.manage-data-storage/200.merge-management/500.view-merge-process.md)

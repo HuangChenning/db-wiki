@@ -1,0 +1,60 @@
+---
+title: USER_MVREF_STATS
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284094.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# USER_MVREF_STATS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.3.0 版本开始引入。</p>
+</main>
+
+## 功能说明
+
+视图 `USER_MVREF_STATS` 用于展示物化视图刷新的基本计时统计信息。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| MV_NAME | VARCHAR2(128) | YES | 物化视图名称 |
+| REFRESH_ID | NUMBER | NO | 刷新的 ID |
+| REFRESH_METHOD | VARCHAR2(30) | NO | 刷新物化视图使用的方式<ul><li>FAST：增量刷新  </li><li>COMPLETE：全量刷新 </li></ul>|
+| REFRESH_OPTIMIZATIONS | VARCHAR2(4000) | NO | 刷新优化。例如空刷新或物化视图刷新期间应用的主键/外键。<main id="notice" type='explain'> <h4>说明</h4><p>该字段仅兼容，且值默认为 NULL。</p></main> |
+| ADDITIONAL_EXECUTIONS | VARCHAR2(4000) | NO | 额外的执行。例如索引重建或物化视图刷新期间涉及的日志操作。<main id="notice" type='explain'> <h4>说明</h4><p>该字段仅兼容，且值默认为 NULL。</p></main> |
+| START_TIME | TIMESTAMP(6) | NO | 刷新开始时间 |
+| END_TIME | TIMESTAMP(6) | NO | 刷新结束时间 |
+| ELAPSED_TIME | NUMBER | NO | 刷新运行的时间长度。<ul><li>V4.4.2 BP2 之前版本单位为秒。</li><li>对于 V4.4.2 版本，从 V4.4.2 BP2 版本开始单位为微妙。</li></ul> |
+| LOG_SETUP_TIME | NUMBER | NO | 物化视图的日志设置时间，单位为秒<main id="notice" type='explain'> <h4>说明</h4><p>该字段仅兼容，且值默认为 0。</p></main> |
+| LOG_PURGE_TIME | NUMBER | YES | 物化视图的日志清除时间。<ul><li>V4.4.2 BP2 之前版本单位为秒。</li><li>对于 V4.4.2 版本，从 V4.4.2 BP2 版本开始单位为微妙。</li></ul> |
+| INITIAL_NUM_ROWS | NUMBER | NO | 物化视图中的初始行数（刷新开始时） |
+| FINAL_NUM_ROWS | NUMBER | NO | 物化视图中的最终行数（刷新结束时） |
+| NUM_STEPS             | NUMBER         | NO   | 表示该次刷新的 step 总数。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| RESULT                | NUMBER         | NO   | 表示该次刷新任务的执行结果码，0 为成功。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| REFRESH_SCN           | NUMBER         | YES  | 表示开始刷新的 SCN。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| SVR_IP                | VARCHAR2(64)   | YES  | 表示执行刷新的 OBServer IP。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| SVR_PORT              | NUMBER         | YES  | 表示执行刷新的 OBServer Port。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+
+## 查询示例
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.USER_MVREF_STATS;
+```
+
+查询结果如下：
+
+```shell
++---------------+------------+----------------+-----------------------+-----------------------+------------------------------+------------------------------+--------------+----------------+----------------+------------------+----------------+
+| MV_NAME       | REFRESH_ID | REFRESH_METHOD | REFRESH_OPTIMIZATIONS | ADDITIONAL_EXECUTIONS | START_TIME                   | END_TIME                     | ELAPSED_TIME | LOG_SETUP_TIME | LOG_PURGE_TIME | INITIAL_NUM_ROWS | FINAL_NUM_ROWS |
++---------------+------------+----------------+-----------------------+-----------------------+------------------------------+------------------------------+--------------+----------------+----------------+------------------+----------------+
+| MV1_TEST_TBL1 |     825195 | FAST           | NULL                  | NULL                  | 20-JAN-24 07.16.27.668694 PM | 20-JAN-24 07.16.27.726144 PM |            0 |              0 |              0 |                0 |              0 |
++---------------+------------+----------------+-----------------------+-----------------------+------------------------------+------------------------------+--------------+----------------+----------------+------------------+----------------+
+1 row in set (0.029 sec)
+```

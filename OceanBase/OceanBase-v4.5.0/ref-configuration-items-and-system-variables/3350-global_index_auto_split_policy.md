@@ -1,0 +1,65 @@
+---
+title: global_index_auto_split_policy
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478800.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# global_index_auto_split_policy
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.3.5 BP2 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`global_index_auto_split_policy` 用于控制新建的全局索引是否开启自动分区功能。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户都可以使用 `ALTER SYSTEM SET` 语句修改该配置项。
+
+## 属性说明
+
+|  **属性** | **描述** |
+|-----------|----------|
+| 参数类型   | STRING |
+| 默认值     | DISTRIBUTED |
+| 取值范围   | <ul><li>`DISTRIBUTED`（默认值）：租户内有多节点资源（比如租户的 Primary Zone 超过 1 个，或者租户的 Unit 超过 1 个）可用时，新建全局索引时，默认开自动分区分裂。</li><li>`ALL`：新建全局索引时，默认开自动分区分裂。</li><li>`OFF`：禁止所有的全局索引的自动分裂，包括现有的全局索引。</li></ul>|
+| 是否可修改 | 是，支持通过 `ALTER SYSTEM SET` 语句修改该配置项的值。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。|
+
+## 使用说明
+
+通过 `ALTER SYSTEM SET` 语句调整配置项 `global_index_auto_split_policy` 的值。只要主表是自动分区表，全局索引也会自动分区。主表不是自动分区表时，才会按照 `global_index_auto_split_policy` 的策略来进行配置。
+
+* 如果 `global_index_auto_split_policy` 设置值为 `ALL`，新建全局索引时，默认开自动分裂。
+
+* 如果 `global_index_auto_split_policy` 设置值为 `DISTRIBUTED`，当确定租户内有多节点资源（比如租户的 Primary Zone 超过 1 个，或者租户的 Unit 超过 1 个）可用时，新建全局索引时，默认开自动分裂。
+
+* 如果 `global_index_auto_split_policy` 设置值为 `OFF`，禁止所有的全局索引的自动分裂，包括现有的全局索引。
+
+自动分区的详细介绍，参见 [自动分区分裂（MySQL 模式）](../../../300.database-object-management/100.manage-object-of-mysql-mode/300.manage-partitions-of-mysql-mode/250.partition-splitting-of-mysql-mode/300.automatic-partition-splitting-of-mysql-mode.md) 或 [自动分区分裂（Oracle 模式）](../../../300.database-object-management/200.manage-object-of-oracle-mode/200.manage-partitions-of-oracle-mode/250.partition-splitting-of-oracle-mode/300.automatic-partition-splitting-of-oracle-mode.md)。
+
+## 配置示例
+
+新建全局索引开启自动分区功能。
+
+```sql
+obclient> ALTER SYSTEM SET global_index_auto_split_policy = 'ALL';
+```
+
+## 相关文档
+
+有关控制租户是否开启自动分区的信息，参见 [enable_auto_split](2350.enable_auto_split.md)

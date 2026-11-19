@@ -1,0 +1,32 @@
+---
+title: SLEEP
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686836.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# SLEEP
+
+`SLEEP` 存储过程用于阻塞当前会话到指定的时长。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_LOCK.SLEEP (
+seconds  IN NUMBER);
+```
+
+## 参数解释
+
+| **参数**  |                              **解释**                              |
+|---------|------------------------------------------------------------------|
+| seconds | 阻塞会话的持续时间（秒）。最小增量可以以百分之一秒为单位输入。例如，1.95 是合法的时间值。 |

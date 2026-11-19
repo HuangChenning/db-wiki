@@ -1,0 +1,72 @@
+---
+title: SHOW PROCEDURE STATUS
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478369.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# SHOW PROCEDURE STATUS
+
+`SHOW PROCEDURE STATUS` 语句显示有关存储过程的信息，包括数据库、名称、类型、创建者、创建和修改日期以及字符集等。
+
+## 语法
+
+```sql
+SHOW PROCEDURE STATUS
+[LIKE 'pattern' | WHERE expr]
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| LIKE 'pattern' | 可选，指定要匹配的存储过程名称模式。可以使用 `%` 和 `_` 通配符。 |
+| WHERE expr | 可选，使用 WHERE 子句指定条件来选择行。 |
+
+要使用此语句，您必须是 `DEFINER` 所定义的用户，并具有 `SHOW_ROUTINE` 权限，具有全局级别的 `SELECT` 权限，或者对该例程具有 `CREATE ROUTINE`、`ALTER ROUTINE` 或 `EXECUTE` 权限。
+
+`SHOW PROCEDURE STATUS` 输出如下信息：
+
+* `Db`：存储过程所在数据库名称。
+* `Name`：存储过程的名称。
+* `Type`：存储程序的类型，值为 `PROCEDURE`。
+* `Definer`：创建者。
+* `Modified`：修改时间。
+* `Created`：创建时间。
+* `Security_type`：SQL 安全类型。
+* `Comment`：注释。
+* `character_set_client`：创建存储过程时 `character_set_client` 系统变量在当前会话的值。
+* `collation_connection`：创建存储过程时 `collation_connection` 系统变量在当前会话的值。
+* `Database Collation`：与存储过程相关联的数据库的排序规则。
+
+存储过程的信息也可从 `INFORMATION_SCHEMA PARAMETERS` 和 `INFORMATION_SCHEMA ROUTINES` 表中获得。详细信息请参见 [INFORMATION_SCHEMA PARAMETERS](../800.information-schema-dictionary-view-mysql/100.information-schema-parameters-mysql.md) 和 [INFORMATION_SCHEMA ROUTINES](../800.information-schema-dictionary-view-mysql/200.information-schema-routines-mysql.md)。
+
+## 示例
+
+查看所有存储过程的状态。
+
+```sql
+obclient> SHOW PROCEDURE STATUS;
+```
+
+查看匹配特定模式的存储过程：
+
+```sql
+obclient> SHOW PROCEDURE STATUS LIKE 'p%';
+```
+
+查询结果如下：
+
+```sql
++---------+--------------------+-----------+---------------------+----------------------------+----------------------------+---------------+------------------------------------------+----------------------+----------------------+--------------------+
+| Db      | Name               | Type      | Definer             | Modified                   | Created                    | Security_type | Comment                                  | character_set_client | collation_connection | Database Collation |
++---------+--------------------+-----------+---------------------+----------------------------+----------------------------+---------------+------------------------------------------+----------------------+----------------------+--------------------+
+| test_db | proc               | PROCEDURE | 'root'@'%'          | 2025-12-23 11:01:31.863377 | 2025-12-23 11:01:31.863377 | DEFINER       | NULL                                     | utf8mb4              | utf8mb4_general_ci   | utf8mb4_general_ci |
+| test_db | proc_name          | PROCEDURE | 'root'@'%'          | 2025-12-23 16:06:27.599661 | 2025-12-23 16:06:27.599661 | DEFINER       | NULL                                     | utf8mb4              | utf8mb4_general_ci   | utf8mb4_general_ci |
+| test_db | process_order_data | PROCEDURE | 'admin'@'localhost' | 2025-12-22 16:50:27.144758 | 2025-12-22 16:50:27.144758 | INVOKER       | Process order data with invoker security | utf8mb4              | utf8mb4_general_ci   | utf8mb4_general_ci |
++---------+--------------------+-----------+---------------------+----------------------------+----------------------------+---------------+------------------------------------------+----------------------+----------------------+--------------------+
+```

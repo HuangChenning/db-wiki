@@ -1,0 +1,157 @@
+---
+title: "IVF 系列索引"
+book: OceanBase AI
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283008.html"
+tags:
+  - oceanbase
+  - distributed
+  - ob-vector-search
+---
+
+# IVF 系列索引
+
+本文档介绍了 OceanBase 数据库的稠密索引 IVF 系列索引的创建、搜索、删除语法说明及示例。
+
+## 索引语法及说明
+
+### 创建
+
+IVF 系列索引包含 IVF 和 IVF_PQ 两种索引，其创建仅支持**后建**。创建时需要注意：
+
+* 如果数据量较大，建议先写完数据，再创建索引，以获得最佳搜索性能。
+* IVF/IVF_PQ 索引均建议在写入数据后再创建索引，并在写入较多增量数据后进行索引重建。每个索引具体的创建说明见下文具体示例。
+* 创建 IVF 索引时，索引名长度暂不支持超过 33 个字符，否则可能因为索引辅助表名长度超过 `index_name` 限制导致异常。未来版本会支持更长的索引名。
+
+后建索引语法：
+
+```sql
+-- 后建索引支持设置并行度，以提升索引构建性能，并行度最大设置不超过 CPU 核数 * 2
+CREATE [/*+ paralell $value*/] VECTOR INDEX index_name ON table_name(column_name2) WITH (param1=value1, param2=value2, ...);
+```
+
+`param` 参数说明：
+
+| 参数 | 默认值 | 取值范围 | 是否必填 | 说明 | 备注 |
+|------|--------|----------|----------|------|------|
+| distance |  | l2/inner_product/cosine | 是 | 指定向量距离算法类型。 | l2 表示欧氏距离，inner_product 表示内积距离，cosine 表示余弦距离。 |
+| type |  | ivf_flat/ivf_pq | 是 | 指定 IVF 索引类型。 |  |
+| lib | ob | ob | 否 | 指定向量索引库类型。 |  |
+| nlist | 128 | [1,65536] | 否 | 聚类中心的个数。 | <ul>V4.4.2 BP1 版本中：<li>如果业务数据少于 100W，推荐值为 `数据量/1000`。</li><li>如果业务数据大于 100W，推荐值为 `sqrt(数据量)`。</li>多分区表场景，`数据量`按照最大分区的数据量来估算。</ul>  |
+| sample_per_nlist | 256 | [1,int64_max] | 是 | 每个聚类中心的取样的数据量，后建索引中使用。 | V4.4.2 BP1 版本推荐保持默认值，不建议修改。 |
+| nbits | 8 | [1,24] | 否 | 指定量化位数。<main id="notice" type='notice'><h4>注意</h4><p>该参数从 V4.4.1 版本开始支持，仅在创建 IVF_PQ 索引时可指定。</p></main> | 建议取值为 8，建议取值范围为 [8,10]。该值越大，量化精度越高，搜索准确率越高，同时搜索性能会受到影响。 |
+| m | 无默认值，必须指定 | [1,65536] | 是 | 指定量化后的向量维度。<main id="notice" type='notice'><h4>注意</h4><p>该参数从 V4.4.1 版本开始支持，仅在创建 IVF_PQ 索引时可指定。</p></main> | 该值越大，索引构建越慢，搜索准确率越高，同时搜索性能会受到影响。 |
+
+**针对 IVF/IVF_PQ 索引（仅适用于 V4.4.2 BP1 版本）**，有以下额外说明：
+
+* 索引限制：
+  * 不支持在堆表和分区表上创建 IVF/IVF_PQ 索引。
+* 构建建议：
+  * 建议在创建索引前，先参考[向量索引内存估算](../200.ob-vector-index-memory-management.md)估算和查询内存占用情况，以避免创建过程中出现内存不足的问题。
+  * 建议在创建索引前，执行合并 `ALTER SYSTEM major freeze` 并等待合并完成。
+  * 多节点集群模式下，建议将 SYS 租户内存设置为大于 1G。
+  * 建议在创建索引前,  将 [parallel_servers_target](../../../700.reference/800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/10600.parallel_servers_target-global.md) 参数值设置为租户 `max_cpu * 10`。
+  * 单分区数据量千万以上，租户CPU资源高于10C的场景，建议在创建索引前，通过 `ALTER SYSTEM SET _px_object_sampling = 5000` 修改采样比例，可以提高索引构建的效率。
+
+### 搜索
+
+IVF 系列索引的搜索是一种近似最近邻（ANN）搜索，不保证 100% 的结果准确性。衡量其准确率的指标是召回率，例如在查询 10 个最近邻时，若能稳定返回 9 个正确结果，则召回率为 90%。
+
+```sql
+SELECT ... FROM table_name 
+ORDER BY distance_function(column_name, vector_expr) [APPROXIMATE|APPROX] 
+LIMIT num (OFFSET num) [PARAMETERS ($param1=$value1, ...)];
+```
+
+**搜索语法要求：**
+* 必须指定 `APPROXIMATE`/`APPROX` 关键字，搜索才会使用向量索引而非全表扫描。
+* 必须包含 `ORDER BY` 和 `LIMIT` 子句。
+* `ORDER BY` 只支持单个向量条件。
+* `LIMIT + OFFSET` 的取值范围为 `(0, 16384]`。
+* 不指定 `LIMIT` 子句会报错。
+* `PARAMETERS` 子句用于指定搜索参数。对于 IVF/IVF_PQ 索引，支持 `nprobes` 参数，例如 `PARAMETERS(nprobes=200)`。该参数从 V4.4.2 BP1 版本开始支持，用于指定搜索时的聚类中心数量。
+
+**距离函数使用规则：**
+* 指定 `APPROXIMATE`/`APPROX`，调用当前版本支持的距离函数，且与向量索引算法匹配，搜索会使用向量索引。
+* 指定 `APPROXIMATE`/`APPROX`，距离函数与向量索引算法不匹配，搜索不会使用向量索引，但也不会报错。
+* 指定 `APPROXIMATE`/`APPROX`，如果距离函数为当前版本不支持的距离函数，搜索不会使用向量索引，且会报错。
+* 未指定 `APPROXIMATE`/`APPROX`，调用当前版本支持的距离函数，搜索不会使用向量索引，但也不会报错。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>从 V4.4.2 BP1 版本开始支持使用 <code>PARAMETERS(similarity=$value)</code> 子句指定相似度阈值搜索。</p>
+</main>
+
+* 相似度阈值参数（`similarity`）：
+  * 语法：在 `LIMIT` 子句后添加 `PARAMETERS (similarity=$value)`，其中 `$value` 为相似度阈值（取值范围为 `[0, 1]`）。通常相似度值越大，表示越相似，距离越小。`inner_product` 例外，距离越大反而越相似。
+  * 功能：指定相似度阈值后，返回的结果中只包含相似度大于等于该阈值的结果。
+  * 支持的索引类型：IVF、IVF_PQ。
+  * 支持的距离类型：
+    * 查询时，支持为 `cosine_distance` 和 `l2_distance` 距离类型的索引指定相似度。对于 `l2_distance`，建议对向量进行 L2 归一化处理，这有助于提高相似度搜索的准确性。关于向量归一化的说明和示例，请参见[使用 SQL 函数-向量归一化](../../250.ob-vector-function.md)。
+    * 不支持距离类型为 `inner_product` 的索引在查询时指定相似度（会报错 `not support`）。
+  * 相似度与距离的对应关系：
+    * `cosine_distance`=`2 - 2 * similarity`
+    * `l2_distance`=`sqrt(1 / similarity -1)`
+
+**其他说明：**
+* `WHERE` 条件会作为向量索引搜索的过滤条件。
+* 召回率受构建参数和搜索参数的影响。
+* 索引搜索参数在建索引时指定，之后不可修改。但可通过 session 变量 `ob_ivf_nprobes` 设置搜索时的聚类中心数量。如果设置了 session 变量，会优先使用它的值。具体设置方式请参见 [ob_ivf_nprobes](../../../700.reference/800.configuration-items-and-system-variables/200.system-variable/400.session-system-variable/560.ob_ivf_nprobes.md)。
+* IVF/IVF_PQ 索引搜索优化建议（**仅适用于 V4.4.2 BP1 版本**）：
+  * 通过将主表在创建表的时候设置 `ROW_FORMAT=COMPRESSED` 启用压缩行格式，可以提升 IVF 向量索引搜索的性能 20~30%，例如：
+    ```sql
+    CREATE TABLE t1 (c1 INT PRIMARY KEY, c2 VECTOR(4)) ROW_FORMAT=COMPRESSED;
+    ```
+  * 不建议打开并行搜索，否则可能会影响搜索性能或结果不正确。
+
+### 删除
+
+删除向量索引的语法如下：
+
+```sql
+DROP INDEX index_name ON table_name;
+```
+
+## 创建、搜索及删除示例
+
+### 后建
+
+创建测试表。
+
+```sql
+CREATE TABLE vec_table_ivf (c1 INT, c2 VECTOR(3), PRIMARY KEY(c1));
+```
+
+创建 IVF 索引。
+
+```sql
+CREATE VECTOR INDEX vec_idx3 ON vec_table_ivf(c2) WITH (distance=l2, type=ivf_flat);
+```
+
+### 搜索
+
+```sql
+SELECT *
+FROM vec_table_ivf
+ORDER BY l2_distance(c2, '[0.1, 0.2, 0.3]') APPROXIMATE
+LIMIT 10
+PARAMETERS (nprobes=20);
+```
+
+### 删除
+
+```sql
+DROP INDEX vec_idx1 ON vec_table;
+```
+
+查看删除的索引。
+
+```sql
+SHOW INDEX FROM vec_table;
+```
+
+返回结果如下：
+
+```shell
+Empty set
+```

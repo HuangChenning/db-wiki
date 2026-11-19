@@ -1,0 +1,43 @@
+---
+title: RENAME
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287826.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# RENAME
+
+## 描述
+
+该语句用来对表、视图、物化视图、私有同义词或序列进行重命名。
+
+## 语法
+
+```sql
+RENAME object_name TO new_object_name;
+```
+
+## 参数解释
+
+| 参数 | 描述 |
+|------|------|
+| object_name | 要重命名的对象名称。可以是表、视图、物化视图、私有同义词或序列。 |
+| new_object_name | 对象的新名称。新名称不能与现有对象重名。 |
+
+## 示例
+
+1. 创建表 `tbl1`。
+
+    ```shell
+    obclient> CREATE TABLE tbl1(col1 INT, col2 INT);
+    ```
+
+2. 将表 `tbl1` 的名称改为 `tbl2`。
+
+    ```shell
+    obclient> RENAME tbl1 TO tbl2;
+    ```

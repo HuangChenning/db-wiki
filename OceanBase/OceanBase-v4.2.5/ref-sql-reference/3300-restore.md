@@ -1,0 +1,93 @@
+---
+title: RESTORE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503172.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# RESTORE
+
+## 描述
+
+`ALTER SYSTEM RESTORE` 语句用于恢复租户备份的数据。
+
+## 使用限制及注意事项
+
+* OceanBase 数据库的物理恢复支持在同集群内恢复，也支持在不同的集群内恢复。
+
+* 使用 `ALTER SYSTEM RESTORE` 语句进行物理恢复前，请务必确认待恢复的备份数据的版本，OceanBase 数据库当前仅支持将低版本的备份数据恢复到同版本或高版本中，同版本下的小版本之间也不支持逆向恢复。
+
+* 使用 `ALTER SYSTEM RESTORE` 语句进行物理恢复前，请确认已创建待恢复的租户所需的资源，为待恢复的租户创建所需资源的具体操作请参见 [恢复前准备](../../../../../600.manage/600.backup-and-recovery/600.restore-data/100.preparation-before-recovery.md)。
+
+* 使用 `ALTER SYSTEM RESTORE` 语句恢复出来的租户默认为备租户，如果需要转为主租户提供服务，需要再执行 `ALTER SYSTEM ACTIVATE STANDBY` 语句，有关 `ALTER SYSTEM ACTIVATE STANDBY` 语句的详细介绍，请参见 [ACTIVATE STANDBY](100.activate.md)。
+
+## 权限要求
+
+仅 `sys` 租户的 `root` 用户（`root@sys`） 可以执行 `ALTER SYSTEM RESTORE` 语句。
+
+## 语法
+
+```sql
+ALTER SYSTEM RESTORE dest_tenant_name FROM uri [ UNTIL {TIME='timestamp' | SCN=scn} ] WITH 'restore_option' [WITH KEY FROM 'backup_key_path' ENCRYPTED BY 'password'] [DESCRIPTION [=] 'description'];
+
+restore_option:
+  pool_list=pool_name[&locality=locality][&primary_zone=zone_name][&concurrency=int_num][&kms_encrypt={true | false}]
+```
+
+## 参数解释
+
+|         参数        |     描述                                                          |
+|--------------------|-------------------------------------------------------------------|
+| dest_tenant_name   | 指恢复的新租户的名称。                                                |
+| uri                | 指备份时设置的数据备份路径 `backup_data_dest` 与日志归档路径 `log_archive_dest`，该值至少包含一条数据备份路径和一条日志归档路径，路径间用 `,` 分隔。<p>目前 OceanBase 数据库支持的归档目的端介质为 NFS、阿里云 OSS、Azure Blob（在 V4.2.5 版本中，从 V4.2.5 BP6 版本开始支持）、AWS S3 以及兼容 S3 协议的对象存储，例如：华为 OBS、Google GCS、腾讯云 COS。`uri` 路径示例可参考 [SET LOG_ARCHIVE_DEST](150.set-log-archive-dest.md) 或 [SET DATA_BACKUP_DEST](3500.set-data-backup-dest.md)。</p> |
+| timestamp          | 指恢复指定时间戳，恢复到该时间点为止，且包括该 `timestamp` 位点，指定 `timestamp` 必须以 `=` 连接。`timestamp` 仅支持 `YYYY-MM-DD HH24:MI:SS.FF` 格式，并且小数部分（`FF`）支持 0~6 位小数，可以精确到微秒。有关恢复时如何选取 `timestamp` 与 `scn` 的值的详细介绍，请参见 [物理恢复相关参数介绍](../../../../../600.manage/600.backup-and-recovery/600.restore-data/800.parameters-of-the-restore.md)。|
+| scn                | 指恢复指定的 SCN，恢复到该 SCN 位点为止，且包括该 `scn` 位点，指定 `scn` 须以 `=` 连接。|
+| restore_option       | 支持 `pool_list`、`locality`、`primary_zone`、`concurrency`、`kms_encrypt` 等参数，不同参数之间通过 `&` 分隔。在指定 locality 和 primary_zone 时，建议尽量与源租户保持同构。如果不同构，待租户恢复后激活为主租户可能会产生负载均衡操作，影响性能。<ul><li>`pool_list`：必选，填写为待恢复的新租户创建的资源池。多个资源池之间用英文逗号（,）分隔。</li>  <li>`locality`：可选，指定新租户副本分布的 Locality 信息，需要与新租户所在集群的 pool_list 的 Zone 信息相匹配。与源租户保持同构时，建议新租户与源租户的 F 副本个数相同。不显式指定时，默认按照 `resource_pool` 的 `zone_list` 为每个 Zone 设一个 F 副本。</br>填写样例: `locality='F@z1,F@z2,F@z3'`。 </li>  <li> `primary_zone`：可选，指定新租户的 Leader 副本的偏好位置，需要与 `pool_list` 及 `locality` 相匹配，即需要满足 Zone 信息匹配以及 `primary_region` 内至少有两个 Paxos 成员等限制。与源租户保持同构时，建议新租户与源租户的第一优先级的 Primary Zone 个数相同。不显式指定时，系统按照 `locality` 的 `zone_list` 将 Leader 随机分布在这些 Zone 中。</br>填写样例: `primary_zone='z1'`</li> <li>`concurrency`：可选，指定数据恢复的并发度。如果不显式指定，则默认等于该租户被分配的 MAX_CPU 数。例如，假设系统租户为待恢复的租户分配的 `MAX_CPU` 为 16，则不显式指定时，`concurrency` 的默认值为 16。</br>填写样例: `concurrency=50`</li> <li>`kms_encrypt`：可选，为 `true` 时表示在恢复时需要使用在恢复前指定的 `kms_encrypt_info`。</li></ul>   |
+| WITH KEY FROM 'backup_key_path' ENCRYPTED BY 'password' | 指定加密租户的秘钥备份信息。仅当源租户配置了透明加密，才需要在恢复时指定秘钥备份相关的信息。其中：<ul><li><code>backup_key_path</code>：秘钥的备份路径。</li> <li><code>password</code>：备份秘钥时设置的加密密码。</li></ul> |
+| description |为可选项，指用户指定的描述信息。 |
+
+## 示例
+
+* 从 NFS 数据备份路径与 NFS 日志归档路径恢复租户 `mysql` 到指定时间戳 `2022-06-01 00:00:00`, 指定资源池为 `restore_pool`, 副本 Locality 为 `F@z1,F@z2,F@z3`, 并指定 `primary_zone` 为 `z1`。
+
+   ```sql
+   obclient [oceanbase]> ALTER SYSTEM RESTORE mysql FROM 'file:///data/nfs/backup/data,file:///data/nfs/backup/archive' UNTIL TIME='2022-06-01 00:00:00' WITH 'pool_list=restore_pool&locality=F@z1,F@z2,F@z3&primary_zone=z1';
+   ```
+
+* 从 NFS 数据备份路径与 NFS 日志归档路径恢复租户 `mysql` 到当前最新的归档位点, 指定资源池为 `restore_pool`，同时指定数据恢复的并发度 `concurrency` 为 50。
+
+   ```sql
+   obclient [oceanbase]> ALTER SYSTEM RESTORE mysql FROM 'file:///data/nfs/backup/data,file:///data/nfs/backup/archive' WITH 'pool_list=restore_pool&concurrency=50';
+   ```
+
+* 从 NFS 数据备份路径与 NFS 日志归档路径恢复租户 `mysql` 到指定 SCN, 指定资源池为 `restore_pool`。
+
+   ```sql
+   obclient [oceanbase]> ALTER SYSTEM RESTORE mysql FROM 'file:///data/nfs/backup/data,file:///data/nfs/backup/archive' UNTIL SCN=1658285759724047000 WITH 'pool_list=restore_pool';
+   ```
+
+* 从 OSS 备份路径与 OSS 日志归档路径恢复租户 `mysql` 到指定时间戳 `2022-06-01 00:00:00`, 指定资源池为 `restore_pool`。
+
+   ```sql
+   obclient [oceanbase]> ALTER SYSTEM RESTORE mysql FROM 'oss://oceanbase-test-bucket/backup/data/?host=xxx.aliyun-inc.com&access_id=xxx&access_key=xxx,oss://oceanbase-test-bucket/backup/archive/?host=xxx.aliyun-inc.com&access_id=xxx&access_key=xxx' UNTIL TIME='2022-06-01 00:00:00' WITH 'pool_list=restore_pool';
+   ```
+
+* 在目标集群上执行 `RESTORE` 命令，使用租户的备份和归档，创建并恢复出备租户。
+
+   ```sql
+   obclient [oceanbase]> ALTER SYSTEM RESTORE restore_oracle_tenant FROM 'file:///data/nfs/backup//ob_backup_oracle_tenant/archive,file:///data/nfs/backup//ob_backup_oracle_tenant/data' UNTIL TIME='2022-11-11 15:04:23.825558' with 'pool_list=small_pool_2&primary_zone=z1';
+   ```
+
+## 相关文档
+
+* [CANCEL RESTORE](1150.cancel-restore.md)
+
+* [RECOVER TABLE](3400.recover-table.md)
+
+* [执行物理恢复](../../../../../600.manage/600.backup-and-recovery/600.restore-data/200.initiate-the-tenant-restore.md)
+
+* [使用备份恢复功能创建备租户](../../../../../600.manage/400.high-availability/300.physical-standby-database-disaster-recovery/200.create-a-standby-tenant/300.create-a-standby-tenant-by-backup-and-recovery.md)

@@ -1,0 +1,799 @@
+---
+title: "SQL 基础操作（Oracle 模式）"
+book: "快速上手"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004475545.html"
+tags:
+  - oceanbase
+  - distributed
+  - quickstart
+---
+
+# SQL 基础操作（Oracle 模式）
+
+本节主要介绍 OceanBase 数据库 Oracle 模式下的一些 SQL 基本操作。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 表操作
+
+本节主要提供数据库中表的创建、查看、修改和删除的语法和示例。
+
+### 创建表
+
+使用 `CREATE TABLE` 语句在数据库中创建新表。
+
+示例：创建表 `TEST`。
+
+```shell
+obclient(SYS@oracletenant)[SYS]> CREATE TABLE TEST (C1 INT PRIMARY KEY, C2 VARCHAR(3));
+```
+
+更多 `CREATE TABLE` 语句相关的语法说明，参见 [CREATE TABLE](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/2400.create-table-of-oracle-mode.md)。
+
+### 修改表
+
+使用 `ALTER TABLE` 语句来修改已存在的表的结构，包括修改表及表属性、新增列、修改列及属性、删除列等。
+
+示例：
+
+* 修改表 `TEST` 的字段 `C2` 的字段类型。
+
+  1. 查看表 `TEST` 的列定义。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> DESCRIBE TEST;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+-------------+------+-----+---------+-------+
+     | FIELD | TYPE        | NULL | KEY | DEFAULT | EXTRA |
+     +-------+-------------+------+-----+---------+-------+
+     | C1    | NUMBER(38)  | NO   | PRI | NULL    | NULL  |
+     | C2    | VARCHAR2(3) | YES  | NULL| NULL    | NULL  |
+     +-------+-------------+------+-----+---------+-------+
+     2 rows in set
+     ```
+
+  2. 将表 `TEST` 中 `C2` 的字段类型修改为 `CHAR`。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> ALTER TABLE TEST MODIFY C2 CHAR(10);
+     ```
+
+  3. 再次查看表 `TEST` 的列定义，确认修改成功。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> DESCRIBE TEST;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+------------+------+-----+---------+-------+
+     | FIELD | TYPE       | NULL | KEY | DEFAULT | EXTRA |
+     +-------+------------+------+-----+---------+-------+
+     | C1    | NUMBER(38) | NO   | PRI | NULL    | NULL  |
+     | C2    | CHAR(10)   | YES  | NULL| NULL    | NULL  |
+     +-------+------------+------+-----+---------+-------+
+     2 rows in set
+     ```
+
+* 在表 `TEST` 中增加、删除列。
+
+  1. 查看当前表 `TEST` 的列定义。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> DESCRIBE TEST;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+------------+------+-----+---------+-------+
+     | FIELD | TYPE       | NULL | KEY | DEFAULT | EXTRA |
+     +-------+------------+------+-----+---------+-------+
+     | C1    | NUMBER(38) | NO   | PRI | NULL    | NULL  |
+     | C2    | CHAR(10)   | YES  | NULL| NULL    | NULL  |
+     +-------+------------+------+-----+---------+-------+
+     2 rows in set
+     ```
+
+  2. 向表 `TEST` 中添加一列 `C3`。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> ALTER TABLE TEST ADD C3 int;
+     ```
+
+  3. 再次查看表 `TEST` 的列定义，确认 `C3` 列添加成功。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> DESCRIBE TEST;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+------------+------+-----+---------+-------+
+     | FIELD | TYPE       | NULL | KEY | DEFAULT | EXTRA |
+     +-------+------------+------+-----+---------+-------+
+     | C1    | NUMBER(38) | NO   | PRI | NULL    | NULL  |
+     | C2    | CHAR(10)   | YES  | NULL | NULL   | NULL  |
+     | C3    | NUMBER(38) | YES  | NULL | NULL   | NULL  |
+     +-------+------------+------+-----+---------+-------+
+     3 rows in set
+     ```
+
+  4. 删除表 `TEST` 中 `C3` 列。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> ALTER TABLE TEST DROP COLUMN C3;
+     ```
+
+  5. 再次查看表 `TEST` 的列定义，确认 `C3` 列删除成功。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> DESCRIBE TEST;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+------------+------+-----+---------+-------+
+     | FIELD | TYPE       | NULL | KEY | DEFAULT | EXTRA |
+     +-------+------------+------+-----+---------+-------+
+     | C1    | NUMBER(38) | NO   | PRI | NULL    | NULL  |
+     | C2    | CHAR(10)   | YES  | NULL | NULL   | NULL  |
+     +-------+------------+------+-----+---------+-------+
+     2 rows in set
+     ```
+
+更多 `ALTER TABLE` 语句相关的语法说明，参见 [ALTER TABLE](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1000.alter-table-of-oracle-mode.md)。
+
+### 删除表
+
+使用 `DROP TABLE` 语句删除表。
+
+示例：删除表 `TEST`。
+
+```shell
+obclient(SYS@oracletenant)[SYS]> DROP TABLE TEST;
+```
+
+更多 `DROP TABLE` 语句相关的语法说明，参见 [DROP TABLE](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/3900.drop-table-of-oracle-mode.md)。
+
+## 索引操作
+
+索引是创建在表上并对数据库表中一列或多列的值进行排序的一种结构。其作用主要在于提高查询的速度，降低数据库系统的性能开销。
+
+### 创建索引
+
+使用 `CREATE INDEX` 语句创建表的索引。
+
+示例：创建表 `TEST` 的索引。
+
+1. 查看表 `TEST` 的列定义。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> DESCRIBE TEST;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +-------+------------+------+-----+---------+-------+
+   | FIELD | TYPE       | NULL | KEY | DEFAULT | EXTRA |
+   +-------+------------+------+-----+---------+-------+
+   | C1    | NUMBER(38) | NO   | PRI | NULL    | NULL  |
+   | C2    | CHAR(10)   | YES  | NULL| NULL    | NULL  |
+   +-------+------------+------+-----+---------+-------+
+   2 rows in set 
+   ```
+
+2. 在表 `TEST` 的 `C1`、`C2` 列上创建一个名为 `TEST_INDEX` 的复合索引。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> CREATE INDEX TEST_INDEX ON TEST (C1, C2);
+   ```
+
+更多 `CREATE INDEX` 语句相关的语法说明，参见 [CREATE INDEX](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1600.create-index-of-oracle-mode.md)。
+
+### 查看索引
+
+* 通过视图 `ALL_INDEXES` 查看表的所有索引。
+
+  ```shell
+  obclient(SYS@oracletenant)[SYS]> SELECT OWNER,INDEX_NAME,INDEX_TYPE,TABLE_OWNER,TABLE_NAME FROM ALL_INDEXES WHERE table_name='TEST';
+  ```
+
+  返回结果如下：
+
+  ```shell
+  +-------+----------------------------+------------+-------------+------------+
+  | OWNER | INDEX_NAME                 | INDEX_TYPE | TABLE_OWNER | TABLE_NAME |
+  +-------+----------------------------+------------+-------------+------------+
+  | SYS   | TEST_OBPK_1762742804587195 | NORMAL     | SYS         | TEST       |
+  | SYS   | TEST_INDEX                 | NORMAL     | SYS         | TEST       |
+  +-------+----------------------------+------------+-------------+------------+
+  2 rows in set
+  ```
+
+* 通过 `USER_IND_COLUMNS` 查看表索引的详细信息。
+
+  ```shell
+  obclient(SYS@oracletenant)[SYS]> SELECT * FROM USER_IND_COLUMNS WHERE table_name='TEST'\G
+  ```
+
+  返回结果如下：
+
+  ```shell
+  *************************** 1. row ***************************
+          INDEX_NAME: TEST_OBPK_1762742804587195
+          TABLE_NAME: TEST
+         COLUMN_NAME: C1
+     COLUMN_POSITION: 1
+       COLUMN_LENGTH: 22
+         CHAR_LENGTH: 0
+             DESCEND: ASC
+  COLLATED_COLUMN_ID: NULL
+  *************************** 2. row ***************************
+          INDEX_NAME: TEST_INDEX
+          TABLE_NAME: TEST
+         COLUMN_NAME: C1
+     COLUMN_POSITION: 1
+       COLUMN_LENGTH: 22
+         CHAR_LENGTH: 0
+             DESCEND: ASC
+  COLLATED_COLUMN_ID: NULL
+  *************************** 3. row ***************************
+          INDEX_NAME: TEST_INDEX
+          TABLE_NAME: TEST
+         COLUMN_NAME: C2
+     COLUMN_POSITION: 2
+       COLUMN_LENGTH: 3
+         CHAR_LENGTH: 3
+             DESCEND: ASC
+  COLLATED_COLUMN_ID: NULL
+  3 rows in set
+  ```
+
+### 删除索引
+
+使用 `DROP INDEX` 语句删除表的索引。
+
+示例：删除索引 `TEST_INDEX`。
+
+```shell
+obclient(SYS@oracletenant)[SYS]> DROP INDEX TEST_INDEX;
+```
+
+更多 `DROP INDEX` 语句相关的语法说明，参见 [DROP INDEX](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/3200.drop-index-of-oracle-mode.md)。
+
+## 插入数据
+
+使用 `INSERT` 语句添加一个或多个记录到表中。
+
+示例：
+
+* 通过 `CREATE TABLE` 创建表 `T1`，并向表 `T1` 中插入一行数据。
+
+  1. 创建表 `t1`。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> CREATE TABLE T1(C1 INT PRIMARY KEY, C2 INT);
+     ```
+
+  2. 查看表中的数据。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> SELECT * FROM T1;
+     ```
+
+     查询结果为空，表中无数据。
+
+  3. 向表 `T1` 中插入一行数据。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> INSERT INTO T1 VALUES(1,1);
+     ```
+
+  4. 再次查看表中的数据，确认插入一行数据成功。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> SELECT * FROM T1;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | C1 | C2   |
+     +----+------+
+     |  1 |    1 |
+     +----+------+
+     1 row in set
+     ```
+
+* 直接向子查询中插入数据。
+
+  ```shell
+  obclient(SYS@oracletenant)[SYS]> INSERT INTO (SELECT * FROM T1) VALUES(2,2);
+  ```
+
+  执行成功后，查看表中的数据，确认插入成功。
+
+  ```shell
+  obclient(SYS@oracletenant)[SYS]> SELECT * FROM T1;
+  ```
+
+  返回结果如下：
+
+  ```shell
+  +----+------+
+  | C1 | C2   |
+  +----+------+
+  |  1 |    1 |
+  |  2 |    2 |
+  +----+------+
+  2 rows in set
+  ```
+
+* 包含 `RETURNING` 子句的数据插入。
+
+  1. 向表 `T1` 中插入一行数据，并返回插入行的 `C1` 列的数据。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> INSERT INTO T1 VALUES(3,3) RETURNING C1;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+
+     | C1 |
+     +----+
+     |  3 |
+     +----+
+     1 row in set
+     ```
+
+  2. 再次查看表中的数据，确认插入成功。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> SELECT * FROM T1;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | C1 | C2   |
+     +----+------+
+     |  1 |    1 |
+     |  2 |    2 |
+     |  3 |    3 |
+     +----+------+
+     3 rows in set
+     ```
+
+更多 `INSERT` 语句相关的语法，参见 [INSERT](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/200.dml-of-oracle-mode/200.insert-of-oracle-mode.md)。
+
+## 删除数据
+
+使用 `DELETE` 语句删除数据。
+
+示例：删除表 `T1` 中 `C1=2` 的行。
+
+1. 查看删除数据前表 `T1` 中的数据。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> SELECT * FROM T1;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +----+------+
+   | C1 | C2   |
+   +----+------+
+   |  1 |    1 |
+   |  2 |    2 |
+   |  3 |    3 |
+   +----+------+
+   3 rows in set
+   ```
+
+2. 删除表 `T1` 中 `C1=2` 的行。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> DELETE FROM T1 WHERE C1 = 2;
+   ```
+
+3. 查看删除数据后表 `T1` 中的数据。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> SELECT * FROM T1;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +----+------+
+   | C1 | C2   |
+   +----+------+
+   |  1 |    1 |
+   |  3 |    3 |
+   +----+------+
+   2 rows in set
+   ```
+
+更多 `DELETE` 语句相关的语法说明，参见 [DELETE](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/200.dml-of-oracle-mode/100.delete-of-oracle-mode.md)。
+
+## 更新数据
+
+使用 `UPDATE` 语句修改表中的字段值。
+
+示例:
+
+* 将表 `T1` 中 `T1.C1=1` 对应的那一行数据的 `C2` 列值修改为 `100`。
+
+  1. 查看更新数据前表 `T1` 中的数据。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> SELECT * FROM T1;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | C1 | C2   |
+     +----+------+
+     |  1 |    1 |
+     |  3 |    3 |
+     +----+------+
+     2 rows in set
+     ```
+
+  2. 将表 `T1` 中 `T1.C1=1` 对应的那一行数据的 `C2` 列值修改为 `100`。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> UPDATE T1 SET T1.C2 = 100 WHERE T1.C1 = 1;
+     ```
+
+  3. 查看更新数据后表 `T1` 中的数据。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> SELECT * FROM T1;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | C1 | C2   |
+     +----+------+
+     |  1 |  100 |
+     |  3 |    3 |
+     +----+------+
+     2 rows in set
+     ```
+
+* 直接操作子查询，将子查询中 `V.C1=3` 对应的那一行数据的 `C2` 列值修改为 `300`。
+
+  ```shell
+  obclient(SYS@oracletenant)[SYS]> UPDATE (SELECT * FROM T1) V SET V.C2 = 300 WHERE V.C1 = 3;
+  ```
+
+  语句执行成功后，查看更新数据后表 `T1` 中的数据。
+
+  ```shell
+  obclient(SYS@oracletenant)[SYS]> SELECT * FROM T1;
+  ```
+
+  返回结果如下：
+
+  ```shell
+  +----+------+
+  | C1 | C2   |
+  +----+------+
+  |  1 |  100 |
+  |  3 |  300 |
+  +----+------+
+  2 rows in set
+  ```
+
+更多 `UPDATE` 语句相关的语法，参见 [UPDATE](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/200.dml-of-oracle-mode/600.update-of-oracle-mode.md)。
+
+## 查询数据
+
+使用 `SELECT` 语句查询表中的内容。
+
+示例：
+
+* 通过 `CREATE TABLE` 创建表 `T2`。从表 `T2` 中读取 `NAME` 的数据。
+
+  1. 创建表 `t2`。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> CREATE TABLE T2 (ID INT, NAME VARCHAR(50), NUM INT);
+     ```
+
+  2. 向表 `T2` 中插入多行数据。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> INSERT INTO T2 VALUES(1,'a',100),(2,'b',200),(3,'a',50);
+     ```
+
+  3. 查看表 `T2` 中的数据，确认插入成功。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> SELECT * FROM T2;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +------+------+------+
+     | ID   | NAME | NUM  |
+     +------+------+------+
+     |    1 | a    |  100 |
+     |    2 | b    |  200 |
+     |    3 | a    |   50 |
+     +------+------+------+
+     3 rows in set
+     ```
+
+  4. 从表 `T2` 中读取字段 `NAME` 的数据。
+
+     ```shell
+     obclient(SYS@oracletenant)[SYS]> SELECT NAME FROM T2;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +------+
+     | NAME |
+     +------+
+     | a    |
+     | b    |
+     | a    |
+     +------+
+     3 rows in set
+     ```
+
+* 在查询结果中对 `NAME` 进行去重处理。
+
+  ```shell
+  obclient(SYS@oracletenant)[SYS]> SELECT DISTINCT NAME FROM T2;
+  ```
+
+  返回结果如下：
+
+  ```shell
+  +------+
+  | NAME |
+  +------+
+  | a    |
+  | b    |
+  +------+
+  2 rows in set
+  ```
+
+* 从表 `T2` 中根据筛选条件 `NAME = 'a'`，输出对应的 `ID` 、`NAME` 和 `NUM`。
+
+  ```shell
+  obclient(SYS@oracletenant)[SYS]> SELECT ID, NAME, NUM FROM T2 WHERE NAME = 'a';
+  ```
+
+  返回结果如下：
+
+  ```shell
+  +------+------+------+
+  | ID   | NAME | NUM  |
+  +------+------+------+
+  |    1 | a    |  100 |
+  |    3 | a    |   50 |
+  +------+------+------+
+  2 rows in set
+  ```
+
+更多 `SELECT` 语句相关的语法说明，参见 [SELECT](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/200.dml-of-oracle-mode/500.select-of-oracle-mode/100.simple-select-of-oracle-mode.md)。
+
+## 提交事务
+
+使用 `COMMIT` 语句提交事务。
+
+在您提交事务之前，您的修改只对当前会话可见，对其他数据库会话是不可见的；您的修改没有持久化，可以用 `ROLLBACK` 语句撤销修改。
+
+在您提交事务之后，您的修改对所有数据库会话可见。您的修改结果持久化成功，不可以用 `ROLLBACK` 语句回滚修改。
+
+示例：通过 `CREATE TABLE` 创建表 `T_INSERT`。使用 `COMMIT` 语句提交事务。
+
+1. 创建表 `T_INSERT`。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> CREATE TABLE T_INSERT(
+        ID NUMBER NOT NULL PRIMARY KEY, 
+        NAME VARCHAR(10) NOT NULL, 
+        VALUE NUMBER NOT NULL, 
+        GMT_CREATE DATE NOT NULL DEFAULT sysdate
+   );
+   ```
+
+2. 向表 `T_INSERT` 中插入多行数据。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> INSERT INTO T_INSERT(ID, NAME, VALUE, GMT_CREATE) VALUES(1,'CN',10001, sysdate),(2,'US',10002, sysdate),(3,'EN',10003, sysdate);
+   ```
+
+3. 查看修改后表 `T_INSERT` 中的数据，确认插入数据成功。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> SELECT * FROM T_INSERT;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+------------+
+   | ID   | NAME | VALUE | GMT_CREATE |
+   +------+------+-------+------------+
+   |    1 | CN   | 10001 | 10-NOV-25  |
+   |    2 | US   | 10002 | 10-NOV-25  |
+   |    3 | EN   | 10003 | 10-NOV-25  |
+   +------+------+-------+------------+
+   3 rows in set
+   ```
+
+4. 再次向表 `T_INSERT` 中插入一行数据。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> INSERT INTO T_INSERT(ID, NAME, VALUE) VALUES(4,'JP',10004);
+   ```
+
+5. 提交事务。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> COMMIT;
+   ```
+
+6. 退出登录。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> exit;
+   ```
+
+7. 重新登录数据库。
+
+   ```shell
+   obclient -h127.0.0.1 -us**@oracletenant -P2881 -p******
+   ```
+
+8. 查看表 `T_INSERT` 中的数据，发现表 `T_INSERT` 中数据的修改持久化成功。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> SELECT * FROM T_INSERT;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+------------+
+   | ID   | NAME | VALUE | GMT_CREATE |
+   +------+------+-------+------------+
+   |    1 | CN   | 10001 | 10-NOV-25  |
+   |    2 | US   | 10002 | 10-NOV-25  |
+   |    3 | EN   | 10003 | 10-NOV-25  |
+   |    4 | JP   | 10004 | 10-NOV-25  |
+   +------+------+-------+------------+
+   4 rows in set
+   ```
+
+更多事务控制语句相关的说明，参见 [事务管理概述](../../300.develop/200.application-development-of-oracle-mode/600.transaction-in-develop-of-oracle-mode/100.transaction-management-overview-of-oracle-mode.md)。
+
+## 回滚事务
+
+使用 `ROLLBACK` 语句可以回滚事务。
+
+回滚一个事务指将事务的修改全部撤销。可以回滚当前整个未提交的事务，也可以回滚到事务中任意一个保存点。如果要回滚到某个保存点，必须结合使用 `ROLLBACK`和 `TO SAVEPOINT` 语句。
+
+其中：
+
+* 如果回滚整个事务，则：
+
+  * 事务会结束
+  * 所有的修改会被丢弃
+  * 清除所有保存点
+  * 释放事务持有的所有锁
+
+* 如果回滚到某个保存点，则：
+
+  * 事务不会结束
+  * 保存点之前的修改被保留，保存点之后的修改被丢弃
+  * 清除保存点之后的保存点（不包括保存点自身）
+  * 释放保存点之后事务持有的所有锁
+
+示例：回滚事务的全部修改。
+
+1. 查看修改前表 `T_INSERT` 中的数据。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> SELECT * FROM T_INSERT;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+------------+
+   | ID   | NAME | VALUE | GMT_CREATE |
+   +------+------+-------+------------+
+   |    1 | CN   | 10001 | 10-NOV-25  |
+   |    2 | US   | 10002 | 10-NOV-25  |
+   |    3 | EN   | 10003 | 10-NOV-25  |
+   |    4 | JP   | 10004 | 10-NOV-25  |
+   +------+------+-------+------------+
+   4 rows in set
+   ```
+
+2. 向表 `T_INSERT` 中插入两行数据。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> INSERT INTO T_INSERT(ID, NAME, VALUE) VALUES(5,'FR',10005),(6,'RU',10006);
+   ```
+
+3. 查看修改后表 `T_INSERT` 中的数据，确认插入数据成功。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> SELECT * FROM T_INSERT;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+------------+
+   | ID   | NAME | VALUE | GMT_CREATE |
+   +------+------+-------+------------+
+   |    1 | CN   | 10001 | 10-NOV-25  |
+   |    2 | US   | 10002 | 10-NOV-25  |
+   |    3 | EN   | 10003 | 10-NOV-25  |
+   |    4 | JP   | 10004 | 10-NOV-25  |
+   |    5 | FR   | 10005 | 10-NOV-25  |
+   |    6 | RU   | 10006 | 10-NOV-25  |
+   +------+------+-------+------------+
+   6 rows in set
+   ```
+
+4. 回滚事务。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> ROLLBACK;
+   ```
+
+5. 回滚后，再次查看表 `T_INSERT` 中的数据，发现插入的数据已回滚。
+
+   ```shell
+   obclient(SYS@oracletenant)[SYS]> SELECT * FROM T_INSERT;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+------------+
+   | ID   | NAME | VALUE | GMT_CREATE |
+   +------+------+-------+------------+
+   |    1 | CN   | 10001 | 10-NOV-25  |
+   |    2 | US   | 10002 | 10-NOV-25  |
+   |    3 | EN   | 10003 | 10-NOV-25  |
+   |    4 | JP   | 10004 | 10-NOV-25  |
+   +------+------+-------+------------+
+   4 rows in set
+   ```
+
+更多事务控制语句相关的说明，参见 [事务管理概述](../../300.develop/200.application-development-of-oracle-mode/600.transaction-in-develop-of-oracle-mode/100.transaction-management-overview-of-oracle-mode.md)。

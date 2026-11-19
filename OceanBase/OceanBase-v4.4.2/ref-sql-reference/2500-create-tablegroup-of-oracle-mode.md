@@ -1,0 +1,284 @@
+---
+title: CREATE TABLEGROUP
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287842.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE TABLEGROUP
+
+## 描述
+
+该语句用来创建表组。
+
+表组主要用于创建一组具有相同分布特征的表，具有相同分布特征的表在进行连接操作时，可以在本地进行，避免跨节点的数据请求。
+
+## 使用限制及注意事项
+
+* OceanBase 数据库升级过程中，禁止创建表组。
+* 对于 V4.4.2 版本，从 V4.4.2 BP1 版本开始表组内分区的分布方式由 `SHARDING` 和 `SCOPE` 共同决定，当前版本只支持 `SHARDING` 属性和 `SCOPE` 属性的部分组合，指定不支持的组合会报错。支持的组合包括：
+
+  * `SHARDING = 'NONE'` + `SCOPE = 'SERVER'`
+  * `SHARDING = 'NONE'` + `SCOPE = 'ZONE'`
+  * `SHARDING = 'NONE'` + `SCOPE = 'CLUSTER'`
+  * `SHARDING = 'PARTITION'` + `SCOPE = 'CLUSTER'`
+  * `SHARDING = 'ADAPTIVE'` + `SCOPE = 'CLUSTER'`
+
+## 语法
+
+```sql
+CREATE TABLEGROUP tablegroup_name
+    [sharding_option,]
+    [scope_option];
+
+sharding_option:
+    SHARDING = '{NONE | PARTITION | ADAPTIVE}'
+
+scope_option:
+    SCOPE = '{SERVER | ZONE | CLUSTER}'
+```
+
+## 参数解释
+
+|   **参数**    | **描述** |
+|---------------|----------|
+| tablegroup_name | 表组名称，最长 64 个字符，字符只能有大小写英文字母，数字和下划线，而且必须以字母或下划线开头，并且不能使用 OceanBase 数据库的关键字。|
+| sharding_option | 可选项，用于指定表组的 `SHARDING` 属性，默认值为 `ADAPTIVE`。`SHARDING` 决定了表组内各表之间对应分区的聚合方式，聚合的一组分区称为 Partition Group（分区组），是分布打散的最小单位，详细介绍可参见下文 [sharding_option](#sharding_option)。|
+| scope_option | 可选项，用于指定表组的 `SCOPE` 属性。`SCOPE` 决定了表组内所有聚合后的 Partition Group 的分布范围，详细介绍可参见下文 [scope_option](#scope_option)。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，从 V4.4.2 BP1 版本开始支持表组的 <code>SCOPE</code> 属性。</p></main>|
+
+### sharding_option
+
+* `NONE`：表示对加入表组的表没有限制。
+* `PARTITION`：表示加入表组的表对应的一级分区，需要与表组中所有表的一级分区的分区方式一致，包括分区类型、分区个数和分区值。
+* `ADAPTIVE`：表示加入表组的表对应的一级分区和二级分区，需要与表组中所有表的一级分区和二级分区的分区方式一致，包括分区类型、分区个数和分区值。加入表组中的表必须只能为同一类分区表（一级分区表或者二级分区表）。
+
+相同的分区方式包括：
+
+* 分区类型相同（例如都是 Hash + Range 分区）。
+* 如果是 Hash 分区，要求引用的列数相同，并且分区个数相同。
+* 如果是 Range 分区，要求引用的列数相同，并且分区数相同，Range 分割点相同。
+
+对于二级分区，根据其分区类型，要求和上述一致。
+
+### scope_option
+
+* `scope_option`：可选项，用于指定表组的 `SCOPE` 属性。`SCOPE` 决定了表组内所有聚合后的 Partition Group 的分布范围。取值如下：
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>对于 V4.4.2 版本，从 V4.4.2 BP1 版本开始支持表组的 <code>SCOPE</code> 属性。</p>
+  </main>
+
+  * `SERVER`：表示所有 Partition Group 的 Leader 聚集在同一节点上。
+  * `ZONE`：表示所有 Partition Group 的 Leader 分布在同一 Zone 内，且打散在 Zone 内各节点。
+  * `CLUSTER`：表示所有 Partition Group 的 Leader 打散在集群内各节点。
+
+  表组未指定 `SCOPE` 时，会根据 `SHARDING` 属性自动设置为对应的默认 `SCOPE` 属性。具体对应关系如下：
+
+  * `SHARDING = 'NONE'` 时，`SCOPE` 取值为 `SERVER`。
+  * `SHARDING = 'PARTITION'` 时，`SCOPE` 取值为 `CLUSTER`。
+  * `SHARDING = 'ADAPTIVE'` 时，`SCOPE` 取值为 `CLUSTER`。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>低版本升级上来的表组也根据相同规则确定 <code>SCOPE</code>。</p>
+  </main>
+
+## 示例
+
+* 创建名为 `myTableGroup1` 的表组，并将非分区表 `myt1` 和 `myt2` 加入到表组中。
+
+  ```sql
+  obclient> CREATE TABLEGROUP myTableGroup1;
+
+  obclient> CREATE TABLE MYT1 (c1 NUMBER, c2 NUMBER) TABLEGROUP = myTableGroup1;
+
+  obclient> CREATE TABLE MYT2 (c1 NUMBER, c2 NUMBER) TABLEGROUP = myTableGroup1;
+  ```
+
+* 创建名为 `tblgroup1` 的表组，其 `SHARDING` 属性为 `NONE`，并将非分区表 `tbl1` 、一级分区表 `tbl2`、二级分区表 `tbl3` 加入到表组中。
+
+  ```sql
+  obclient> CREATE TABLEGROUP tblgroup1 SHARDING = 'NONE';
+
+  obclient> CREATE TABLE tbl1 (col NUMBER) TABLEGROUP = tblgroup1;
+
+  obclient> CREATE TABLE tbl2 (col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup1
+      PARTITION BY LIST(col1)
+        (PARTITION p0 VALUES ('01'),
+         PARTITION p1 VALUES ('02')
+         );
+
+  obclient> CREATE TABLE tbl3(col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup1
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST (col2)
+        SUBPARTITION TEMPLATE
+        (SUBPARTITION mp0 VALUES ('01'),
+         SUBPARTITION mp1 VALUES ('02'),
+         SUBPARTITION mp2 VALUES ('03')
+         )
+        (PARTITION p0 VALUES('01'),
+         PARTITION p1 VALUES('02')
+        );
+  ```
+
+* 创建名为 `tblgroup2` 的表组，其 `SHARDING` 属性为 `PARTITION`，并将分区表 `tbl4` 和分区表 `tbl5` 加入到表组中，两者的分区方式一致。
+
+  ```sql
+  obclient> CREATE TABLEGROUP tblgroup2 SHARDING = 'PARTITION';
+
+  obclient> CREATE TABLE tbl4 (col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup2
+      PARTITION BY LIST(col1)
+        (PARTITION p0 VALUES ('01'),
+         PARTITION p1 VALUES ('02')
+        );
+
+  obclient> CREATE TABLE tbl5 (col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup2
+    PARTITION BY LIST(col1)
+      (PARTITION p0 VALUES ('01'),
+       PARTITION p1 VALUES ('02')
+       );
+  ```
+
+* 创建名为 `tblgroup3` 的表组，其 `SHARDING` 属性为 `PARTITION`，非分区表 `tbl6` 和分区表 `tbl7` 不能同时加入到该表组中。
+
+  ```sql
+  obclient> CREATE TABLEGROUP tblgroup3 SHARDING = 'PARTITION';
+
+  obclient> CREATE TABLE tbl6 (col INT) TABLEGROUP = tblgroup3;
+
+  obclient> CREATE TABLE tbl7 (col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup3
+    PARTITION BY LIST(col1)
+      (PARTITION p0 VALUES ('01'),
+       PARTITION p1 VALUES ('02')
+       );
+  ```
+
+  预期返回结果：
+
+  ```sql
+  OBE-00600: internal error code, arguments: -4179, not all tables are non-partitioned or partitioned, add table to tablegroup not allowed
+  ```
+
+* 创建名为 `tblgroup4` 的表组，其 `SHARDING` 属性为 `PARTITION`，分区表 `tbl8` 和分区表 `tbl9` 的分区值不一致，不能同时加入到表组中。
+
+  ```sql
+  obclient> CREATE TABLEGROUP tblgroup4 SHARDING = 'PARTITION';
+
+  obclient> CREATE TABLE tbl8 (col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup4
+      PARTITION BY LIST(col1)
+        (PARTITION p0 VALUES ('01'),
+         PARTITION p1 VALUES ('02')
+        );
+
+  obclient> CREATE TABLE tbl9 (col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup4
+      PARTITION BY LIST(col1)
+        (PARTITION p0 VALUES ('01'),
+         PARTITION p1 VALUES ('02'),
+         PARTITION p2 VALUES ('03')
+         );
+  ```
+
+  预期返回结果：
+
+  ```sql
+  OBE-00600: internal error code, arguments: -4179, partition num not equal, add table to tablegroup not allowed
+  ```
+
+* 创建名为 `tblgroup5` 的表组，其 `SHARDING` 属性为 `ADAPTIVE`，并将分区表 `tbl10` 和分区表 `tbl11` 加入到表组中，两者的分区方式一致。
+
+  ```sql
+  obclient> CREATE TABLEGROUP tblgroup5 SHARDING = 'ADAPTIVE';
+
+  obclient> CREATE TABLE tbl10(col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup5
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST (col2)
+        SUBPARTITION TEMPLATE
+        (SUBPARTITION mp0 VALUES ('01'),
+         SUBPARTITION mp1 VALUES ('02'),
+         SUBPARTITION mp2 VALUES ('03')
+         )
+        (PARTITION p0 VALUES('01'),
+         PARTITION p1 VALUES('02')
+        );
+
+  obclient> CREATE TABLE tbl11(col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup5
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST(col2)
+        SUBPARTITION TEMPLATE
+        (SUBPARTITION mp0 VALUES('01'),
+         SUBPARTITION mp1 VALUES('02'),
+         SUBPARTITION mp2 VALUES('03')
+        )
+        (PARTITION p0 VALUES('01'),
+         PARTITION p1 VALUES('02')
+        );
+  ```
+
+* 创建名为 `tblgroup6` 的表组，其 `SHARDING` 属性为 `ADAPTIVE`，非分区表 `tbl12` 和分区表 `tbl13` 不能同时加入到表组中。
+
+  ```shell
+  obclient> CREATE TABLEGROUP tblgroup6 SHARDING = 'ADAPTIVE';
+
+  obclient> CREATE TABLE tbl12 (col INT) TABLEGROUP = tblgroup6;
+
+  obclient> CREATE TABLE tbl13(col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup6
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST(col2)
+        SUBPARTITION TEMPLATE
+        (SUBPARTITION mp0 VALUES('01'),
+         SUBPARTITION mp1 VALUES('02'),
+         SUBPARTITION mp2 VALUES('03')
+        )
+        (PARTITION p0 VALUES('01'),
+         PARTITION p1 VALUES('02')
+        );
+
+  预期返回结果：
+
+  ``sql
+  OBE-00600: internal error code, arguments: -4179, not all tables are non-partitioned or partitioned, add table to tablegroup not allowed
+  ```
+
+* 创建名为 `tblgroup7` 的表组，其 `SHARDING` 属性为 `ADAPTIVE`，由于分区表 `tbl14` 和分区表 `tbl15` 的一级分区的分区类型相同，二级分区分区类型不同（二级分区个数不同），不能同时加入到表组中。
+
+  ```shell
+  obclient> CREATE TABLEGROUP tblgroup7 SHARDING = 'ADAPTIVE';
+
+  obclient> CREATE TABLE tbl14(col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup7
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST(col2)
+        SUBPARTITION TEMPLATE
+        (SUBPARTITION mp0 VALUES ('01'),
+         SUBPARTITION mp1 VALUES ('02'),
+         SUBPARTITION mp2 VALUES ('03')
+         )
+        (PARTITION p0 VALUES('01'),
+         PARTITION p1 VALUES('02')
+        );
+
+  obclient> CREATE TABLE tbl15(col1 NUMBER,col2 VARCHAR2(50)) TABLEGROUP = tblgroup7
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST(col2)
+        SUBPARTITION TEMPLATE
+        (SUBPARTITION mp0 VALUES('01'),
+         SUBPARTITION mp1 VALUES('02')
+        )
+        (PARTITION p0 VALUES('01'),
+         PARTITION p1 VALUES('02')
+        );
+  ```
+
+  预期返回结果：
+
+  ```sql
+  OBE-00600: internal error code, arguments: -4179, subpartition num not matched, add table to tablegroup not allowed
+  ```
+
+## 相关文档
+
+* [ALTER TABLEGROUP](../100.ddl-of-oracle-mode/1100.alter-tablegroup-of-oracle-mode.md)
+
+* [DROP TABLEGROUP](../100.ddl-of-oracle-mode/4000.drop-tablegroup-of-oracle-mode.md)
+
+* [管理表组内的表](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/300.manage-table-groups-of-oracle-mode/600.manage-tables-within-a-table-group-of-oracle-mode.md)
+
+* [查看表组信息](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/300.manage-table-groups-of-oracle-mode/300.view-the-information-of-a-table-group-of-oracle-mode.md)

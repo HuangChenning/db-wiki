@@ -1,0 +1,70 @@
+---
+title: "新建角色"
+book: "管理数据库"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000006078391.html"
+tags:
+  - oceanbase
+  - standalone
+  - manage
+---
+
+# 新建角色
+
+您可以通过 `CREATE ROLE` 语句新建角色，通过角色来管理权限。
+
+## 使用限制
+
+- `CREATE ROLE` 不支持为角色指定 `ob_sm3_password` 等增强认证插件。
+
+## 前提条件
+
+- 新建角色需要当前用户具备 `CREATE USER` 权限或 `CREATE ROLE` 权限。
+
+  查看当前用户所拥有的权限的相关操作请参见 [查看用户权限](400-view-user-permissions-of-mysql-mode.md)。如果您没有相关权限，请联系管理员为您添加，为用户添加权限的相关操作请参见 [直接授予权限](200-authority-of-mysql-mode.md)。
+
+- 如果当前租户下系统变量 `read_only` 的值为 `1`，即租户为只读模式，则当前用户还需要额外具备 `SUPER` 权限，才能执行 `CREATE ROLE` 语句。 系统变量 `read_only` 用于设置租户是否为只读模式。默认为 `0`，表示租户为读写模式。有关系统变量 `read_only` 的更多说明，请参见 [read_only](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285523)。
+
+## 操作示例
+
+新建角色 `role1`。
+
+```
+obclient [oceanbase]> CREATE ROLE role1;
+```
+
+或者
+
+```
+obclient [oceanbase]> CREATE ROLE IF NOT EXISTS role1;
+```
+
+上述示例中，不加 `IF NOT EXISTS` 子句时，如果当前租户中已存在同名的 `role1`，系统就会报错。如果加了 `IF NOT EXISTS` 子句，则系统会提示一条 Warning 信息。
+
+```
+obclient [oceanbase]> CREATE ROLE IF NOT EXISTS role1;
+Query OK, 0 rows affected, 1 warning
+```
+
+使用 `SHOW WARNINGS;` 语句查询 Warning 信息，显示结果如下：
+
+```
++-------+------+---------------------------------------------+
+| Level | Code | Message                                     |
++-------+------+---------------------------------------------+
+| Note  | 3163 | Authorization ID 'role1'@'%' already exists |
++-------+------+---------------------------------------------+
+1 row in set
+```
+
+## 后续操作
+
+角色创建成功后，您可以将其他角色或权限授予该角色，具体操作请参见以下内容：
+
+- [向角色中添加权限](300-grant-privileges-to-a-role-of-mysql-mode.md)
+
+- [将角色授予用户或角色](400-grant-a-role-to-a-role-or-user-of-mysql-mode.md)
+
+## 相关文档
+
+有关 `CREATE ROLE` 语句的详细说明，请参见 [CREATE ROLE](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286427)。

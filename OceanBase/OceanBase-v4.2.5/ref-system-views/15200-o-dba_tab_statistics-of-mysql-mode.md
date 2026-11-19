@@ -1,0 +1,107 @@
+---
+title: oceanbase.DBA_TAB_STATISTICS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501680.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_TAB_STATISTICS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户所有表的优化器统计信息。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| OWNER | varchar(128) | NO | 对象的所有者 |
+| TABLE_NAME | varchar(128) | NO | 表名 |
+| PARTITION_NAME | varchar(128) | NO | 分区名称 |
+| PARTITION_POSITION | decimal(10,0) | NO | 分区在表中的位置 |
+| SUBPARTITION_NAME | varchar(128) | NO | 子分区的名称 |
+| SUBPARTITION_POSITION | decimal(10,0) | NO | 子分区在分区内的位置 |
+| OBJECT_TYPE | varchar(12) | NO | 对象类型：<ul><li>TABLE</li><li>PARTITION</li><li>SUBPARTITION </li></ul> |
+| NUM_ROWS | decimal(10,0) | NO | 对象中的行数 |
+| BLOCKS | decimal(10,0) | NO | 对象中使用的块数 |
+| EMPTY_BLOCKS | decimal(10,0) | NO | 对象中的空块数 |
+| AVG_SPACE | decimal(10,0) | NO | 对象中的平均可用空间 |
+| CHAIN_CNT | decimal(10,0) | NO | 对象中的链接行数 |
+| AVG_ROW_LEN | decimal(10,0) | NO | 平均行长度，包括行开销 |
+| AVG_SPACE_FREELIST_BLOCKS | decimal(10,0) | NO | FREELIST 上所有块的平均可用空间 |
+| NUM_FREELIST_BLOCKS | decimal(10,0) | NO | FREELIST 上的块数 |
+| AVG_CACHED_BLOCKS | decimal(10,0) | NO | 缓冲区缓存中的平均块数 |
+| AVG_CACHE_HIT_RATIO | decimal(10,0) | NO | 对象的平均缓存命中率 |
+| IM_IMCU_COUNT | decimal(10,0) | NO | 表中内存压缩单元（IMCU）的数量 |
+| IM_BLOCK_COUNT | decimal(10,0) | NO | 表中的 In-Memory 块数 |
+| IM_STAT_UPDATE_TIME | datetime | NO | 内存中统计信息的最近更新的时间戳 |
+| SCAN_RATE | decimal(10,0) | NO | 对象的扫描速率（以兆字节/秒为单位） |
+| SAMPLE_SIZE | decimal(10,0) | NO | 用于分析表格的样本量 |
+| LAST_ANALYZED | datetime(6) | NO | 最近一次分析表的日期 |
+| GLOBAL_STATS | varchar(3) | NO | 指示统计信息是否被收集或增量维护：<ul><li>YES</li><li>NO </li></ul> |
+| USER_STATS | varchar(3) | NO | 指示统计信息是否由用户直接输入：<ul><li>YES</li><li>NO </li></ul> |
+| STATTYPE_LOCKED | varchar(5) | NO | 统计锁类型：<ul><li>DATA</li><li>CACHE</li><li>ALL</li></ul> |
+| STALE_STATS | varchar(3) | NO | 统计信息是否过时 |
+| SCOPE | varchar(7) | NO | 该值 SHARED 用于在除全局临时表之外的任何表上收集的统计信息。<br>对于全局临时表，可能的值为：<ul><li>SESSION：表示统计信息是特定于会话的</li><li>SHARED：表示统计信息在所有会话中共享 </li></ul> |
+
+## 查询示例
+
+查看本租户中表 `t_subpart` 的优化器统计信息。
+
+```shell
+obclient [oceanbase]> SELECT OWNER, TABLE_NAME, OBJECT_TYPE, NUM_ROWS, AVG_ROW_LEN FROM oceanbase.DBA_TAB_STATISTICS WHERE TABLE_NAME='t_subpart';
+```
+
+查询结果如下：
+
+```shell
++-------+------------+--------------+----------+-------------+
+| OWNER | TABLE_NAME | OBJECT_TYPE  | NUM_ROWS | AVG_ROW_LEN |
++-------+------------+--------------+----------+-------------+
+| test  | t_subpart  | TABLE        |    10000 |          60 |
+| test  | t_subpart  | PARTITION    |     3334 |          60 |
+| test  | t_subpart  | PARTITION    |     3333 |          60 |
+| test  | t_subpart  | PARTITION    |     3333 |          60 |
+| test  | t_subpart  | SUBPARTITION |     1336 |          60 |
+| test  | t_subpart  | SUBPARTITION |      999 |          60 |
+| test  | t_subpart  | SUBPARTITION |      999 |          60 |
+| test  | t_subpart  | SUBPARTITION |     1002 |          60 |
+| test  | t_subpart  | SUBPARTITION |     1332 |          60 |
+| test  | t_subpart  | SUBPARTITION |      999 |          60 |
+| test  | t_subpart  | SUBPARTITION |     1002 |          60 |
+| test  | t_subpart  | SUBPARTITION |      999 |          60 |
+| test  | t_subpart  | SUBPARTITION |     1332 |          60 |
++-------+------------+--------------+----------+-------------+
+13 rows in set
+```
+
+## 相关视图或文档
+
+* 查看 Global 级的列统计信息：[DBA_TAB_COL_STATISTICS](14800.o-dba_tab_col_statistics-of-mysql-mode.md)
+
+* 查看 Partition 级的列统计信息：[DBA_PART_COL_STATISTICS](12900.o-dba_part_col_statistics-of-mysql-mode.md)
+
+* 查看 Subpartition 级的列统计信息：[DBA_SUBPART_COL_STATISTICS](14400.o-dba_subpart_col_statistics-of-mysql-mode.md)
+
+* 查看表级的直方图统计信息：[DBA_TAB_HISTOGRAMS](14900.o-dba_tab_histograms-of-mysql-mode.md)
+
+* 查看 Partition 级的直方图统计信息：[DBA_PART_HISTOGRAMS](13000.o-dba_part_histograms-of-mysql-mode.md)
+
+* 查看 Subpartition 级的直方图统计信息：[DBA_SUBPART_HISTOGRAMS](14500.o-dba_subpart_histograms-of-mysql-mode.md)
+
+* 查看索引统计信息：[DBA_IND_STATISTICS](5100.o-dba_ind_statistics-of-mysql-mode.md)
+
+* 有关如何收集统计信息，参见以下文档：
+
+  * [手动收集统计信息](../../../1000.performance-tuning-guide/500.sql-optimization/400.sql-optimization/400.optimizer-statistics/200.statistics-collection-methods/300.collect-statistics-manually.md)
+
+  * [自动收集统计信息](../../../1000.performance-tuning-guide/500.sql-optimization/400.sql-optimization/400.optimizer-statistics/200.statistics-collection-methods/400.collect-statistics-automatically.md)

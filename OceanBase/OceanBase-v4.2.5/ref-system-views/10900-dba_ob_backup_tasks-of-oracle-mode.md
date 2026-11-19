@@ -1,0 +1,97 @@
+---
+title: DBA_OB_BACKUP_TASKS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501018.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_BACKUP_TASKS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户自身的 Task 级备份任务。
+
+## 字段说明
+
+| 字段名称 | 字段名称 | 字段名称 | 字段名称 |
+| --- | --- | --- | --- |
+| TASK_ID | NUMBER(38) | NO | TASK 级备份任务 ID，对应一个备份集的任务 |
+| JOB_ID | NUMBER(38) | NO | 该 TASK 任务所属的 JOB_ID |
+| INCARNATION | NUMBER(38) | NO | 表示 Flashback Database 后的第几次分身 |
+| BACKUP_SET_ID | NUMBER(38) | NO | 该 TASK 对应的备份集 ID |
+| START_TIMESTAMP | VARCHAR2(256) | NO | TASK 任务的开始时间 |
+| END_TIMESTAMP | VARCHAR2(256) | NO | TASK 任务的结束时间 |
+| STATUS | VARCHAR2(4096) | NO | 备份的状态 |
+| START_SCN | NUMBER(38)  | NO | 备份开始的 SCN |
+| END_SCN | NUMBER(38)  | NO | 备份结束的 SCN |
+| USER_LS_START_SCN | NUMBER(38)  | NO | 备份日志流 META 的 SCN |
+| ENCRYPTION_MODE | VARCHAR2(4096) | YES | 加密模式：<ul><li>None：表示不加密</li><li>Password：表示只使用密码保护</li><li>Password Encryption ：表示加密，并且使用密码保护</li><li>Transparent Encryption：表示使用 TDE 加密</li><li>Dual mode Encryption：表示使用 TDE 加密以及密码保护</li></ul> <br>目前仅支持 None 和 Password 两种模式 |
+| PASSWD | VARCHAR2(4096) | YES | 密码 |
+| INPUT_BYTES | NUMBER(38) | YES | 输入字节数 |
+| OUTPUT_BYTES | NUMBER(38) | YES | 输出字节数 |
+| OUTPUT_RATE_BYTES | NUMBER | NO | 每秒输出字节数 |
+| EXTRA_META_BYTES | NUMBER(38) | YES | 额外字节数 |
+| TABLET_COUNT | NUMBER(38) | YES | TABLET 总量 |
+| FINISH_TABLET_COUNT | NUMBER(38) | YES | 完成备份的 TABLET 总量 |
+| MACRO_BLOCK_COUNT | NUMBER(38) | YES | 宏块数 |
+| FINISH_MACRO_BLOCK_COUNT | NUMBER(38) | YES | 完成备份的宏块数 |
+| FILE_COUNT | NUMBER(38) | YES | 备份文件数 |
+| META_TURN_ID | NUMBER(38) | YES | 备份 META 的轮次 |
+| DATA_TURN_ID | NUMBER(38) | YES | 备份 DATA 的轮次 |
+| RESULT | NUMBER(38) | YES | 备份错误码结果 |
+| COMMENT | VARCHAR2(4096) | YES | 错误码描述 |
+| PATH | VARCHAR2(4096) | YES | 备份路径 |
+| MINOR_TURN_ID                 | NUMBER(38)     | NO              | 转储数据备份结束的轮次      |
+| MAJOR_TURN_ID                 | NUMBER(38)     | NO              | 基线数据备份结束的轮次      |
+
+## 查询示例
+
+查询本租户 Task 级备份任务的备份进度。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_OB_BACKUP_TASKS\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+                 TASK_ID: 3
+                  JOB_ID: 3
+             INCARNATION: 1
+           BACKUP_SET_ID: 3
+         START_TIMESTAMP: 2025-01-07 15:23:32.167496
+           END_TIMESTAMP: NULL
+                  STATUS: BACKUP_LOG
+               START_SCN: 1736234633061379000
+                 END_SCN: 1736234747644435000
+       USER_LS_START_SCN: 1736234641960191000
+         ENCRYPTION_MODE: NONE
+                  PASSWD:
+             INPUT_BYTES: 275828099
+            OUTPUT_BYTES: 21022393
+       OUTPUT_RATE_BYTES: 0.0000
+        EXTRA_META_BYTES: 0
+            TABLET_COUNT: 681
+     FINISH_TABLET_COUNT: 681
+       MACRO_BLOCK_COUNT: 132
+FINISH_MACRO_BLOCK_COUNT: 131
+              FILE_COUNT: 0
+            META_TURN_ID: 1
+            DATA_TURN_ID: 0
+                  RESULT: 0
+                 COMMENT:
+                    PATH: file:///home/admin/oceanbase/backupdataorc
+           MINOR_TURN_ID: 1
+           MAJOR_TURN_ID: 1
+1 row in set (0.002 sec)
+```

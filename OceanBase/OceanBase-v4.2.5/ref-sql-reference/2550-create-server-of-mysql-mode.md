@@ -1,0 +1,39 @@
+---
+title: CREATE SERVER
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503336.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE SERVER
+
+## 描述
+
+该语句用于创建存储引擎的服务器定义。
+
+## 语法
+
+```sql
+CREATE SERVER server_name
+    FOREIGN DATA WRAPPER wrapper_name
+    OPTIONS (option [, option] ...)
+
+option: {
+    HOST character-literal
+  | DATABASE character-literal
+  | USER character-literal
+  | PASSWORD character-literal
+  | SOCKET character-literal
+  | OWNER character-literal
+  | PORT numeric-literal
+}
+```
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>仅支持该关键字语法，功能暂不生效。</p>
+</main>

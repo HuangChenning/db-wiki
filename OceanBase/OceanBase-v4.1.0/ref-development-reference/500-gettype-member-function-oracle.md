@@ -1,0 +1,51 @@
+---
+title: "GETTYPE 成员函数"
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702560.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# GETTYPE 成员函数
+
+GETTYPE 成员函数 
+=================================
+
+`GETTYPE` 成员函数用于获取 `ANYDATA` 的类型代码。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+语法 
+-----------------------
+
+```sql
+MEMBER FUNCTION GetType(
+         self IN AnyData, 
+         typ OUT NOCOPY AnyType)
+RETURN PLS_INTEGER；
+```
+
+
+
+参数解释 
+-------------------------
+
+
+
+|  参数  |             描述             |
+|------|----------------------------|
+| self | 一个 `ANYDATA`。              |
+| typ  | 对应于 `ANYDATA` 的 `AnyType`。 |
+
+
+
+返回值 
+------------------------
+
+与 `ANYDATA` 类型相对应的类型。

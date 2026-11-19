@@ -1,0 +1,14 @@
+---
+title: "优化器估行机制"
+book: "管理数据库"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000000023384.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 优化器估行机制
+
+前面的章节中，介绍了基本统计信息的收集及管理特性等；而统计信息的作用都是为了在计划生成的时候有一个精确的行数估计。在 OceanBase 数据库优化器中目前有两种估行方式，一种是基于选择率的行数估计，一种是基于存储层的行数估计。

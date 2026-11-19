@@ -1,0 +1,184 @@
+---
+title: ALTER USER
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287825.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER USER
+
+## 描述
+
+该语句主要用于执行以下操作：
+
+* 修改数据库用户的密码。
+
+* 修改数据库用户使用的 Profile。
+
+* 修改数据库用户连接的加密方式，其它修改用户密码方式，请参见 [SET PASSWORD](../300.dcl-of-oracle-mode/3300.set-password-of-oracle-mode.md)。
+
+* 在密码轮转场景下提前结束轮转期。
+
+* 修改数据库用户拥有角色的默认角色。
+
+## 权限要求
+
+除了当前用户可以执行的修改命令外，其他用户必须拥有 `ALTER USER` 权限，才可以执行本命令修改其他用户的信息。有关 OceanBase 数据库权限的详细介绍，请参见 [Oracle 模式下的权限分类](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/000.permission-classification-of-oracle-mode.md)。
+
+## 使用限制及注意事项
+
+* 使用代理用户代理目标用户连接数据库时，当前仅支持通过 OBClient 连接数据库，并且要求 OBClient 版本为 V2.2.6 及之后版本。暂不支持 Java 驱动和 C 驱动连接数据库。
+* `SET PASSWORD`/`ALTER USER` 改密后，旧密码快速认证缓存失效，旧密码无法再登录。
+* 认证串格式校验 `IDENTIFIED WITH ... BY VALUES`，校验 `$S$` 格式，拒绝 `$A$`（`sha2`）等错误格式。
+* 未适配的 ODP 无法完成 SM3 用户（使用认证插件 `ob_sm3_password` 的用户）的连接。
+
+## 语法
+
+```sql
+ALTER USER user_name
+    { IDENTIFIED BY password
+    | IDENTIFIED WITH auth_plugin [BY password]
+    | EXPIRE PASSWORD ROLLOVER PERIOD
+    | PROFILE {"profile_name" | DEFAULT}
+    | REQUIRE {NONE | SSL | x509 | tls_option_list}
+    | DEFAULT ROLE
+            { role_name[,role_name...]
+            | ALL [EXCEPT role_name[,role_name...]]
+            | NONE
+            }
+    | GRANT CONNECT THROUGH proxy_user_name [with_clause]
+    };
+
+auth_plugin:
+    caching_sha2_password
+    | ob_sm3_password
+
+tls_option_list:
+    tls_option
+    | tls_option_list tls_option
+
+tls_option:
+    CIPHER str_value
+    | ISSUER str_value
+    | SUBJECT str_value
+
+with_clause:
+    WITH ROLE {role_name[, role_name,...]}
+    | WITH NO ROLE
+    | WITH ROLE ALL EXCEPT {role_name[, role_name,...]}
+```
+
+## 参数解释
+
+|      参数      |         描述       |
+|---------------|--------------------|
+| user_name     | 指定用户名或者被代理的目标用户名。|
+| IDENTIFIED BY | 指定用户新密码。|
+| IDENTIFIED WITH auth_plugin [BY password] | 指定认证插件及对应的认证信息。 <ul><li>`auth_plugin`：用于指定用户身份验证的方式（认证插件），详细介绍可参见下文 [auth_plugin](#auth_plugin)。</li><li>`BY password`：用于指定明文密码。</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，<code>IDENTIFIED WITH</code> 语法从 V4.4.2 BP2 版本开始支持。</p></main> |
+| EXPIRE PASSWORD ROLLOVER PERIOD | 在密码轮转场景下提前结束轮转期，使旧密码立即失效，仅保留当前密码。<main id="notice" type='explain'><h4>说明</h4><p>该参数从 V4.4.2 BP1 版本开始支持。</p></main> |
+| PROFILE       | 指定用户使用的的 Profile。<ul><li>`profile_name`：Profile 文件名。</li><li>`DEFAULT`：表示忽略此参数的限制。</li></ul>|
+| REQUIRE       | 指定用户使用的加密协议为 `NONE`、`SSL`、`X509` 和 `tls_option_list` 中的一种。|
+| DEFAULT ROLE  | 指定用户登录时的默认角色。<ul><li>`ALL`：把用户拥有的所有角色都设置为默认角色。`EXCEPT` 子句表示列出的角色除外，为可选项。</li><li>`NONE`：不指定默认角色，即禁用用户的所有角色。<main id="notice" type='notice'><h4>注意</h4><p>以下情况不能指定 <code>DEFAULT ROLE</code>：<ul><li>未授予用户的角色。</li><li>通过其他角色授予的角色。</li></ul></p></main>|
+| GRANT CONNECT THROUGH | 指定使用代理用户。更多有关使用代理用户的示例信息，请参见 [使用代理用户](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/710.set-proxy-user-for-a-user-of-oracle-mode.md)。|
+| proxy_user_name | 代理用户名。授权后，该用户能代表目标用户连接数据库，并使用目标用户的角色权限执行数据库操作。|
+| with_clause     | 指定代理用户代理目标用户连接数据库时生效的角色权限。如果不指定该子句，则默认代理用户代理目标用户连接数据库时，目标用户的所有角色权限均生效。详细介绍可参见下文 [with_clause](#with_clause)。|
+
+### auth_plugin
+
+* `caching_sha2_password`：基于 SHA-256 的密码认证插件，具有更高的安全防护等级。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>对于 V4.4.2 版本，从 V4.4.2 BP2 版本开始支持认证插件 <code>caching_sha2_password</code>。</p>
+  </main>
+
+* `ob_sm3_password`：该插件在认证协议与状态机上完全复用 `caching_sha2_password`（AuthSwitch、快速认证/完整认证、TLS/RSA 传密），但算法与元数据保持独立，使用 SM3 哈希算法替代 SHA-256，用于密码存储与认证校验。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>对于 V4.4.2 版本，从 V4.4.2 BP3 版本开始支持认证插件 <code>ob_sm3_password</code>。</p>
+  </main>
+
+### with_clause
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>指定代理用户生效的角色权限时，对于带密码的角色权限，需要在连接数据库后手动通过 <code>SET ROLE role_name IDENTIFIED BY role_password;</code> 命令激活该角色。</p>
+</main>
+
+* `WITH ROLE {role_name[, role_name,...]}`：指定代理用户代理目标用户连接数据库时，自动获取并激活指定的角色权限，即仅生效目标用户中指定的角色权限。
+* `WITH NO ROLE`：指定代理用户代理目标用户连接数据库时，不会自动获取目标用户的任何角色权限，即目标用户的所有角色权限均不生效。
+* `WITH ROLE ALL EXCEPT {role_name[ ,role_name,...]}`：指定代理用户代理目标用户连接数据库时，自动获取并激活目标用户中除指定角色之外的其他所有角色权限。
+
+## 示例
+
+* 修改用户 `user1` 的密码。
+
+  ```sql
+  obclient> ALTER USER user1 IDENTIFIED BY ******;
+  Query OK, 0 rows affected
+  ```
+
+* 将用户 `user1` 的认证插件修改为 `caching_sha2_password`。
+
+  ```sql
+  obclient> ALTER USER user1 IDENTIFIED WITH caching_sha2_password BY ******;
+  Query OK, 0 rows affected
+  ```
+
+* 修改用户 `user1` 连接加密协议为 `SSL`。
+
+  ```sql
+  obclient> ALTER USER user1 REQUIRE SSL;
+  Query OK, 0 rows affected
+  ```
+
+* 修改用户 `user1` 使用的的 Profile 为 `profile1`。
+
+  ```sql
+  obclient> ALTER USER user1 PROFILE "profile1";
+  Query OK, 0 rows affected
+  ```
+
+* 在密码轮转场景下提前结束用户 `user1` 的轮转期。
+
+  ```sql
+  obclient> ALTER USER user1 EXPIRE PASSWORD ROLLOVER PERIOD;
+  Query OK, 0 rows affected
+  ```
+
+* 设置用户 `user1` 的默认角色。
+
+  ```sql
+  obclient> CREATE ROLE role1;
+  Query OK, 0 rows affected
+
+  obclient> CREATE ROLE role2 IDENTIFIED BY ******;
+  Query OK, 0 rows affected
+
+  obclient> CREATE ROLE role3 IDENTIFIED BY ******;
+  Query OK, 0 rows affected
+
+  obclient> GRANT role1,role2,role3 TO user1;
+  Query OK, 0 rows affected
+
+  obclient> ALTER USER user1 DEFAULT ROLE role1;
+  Query OK, 0 rows affected
+  ```
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>用户 <code>user1</code> 可以直接使用 <code>role1</code> 的权限。<code>role2</code> 和 <code>role3</code> 的权限需要用户 <code>user1</code> 在会话中启用 <code>role2</code> 和 <code>role3</code> 后，用户 <code>user1</code> 才能使用其权限。</p>
+  </main>
+
+  有关启用角色命令的详细信息，请参见 [SET ROLE](../300.dcl-of-oracle-mode/3400.set-role-of-oracle-mode.md)。
+
+* 直接写入已序列化的认证串（`$S$...`）。
+
+    ```shell
+    obclient> ALTER USER user001 IDENTIFIED WITH ob_sm3_password BY VALUES '$S$005$ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.';
+    ```

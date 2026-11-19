@@ -1,0 +1,202 @@
+---
+title: "数据表概述"
+book: OceanBase AP
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005282495.html"
+tags:
+  - oceanbase
+  - distributed
+  - obap
+---
+
+# 数据表概述
+
+在 **OceanBase** 数据库中，表是最基础的数据存储单元。表包含了所有用户可以访问的数据，每个表由多行记录组成，而每行记录则包含多个列。每个表的设计和使用都需要依据业务需求进行合理规划，以确保系统的高效性和可扩展性。
+
+本篇文章从表类型、更新模式、数据分布、索引、数据类型与视图等方面展开，并围绕 **AP 表设计原则** 给出场景推荐与组合说明。
+
+## AP 表设计原则概述
+
+AP（分析处理）场景下表设计可围绕以下三个原则展开，与后文的表类型、数据分布、索引、视图等能力结合使用：
+
+* **宽表**：分析场景常使用列数较多的宽表，单次查询多只访问部分列。采用**列存表**或**列存索引**可按列存储与扫描，减少 IO、利于向量化与 Skip Index；配合分区与表组，宽表可水平打散并与其他表对齐，便于 Join 与并行扫描。详见本文「表类型」「数据分布」及 [使用列存与行列混存](100.column-store-overview.md)。
+* **预聚合**：对固定维度的汇总、报表类查询，可事先通过**物化视图**等预计算并持久化结果，查询时直接读物化视图，降低实时聚合开销。适用于报表、大屏、固定分析口径等场景。详见本文「视图」及 [物化视图（MySQL 模式）](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/100.materialized-views-overview-of-mysql-mode.md)、[物化视图（Oracle 模式）](../../700.reference/300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/100.materialized-views-overview-of-oracle-mode.md)。
+* **分区策略**：通过**分区表**按分区键（如时间、地域、ID）将数据水平拆分，可做分区裁剪减少扫描量、按分区并行计算，并便于按分区做生命周期管理（归档、清理）。AP 场景建议分区键与常用过滤、聚合维度一致，并配合表组实现多表分区对齐以优化 Join。详见本文「数据分布」及 [OLAP 场景下的表分区设计实践](800.data-design-best-practice/300.best-practice-table-partition.md)。
+
+## 表类型
+
+OceanBase 数据库支持的表类型有分区表、复制表、主键表和无主键表、外部表等等。
+
+* 分区表：OceanBase 数据库可以把普通的表的数据按照一定的规则划分到不同的区块内，将同一区块的数据物理上存储在一起。这种划分区块的表叫做分区表。OceanBase 数据库的基本分区策略包括范围（Range）分区、列表（List）分区、哈希（Hash）分区和 Key 分区。
+* 复制表：复制表是 OceanBase 数据库中的一种特殊表。这种表可以在任意一个“健康”的副本上读取到数据的最新修改。
+* 主键表和无主键表：有主键表即表中包含主键的表；表中未指定主键的表称为无主键表。
+* 外部表：数据库中的表数据存放在数据库的存储空间中，而外表的数据存储在外部存储服务中。
+* **堆表（堆组织表）**：数据不按主键排序存储，主键为二级唯一索引，数据与索引解耦；主键用于唯一性约束，查询则依赖于主表。当用户数据按时间顺序写入时，能够更有效地利用 Skip Index 提高分析型查询效率。在 **AP 场景** 下，新建表**默认采用堆组织表**形式：租户级配置项 [default_table_organization](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2150.default_table_organization.md) 在 OLAP 参数模板下为 `HEAP`，未显式指定 `ORGANIZATION` 时新建表即为堆表，便于大批量导入与 Skip Index 利用。
+* **临时表**：在 **AP 场景** 下也常用临时表存放 ETL 中间结果、旁路导入暂存、复杂查询的中间结果缓存等；数据按会话或事务隔离，会话结束或事务提交/回滚后自动清理，与持久化表区分。MySQL 模式为会话级临时表，Oracle 模式支持全局临时表。
+
+在 **AP 场景** 下，OceanBase 支持多种表类型，除了 **TP 场景** 中常见的 **复制表**、**分区表**、**主键表** 和 **无主键表**，根据数据的存储方式，按行存储还是按列存储，还引入新维度的表类型：**列存表、行列混存表。**
+
+* **列存表**：列存表将数据按列而非按行存储，能够显著提高分析型查询的性能，尤其适用于大数据量和频繁进行聚合分析的场景。详情请参见：[列存表架构](../../700.reference/100.oceanbase-database-concepts/900.storage-architecture/200.data-storage/320.columnstore-engine.md)。
+
+* **行列混存表**：按行存储和按列存储的数据都分别存储了一份，系统会自动根据查询语句判断选择行存还是列存查询性能更优，适用于交易类业务和分析类业务兼顾的场景。
+
+## 表更新模式
+
+OceanBase 数据库支持建表时指定数据的写入和查询模式。建表时，通过 `CREATE TABLE` 语句中的参数 `merge_engine` 选择 **delete_insert 更新模式** 和 **partial_update 更新模式** ，这两种模式是针对不同业务场景设计的数据更新策略。
+
++ **delete_insert（全列更新模式）**
+
+  以 **查询性能优先**，通过“Merge-On-Write”机制将 `UPDATE` 操作转化为全列的 `DELETE` 和 `INSERT` 记录，确保每行数据包含完整的列值。这种模式显著提升了复杂查询和批处理的效率（如分析型任务），但增量数据需要额外存储空间，适用于 **增量数据频繁且需要快速分析** 的场景。
+
++ **partial_update（部分更新模式）**  
+
+  仅记录修改的列的值，避免冗余存储。查询时需合并多份数据以获取最新值，性能相对较低，但更适合 **高频更新但查询需求低** 的场景（如 OLTP 类业务），或对存储成本敏感的环境。
+
+| **特性类别** | **delete_insert 更新模式** | **partial_update 更新模式** |
+| --- | --- | --- |
+| **存储方式** | 每次更新在 SSTable 中写入两行（`DELETE`和`INSERT`），包含全列数据。 | 每次更新仅记录修改的列的值，存储空间更节省。 |
+| **查询效率** | <ul><li>查询时提前在memtable/sstable中计算下压过滤算子。</ul></li><ul><li>若增量数据过滤结果不包含对基线数据更新，则可以分别批处理基线与增量数据；如果过滤结果包含对基线数据更新，合并增量/基线的记录获取最新值进行投影。</ul></li> | 查询时需合并多个 Memtable/SSTable 的记录，以获取主键的最新值，可能影响性能。  <br/> 适用于对存储成本敏感且更新操作频繁的场景。 |
+| **适用场景** | 增量数据比例较高，需要频繁执行复杂查询或批处理分析的场景。    | 高频更新但查询需求较低的场景。   |
+
+更多内容，参见 [MySQL 模式下的创建表](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/200.create-a-table-for-mysql-tenant-of-mysql-mode.md)和 [Oracle 模式下的创建表](../../700.reference/300.database-object-management/200.manage-object-of-oracle-mode/100.manage-tables-of-oracle-mode/200.create-a-table-for-oracle-tenant-of-oracle-mode.md)。
+
+## 数据分布
+
+**分区策略**是 AP 表设计的重要一环。OceanBase 数据库通过创建分区表将数据分布在不同的分区，不同分区数据可以分布到不同的机器，查询时利用分区裁剪能够减少数据的扫描量，且能利用多机的资源提升查询性能。默认情况下，不同表之间的数据是随机分布的，没有直接关系，通过负载均衡可以将一个表的数据比较均匀的分布在整个集群。
+
+在分布式 AP 系统中，表的数据量通常比较多。不同表的数据随机分布的情况下，表连接时数据传输的开销往往不可忽视。利用[表组](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/400.manage-table-groups-of-mysql-mode/100.about-table-groups-of-mysql-mode.md)（Table Group）可以让分区方式相同的分区表数据按照特定的规则对齐，让具有关联关系的数据聚集在同一台机器上，使得这些表连接时能够使用 Partition Wise Join 的方式执行，能够有效降低连接场景下的数据传输的开销，提升性能。
+
+![](img/f2e8b46eb1ce517f.png)
+
+OceanBase支持一级分区表和二级分区表，支持 RANGE 分区、LIST 分区、HASH 分区和 KEY 分区这四种分区类型。
+
+OceanBase提供三种属性的表组：
+
+1. NONE：表组内的所有表的所有分区均聚集在同一台机器上。
+
+2. PARTITION：表组内每一张表的数据按一级分区打散，如果是二级分区表，则一级分区下的所有二级分区聚集在一起。
+
+3. ADAPTIVE：表组内每一张表的数据根据自适应方式打散，如果表组内的表是一级分区表，则按一级分区打散；如果表组内的表是二级分区表，则按每个一级分区下的二级分区打散。
+
+更多信息，参见[数据分布](../../600.manage/300.replica-management/400.data-distribution.md)、[MySQL 模式下的表组](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/400.manage-table-groups-of-mysql-mode/100.about-table-groups-of-mysql-mode.md)和 [Oracle 模式下的表组](../../700.reference/300.database-object-management/200.manage-object-of-oracle-mode/300.manage-table-groups-of-oracle-mode/100.about-table-groups-of-oracle-mode.md)。
+
+## 索引类型
+
+索引是提高查询性能的关键组件。OceanBase 在 AP 场景中支持多种索引类型，用于加速等值/范围查询、全文检索、JSON 集合查询、向量相似度搜索与分析型扫描等。
+
+* **索引数据分布**：**局部索引** 指索引分区与基表分区一一对应、绑定存储；**全局索引** 指索引与基表分区独立、可跨分区组织。二者与“索引建在哪些分区上、如何分布”相关。
+* **索引存储格式**：**行存索引** 与 **列存索引** 指索引表自身按行或按列组织数据。列存格式（如 `WITH COLUMN GROUP (each column)`）利于分析型扫描与聚合，行存格式利于点查与随机访问。**列存索引** 即采用列存存储格式的索引（如 B-tree 索引指定为列存）。索引表按列组织数据（`WITH COLUMN GROUP (each column)` 等），依据列而非行存储，适用于 HTAP 场景下的聚合、宽表扫描与分析型查询，能够显著提升分析类查询性能，特别是在处理大规模数据时缩短数据检索和分析时间。详见 [列存](../../700.reference/100.oceanbase-database-concepts/900.storage-architecture/200.data-storage/320.columnstore-engine.md) 与 [创建索引（MySQL 模式）— 列存索引](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md)。
+
+在上述两个维度下，按**索引结构**可分为以下几类：
+
+* **B-tree 索引（普通索引）**：默认的索引结构，包括 **唯一索引**、**非唯一索引** 和 **函数索引**。适用于等值查询、范围查询、排序和点查。B-tree 索引可以是 **局部索引** 或 **全局索引**，也可以采用行存或列存格式；列存格式的 B-tree 索引即常说的 **列存索引**，适用于 HTAP 场景下的分析型扫描。详见 [索引简介](../../700.reference/100.oceanbase-database-concepts/400.database-objects/200.database-objects-of-mysql-mode/300.index-of-oracle-mode/100.index-overview-of-mysql-mode.md)、[创建索引（MySQL 模式）](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md)、[列存](../../700.reference/100.oceanbase-database-concepts/900.storage-architecture/200.data-storage/320.columnstore-engine.md)。其中，**函数索引** 适用于按表达式过滤或排序（如 `MONTH(date_col)`、`UPPER(name)`），避免逐行计算。参见 [函数索引支持的系统函数列表](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/500.function-index-list-of-supported-functions-of-mysql-mode.md) 与 [不支持的函数列表](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/600.function-index-list-of-not-supported-functions-of-mysql-mode.md)。
+  * **适用场景**：等值/范围条件（`WHERE col = ?`、`BETWEEN`、`IN`）；排序与分页（`ORDER BY` 结合过滤）；在分区键或常用过滤列上建局部索引以配合分区裁剪；主键/唯一键或覆盖索引减少回表，适用于维表关联、小结果集筛选等。
+
+* **全文索引**：基于倒排索引与分词，对 `CHAR`/`VARCHAR`/`TEXT` 列建立关键词映射。**仅支持局部索引**。详见 [全文索引](../../700.reference/100.oceanbase-database-concepts/400.database-objects/200.database-objects-of-mysql-mode/300.index-of-oracle-mode/320.full-text-indexes-of-mysql-mode-in-concepts.md)。
+  * **适用场景**：适用于企业内部知识库与文档检索、新闻/法律文书等大段文本搜索、日志分析中按关键词定位等。执行计划中可见 `TEXT RETRIEVAL SCAN` 表示命中全文索引。
+
+* **JSON 多值索引**：OceanBase 数据库的 MySQL 模式支持多值索引功能，可在数组或集合上创建索引，提高基于 JSON 数组元素搜索的查询效率。**仅支持局部索引**。详见 [多值索引](../../700.reference/100.oceanbase-database-concepts/400.database-objects/200.database-objects-of-mysql-mode/300.index-of-oracle-mode/100.index-overview-of-mysql-mode.md) 与 [创建索引（MySQL 模式）](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md)。
+  * **适用场景**：适用于标签/分类、多对多关联（如数组存演员列表）、以及 `MEMBER OF()`、`JSON_CONTAINS()`、`JSON_OVERLAPS()` 等谓词。
+
+* **空间索引**：独立的空间索引结构，用于地理空间数据与 GIS 场景，可快速检索坐标范围内数据。**仅支持局部索引**。
+
+* **向量索引**：在 Vector 类型列上建立的向量索引，包含稠密向量索引与稀疏向量索引。其中，稠密向量索引示例包括 HNSW、IVF；稀疏向量索引类型与约束以 [向量索引概述](../../640.ob-vector-search/200.ob-vector-index/100.ob-vector-index-overview.md) 为准。支持 L2、内积、余弦等距离/相似度计算，适用于向量相似度检索类查询。具有独立的索引结构，**仅支持局部索引**。
+
+AP 场景下 **列存索引**、**行存基表 + 列存索引** 等组合，参见 [列存表与列存索引实践](800.data-design-best-practice/500.column-store-index-and-table-usage.md)；**全文索引、JSON 多值索引、空间索引、向量索引** 等特殊索引选型，参见 [JSON 多值索引与全文索引实践](800.data-design-best-practice/200.best-practices-choosing-special-indexes.md)。更多语法与实现细节，参见 [MySQL 模式索引简介](../../700.reference/100.oceanbase-database-concepts/400.database-objects/200.database-objects-of-mysql-mode/300.index-of-oracle-mode/100.index-overview-of-mysql-mode.md) 与 [Oracle 模式索引简介](../../700.reference/100.oceanbase-database-concepts/400.database-objects/100.database-objects-of-oracle-mode/300.index-of-oracle-mode/100.the-index-overview-of-oracle-mode.md)。
+
+## 数据类型
+
+在创建和使用表之前，数据库管理员需要根据业务需求合理规划表结构和数据类型。为确保数据存储的高效性和查询的优化，管理员应遵循以下原则：
+
+* **规范化表结构**：通过合理设计表结构，确保数据冗余最小化，提升查询效率。
+* **选择合适的 SQL 数据类型**：为每个列选择最适合的 SQL 数据类型，以减少存储空间并提高查询速度。
+
+常见的 SQL 数据类型包括：
+
+* **基础数据类型**：如 `INT`、`VARCHAR`、`DATE` 等。
+* **复杂数据类型**：如 `JSON`、`ARRAY`、`BITMAP` 等，适用于存储更复杂的数据结构。
+
+详细的 SQL 数据类型描述，请参见：
+
+* [MySQL 模式数据类型](../../700.reference/100.oceanbase-database-concepts/400.database-objects/200.database-objects-of-mysql-mode/200.table-of-mysql-mode/200.data-type-of-mysql-mode/100.data-types-overview-of-mysql-mode.md)
+* [Oracle 模式数据类型](../../700.reference/100.oceanbase-database-concepts/400.database-objects/100.database-objects-of-oracle-mode/200.table-of-oracle-mode/200.data-type-of-oracle-mode/100.data-type-overview-of-oracle-mode.md)
+
+## 视图
+
+OceanBase 数据库支持普通视图和物化视图。
+
+* 普通视图（Standard Views）：普通视图也叫非物化视图，是最常见的视图类型。它们仅仅存储定义视图的 SQL 查询，而不存储查询结果。
+* 物化视图（Materialized Views）：物化视图与普通视图不同，它们在物理存储上保留了查询的结果。OceanBase 数据库支持异步物化视图，即基础表数据变动时，并不会立即更新物化视图，保证了基表 DML 操作的执行性能。物化视图是**预聚合**的常见实现方式，适用于固定分析口径、报表与大屏等场景。参见 [MySQL 模式下的物化视图](../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/100.materialized-views-overview-of-mysql-mode.md) 和  [Oracle 模式下的物化视图](../../700.reference/300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/100.materialized-views-overview-of-oracle-mode.md)。
+
+## 场景推荐与组合
+
+结合**宽表、预聚合、分区策略**等 AP 表设计原则，下表给出典型场景下的表设计组合建议，便于按业务形态选型。具体分区键、分区数、存储格式与索引需根据数据量与查询模式再细化，详见 [列存与行列混存概述](100.column-store-overview.md)、[AP 场景下的主键设计实践](800.data-design-best-practice/100.strategies-optimizing-storage-structure-query-performance.md)、[OLAP 场景下的表分区设计实践](800.data-design-best-practice/300.best-practice-table-partition.md)、[列存表与列存索引实践](800.data-design-best-practice/500.column-store-index-and-table-usage.md) 与 [JSON 多值索引与全文索引实践](800.data-design-best-practice/200.best-practices-choosing-special-indexes.md)。
+
+| 典型场景 | 推荐表设计组合 | 说明 |
+|----------|----------------|------|
+| 纯分析、大宽表、多列扫描 | 列存表 + 分区表（按时间/维度）+ 表组（多表 Join 时） | **宽表**用列存减少 IO；**分区策略**做裁剪与并行；表组保证关联表分区对齐，利于 Partition Wise Join。 |
+| 固定报表/大屏、重复聚合查询 | 明细表（分区+列存或行列混存）+ 物化视图（预聚合结果） | **预聚合**：物化视图保存汇总结果，查询直读；明细表仍可做即席分析。 |
+| HTAP、以 TP 为主兼有分析 | 行存基表 + 列存索引 + 分区表 | 写入与点查走行存；分析走列存索引，存储可控。详见 [列存表与列存索引实践](800.data-design-best-practice/500.column-store-index-and-table-usage.md)。 |
+| 需要 TP/AP 物理隔离 | F/R 上行存或行列混存 + 列存副本（C 副本） | AP 流量走 C 副本弱读，TP 走 F/R；无需在 F/R 上为分析建列存索引也可获得列存扫描。部署见 [AP 部署概述](../150.obap-deploy/10.obap-deploy-overview.md)。 |
+| 即席分析、查询列不固定 | 行列混存表 + 分区表 | 优化器自动选行存/列存路径；分区做裁剪与生命周期管理。 |
+| 日志/埋点、按时间范围查询与清理 | 列存表或行列混存 + RANGE 分区（按天/小时） | **分区策略**：按时间分区便于裁剪与按分区归档/删除；列存利于按列扫描与压缩。 |
+
+以上组合可叠加使用（例如：分区表 + 列存 + 物化视图），具体以业务写入量、查询模式与存储成本为准。
+
+## 创建数据表示例
+
+创建包含分区、列存和行存索引的表
+
+```sql
+CREATE TABLE salesdata (
+    sale_id INT,
+    product_id INT NOT NULL,
+    saledate DATE NOT NULL,
+    saledate_int INT, -- 定义为普通列
+    quantity INT,
+    price DECIMAL(10, 2),
+    customer_id INT,
+    PRIMARY KEY (sale_id, saledate_int) -- 主键可以包括普通列
+)
+PARTITION BY RANGE COLUMNS (saledate_int) (
+    PARTITION p2023_q1 VALUES LESS THAN (202304),
+    PARTITION p2023_q2 VALUES LESS THAN (202307),
+    PARTITION p2023_q3 VALUES LESS THAN (202310),
+    PARTITION p2023_q4 VALUES LESS THAN (202401)
+)
+WITH COLUMN GROUP(each column);
+
+CREATE INDEX idx_product_id ON salesdata(product_id);
+CREATE INDEX idx_customer_id ON salesdata(customer_id);
+```
+
+1. **分区**：`salesdata` 表使用 **范围分区**（RANGE）。
+
+   * `PARTITION BY RANGE COLUMNS (saledate_int)`：通过 `saledate_int` 列进行分区。
+
+   * 定义了四个分区：
+
+     - `p2023_q1` 分区包含 `202304` 之前的所有数据（即 2023 年第一季度）。
+     - `p2023_q2`、`p2023_q3` 和 `p2023_q4` 分区涵盖了 2023 年的第二、第三和第四季度的数据。
+
+2. **列存**：通过 `WITH COLUMN GROUP(each column);` 指定了 **列存存储**。这些列的数据将采用列存储方式，适合大规模的数据分析场景。
+
+3. **行存索引**：分别在 `product_id` 和 `customer_id` 列上，创建了两个索引 `idx_product_id` 和 `idx_customer_id`。行存索引可以加速基于具体列的查询，尤其是用于高频次的小查询。
+
+当创建并使用列存储表时，如果你导入了大量数据，那么需要注意执行一次 合并操作 以改善读取性能，并且进行 统计信息收集，调整执行策略。
+
+* **合并操作**：在批量导入数据之后，建议进行一次合并操作。这有助于改善读取性能，因为合并操作会整理片段化数据，使其在物理存储上更连续，从而减少读取时的磁盘 I/O。导入数据后，在租户内触发一次合并操作，以确保所有数据都被合并到基线层，操作请参考 [MAJOR 和 MINOR（MySQL 模式）](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/1500.alter-system-freeze-of-mysql-mode.md) 和 [MAJOR 和 MINOR（Oracle 模式）](../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/4600.alter-system-major-freeze-of-oracle-mode.md)。
+
+* **统计信息收集**：合并操作完成之后，推荐进行统计信息的收集。这对于优化器生成有效的查询计划和执行策略是非常重要的。执行 [GATHER_SCHEMA_STATS（MySQL 模式)](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/15900.dbms-stats-mysql/1800.gather-schema-stats-mysql.md) /[GATHER_SCHEMA_STATS（Oracle 模式)](../../700.reference/600.pl-reference/300.pl-oracle/1400.pl-system-package-oracle/15900.dbms-stats-oracle/1800.gather-schema-stats-oracle.md)查看对所有表收集统计信息，并可以通过视图 [GV$OB_OPT_STAT_GATHER_MONITOR（MySQL 模式）](../../700.reference/700.system-views/400.system-view-of-mysql-mode/300.performance-view-of-mysql-mode/6100.gv_ob_opt_stat_gather_monitor-of-mysql-mode.md) 和 [GV$OB_OPT_STAT_GATHER_MONITOR（Oracle 模式）](../../700.reference/700.system-views/500.system-view-of-oracle-mode/300.performance-view-of-oracle-mode/2000.gv-ob_opt_stat_gather_monitor-of-oracle-mode.md) 监控收集进度。
+
+需要注意的是，随着列存表数据量的增加，合并操作的速度可能会下降。
+
+## 相关文档
+
+* [使用列存与行列混存](100.column-store-overview.md)
+* [AP 场景下的主键设计实践](800.data-design-best-practice/100.strategies-optimizing-storage-structure-query-performance.md)
+* [列存表与列存索引实践](800.data-design-best-practice/500.column-store-index-and-table-usage.md)
+* [OLAP 场景下的表分区设计实践](800.data-design-best-practice/300.best-practice-table-partition.md)
+* [JSON 多值索引与全文索引实践](800.data-design-best-practice/200.best-practices-choosing-special-indexes.md)
+* [动态分区](500.data-distribution/200.dynamic-partition.md)
+* [AP FAQ](../1500.ap-faq.md)

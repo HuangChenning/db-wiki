@@ -1,0 +1,28 @@
+---
+title: nls_nchar_conv_excp
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002183527.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# nls_nchar_conv_excp
+
+`nls_nchar_conv_excp` 用于控制 NCHAR/NVARCHAR2 与 CHAR/VARCHAR2 之间转换丢失数据时是否报错。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该变量不支持修改。</p>
+  </main>
+
+|  **属性**  |                                                      **描述**                                                       |
+|----------|-------------------------------------------------------------------------------------------------------------------|
+| 参数类型     | bool                           |
+| 默认值      | FALSE                          |
+| 取值范围     | <li> TRUE：表示报错   <li> FALSE：表示不报错    |
+| 生效范围     | <li> Global   <li> Session           |
+| 是否参与序列化  | 是                              |
+| 是否影响计划生成 | 是                              |

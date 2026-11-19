@@ -1,0 +1,175 @@
+---
+title: "Truncate 分区"
+book: "数据库对象管理"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004476719.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# Truncate 分区
+
+您可以根据业务需要，清空分区表中分区的数据，保留分区结构。
+
+## 分区表对 Truncate 分区操作的支持情况
+
+OceanBase 数据库的 MySQL 模式中，一级分区表和二级分区表对 Truncate 分区操作的具体支持情况如下表所示。
+
+|    分区表  |    分区类型   | Truncate 一级分区 | Truncate 二级分区 |
+|-----------|---------------|------------------|------------------|
+| 一级分区表 | <ul><li>Range</li><li>Range Columns</li><li>List</li><li>List Columns</li></ul> | 支持 | - |
+| 一级分区表 | <ul><li>Hash</li><li>Key</li></ul> | 不支持| - |
+| 二级分区表 | <ul><li>Range + Range</li><li>Range + Range Columns</li><li>Range + List</li><li>Range + List Columns</li></ul> | 支持 | 支持 |
+| 二级分区表 | <ul><li>Range + Hash</li><li>Range + Key</li></ul> | 支持 | 不支持 |
+| 二级分区表 | <ul><li>Range Columns + Range</li><li>Range Columns + Range Columns</li><li>Range Columns + List</li><li>Range Columns + List Columns</li></ul> | 支持 | 支持 |
+| 二级分区表 | <ul><li>Range Columns + Hash</li><li>Range Columns + Key</li></ul> | 支持 | 不支持 |
+| 二级分区表 | <ul><li>List + Range</li><li>List + Range Columns</li><li>List + List</li><li>List + List Columns</li></ul> | 支持 | 支持 |
+| 二级分区表 | <ul><li>List + Hash</li><li>List + Key</li></ul> | 支持 | 不支持 |
+| 二级分区表 | <ul><li>List Columns + Range</li><li>List Columns + Range Columns</li><li>List Columns + List</li><li>List Columns + List Columns</li></ul> | 支持 | 支持 |
+| 二级分区表 | <ul><li>List Columns + Hash</li><li>List Columns + Key</li></ul> | 支持 | 不支持 |
+| 二级分区表 | <ul><li>Hash + Range</li><li>Hash + Range Columns</li><li>Hash + List</li><li>Hash + List Columns</li></ul> | 不支持 | 支持 |
+| 二级分区表 | <ul><li>Hash + Hash</li><li>Hash + Key</li></ul> | 不支持 | 不支持 |
+| 二级分区表 | <ul><li>Key + Range</li><li>Key + Range Columns</li><li>Key + List</li><li>Key + List Columns</li></ul> | 不支持 | 支持 |
+| 二级分区表 | <ul><li>Key + Hash</li><li>Key + Key</li></ul> | 不支持 | 不支持 |
+
+## Truncate 分区操作说明
+
+### Truncate 分区对全局索引的影响
+
+对于使用 Range/Range Columns、List/List Columns 分区（包括一级分区和二级分区）且支持 `TRUNCATE` 分区操作的表，系统不会重建全局索引，而是通过后台合并删除数据的方式，以 lazy（延迟）维护策略保持索引有效，从而避免因索引失效导致的查询中断或性能下降。需要注意的是，该优化仅适用于普通全局索引。以下场景无法触发该优化：
+
+* 一级分区为 Hash 分区（即使二级分区为 Range/Range Columns、List/List Columns），此时对二级分区执行 Truncate 操作。
+* 分区键为表达式而非普通列。
+
+#### 控制分区 DDL 时全局索引行为的隐藏配置项
+
+对于 V4.3.5 版本，OceanBase 数据库从 V4.3.5 BP2 版本开始引入租户级隐藏配置项 `_ob_enable_truncate_partition_preserve_global_index`，用于控制是否允许在 `TRUNCATE`/`DROP` 主表分区（以下简称分区 DDL）时，全局索引不失效。对于升级上来的租户，该隐藏配置项默认值为 `False`，对于新建租户默认值为 `True`，取值行为对比如下：
+
+| 配置项值 | 分区 DDL 执行期间的行为 | 分区 DDL 执行完成后的结果 |
+|----------|-----------------------|-------------------------|
+| True | 只有 `TRUNCATE`/`DROP` 的主表分区不允许 DML，主表的其他分区可以正常 DML。| 全局索引不失效：主表和所有的索引表都可以执行 DML 操作，并且主表相关的全局索引不失效。|
+| False | 只有 `TRUNCATE`/`DROP` 的主表分区不允许 DML，主表的其他分区可以正常 DML。| 全局索引失效：主表和所有的索引表都可以执行 DML 操作，主表相关的全局索引会失效或者重建。|
+
+**示例如下：**
+
+* 索引维持。
+
+    ```shell
+    obclient> ALTER SYSTEM SET _ob_enable_truncate_partition_preserve_global_index = True;
+    ```
+
+* 索引失效。
+
+    ```shell
+    obclient> ALTER SYSTEM SET _ob_enable_truncate_partition_preserve_global_index = False;
+    ```
+
+### Truncate 分区对并发 DDL/DML/查询 的影响
+
+Truncate 分区属于 Offline DDL 操作。在 Truncate 分区时，OceanBase 数据库会在目标分区上加一个分区级别的排他锁。
+
+| 操作类型 | 在 Truncate 分区执行期间的影响 |
+|----------|------------------------------|
+| 并发 DDL | 被禁止或阻塞。针对同一张表的任何其他 DDL 操作都无法同时执行。|
+| 并发 DML | <ul><li>对目标分区：完全阻塞。</li><li>对其他分区：通常可并发，前提是语句能明确访问其他分区。</li></ul>|
+| 并发查询（`SELECT`）| 不受影响，可正常执行。|
+
+## Truncate 一级分区
+
+您可以 Truncate 分区表中的一级分区。
+
+Truncate 一级分区的 SQL 语法如下：
+
+```sql
+ALTER TABLE table_name TRUNCATE PARTITION partition_name[, partition_name ...];
+```
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <ul>
+    <li>
+    <p>Truncate 一级分区时，可以将一个或多个分区中的数据清空。</p>
+    </li>
+    <li>
+    <p>在 Truncate 一级分区时，请尽量保证该分区上不存在活动的事务或查询，否则可能会导致 SQL 语句报错，或者出现一些异常情况。在 <code>sys</code> 租户下，通过视图 <code>oceanbase.GV$OB_TRANSACTION_PARTICIPANTS</code> 查询当前还未结束的事务上下文状态。</p>
+    </li>
+    <li>
+    <p>对于二级分区表，Truncate 一级分区时，会将一个或多个一级分区及其对应的二级分区中的数据全部清空。</p>
+    </li>
+    </ul>
+  </main>
+
+部分示例如下：
+
+* 清空一级分区表 `tbl1_r` 中 `M202001` 和 `M202002` 分区中的数据。
+
+  ```sql
+  obclient> CREATE TABLE tbl1_r (log_id BIGINT NOT NULL,log_value VARCHAR(50),log_date TIMESTAMP NOT NULL)
+         PARTITION BY RANGE(UNIX_TIMESTAMP(log_date)) 
+          (PARTITION M202001 VALUES LESS THAN(UNIX_TIMESTAMP('2020/02/01'))
+         , PARTITION M202002 VALUES LESS THAN(UNIX_TIMESTAMP('2020/03/01'))
+         , PARTITION M202003 VALUES LESS THAN(UNIX_TIMESTAMP('2020/04/01'))
+         , PARTITION M202004 VALUES LESS THAN(UNIX_TIMESTAMP('2020/05/01'))
+         , PARTITION M202005 VALUES LESS THAN(UNIX_TIMESTAMP('2020/06/01'))
+         , PARTITION M202006 VALUES LESS THAN(UNIX_TIMESTAMP('2020/07/01'))
+         , PARTITION M202007 VALUES LESS THAN(UNIX_TIMESTAMP('2020/08/01'))
+         , PARTITION M202008 VALUES LESS THAN(UNIX_TIMESTAMP('2020/09/01'))
+         , PARTITION M202009 VALUES LESS THAN(UNIX_TIMESTAMP('2020/10/01'))
+         , PARTITION M202010 VALUES LESS THAN(UNIX_TIMESTAMP('2020/11/01'))
+         , PARTITION M202011 VALUES LESS THAN(UNIX_TIMESTAMP('2020/12/01'))
+         , PARTITION M202012 VALUES LESS THAN(UNIX_TIMESTAMP('2021/01/01'))
+          );
+  Query OK, 0 rows affected
+  
+  obclient> ALTER TABLE tbl1_r TRUNCATE PARTITION M202001,M202002;
+  Query OK, 0 rows affected
+  ```
+
+* 清空 Range Columns + List Columns 分区表 `t_f_rclc` 的一级分区 `p0` 中的数据。
+
+## Truncate 二级分区
+
+Truncate 二级分区的 SQL 语法如下：
+
+```sql
+ALTER TABLE table_name TRUNCATE SUBPARTITION subpartition_name[, subpartition_name ...];
+```
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <ul>
+    <li>
+    <p>Truncate 二级分区表中的二级分区时，请尽量保证该分区上不存在活动的事务或查询，否则可能会导致 SQL 语句报错，或者出现一些异常情况。在 <code>sys</code> 租户下，通过视图 <code>oceanbase.GV$OB_TRANSACTION_PARTICIPANTS</code> 查询当前还未结束的事务上下文状态。</p>
+    </li>
+    <li>
+    <p>当 Truncate 多个二级分区时，这些二级分区必须属于同一个一级分区。</p>
+    </li>
+    </ul>
+  </main>
+
+以清空 Range + Range 分区表 `t_f_rr` 的二级分区 `sp1` 和 `sp2` 中的数据为例，示例如下：
+
+```sql
+obclient> CREATE TABLE t_f_rr(col1 INT,col2 TIMESTAMP) 
+       PARTITION BY RANGE(col1)
+       SUBPARTITION BY RANGE(UNIX_TIMESTAMP(col2))
+        (PARTITION p0 VALUES LESS THAN(100)
+           (SUBPARTITION sp0 VALUES LESS THAN(UNIX_TIMESTAMP('2021/04/01')),
+            SUBPARTITION sp1 VALUES LESS THAN(UNIX_TIMESTAMP('2021/07/01')),
+            SUBPARTITION sp2 VALUES LESS THAN(UNIX_TIMESTAMP('2021/10/01')),
+            SUBPARTITION sp3 VALUES LESS THAN(UNIX_TIMESTAMP('2022/01/01'))
+           ),
+         PARTITION p1 VALUES LESS THAN(200)
+           (SUBPARTITION sp4 VALUES LESS THAN(UNIX_TIMESTAMP('2021/04/01')),
+            SUBPARTITION sp5 VALUES LESS THAN(UNIX_TIMESTAMP('2021/07/01')),
+            SUBPARTITION sp6 VALUES LESS THAN(UNIX_TIMESTAMP('2021/10/01')),
+            SUBPARTITION sp7 VALUES LESS THAN(UNIX_TIMESTAMP('2022/01/01'))
+            )
+         );
+Query OK, 0 rows affected
+
+obclient> ALTER TABLE t_f_rr TRUNCATE SUBPARTITION sp1,sp2;
+Query OK, 0 rows affected
+```

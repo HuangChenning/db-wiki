@@ -29,7 +29,16 @@ For database administrators and developers, this collection covers database conc
 | Dameng DM8 | 56 | [Version catalog](dameng/dm8/catalog.md) · [System Administration](dameng/dm8/administrator/contents.md) |
 | HighGo V4.5 | 23 | [Version catalog](highgo/highgov45/catalog.md) · [Installation Manual](highgo/highgov45/develop-installation-manual/contents.md) |
 | HighGo V9 | 24 | [Version catalog](highgo/highgov9/catalog.md) · [Administrator's Guide](highgo/highgov9/safety-administrator-guide/contents.md) |
-| OceanBase V5.0.1 | 28 | [Version catalog](OceanBase/OceanBase-v5.0.1/catalog.md) · [Introduction](OceanBase/OceanBase-v5.0.1/learn-more-about-oceanbase/contents.md) |
+| OceanBase V5.0.1 (Distributed) | 28 | [Version catalog](OceanBase/OceanBase-v5.0.1/catalog.md) · [Introduction](OceanBase/OceanBase-v5.0.1/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.6.0 (Distributed) | 30 | [Version catalog](OceanBase/OceanBase-v4.6.0/catalog.md) · [Introduction](OceanBase/OceanBase-v4.6.0/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.5.0 (Distributed) | 29 | [Version catalog](OceanBase/OceanBase-v4.5.0/catalog.md) · [Introduction](OceanBase/OceanBase-v4.5.0/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.4.2 (Distributed) | 31 | [Version catalog](OceanBase/OceanBase-v4.4.2/catalog.md) · [Introduction](OceanBase/OceanBase-v4.4.2/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.3.5 (Distributed) | 31 | [Version catalog](OceanBase/OceanBase-v4.3.5/catalog.md) · [Introduction](OceanBase/OceanBase-v4.3.5/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.2.5 (Distributed) | 25 | [Version catalog](OceanBase/OceanBase-v4.2.5/catalog.md) · [Introduction](OceanBase/OceanBase-v4.2.5/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.1.0 (Distributed) | 16 | [Version catalog](OceanBase/OceanBase-v4.1.0/catalog.md) · [Introduction](OceanBase/OceanBase-v4.1.0/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.4.2 LTS (Standalone) | 17 | [Version catalog](OceanBase/OceanBase-standalone-v4.4.2/catalog.md) · [Introduction](OceanBase/OceanBase-standalone-v4.4.2/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.3.5 LTS (Standalone) | 18 | [Version catalog](OceanBase/OceanBase-standalone-v4.3.5/catalog.md) · [Introduction](OceanBase/OceanBase-standalone-v4.3.5/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.2.5 LTS (Standalone) | 17 | [Version catalog](OceanBase/OceanBase-standalone-v4.2.5/catalog.md) · [Introduction](OceanBase/OceanBase-standalone-v4.2.5/learn-more-about-oceanbase/contents.md) |
 
 For example, open the [Oracle 19c Database Concepts contents](Oracle/Oracle19c/concepts/contents.md), then [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md) to read a full chapter. Its opening `source` field records the official page URL.
 

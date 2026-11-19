@@ -1,0 +1,285 @@
+---
+title: INSERT
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504054.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# INSERT
+
+## 描述
+
+该语句用于向表中添加一个或多个记录。
+
+## 权限要求
+
+执行 `INSERT` 语句需要当前用户拥有 `INSERT` 的系统权限。有关 OceanBase 数据库权限的详细介绍，请参见 [Oracle 模式下的权限分类](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/000.permission-classification-of-oracle-mode.md)。
+
+## 语法
+
+```sql
+INSERT [hint_options] { single_table_insert | multi_table_insert }
+
+single_table_insert:
+    { INTO insert_table_clause { NOLOGGING | /*EMPTY*/ } '(' column_list ')' values_clause [{ RETURNING | RETURN } returning_exprs [into_clause]]
+    | INTO insert_table_clause { NOLOGGING | /*EMPTY*/ } '(' ')' values_clause [{ RETURNING | RETURN } returning_exprs [into_clause]]
+    | INTO insert_table_clause { NOLOGGING | /*EMPTY*/ } values_clause [{ RETURNING | RETURN } returning_exprs [into_clause]]
+    }
+
+hint_options:
+    [/*+ [APPEND | DIRECT(bool, int, load_mode)] enable_parallel_dml PARALLEL(N) | NO_DIRECT */]
+    [INTO] table_name [PARTITION(PARTITION_OPTION)]
+
+column_list:
+      column_definition_ref [, column_definition_ref...]
+
+
+returning_exprs:
+    projection_col_name [,projection_col_name ...]
+
+insert_into_clause:
+    { INTO into_var_list | BULK COLLECT INTO into_var_list}
+
+into_var_list:
+    { USER_VARIABLE | ref_name } [, { USER_VARIABLE | ref_name }...]
+
+values_clause:
+    VALUES ({ expr | DEFAULT } [, { expr | DEFAULT } ]...  )
+
+returning_exprs:
+      projection [, projection...]
+
+multi_table_insert:
+    { ALL { insert_into_clause [ values_clause ] [error_logging_clause] }
+    | conditional_insert_clause
+    } subquery
+
+conditional_insert_clause:
+    [ ALL | FIRST ]
+    WHEN condition
+    THEN insert_into_clause
+    [ values_clause ]
+    [ error_logging_clause ]
+    [ insert_into_clause [ values_clause ] [ error_logging_clause ] ]...
+    [ WHEN condition
+        THEN insert_into_clause
+        [ values_clause ]
+        [ error_logging_clause ]
+        [ insert_into_clause [ values_clause ] [ error_logging_clause ] ]...
+    ]...
+    [ ELSE insert_into_clause
+        [ values_clause ]
+        [ error_logging_clause ]
+        [ insert_into_clause [ values_clause ] [ error_logging_clause ] ]...
+    ]
+
+error_logging_clause:
+    LOG ERRORS [ INTO [schema.] table_name ] [ (simple_expression) ] [ REJECT LIMIT { integer | UNLIMITED } ]
+```
+
+## 参数解释
+
+## 参数解释
+|            参数             |                                                                                                        描述                                                                                                         |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| hint_options              | 指定 Hint 选项，为可选项，用于优化查询的执行计划。                                                                                                                                                                                                  |
+| single_table_insert       | 单表插入，主要用于将数据插入到一个表中。                                                                                                                                                                                                         |
+| multi_table_insert        | 多表插入，允许在多个表中插入数据，支持条件插入的灵活性。                                                                                                                                                                                            |
+| insert_table_clause       | 指定要插入数据的目标表，可以是基表、可更新视图或特殊子查询。  <main id="notice" type='notice'><h4>注意</h4><p>特殊子查询是指类似于可更新视图对应的子查询，这类子查询不应该包含复杂的算子（例如 <code>GROUP BY</code>、<code>DISTINCT</code>、<code>WINDOW FUNCTION</code> 等）。</p></main>                                                                                                                                                                                      |
+| opt_nologging             | 可选参数，允许在插入时减少日志记录，以提高性能，但这可能会在故障恢复时丢失数据。                                                                                                                                                                               |
+| column_list               | 指定要插入的列名列表，定义了插入操作所依赖的具体列。                                                                                                                                                                                                         |
+| values_clause             | 定义要插入的具体值，可以使用表达式或默认值来填充列。                                                                                                                                                                                                  |
+| returning_exprs           | 用于指定在插入后要返回的列，可以在插入操作中获取新插入的行的信息。                                                                                                                                                                                             |
+| insert_into_clause        | 用于指定要插入的列值，可以是具体的列名和对应的值集合。                                                                                                                                                                                          |
+| into_var_list             | 指定接收插入结果的变量列表，可以是用户定义的变量或引用名称。                                                                                                                                                                                              |
+| conditional_insert_clause | 带条件的多表插入，允许根据设定的条件动态决定将数据插入哪个目标表。 <ul><li> `ALL`: 遍历所有匹配条件的分支，将满足条件的数据插入对应的表。</li><li> `FIRST`: 找到第一个满足条件的分支后，将数据插入该表，不再检查后续条件。</li></ul>    |
+| error_logging_clause      | 定义如何处理插入过程中的错误，将 SQL 错误和受影响的行信息记录到一个错误记录表中。<ul><li> `LOG ERRORS`: 启用错误记录。</li><li> `INTO` : 指定错误记录表名。</li><li> `(simple_expression)`: 可选的表达式，表示错误记录的详细信息。</li><li> `REJECT LIMIT`: 设置可接受的错误数量限制。</li></ul> |
+| NOLOGGING	   |   优化插入性能，通过减少日志记录来提高插入速度，通常用于大批量插入。|
+
+
+## 示例
+
+示例表及数据基于以下定义：
+
+```shell
+obclient> CREATE TABLE tbl(col1 INT PRIMARY KEY, col2 INT,col3 INT);
+Query OK, 0 rows affected
+
+obclient> CREATE TABLE tbl2(col1 INT PRIMARY KEY, col2 INT,col3 INT);
+Query OK, 0 rows affected
+
+obclient> CREATE TABLE tbl3(col1 INT PRIMARY KEY, col2 INT,col3 INT);
+Query OK, 0 rows affected
+```
+
+* 单表插入：向表 `tbl1` 中插入两行数据。
+
+  ```shell
+  obclient> INSERT INTO tbl1 (col1, col2, col3) VALUES (1, 10, 100), (2, 20, 200);
+  Query OK, 2 row affected
+
+  obclient> SELECT * FROM tbl1;
+  +------+------+------+
+  | COL1 | COL2 | COL3 |
+  +------+------+------+
+  |    1 |   10 |  100 |
+  |    2 |   20 |  200 |
+  +------+------+------+
+  2 rows in set
+  ```
+
+* 单表插入：直接向子查询中插入数据。
+
+  ```shell
+  obclient>INSERT INTO tbl1 (col1, col2, col3) SELECT col1 + 2, col2 + 5, col3 + 10 FROM tbl1;
+  Query OK, 2 row affected
+
+  obclient> SELECT * FROM tbl1;
+  +------+------+------+
+  | COL1 | COL2 | COL3 |
+  +------+------+------+
+  |    1 |   10 |  100 |
+  |    2 |   20 |  200 |
+  |    3 |   15 |  110 |
+  |    4 |   25 |  210 |
+  +------+------+------+
+  4 rows in set
+  ```
+
+* 单表插入：包含 `RETURNING` 子句。
+
+  ```shell
+  obclient> INSERT INTO tbl1 (col1, col2, col3) VALUES (5, 50, 500), (6, 60, 600) RETURNING col1;
+  +------+
+  | COL1 |
+  +------+
+  |    5 |
+  |    6 |
+  +------+
+  2 rows in set
+
+  obclient> SELECT * FROM tbl1;
+  +------+------+------+
+  | COL1 | COL2 | COL3 |
+  +------+------+------+
+  |    1 |   10 |  100 |
+  |    2 |   20 |  200 |
+  |    3 |   15 |  110 |
+  |    4 |   25 |  210 |
+  |    5 |   50 |  500 |
+  |    6 |   60 |  600 |
+  +------+------+------+
+  6 rows in set
+  ```
+
+* 普通的多表插入：当表 `tbl3` 中有至少一行数据时，向表 `tbl1` 插入一行数据 (7,8,9)，向表 `tbl2` 插入一行数据 (10,11,12)。
+
+  ```shell
+  obclient> INSERT ALL INTO tbl1 VALUES(7,8,9)
+                                      INTO tbl2 VALUES(10,11,12)
+                  SELECT * FROM tbl3 WHERE ROWNUM< 2;
+  Query OK, 2 rows affected
+  Records: 2  Duplicates: 0  Warnings: 0
+
+  obclient> SELECT * FROM tbl1;
+  +------+------+------+
+  | COL1 | COL2 | COL3 |
+  +------+------+------+
+  |    1 |   10 |  100 |
+  |    2 |   20 |  200 |
+  |    3 |   15 |  110 |
+  |    4 |   25 |  210 |
+  |    5 |   50 |  500 |
+  |    6 |   60 |  600 |
+  |    7 |    8 |    9 |
+  +------+------+------+
+  7 rows in set
+
+  obclient> SELECT * FROM tbl2;
+  +------+------+------+
+  | COL1 | COL2 | COL3 |
+  +------+------+------+
+  |   10 |   11 |   12 |
+  +------+------+------+
+  1 row in set
+  ```
+
+* 带条件的多表插入：使用 `INSERT ALL`，当表 `tbl` 中 `col2` 的值大于 `1` 时，向表 `tbl1` 中插入数据 (10,11,12)；当表 `tbl` 中 `col3` 的值大于 `1` 时，向表 `tbl2` 中插入数据 (22,23,24)；如果都不满足，则向表 `tbl1` 中插入数据 (33,34,35)。
+
+  ```shell
+  obclient> INSERT INTO tbl VALUES(1,2,3);
+  Query OK, 1 row affected
+
+  obclient>INSERT ALL
+                WHEN col2 > 1 THEN INTO tbl1 VALUES(10,11,12)
+                WHEN col3 > 1 THEN INTO tbl2 VALUES(22,23,24)
+                ELSE INTO tbl1 VALUES(33,34,35) SELECT col2,col3 FROM tbl;
+  Query OK, 2 rows affected
+  Records: 2  Duplicates: 0  Warnings: 0
+
+  obclient> SELECT * FROM tbl1;
+  +------+------+------+
+  | COL1 | COL2 | COL3 |
+  +------+------+------+
+  |    1 |   10 |  100 |
+  |    2 |   20 |  200 |
+  |    3 |   15 |  110 |
+  |    4 |   25 |  210 |
+  |    5 |   50 |  500 |
+  |    6 |   60 |  600 |
+  |    7 |    8 |    9 |
+  |   10 |   11 |   12 |
+  +------+------+------+
+  8 rows in set
+
+  obclient> SELECT * FROM tbl2;
+  +------+------+------+
+  | COL1 | COL2 | COL3 |
+  +------+------+------+
+  |   10 |   11 |   12 |
+  |   22 |   23 |   24 |
+  +------+------+------+
+  2 rows in set
+  ```
+
+* 带条件的多表插入：使用 `INSERT FIRST`，当表 `tbl` 中 `col2` 的值大于 `1` 时，向表 `tbl1` 中插入数据 (14,15,16)，向表 `tbl2` 中插入数据 (40,41,42)；当表 `tbl` 中 `col3` 的值大于 `1` 时，向表 `tbl2` 中插入数据 (25,26,27)；如果都不满足，则向表 `tbl1` 中插入数据 (35,36,37)。
+
+  ```shell
+  obclient>INSERT ALL
+                WHEN col2 > 1 THEN INTO tbl1 VALUES(14,15,16) INTO tbl2 VALUES(40,41,42)
+                WHEN col3 > 1 THEN INTO tbl2 VALUES(25,26,27)
+                ELSE INTO tbl1 VALUES(35,36,37) SELECT col2,col3 FROM tbl;
+  Query OK, 3 rows affected
+  Records: 3  Duplicates: 0  Warnings: 0
+
+  obclient> SELECT * FROM tbl1;
+  +------+------+------+
+  | COL1 | COL2 | COL3 |
+  +------+------+------+
+  |    1 |   10 |  100 |
+  |    2 |   20 |  200 |
+  |    3 |   15 |  110 |
+  |    4 |   25 |  210 |
+  |    5 |   50 |  500 |
+  |    6 |   60 |  600 |
+  |    7 |    8 |    9 |
+  |   10 |   11 |   12 |
+  |   14 |   15 |   16 |
+  +------+------+------+
+  9 rows in set
+
+  obclient> SELECT * FROM tbl2;
+  +------+------+------+
+  | COL1 | COL2 | COL3 |
+  +------+------+------+
+  |   10 |   11 |   12 |
+  |   22 |   23 |   24 |
+  |   25 |   26 |   27 |
+  |   40 |   41 |   42 |
+  +------+------+------+
+  4 rows in set
+  ```

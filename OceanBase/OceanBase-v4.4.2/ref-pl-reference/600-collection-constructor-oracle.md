@@ -1,0 +1,139 @@
+---
+title: "集合构造函数"
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285428.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# 集合构造函数
+
+集合构造函数是与集合类型同名的系统定义函数，该函数返回该类型的集合。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。
+  </main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>构造函数仅适用于可变数组和嵌套表。关联数组没有构造函数。在本文中，集合是指可变数组或嵌套表。</p>
+</main>
+
+调用构造函数的语法如下：
+
+```javascript
+collection_type ( [ value [, value ]... ] )
+```
+
+其中，`collection_type` 是指先前声明的嵌套表类型或可变数组类型（不是关联数组类型）的名称；`value` 是指集合元素 `collection_type` 的有效值。如果 `collection_type` 是可变数组类型，则具有最大值，值的数量不能超过该最大值。如果 `collection_type` 是嵌套表类型，则没有最大值。
+
+如果参数列表为空，则构造函数将返回一个空集合。否则，构造函数将返回一个包含指定值的集合。
+
+您可以在变量声明和块的可执行部分中将返回的集合分配给（相同类型的）集合变量。
+
+**示例：将集合变量初始化为空值。**
+
+```javascript
+obclient> DECLARE
+  TYPE players IS VARRAY(5) OF VARCHAR2(20);
+  team PLAYERS := players();   --初始化为空值
+
+  PROCEDURE print_team (heading VARCHAR2) IS
+  BEGIN
+    DBMS_OUTPUT.PUT_LINE(heading);
+    IF team.COUNT = 0 THEN
+      DBMS_OUTPUT.PUT_LINE('Empty');
+    ELSE
+      FOR i IN 1..5 LOOP
+        DBMS_OUTPUT.PUT_LINE(i || '.' || team(i));
+      END LOOP;
+    END IF;
+    DBMS_OUTPUT.PUT_LINE('---');
+  END;
+
+BEGIN
+  print_team('Team Members:');
+  team := players('Charles', 'Carl', 'James', 'Gary','Brian');
+  print_team('Team Members:');
+END;
+/
+Query OK, 0 rows affected
+
+Team Members:
+Empty
+---
+Team Members:
+1.Charles
+2.Carl
+3.James
+4.Gary
+5.Brian
+---
+```
+
+上述示例两次调用了构造函数：先将可变数组变量 `team`​ 初始化为空，然后在该块的可执行部分为其赋予新值。​`print_team`​ 存储过程显示 `team` ​的初始值和最终值。​`print_team` ​使用了集合方法 ​`COUNT`​ 来确定 ​​`team`​ 是否为空。
+
+**示例：关联数组通过构造函数指定 index 和 element**
+
+```sql
+obclient> declare
+    ->     type rec_type is record (
+    ->         id number,
+    ->         name varchar2(50),
+    ->         salary number
+    ->     );
+    ->     type ty_rec is table of rec_type index by PLS_INTEGER;
+    ->     v_rec ty_rec;
+    ->     idx PLS_INTEGER;
+    -> begin
+    ->     v_rec := ty_rec(1 => rec_type(1, 'Alice', 5000),2 => rec_type(2, 'Bob', 6000),3 => rec_type(3, 'Charlie', 7000));
+    ->     idx := v_rec.FIRST();
+    ->     while idx is not null loop
+    ->         dbms_output.put_line('ID: ' || v_rec(idx).id || ', Name: ' || v_rec(idx).name || ', Salary: ' || v_rec(idx).salary);
+    ->         idx := v_rec.NEXT(idx);
+    ->     end loop;
+    -> end;
+    -> /
+Query OK, 0 rows affected (0.146 sec)
+```
+
+返回结果如下：
+
+```shell
+ID: 1, Name: Alice, Salary: 5000
+ID: 2, Name: Bob, Salary: 6000
+ID: 3, Name: Charlie, Salary: 7000
+```
+
+上述例子先定义了一个 `record` 类型，然后定义了一个 `ty_rec` 的关联数组类型，`index` 是 `PLS_INTEGER` 类型，`element` 类型是 `rec_type` 类型，`v_rec` 是一个 `ty_rec` 的关联数组变量，通过带 `=>` 的构造函数指定 `index` 与其对应的 `element` ，然后枚举关联数组将其全部元素一一输出。
+同时关联数组还支持不指定 `index` 的构造函数（即不带 `=>` 的构造函数，仅限 `index` 是 `PLS_INTEGER` 类型的关联数组），这种情况下 `index` 会默认从 `1` 开始递增计数，示例如下：
+
+```sql
+obclient> declare
+    ->     type ty1 is table of int index by PLS_INTEGER;
+    ->     x ty1;
+    ->     idx PLS_INTEGER;
+    -> begin
+    ->     x := ty1(10, 20, 30);
+    ->     idx := x.FIRST();
+    ->     while idx is not null loop
+    ->       dbms_output.put_line('index: ' || idx || ', Element: ' || x(idx));
+    ->       idx := x.NEXT(idx);
+    ->     end loop;
+    -> end;
+    -> /
+Query OK, 0 rows affected (0.122 sec)
+
+返回结果如下：
+
+```shell
+index: 1, Element: 10
+index: 2, Element: 20
+index: 3, Element: 30
+```
+
+上述例子先声明了一个 `index` 为 `PLS_INTEGER` 类型且 `element` 类型为 `int` 的关联数组类型 `ty1`，然后声明 `x` 为 `ty1` 类型的变量，然后在 `ty1` 构造函数内直接指明 `element` 的值赋值给 `x`，然后依次遍历 `x` 的 `index` 与 `element` 并输出。

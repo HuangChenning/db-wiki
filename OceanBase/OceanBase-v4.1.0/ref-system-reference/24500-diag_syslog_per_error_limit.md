@@ -1,0 +1,26 @@
+---
+title: diag_syslog_per_error_limit
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702132.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# diag_syslog_per_error_limit
+
+`diag_syslog_per_error_limit` 用于设置每个错误码每秒允许的 DIAG 系统日志数，超过该阈值后，日志将不再打印。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V3.2.4 版本开始引入。</p>
+</main>
+
+| **属性** | **描述** |
+| --- | --- |
+| 参数类型 | 整型 |
+| 默认值 | 200 |
+| 取值范围 | \[0, +∞) |
+| 是否重启 OBServer 节点生效 | 否 |

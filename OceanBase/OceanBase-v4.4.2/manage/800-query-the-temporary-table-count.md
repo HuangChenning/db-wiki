@@ -1,0 +1,36 @@
+---
+title: "查询临时表数量"
+book: "管理数据库"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005282763.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 查询临时表数量
+
+视图 `CDB_TABLES` 中记录了所有租户的所有表，包括临时表和非临时表。用户可以通过该视图统计临时表的数量。
+
+系统租户下，统计所有租户下的临时表数量，语句如下：
+
+```shell
+obclient> SELECT count(*), CON_ID FROM oceanbase.CDB_TABLES WHERE TEMPORARY = 'Y' GROUP BY CON_ID;  
+```
+
+其中，`CON_ID` 表示租户的 `tenant_id`。
+
+Oracle 模式的用户租户下，如果仅需要查询本租户临时表的数量，可以通过以下语句查询视图 `DBA_TABLES`/`ALL_TABLES`/`USER_TABLES`。
+
+```shell
+obclient> SELECT count(*) FROM SYS.DBA_TABLES WHERE TEMPORARY = 'Y';  
+```
+
+```shell
+obclient> SELECT count(*) FROM SYS.ALL_TABLES WHERE TEMPORARY = 'Y';  
+```
+
+```shell
+obclient> SELECT count(*) FROM SYS.USER_TABLES WHERE TEMPORARY = 'Y';  
+```

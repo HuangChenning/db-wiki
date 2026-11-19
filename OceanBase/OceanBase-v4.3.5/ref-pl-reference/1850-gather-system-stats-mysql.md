@@ -1,0 +1,42 @@
+---
+title: GATHER_SYSTEM_STATS
+book: "PL 参考"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002016298.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# GATHER_SYSTEM_STATS
+
+`GATHER_SYSTEM_STATS` 过程用于收集系统统计信息。
+
+## 语法
+
+```sql
+DBMS_STATS.GATHER_SYSTEM_STATS();
+```
+
+## 异常情况
+
+|    错误码    |        描述     |
+|-----------|------------------|
+| HY000    | 输入的系统统计信息名称错。 |
+
+## 使用说明
+
+* 要运行此过程，您必须以所指定的用户身份连接，或是具有 `SYSDBA` 权限。
+
+## 示例
+
+执行 `DBMS_STATS.GATHER_SYSTEM_STATS` 过程收集系统统计信息，如 CPU 速度、磁盘 I/O 性能和网络吞吐量：
+
+```sql
+BEGIN
+    -- 收集系统统计信息
+    DBMS_STATS.GATHER_SYSTEM_STATS();
+END;
+/
+```

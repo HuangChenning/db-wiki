@@ -1,0 +1,42 @@
+---
+title: DROP RESOURCE POOL
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501958.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP RESOURCE POOL
+
+## 描述
+
+该语句用来删除资源池。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>已经分配给租户的资源池不能删除。</p>
+  </main>
+
+## 语法
+
+```sql
+DROP RESOURCE POOL pool_name;
+```
+
+## 参数解释
+
+|  **参数**   |   **描述**   |
+|-----------|------------|
+| pool_name | 要删除的资源池名称。 |
+
+## 示例
+
+删除资源池 `pool1`。
+
+```sql
+obclient> DROP RESOURCE POOL pool1;
+Query OK, 0 rows affected
+```

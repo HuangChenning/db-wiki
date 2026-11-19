@@ -1,0 +1,38 @@
+---
+title: "V$OB_KVCACHE"
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699225.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# V$OB_KVCACHE
+
+V$OB_KVCACHE 
+=================================
+
+功能 
+-------------------
+
+展示每台 OBServer 节点上的 KVCACHE 信息。
+
+字段说明 
+----------------------
+
+
+
+|      字段名称      |      类型       | 是否可以为 NULL |    描述     |
+|----------------|---------------|------------|-----------|
+| SVR_IP         | varchar(46)   | NO         | 服务器 IP 地址 |
+| SVR_PORT       | bigint(20)    | NO         | 服务器端口号    |
+| TENANT_ID      | bigint(20)    | NO         | 租户 ID     |
+| CACHE_NAME     | varchar(128)  | NO         | CACHE 项名称 |
+| PRIORITY       | bigint(20)    | NO         | 优先级       |
+| CACHE_SIZE     | bigint(20)    | NO         | CACHE 大小  |
+| HIT_RATIO      | decimal(38,3) | NO         | 命中率       |
+| TOTAL_PUT_CNT  | bigint(20)    | NO         | PUT 次数    |
+| TOTAL_HIT_CNT  | bigint(20)    | NO         | 命中次数      |
+| TOTAL_MISS_CNT | bigint(20)    | NO         | 未命中次数     |

@@ -1,0 +1,85 @@
+---
+title: GETNODEVALUE
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354590.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# GETNODEVALUE
+
+`GETNODEVALUE` 函数用于获取指定节点的字符串值，可用于读取文本节点或元素节点的内容。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该子程序从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_XMLDOM.getNodeValue (
+   node IN DBMS_XMLDOM.DOMNODE);
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| node | 待读取的 `DBMS_XMLDOM.DOMNODE` 句柄。 |
+
+## 返回值
+
+节点的字符串值，类型为 `VARCHAR2`。
+
+## 使用说明
+
+* 对文本节点或 CDATA 节点：直接返回其文本内容。
+* 对元素节点：也可直接调用本函数；按 DOM 规范，其行为等价于读取第一个子节点（通常为 `#text`）的内容，适用于获取叶子元素的文本值。
+
+从 V4.4.2 BP3 版本开始，如果节点的字符串值为空字符串，函数返回 `NULL`。
+
+## 示例
+
+本示例采用显式定位文本子节点的方式：先通过 `GETCHILDNODES` 与 `ITEM` 取到 `#text` 节点，再调用 `GETNODEVALUE` 读取 `'hello'`。若已持有叶子元素节点，也可跳过子节点遍历，直接对该叶子元素节点调用 `GETNODEVALUE`。
+
+```sql
+-- 声明解析器和文档句柄变量
+DECLARE
+  p   DBMS_XMLPARSER.PARSER;
+  doc DBMS_XMLDOM.DOMDOCUMENT;
+  nl  DBMS_XMLDOM.DOMNODELIST;
+  n   DBMS_XMLDOM.DOMNODE;
+  v   VARCHAR2(32767);
+BEGIN
+  -- 创建解析器实例
+  p := DBMS_XMLPARSER.NEWPARSER;
+  -- 在解析器上解析 XML 文档
+  DBMS_XMLPARSER.PARSECLOB(p, '<root><item>hello</item></root>');
+  -- 获取 XML 文档的 DOMDOCUMENT 句柄
+  doc := DBMS_XMLPARSER.GETDOCUMENT(p);
+  -- 释放解析器实例
+  DBMS_XMLPARSER.FREEPARSER(p);
+  -- 获取 XML 文档中所有名为 "item" 的元素列表
+  nl := DBMS_XMLDOM.GETELEMENTSBYTAGNAME(doc, 'item');
+  -- 获取列表中的第一个元素
+  n  := DBMS_XMLDOM.ITEM(nl, 0);
+  -- 获取 item 元素的子节点列表
+  nl := DBMS_XMLDOM.GETCHILDNODES(n);
+  -- 获取列表中的第一个子节点（#text 文本节点）
+  n  := DBMS_XMLDOM.ITEM(nl, 0);
+  -- 获取节点值 'hello'
+  v  := DBMS_XMLDOM.GETNODEVALUE(n);
+  -- 释放 XML 文档资源
+  DBMS_XMLDOM.FREEDOCUMENT(doc);
+END;
+/
+```

@@ -1,0 +1,63 @@
+---
+title: DROP USER
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686179.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP USER
+
+## 描述
+
+该语句用于删除一个或多个数据库用户。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <ul>
+    <li>必须拥有全局的 <code>CREATE USER</code> 权限，才可以使用 <code>DROP USER</code> 命令。</li>
+    <li>不能通过 <code>DELETE</code> 方式对 <code>mysql.user</code> 表进行删除操作，只能通过 <code>DROP</code> 命令删除。</li>
+    <li>成功删除用户后，该用户的所有权限也会被一同删除。</li>
+    </ul>
+  </main>
+
+## 语法
+
+```sql
+DROP USER [IF EXISTS] user_name [, user_name...]
+```
+
+## 参数解释
+
+|    **参数**     |          **描述**           |
+|-----------|-----------------------|
+| IF EXISTS | 可选项。当使用该子句时，尝试删除一个不存在的用户会产生警告而不是错误。如果不使用该子句，则删除一个不存在的用户会引发错误。|
+| user_name | 用户名。同时删除多个用户时，用逗号隔开。 |
+
+## 示例
+
+* 删除用户 `sales_user`。
+
+```sql
+obclient> DROP USER sales_user;
+```
+
+* 使用 `IF EXISTS` 删除用户，如果用户不存在也不会报错。
+
+```sql
+obclient> DROP USER IF EXISTS finance_user;
+```
+
+* 同时删除多个用户。
+
+```sql
+obclient> DROP USER user1, user2, user3;
+```
+
+## 相关文档
+
+* [CREATE USER](2800.create-user-of-mysql-mode.md)
+* [ALTER USER](1800.alter-user-of-mysql-mode.md)

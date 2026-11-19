@@ -1,0 +1,59 @@
+---
+title: audit_log_encryption
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005906387.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# audit_log_encryption
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.x 版本，MySQL 模式从 V4.4.2 BP1 版本开始引入；Oracle 模式从 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`audit_log_encryption` 用于控制审计日志是否加密。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。</p>
+</main>
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户都可以使用 `ALTER SYSTEM SET` 语句修改该配置项。
+
+## 属性说明
+
+| **属性** | **描述** |
+| -------- | -------- |
+| 参数类型   | String |
+| 默认值     | NONE |
+| 取值范围   | <ul><li>NONE</li><li>AES</li></ul>|
+| 是否可修改 | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。   |
+
+## 配置示例
+
+设置审计日志使用的加密算法为 AES。
+
+```shell
+obclient> ALTER SYSTEM SET audit_log_encryption='AES';
+```
+
+## 相关文档
+
+* [设置审计日志加密（MySQL 模式）](../../../../600.manage/500.security-and-permissions/600.security-audit/200.security-audit-of-mysql-mode/300.set-up-audit-rules-of-mysql-mode.md)
+* [设置审计日志加密（Oracle 模式）](../../../../600.manage/500.security-and-permissions/600.security-audit/300.security-audit-of-oracle-mode/300.set-up-and-view-audit-rules-of-oracle-mode.md)

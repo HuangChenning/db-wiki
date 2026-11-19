@@ -1,0 +1,34 @@
+---
+title: OB_MOD_ACT_TRACE_DISABLE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503823.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# OB_MOD_ACT_TRACE_DISABLE
+
+`OB_MOD_ACT_TRACE_DISABLE` 用于关闭 module/action 级别全链路追踪。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_MONITOR.OB_MOD_ACT_TRACE_DISABLE(
+ module_name     IN  VARCHAR2,
+ action_name     IN  VARCHAR2)
+```
+
+## 参数解释
+
+| **参数**        | **解释**                                       |
+|------------------|----------------------------------------------|
+| module_name      | 关闭全链路追踪的 `module_name`。             |
+| action_name      | 关闭全链路追踪的 `action_name`。             |

@@ -1,0 +1,45 @@
+---
+title: NTILE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504372.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# NTILE
+
+## 声明
+
+```sql
+NTILE(expr) OVER ([ query_partition_clause ] order_by_clause)
+```
+
+## 说明
+
+将分区中已经排序的行划分为大小尽可能相同的指定数量的分组，并返回给每行组号。`expr` 如果是 `NULL`，则返回 `NULL`。
+
+## 示例
+
+```sql
+obclient> CREATE TABLE employees(LAST_NAME CHAR(10), SALARY DECIMAL, JOB_ID CHAR(32));
+INSERT INTO employees VALUES('JIM', 2000, 'CLEANER');
+INSERT INTO employees VALUES('MIKE', 12000, 'ENGINEERING');
+INSERT INTO employees VALUES('LILY', 13000, 'ENGINEERING');
+INSERT INTO employees VALUES('TOM', 11000, 'ENGINEERING');
+COMMIT;
+Query OK, 0 rows affected
+
+obclient> SELECT LAST_NAME, NTILE(10) OVER(PARTITION BY JOB_ID ORDER BY SALARY) NTL FROM employees;
++-----------+------+
+| LAST_NAME | NTL  |
++-----------+------+
+| JIM       |    1 |
+| TOM       |    1 |
+| MIKE      |    2 |
+| LILY      |    3 |
++-----------+------+
+4 rows in set
+```

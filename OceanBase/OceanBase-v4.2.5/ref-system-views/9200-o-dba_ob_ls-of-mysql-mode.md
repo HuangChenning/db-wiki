@@ -1,0 +1,66 @@
+---
+title: oceanbase.DBA_OB_LS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501812.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_LS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户日志流的状态和恢复进度。
+
+## 字段说明
+
+| 字段名称       | 类型                | 是否可以为 NULL        | 描述               |
+|---------------|---------------------|-----------------------|--------------------|
+| LS_ID         | bigint(20)          | NO   | 日志流 ID |
+| STATUS        | varchar(100)        | NO   | 日志流的状态，包括：<ul><li>`CREATING`：日志流创建中</li><li>`CREATED`：日志流创建完成</li><li>`NORMAL`：日志流可以提供服务</li><li>`DROPPING`：日志流即将删除，需要将日志流上的 Tablet 迁移走</li><li>`TENANT DROPPING`：日志流所在的租户正在删除，需要删除日志流</li><li>`WAIT OFFLINE`：日志流数据已经删除完成，等待 GC</li><li>`CREATE ABORT`：日志流创建失败或者不需要创建，即将删除</li></ul> |
+| PRIMARY_ZONE  | longtext            | YES  | 日志流的选举优先级 |
+| UNIT_GROUP_ID | bigint(20)          | NO   | Unit 组 ID，对于系统日志流（1 号日志流）和广播日志流，该字段显示为 0，表示该日志流不绑定在某个 Unit 组 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP5 版本开始，该字段的值始终为 0。</p></main>  |
+| LS_GROUP_ID   | bigint(20)          | NO   | 日志流组 ID，对于系统日志流（1 号日志流）和广播日志流，该字段显示为 0，表示该日志流不属于某个日志流组 |
+| CREATE_SCN    | bigint(20) unsigned | NO   | 日志流开始写日志的位点 |
+| DROP_SCN      | bigint(20) unsigned | NO   | 日志流删除的位点，所有用户数据结束的位点。如果日志流被删除，则该字段记录删除时的 SCN，如果未被删除，则该字段为空。 |
+| SYNC_SCN      | bigint(20) unsigned | NO   | 日志流的同步位点，表示日志流最后一次同步成功的事务的 SCN |
+| READABLE_SCN  | bigint(20) unsigned | NO   | 日志流的可读点，表示日志流可以被读取的最小 SCN |
+| FLAG          | varchar(2048)       | NO   | 日志流标记：<ul><li>空：正常日志流</li><li> DUPLICATE：用户租户的广播日志流，复制表创建在该日志流上 </li> <li>BLOCK_TABLET_IN：表示不可以在该日志流上创建 Tablet</li> <li>DUPLICATE\|BLOCK_TABLET_IN：广播日志流当前不允许创建 Tablet</li></ul>  <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入。</p></main>  |
+| UNIT_LIST     | varchar(1216)       | NO   | 用户日志流分布的 Unit 列表，系统日志流和广播日志流在不指定具体位置时为空。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP5 版本开始引入。</p></main>  |
+
+## 查询示例
+
+用户租户查询本租户日志流的状态和恢复进展。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OB_LS;
+```
+
+查询结果如下：
+
+```shell
++-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+------+-----------+
+| LS_ID | STATUS | PRIMARY_ZONE | UNIT_GROUP_ID | LS_GROUP_ID | CREATE_SCN          | DROP_SCN | SYNC_SCN            | READABLE_SCN        | FLAG | UNIT_LIST |
++-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+------+-----------+
+|     1 | NORMAL | z1;z2        |             0 |           0 |                NULL |     NULL | 1750055483679475000 | 1750055483578564000 |      |           |
+|  1001 | NORMAL | z1;z2        |             0 |        1001 | 1749563782108030001 |     NULL | 1750055483679475000 | 1750055483578564000 |      | 1013,1014 |
+|  1008 | NORMAL | z1;z2        |             0 |        1007 | 1749782975005359000 |     NULL | 1750055484007917000 | 1750055483907266000 |      | 1025,1026 |
+|  1013 | NORMAL | z2;z1        |             0 |        1001 | 1750053043528617000 |     NULL | 1750055483767834000 | 1750055483667011000 |      | 1013,1014 |
+|  1014 | NORMAL | z2;z1        |             0 |        1007 | 1750053043545545000 |     NULL | 1750055484379656000 | 1750055484379656000 |      | 1025,1026 |
++-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+------+-----------+
+5 rows in set
+```
+
+## 相关视图或文档
+
+* 如果要查看所有租户的日志流，可以查询 [CDB_OB_LS](../../300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/9100.o-cdb_ob_ls-of-sys-tenant.md)。
+
+* 有关日志流的详细介绍，参见 [副本介绍](../../../../600.manage/300.replica-management/100.replica-introduction.md)。

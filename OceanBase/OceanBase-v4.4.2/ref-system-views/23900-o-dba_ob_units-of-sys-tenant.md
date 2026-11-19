@@ -1,0 +1,143 @@
+---
+title: oceanbase.DBA_OB_UNITS
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284509.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_UNITS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示所有租户的 Unit 信息。
+
+## 字段说明
+
+|         字段名称          |      类型      | 是否可以为 NULL |   描述   |
+|-----------------------|--------------|------------|--------------------|
+| UNIT_ID| bigint(20)   | NO         | Unit ID|
+| TENANT_ID             | bigint(20)   | NO         | Unit 所属的租户 ID：<ul><li>`NULL`：当前 Unit 不属于任何租户   </li><li> 有效值：目标租户 ID </li></ul>   |
+| STATUS | varchar(128) | NO         | <ul><li>`ACTIVE`：正常状态   </li> <li>`ADDING`：正在增加状态</li> <li> `DELETING`：正在删除状态</li></ul>       |
+| RESOURCE_POOL_ID      | bigint(20)   | NO         | Unit 所属的资源池 ID        |
+| UNIT_GROUP_ID         | bigint(20)   | NO         | Unit 所属的 Unit Group ID|
+| CREATE_TIME           | timestamp(6) | YES        | Unit 创建时间             |
+| MODIFY_TIME           | timestamp(6) | YES        | Unit 修改时间     |
+| ZONE   | varchar(128) | NO         | Zone 名称|
+| SVR_IP | varchar(46)  | NO         | Unit 所属的 OBServer IP  |
+| SVR_PORT              | bigint(20)   | NO         | Unit 所属的 OBServer 端口号 |
+| MIGRATE_FROM_SVR_IP   | varchar(46)  | NO         | <ul><li>`NULL`：Unit 没有在迁移中 </li><li>有效值：Unit 正在迁移中，表示迁移的源端 服务器 IP 地址</li></ul>  |
+| MIGRATE_FROM_SVR_PORT | bigint(20)   | NO         | <ul><li> `NULL`：Unit 没有在迁移中 </li><li> 有效值：Unit 正在迁移中，表示迁移的源端服务器端口号 </li></ul>     |
+| MANUAL_MIGRATE        | varchar(3)   | NO         | <ul><li>`NULL`：Unit 没有在迁移中 </li><li>`YES`：人工发起的 Unit 迁移 </li><li>`NO`：自动发起的 Unit 迁移 </li></ul>   |
+| UNIT_CONFIG_ID        | bigint(20)   | NO         |  Unit 采用的规格 ID   |
+| MAX_CPU               | double       | NO         |  CPU 规格上限   |
+| MIN_CPU               | double       | NO         |  CPU 规格下限   |
+| MEMORY_SIZE           | bigint(20)   | NO         |  内存规格，单位为字节   |
+| LOG_DISK_SIZE         | bigint(20)   | NO         |  日志盘规格，单位为字节   |
+| DATA_DISK_SIZE        | bigint(20)   | NO         |  该字段值为 `NULL`，表示未定义，允许竞争使用其他租户的磁盘空间。 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.3.4 版本开始引入。</p></main>   |
+| MAX_IOPS              | bigint(20)   | NO         |  磁盘 IOPS 规格上限   |
+| MIN_IOPS              | bigint(20)   | NO         |  磁盘 IOPS 规格下限   |
+| IOPS_WEIGHT           | bigint(20)   | NO         |  IOPS 权重   |
+| MAX_NET_BANDWIDTH     | bigint(20)   | NO         |  Unit 的最大网络带宽，单位为字节  <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.3.4 版本开始引入。</p></main>    | 
+| NET_BANDWIDTH_WEIGHT  | bigint(20)   | NO         |  Unit 的网络带宽的权重值 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.3.4 版本开始引入。</p></main>     |
+| REPLICA_TYPE          | varchar(7)   | NO         |  副本类型，默认为 `FULL` <main id="notice" type='explain'><h4>说明</h4><ul><li>对于 V4.4.x 版本，字段 <code>REPLICA_TYPE</code> 从 V4.4.0 BP1 版本开始引入。</li> <li>对于 V4.5.x 版本，字段 <code>REPLICA_TYPE</code> 从 V4.5.0 版本开始引入。</li><li>对于 V4.2.5 版本，字段 <code>REPLICA_TYPE</code> 从 V4.2.5 BP7 版本开始引入。</li></ul></main>  |
+
+## 查询示例
+
+查看所有租户的 Unit 信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OB_UNITS\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+              UNIT_ID: 1
+            TENANT_ID: 1
+               STATUS: ACTIVE
+     RESOURCE_POOL_ID: 1
+        UNIT_GROUP_ID: 1
+          CREATE_TIME: 2026-01-07 15:06:23.099539
+          MODIFY_TIME: 2026-01-07 15:06:23.099539
+                 ZONE: zone1
+               SVR_IP: 172.xx.xxx.xxx
+             SVR_PORT: 2882
+  MIGRATE_FROM_SVR_IP: NULL
+MIGRATE_FROM_SVR_PORT: NULL
+       MANUAL_MIGRATE: NULL
+       UNIT_CONFIG_ID: 1
+              MAX_CPU: 4
+              MIN_CPU: 4
+          MEMORY_SIZE: 5368709120
+        LOG_DISK_SIZE: 9663676416
+       DATA_DISK_SIZE: NULL
+             MAX_IOPS: 9223372036854775807
+             MIN_IOPS: 9223372036854775807
+          IOPS_WEIGHT: 4
+    MAX_NET_BANDWIDTH: 9223372036854775807
+ NET_BANDWIDTH_WEIGHT: 4
+         REPLICA_TYPE: FULL
+*************************** 2. row ***************************
+              UNIT_ID: 1001
+            TENANT_ID: 1002
+               STATUS: ACTIVE
+     RESOURCE_POOL_ID: 1001
+        UNIT_GROUP_ID: 1001
+          CREATE_TIME: 2026-01-07 15:07:22.056459
+          MODIFY_TIME: 2026-01-07 15:07:29.483140
+                 ZONE: zone1
+               SVR_IP: 172.xx.xxx.xxx
+             SVR_PORT: 2882
+  MIGRATE_FROM_SVR_IP: NULL
+MIGRATE_FROM_SVR_PORT: NULL
+       MANUAL_MIGRATE: NULL
+       UNIT_CONFIG_ID: 1001
+              MAX_CPU: 2
+              MIN_CPU: 2
+          MEMORY_SIZE: 6442450944
+        LOG_DISK_SIZE: 19327352832
+       DATA_DISK_SIZE: NULL
+             MAX_IOPS: 9223372036854775807
+             MIN_IOPS: 9223372036854775807
+          IOPS_WEIGHT: 2
+    MAX_NET_BANDWIDTH: 9223372036854775807
+ NET_BANDWIDTH_WEIGHT: 2
+         REPLICA_TYPE: FULL
+*************************** 3. row ***************************
+              UNIT_ID: 1002
+            TENANT_ID: 1004
+               STATUS: ACTIVE
+     RESOURCE_POOL_ID: 1002
+        UNIT_GROUP_ID: 1002
+          CREATE_TIME: 2026-01-07 15:07:25.021073
+          MODIFY_TIME: 2026-01-07 15:07:39.427429
+                 ZONE: zone1
+               SVR_IP: 172.xx.xxx.xxx
+             SVR_PORT: 2882
+  MIGRATE_FROM_SVR_IP: NULL
+MIGRATE_FROM_SVR_PORT: NULL
+       MANUAL_MIGRATE: NULL
+       UNIT_CONFIG_ID: 1001
+              MAX_CPU: 2
+              MIN_CPU: 2
+          MEMORY_SIZE: 6442450944
+        LOG_DISK_SIZE: 19327352832
+       DATA_DISK_SIZE: NULL
+             MAX_IOPS: 9223372036854775807
+             MIN_IOPS: 9223372036854775807
+          IOPS_WEIGHT: 2
+    MAX_NET_BANDWIDTH: 9223372036854775807
+ NET_BANDWIDTH_WEIGHT: 2
+         REPLICA_TYPE: FULL
+3 rows in set
+```

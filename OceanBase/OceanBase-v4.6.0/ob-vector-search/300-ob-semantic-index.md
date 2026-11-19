@@ -1,0 +1,387 @@
+---
+title: "语义索引"
+book: OceanBase AI
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682088.html"
+tags:
+  - oceanbase
+  - distributed
+  - ob-vector-search
+---
+
+# 语义索引
+
+本文档介绍了如何在 OceanBase 数据库中使用语义索引（Semantic Index）。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该功能在当前版本为实验特性，不建议在生产环境使用。</p>
+</main>
+
+## 概述
+
+语义索引利用 OceanBase 数据库内置的嵌入（Embedding）能力，极大地简化了向量索引的使用流程。它实现了向量概念对用户的透明化：你可以直接写入需要存储的原始数据（如文本），OceanBase 数据库会在内部自动将其转换为向量并建立索引。在搜索时，你同样只需提供原始搜索内容，OceanBase 数据库也会自动进行嵌入并搜索向量索引，从而显著提升了使用的便捷性。
+
+考虑到嵌入模型的性能开销，语义索引提供了同步和异步两种嵌入方式供用户选择：
+* 同步模式：数据写入后立即进行嵌入和索引，确保数据实时可见。
+* 异步模式：由后台任务分批进行数据的嵌入和索引，这能显著提升写入性能，数据延时可见。你可以根据对数据可见性时效的要求，灵活设置后台任务的触发周期。
+
+此外，创建了语义索引的表，同样可以进行暴力搜索。暴力搜索指的是采用全表扫描的方式进行搜索，得到距离最近的前 n 行的精确结果。
+
+## 功能支持
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>本功能在当前版本中仅支持 HNSW/HNSW_BQ/HNSW_SQ 索引。</p>
+</main>
+
+当前版本语义索引更新、删除与搜索的使用语法、内存管理方式与 HNSW 系列索引完全一致。支持索引监控与维护流程，异步模式下增量刷新会额外触发数据的嵌入。
+
+支持的功能点如下：
+
+| 模块 | 功能点 | 介绍 |
+|------|--------|------|
+| DDL | 建表时创建语义索引 | 可以在创建表的时候，在 `VARCHAR` 列上创建语义索引 |
+| DDL | 后建语义索引 | 支持在已存在表的 `VARCHAR` 列上创建语义索引 |
+| DDL | 单列多索引 | 支持在同一列上创建多个语义索引，可用于不同模型、距离算法或索引参数组合<main id="notice" type='notice'><h4>注意</h4><p>该功能点仅用于测试，不可用于生产。</p></main> |
+| 搜索 | `semantic_distance` 函数 | 通过该函数传入原始数据进行向量搜索 |
+| 搜索 | `semantic_vector_distance` 函数 | 通过该函数传入向量进行搜索，有两种使用方式：<ul><li>当 SQL 语句中带有 `APPROXIMATE`/`APPROX` 子句时，会使用向量索引进行搜索。</li><li>当不带有 `APPROXIMATE`/`APPROX` 子句时，会采用全表扫描的方式进行暴力搜索。</li></ul> |
+| DBMS_VECTOR | `REBUILD_INDEX` | 使用方法与常规向量索引相同，执行索引全量重建 |
+
+一些使用注意事项如下：
+
+* 同步模式下，写入性能可能受到嵌入性能的影响；异步模式下，数据可见性会有延迟。
+* 对于重复搜索的场景，建议使用 AI 函数服务（AI Function Service）预先获取查询向量，避免每次搜索都进行嵌入。
+
+## 前提条件
+
+### 注册嵌入模型和端点
+
+在使用语义索引之前，必须先注册嵌入（Embedding）模型和端点。以下是注册示例：
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL ('ob_embed');
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('ob_embed_endpoint');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL(
+'ob_embed', '{
+    "type": "dense_embedding",
+    "model_name": "BAAI/bge-m3"
+}');
+
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+'ob_embed_endpoint', '{
+    "ai_model_name": "ob_embed",
+    "url": "https://api.siliconflow.cn/v1/embeddings",
+    "access_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "provider": "siliconflow"
+}');
+```
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>请将 <code>access_key</code> 替换为您的实际 API Key。BAAI/bge-m3 模型的向量维度为 1024，因此在创建语义索引时需要使用 <code>dim=1024</code>。</p>
+</main>
+
+### 手动启用语义索引
+
+通过租户级配置项 `_enable_semantic_index` 启用语义索引功能，默认关闭：
+
+```sql
+ALTER SYSTEM SET _enable_semantic_index = true;
+```
+
+## 索引语法及说明
+
+### 创建
+
+语义索引支持**建表时创建**和**后建**两种方式。创建时需要注意：
+
+* 创建索引必须指定在 `VARCHAR` 类型的列上。
+* 支持在同一列上创建多个语义索引。
+* `model`、`sync_mode` 参数不支持在常规向量索引上配置。
+* 后建索引的参数和说明与建表时创建索引一致。
+
+:::tab
+tab 建表时创建
+
+支持使用 `CREATE TABLE` 语句创建语义索引，通过索引参数，同步或者异步发起后台任务。同步模式会在插入数据时自动将 `VARCHAR` 数据转换成向量数据，异步模式则会定期或者手动完成数据转换。
+
+语法如下：
+
+```sql
+CREATE TABLE table_name (
+    column_name1 data_type1,
+    column_name2 VARCHAR, -- 文本列
+    ...,
+    VECTOR INDEX index_name (column_name2) WITH (param1=value1, param2=value2, ...)
+);
+```
+
+tab 后建索引
+
+支持在已经存在表的 `VARCHAR` 列上创建语义索引，后建索引时会通过提供的索引参数发起同步或者异步的后台任务。同步模式下所有现存 `VARCHAR` 数据会进行向量嵌入，异步模式则会定期或者手动完成嵌入。
+
+语法如下：
+
+```sql
+CREATE VECTOR INDEX index_name 
+ON table_name(varchar_column_name) 
+WITH (param1=value1, param2=value2, ...);
+```
+
+:::
+
+`param` 参数说明如下：
+
+| 参数 | 默认值 | 取值范围 | 是否必填 | 说明 | 备注 |
+|------|--------|----------|----------|------|------|
+| `distance` |  | `l2`/`inner_product`/`cosine` | 是 | 指定向量距离算法类型。 | `l2` 表示欧氏距离，`inner_product` 表示内积距离，`cosine` 表示余弦距离。 |
+| `type` |  | 目前支持 `hnsw` / `hnsw_bq` / `hnsw_sq` | 是 | 指定索引算法类型。 |  |
+| `lib` | `vsag` | `vsag` | 否 | 指定向量索引库类型。 | 目前仅支持 VSAG 向量库。 |
+| `model` |  | 已注册的模型名称 | 是 | 指定用于 embedding 的大语言模型名称。 | 必须在创建索引使用 AI 函数服务注册该模型。<main id="notice" type='notice'><h4>说明</h4><p>常规向量索引不支持设置此参数。</p></main> |
+| `dim` |  | 正整数，最大 4096 | 是 | 指定 embedding 后的向量维度。 | 必须与模型提供的维度对应。 |
+| `sync_mode` | `async` | `immediate`/`manual`/`async` | 否 | 指定数据和索引同步的模式。 | `immediate` 表示同步模式，`manual` 表示手动模式，`async` 表示异步模式。<main id="notice"><h4>说明</h4><p>常规向量索引不支持设置此参数。</p></main> |
+| `sync_interval` | `10s` | 时间间隔，如 `10s`、`1h`、`1d` 等 | 否 | 设置异步模式下后台任务的触发周期。 | 数值部分需为正数，单位支持秒（s）、小时（h）、天（d）等。 |
+
+其他向量索引参数（如 `m`、`ef_construction`、`ef_search` 等）的使用与常规 HNSW/HNSW_BQ 索引相同，具体请参见文末相关文档中的 HNSW 系列索引文档。
+
+### 搜索
+
+语义索引支持两种搜索方式：
+
+* 使用原始文本搜索
+* 使用向量搜索
+    * 可指定 `APPROXIMATE`/`APPROX` 子句，使用向量索引进行最近邻搜索。
+    * 也可不指定 `APPROXIMATE`/`APPROX` 子句，使用全表扫描的方式进行暴力搜索。
+
+使用 Hint 说明与注意事项如下：
+
+* 当在同一列上存在多个语义索引时，查询必须通过 `VECTOR_INDEX` Hint 明确指定所需使用的向量索引，否则系统会报错。通过 Hint，你不仅可以在查询语句中选择具体的向量索引，还可灵活配置前置或后置过滤条件，提高搜索的准确性和灵活性。
+* `VECTOR_INDEX` Hint 可与 `INDEX` Hint 配合使用。
+* 以上两点的使用说明请参见[VECTOR_INDEX Hint](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/100.basic-elements-of-mysql-mode/600.annotation-of-mysql-mode/400.hint-of-mysql-mode/200.hint-list-of-mysql-mode/200.optimizer-hint-of-mysql-mode/900.hints-related-to-vector-index-hint-of-mysql-mode.md)。
+
+:::tab
+tab 使用原始文本搜索
+
+使用 `semantic_distance` 表达式，传入原始文本进行向量搜索。
+
+语法如下：
+
+```sql
+SELECT ... FROM table_name 
+ORDER BY semantic_distance(column_name, 'query_text') [APPROXIMATE|APPROX] 
+LIMIT n;
+```
+
+其中：
+* `column_name`：语义索引创建时指定的文本列。
+* `query_text`：搜索的原始文本。
+* `n`：返回的结果行数。
+
+tab 使用向量搜索
+
+1. 带 `APPROXIMATE` 子句：使用 `semantic_vector_distance` 表达式，传入向量进行搜索，当搜索语句中带有 `APPROXIMATE`/`APPROX` 子句时，会使用向量索引进行搜索。语法如下：
+
+    ```sql
+    SELECT ... FROM table_name 
+    ORDER BY semantic_vector_distance(column_name, 'query_vector') [APPROXIMATE|APPROX] 
+    LIMIT n;
+    ```
+
+    其中：
+    * `column_name`：语义索引创建时指定的文本列。
+    * `query_vector`：查询向量。
+    * `n`：返回的结果行数。
+
+2. 不带 `APPROXIMATE` 子句：使用 `semantic_vector_distance` 表达式，传入向量进行检索，当不带有 `APPROXIMATE`/`APPROX` 子句时，会采用全表扫描的方式进行暴力检索，得到距离最近的前 n 行的精确结果。检索执行时，会从表模式（Schema）中获取 `distance` 的类型，然后进行整表扫描，每行都会进行向量距离的计算，从而保证获取精确结果。语法如下：
+
+    ```sql
+    SELECT ... FROM table_name 
+    ORDER BY semantic_vector_distance(column_name, 'query_vector') 
+    LIMIT n;
+    ```
+    参数含义与带 `APPROXIMATE` 子句一致。
+
+:::
+
+`APPROXIMATE`/`APPROX` 子句的详细语法说明请参见文末相关文档中的 HNSW 系列索引文档。
+
+## 创建、更新、搜索与删除示例
+
+语义索引的 DML 操作（`INSERT`、`UPDATE`、`DELETE`）与常规向量索引完全一致。插入或更新 `VARCHAR` 类型的数据时，系统会根据 `sync_mode` 参数设置同步或异步进行向量嵌入。
+
+### 建表时创建
+
+创建测试表 `items` 时创建 `vector_idx` 索引：
+
+```sql
+-- 假设 ob_embed 模型的创建在此前已完成（请参考"前提条件"部分注册模型）
+CREATE TABLE items (
+    id BIGINT PRIMARY KEY, 
+    doc VARCHAR(100),
+    VECTOR INDEX vector_idx(doc)
+    WITH (distance=l2, lib=vsag, type=hnsw_sq, model=ob_embed, dim=1024, sync_mode=async, sync_interval=10s)
+);
+```
+
+向测试表 `items` 插入一条数据，系统会自动进行嵌入：
+
+```sql
+INSERT INTO items(id, doc) VALUES(1, 'Rose');
+```
+
+### 后建
+
+创建测试表 `items` 后，使用 `CREATE VECTOR INDEX` 语句创建 `vector_idx` 索引：
+
+```sql
+CREATE TABLE items (
+    id BIGINT PRIMARY KEY, 
+    doc VARCHAR(100)
+);
+
+-- 假设 ob_embed 模型的创建在此前已完成（请参考"前提条件"部分注册模型）
+CREATE VECTOR INDEX vector_idx 
+ON items (doc) 
+WITH (distance=l2, lib=vsag, type=hnsw_sq, model=ob_embed, dim=1024, sync_mode=async, sync_interval=10s);
+```
+
+向测试表 `items` 插入一条数据，系统会自动进行嵌入：
+
+```sql
+INSERT INTO items(id, doc) VALUES(1, 'Rose');
+```
+
+### 更新
+
+更新 `VARCHAR` 类型的数据时，系统会重新进行嵌入：
+
+* 同步模式：更新后立即重新进行嵌入。
+* 异步模式：更新后由后台任务在下次触发周期时重新进行嵌入。
+
+使用示例：
+
+```sql
+UPDATE items SET doc = 'Lily' WHERE id = 1;
+```
+
+### 删除
+
+删除操作与常规向量索引一致，直接删除数据即可。
+
+使用示例：
+
+```sql
+DELETE FROM items WHERE id = 1;
+```
+
+### 搜索
+
+:::tab
+tab 使用原始文本搜索
+
+```sql
+-- 假设 ob_emb 模型的创建在此前已完成
+CREATE TABLE items (
+    id INT PRIMARY KEY, 
+    doc varchar(100),
+    VECTOR INDEX vector_idx(doc)
+    WITH (distance=l2, lib=vsag, type=hnsw_sq, model=ob_embed, dim=1024, sync_mode=immediate)
+);
+
+INSERT INTO items(id, doc) VALUES(1, 'Rose');
+INSERT INTO items(id, doc) VALUES(2, 'Sunflower');
+INSERT INTO items(id, doc) VALUES(3, 'Rose');
+INSERT INTO items(id, doc) VALUES(4, 'Sunflower');
+INSERT INTO items(id, doc) VALUES(5, 'Rose');
+
+-- 使用原始文本进行搜索
+SELECT id, doc FROM items
+ORDER BY semantic_distance(doc, 'Sunflower') 
+APPROXIMATE LIMIT 3;
+```
+
+返回结果如下：
+
+```sql
++----+-----------+
+| id | doc       |
++----+-----------+
+|  4 | Sunflower |
+|  2 | Sunflower |
+|  3 | Rose      |
++----+-----------+
+3 rows in set
+```
+
+tab 使用向量搜索（带 APPROXIMATE 子句）
+
+使用 `semantic_vector_distance` 表达式，传入向量进行搜索，当搜索语句中带有 `APPROXIMATE`/`APPROX` 子句时，会使用向量索引进行搜索。
+
+```sql
+-- 假设 ob_emb 模型的创建在此前已完成（请参考"前提条件"部分注册模型）
+CREATE TABLE items (
+    id INT PRIMARY KEY, 
+    doc varchar(100),
+    VECTOR INDEX vector_idx(doc)
+    WITH (distance=l2, lib=vsag, type=hnsw_sq, model=ob_embed, dim=1024, sync_mode=immediate)
+);
+
+INSERT INTO items(id, doc) VALUES(1, 'Rose');
+INSERT INTO items(id, doc) VALUES(2, 'Lily');
+INSERT INTO items(id, doc) VALUES(3, 'Sunflower');
+INSERT INTO items(id, doc) VALUES(4, 'Rose');
+
+-- 先获取查询向量
+SET @query_vector = AI_EMBED('ob_embed', 'Sunflower');
+
+-- 使用向量进行索引搜索
+SELECT id, doc FROM items
+ORDER BY semantic_vector_distance(doc, @query_vector) 
+APPROXIMATE LIMIT 3;
+```
+
+返回结果如下：
+
+```shell
++----+-----------+
+| id | doc       |
++----+-----------+
+|  3 | Sunflower |
+|  1 | Rose      |
+|  4 | Rose      |
++----+-----------+
+3 rows in set
+```
+
+tab 使用向量检索（不带 APPROXIMATE 子句）
+
+```sql
+-- 使用向量进行暴力检索（精确结果）
+SELECT id, doc FROM items
+ORDER BY semantic_vector_distance(doc, @query_vector) 
+LIMIT 3;
+```
+
+返回结果如下：
+
+```shell
++----+-----------+
+| id | doc       |
++----+-----------+
+|  3 | Sunflower |
+|  4 | Rose      |
+|  1 | Rose      |
++----+-----------+
+3 rows in set
+```
+
+:::
+
+## 相关文档
+
+* [AI 函数语法及示例](../370.ob-vector-search-ai-function/300.ob-vector-search-ai-function.md)
+* [HNSW 系列索引](300.ob-dense-vector-index/200.ob-hnsw-index.md)
+* [索引内存管理](200.ob-vector-index-memory-management.md)
+* [索引监控与维护](600.vector-index-monitor-and-maintain.md)

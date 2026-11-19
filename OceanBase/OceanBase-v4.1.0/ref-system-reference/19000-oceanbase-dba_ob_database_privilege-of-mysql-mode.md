@@ -1,0 +1,37 @@
+---
+title: oceanbase.DBA_OB_DATABASE_PRIVILEGE
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700892.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# oceanbase.DBA_OB_DATABASE_PRIVILEGE
+
+## 功能
+
+展示当前用户的所拥有的数据库权限。
+
+## 字段说明
+
+| 字段名称                     | 字段类型          | 是否可以为 NULL | 描述 |
+|-------------------|--------------|------|-----|
+| USER_ID           | bigint(20)   | NO   | 用户 ID    |
+| USERNAME          | varchar(128) | NO   | 用户名称   |
+| DATABASE_NAME     | varchar(128) | NO   | 数据库名称    |
+| GMT_CREATE        | timestamp(6) | YES  | 创建时间    |
+| GMT_MODIFIED      | timestamp(6) | YES  | 修改时间    |
+| PRIV_ALTER        | varchar(3)   | NO   | 修改数据库或表的权限    |
+| PRIV_CREATE       | varchar(3)   | NO   | 创建数据库或表的权限    |
+| PRIV_DELETE       | varchar(3)   | NO   | 删除数据库或表记录的权限    |
+| PRIV_DROP         | varchar(3)   | NO   | 删除数据库或表的权限   |
+| PRIV_GRANT_OPTION | varchar(3)   | NO   | 授予当前租户的权限   |
+| PRIV_INSERT       | varchar(3)   | NO   | 插入记录的权限    |
+| PRIV_UPDATE       | varchar(3)   | NO   | 更新记录的权限   |
+| PRIV_SELECT       | varchar(3)   | NO   | 查询记录的权限   |
+| PRIV_INDEX        | varchar(3)   | NO   | 设置索引的权限    |
+| PRIV_CREATE_VIEW  | varchar(3)   | NO   | 创建视图的权限    |
+| PRIV_SHOW_VIEW    | varchar(3)   | NO   | 查看视图的权限   |

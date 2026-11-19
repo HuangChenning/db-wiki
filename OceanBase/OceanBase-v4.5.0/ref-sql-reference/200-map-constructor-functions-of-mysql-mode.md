@@ -1,0 +1,99 @@
+---
+title: "映射构造函数"
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480786.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 映射构造函数
+
+| dir-name      |                 |`
+| dir-name-en   |                 |
+| tenant-type   | MySQL Mode      |
+
+# 映射构造函数
+
+映射构造函数/运算符用于构建新的映射数据类型。OceanBase 数据库当前所支持的映射构造函数包括 `map()`，操作符包括 `{}`。
+
+## map
+
+`map()` 函数用于构建一个映射数据。语法如下：
+
+```sql
+map(key1, value1, key2, value2, ..., keyN, valueN)
+```
+
+输入参数说明如下：
+
+* 输入的参数个数需为偶数，序数为奇数的参数构成 Key 数组 ，序数为偶数的参数构成 Value 数组。
+* key1~keyN 和 value1~valueN 的数据元素类型请参见[映射数据类型概述](../../100.basic-elements-of-mysql-mode/100.data-type-of-mysql-mode/1300.map-data-type-of-mysql-mode/100.map-data-type-overview-of-mysql-mode.md)。
+* 注意，输入的键值对中 Key 不可重复，如有重复的 Key，则以后输入的 Value 为准，前面的 Value 会被覆盖。
+
+返回值为映射数据类型（MAP）。
+
+示例如下：
+
+```sql
+-- 构建出的映射数据只有一个键值对，key 为 1，value 为 2
+SELECT map(1,2);
++----------+
+| map(1,2) |
++----------+
+| {1:2}    |
++----------+
+1 row in set
+```
+
+```sql
+-- 构建出的映射数据有 3 个键值对
+SELECT map(1,"a",2,"b",3,"c");
++------------------------+
+| map(1,"a",2,"b",3,"c") |
++------------------------+
+| {1:"a",2:"b",3:"c"}    |
++------------------------+
+1 row in set
+```
+
+```sql
+-- Key 数组的数据类型由奇数序数的参数决定，Value 数组的数据类型由偶数序数的参数决定
+SELECT map(1,"a","b",1.8,"ccc",3);
++-------------------------------+
+| map(1,"a","b",1.8,"ccc",3)    |
++-------------------------------+
+| {"1":"a","b":"1.8","ccc":"3"} |
++-------------------------------+
+```
+
+## {}
+
+`{}` 用于以字符串形式构建映射数据。将映射数据写成 `{key1:value1, key2:value2, ..., keyN:valueN}` 形式的字符串后，OceanBase 数据库会将其转换为映射数据类型，因此向映射列插入数据时可以直接使用这种字符串。
+
+输入参数说明如下：
+
+* 每个键值对使用 `,` 分隔，Key 和 Value 之间使用 `:` 分隔。
+* Key 可以不加引号，例如 `{1:1,2:2,3:3}`。
+* 输入的键值对中 Key 不可重复，如有重复的 Key，则以后输入的 Value 为准，前面的 Value 会被覆盖。
+
+示例如下：
+
+```sql
+CREATE TABLE t1 (
+  id INT NOT NULL AUTO_INCREMENT,
+  m MAP(INT, INT)
+);
+
+INSERT INTO t1 (m) VALUES ('{1:1,2:2,3:3}');
+
+SELECT m FROM t1;
++---------------+
+| m             |
++---------------+
+| {1:1,2:2,3:3} |
++---------------+
+1 row in set
+```

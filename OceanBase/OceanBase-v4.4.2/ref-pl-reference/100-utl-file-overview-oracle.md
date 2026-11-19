@@ -1,0 +1,94 @@
+---
+title: "UTL_FILE 概述"
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286946.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# UTL_FILE 概述
+
+使用 `UTL_FILE` 系统包，PL 程序可以读写操作系统文本文件。`UTL_FILE` 提供操作系统流文件 I/O 的受限版本。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## UTL_FILE 权限说明
+
+用户需要具有 `UTL_FILE` 系统包的 `EXECUTE` 权限。
+
+## UTL_FILE 数据结构
+
+`UTL_FILE` 系统包定义了一个 `RECORD` 类型，为 `FILE_TYPE`。
+
+`FILE_TYPE` 的内容是 `UTL_FILE` 系统包的私有内容，所以不能被引用或更改。
+
+### 语法
+
+```sql
+TYPE file_type IS RECORD (
+id                BINARY_INTEGER,
+datatype          BINARY_INTEGER,
+byte_mode         BOOLEAN);
+```
+
+### 参数解释
+
+|    参数     |                描述                 |
+|-----------|-----------------------------------|
+| id        | 内部文件句柄编号的数值。                      |
+| datatype  | 文件是 `CHAR` 文件、`Nchar` 文件或其他（二进制）。 |
+| byte_mode | 文件是作为二进制文件打开还是作为文本文件打开。           |
+
+## UTL_FILE 异常情况
+
+|        异常名称         |         含义                     |
+|---------------------|---------------------------------|
+| INVALID_PATH        | 文件位置无效。        |
+| INVALID_MODE        | `FOPEN` 函数中的 `open_mode` 参数无效。   |
+| INVALID_FILEHANDLE  | 文件句柄无效。   |
+| INVALID_OPERATION   | 不支持的文件操作。    |
+| READ_ERROR          | 读取缓存过小，或者读取的过程中遇到了操作系统相关的错误。    |
+| WRITE_ERROR         | 写入的过程中遇到了操作系统相关的错误。 |
+| INTERNAL_ERROR      | 内部定义的 PL 错误。   |
+| FILE_OPEN           | 打开文件报错。  |
+| INVALID_MAXLINESIZE | `FOPEN` 函数的参数 `max_linesize` 无效。支持的范围为 \[1,32767\]。 |
+| INVALID_FILENAME    | 参数文件名无效。 |
+| ACCESS_DENIED       | 因为权限不足无法访问文件。  |
+| INVALID_OFFSET      | 可能原因如下：<ul><li> `ABSOLUTE_OFFSET` 和 `ABSOLUTE_OFFSET` 同时为 `NULL`    </li><li> `ABSOLUTE_OFFSET` \< 0    </li><li> `ABSOLUTE_OFFSET` 为 `NULL` 时，指定的 `RELATIVE_OFFSET` 超过了文件的长度 </li></ul>   |
+
+## UTL_FILE 子程序概览
+
+下表为 OceanBase 数据库当前版本所支持的 `UTL_FILE` 子程序和简要描述。
+
+|                           子程序                           |                描述                 |
+|---------------------------------------------------------|-----------------------------------|
+| [FCLOSE](../26100.utl-file-oracle/200.fclose-oracle.md)   | 关闭文件。                             |
+|[FCOPY](240.fcopy-oracle.md)|用于从源文件复制行到目标文件。|
+|[FCLOSE_ALL](250.fclose-all-oracle.md)|用于关闭当前会话下所有 `UTL_FILE` 已打开的文件。|
+| [FFLUSH](../26100.utl-file-oracle/300.fflush-oracle.md)   | 刷新缓存中的数据到文件中。                     |
+| [FOPEN](../26100.utl-file-oracle/400.fopen-oracle.md)    | 根据用户指定的信息打开文件。                    |
+|[FOPEN_NCHAR](450.fopen_nchar-oracle.md)|用于以 NCHAR 方式打开文件。|
+| [FGETPOS](../26100.utl-file-oracle/500.fgetpos-oracle.md)  | 获取文件当前被访问的位置（偏移量），以字节为单位。         |
+|[FGETATTR](550.fgetattr-oracle.md)|用于读取操作系统文件属性（如是否存在、大小等）的过程。|
+| [FREMOVE](../26100.utl-file-oracle/600.fremove-oracle.md)  | 删除磁盘文件（需要相应的删除权限），类似UNIX `rm` 命令。 |
+| [FRENAME](../26100.utl-file-oracle/700.frename-oracle.md)  | 将现有文件重命名为新名称，类似于 UNIX `mv` 命令。    |
+| [FSEEK](../26100.utl-file-oracle/800.fseek-oracle.md)    | 按指定的字节数向前或向后调整文件位置。               |
+| [NEW_LINE](../26100.utl-file-oracle/900.new-line-utl-oracle.md) | 将一个或多个操作系统指定的行终止符写入文件。            |
+|[NEW_LINE_NCHAR](950.new-line-nchar-oracle.md)|用于向文件中插入换行符。|
+|[GET_RAW](960.get-raw-oracle.md)|用于从操作系统文件中读取原始二进制数据。|
+| [GET_LINE](../26100.utl-file-oracle/1000.get-line-utl-oracle.md) | 读取一行文本。                           |
+|[GET_LINE_NCHAR](1050.get-line-nchar-oracle.md)|用于以 `Unicode` 方式从文本文件中读取一行内容。|
+| [PUT](../26100.utl-file-oracle/1100.put-utl-oracle.md)      | 将字符串写入文件。                         |
+|[PUT_RAW](1150.put-raw-oracle.md)|存储过程用于将输入参数按 RAW 写入到指定的文件中。|
+| [PUT_LINE](../26100.utl-file-oracle/1200.put-line-utl-oracle.md) | 将一行写入文件，并附加操作系统指定的行终止符。           |
+|[PUT_NCHAR](1250.put-nchar-oracle.md)|用于以 `NCHAR` 方式追加到当前行缓冲。|
+|[PUT_LINE_NCHAR](1260.put-line-nchar-oracle.md)|用于写入 Unicode 字符到文件的存储过程。|
+|[PUTF](1270.putf-oracle.md)|用于按格式串写入到指定的文件中。|
+|[PUTF_NCHAR](1280.putf-nchar-oracle.md)|用于以 `NCHAR` 方式按格式写入到指定的文件中。|
+|[IS_OPEN](1300.utl-is-open-oracle.md)|用于判断句柄是否仍为打开状态。|

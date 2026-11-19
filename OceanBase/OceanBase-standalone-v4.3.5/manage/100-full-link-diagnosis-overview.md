@@ -1,0 +1,32 @@
+---
+title: "全链路追踪概述"
+book: "管理数据库"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000003577635.html"
+tags:
+  - oceanbase
+  - standalone
+  - manage
+---
+
+# 全链路追踪概述
+
+## 什么是全链路追踪？
+
+OceanBase 数据库拥有复杂的调用链路。当出现超时问题时，往往无法快速定位是 OceanBase 内部组件或是网络的问题，运维人员只能根据经验和 OBServer 日志进行分析。为了提高诊断效率，本次更新引入了一种全新的全链路追踪机制，能够追踪用户 SQL 请求在数据库全链路过程中，在不同组件、不同阶段执行的相关信息，并以可视化方式展现给用户，从而帮助用户快速定位问题所在位置。
+
+### 全链路追踪路径
+
+全链路追踪覆盖了主要的数据流路径，具体如下。
+
+请求直接从应用程序通过客户端发送至 OBServer，然后结果直接返回。
+
+全链路追踪的目的是对这两条路径上的所有组件进行问题定位。
+
+使用全链路追踪功能前，可通过 [DBMS_MONITOR](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002016533) 包设置全链路追踪功能为打开状态，也可设置业务需要的采样率或日志打印级别等配置信息。功能打开后，符合配置规则的 SQL，会被记录全路径的打点信息。
+
+### 全链路追踪的日志
+
+全链路追踪的日志，即跟踪日志（trace logs），它会根据数据访问路径来决定其记录细节。直接访问 OBServer，则只在 OBServer 的日志文件中记录。具体而言，OBServer 的命名为 `trace.log`。每个日志文件的大小限制为 256MB，当日志达到这一大小限制时，系统将创建新的日志文件，并将旧文件归档。归档文件的数量由配置项 [max_syslog_file_count](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002015640) 控制，超出的文件将被自动删除。
+
+运维人员可通过搜集和分析所有跟踪日志，来追踪每个事务或 SQL 查询在整个调用链路上的执行时间和其他相关信息。这不仅为问题的准确定位提供了重要线索，还大大提升了运维效率。

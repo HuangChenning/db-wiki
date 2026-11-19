@@ -1,0 +1,39 @@
+---
+title: USER_SYS_PRIVS
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699132.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# USER_SYS_PRIVS
+
+USER_SYS_PRIVS
+===================================
+
+功能
+-----------
+
+列出了授予当前用户的系统权限。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+相关视图
+-------------
+
+DBA_SYS_PRIVS
+
+字段说明
+-------------
+
+|   **字段名称**   |    **类型**     | **是否可以为 NULL** |      **描述**      |
+|--------------|---------------|----------------|------------------|
+| GRANTEE      | VARCHAR2(128) | NO             | 接受授权的受让人名称、用户或角色 |
+| PRIVILEGE    | VARCHAR2(40)  | NO             | 系统权限             |
+| ADMIN_OPTION | VARCHAR2(3)   | NO             | 授予管理选项           |

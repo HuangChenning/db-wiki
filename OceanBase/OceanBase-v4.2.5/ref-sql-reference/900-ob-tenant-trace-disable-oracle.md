@@ -1,0 +1,36 @@
+---
+title: OB_TENANT_TRACE_DISABLE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503820.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# OB_TENANT_TRACE_DISABLE
+
+`OB_TENANT_TRACE_DISABLE` 用于禁用当前租户的全链路追踪功能。
+
+<main id="notice" >
+  <h4>注意</h4>
+  <p>不允许关闭其他租户的全链路追踪。</p>
+</main>
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_MONITOR.OB_TENANT_TRACE_DISABLE(tenant_name  IN VARCHAR2 DEFAULT NULL);
+```
+
+## 参数解释
+
+| **参数**        | **解释**                                      |
+|------------------|----------------------------------------------|
+| tenant_name      | 关闭全链路追踪的 `tenant_name`，默认为 `null` 表示当前租户。 |

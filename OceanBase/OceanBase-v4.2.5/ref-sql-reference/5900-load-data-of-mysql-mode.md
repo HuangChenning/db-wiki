@@ -1,0 +1,228 @@
+---
+title: LOAD DATA
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503282.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# LOAD DATA
+
+## 描述
+
+该语句用于从外部导入数据。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p><ul><li>带有触发器（Trigger）的表禁止使用 <code>LOAD DATA</code> 语句。</li><li>要从外部文件导入数据，您需要具有 <code>FILE</code> 权限及以下设置：<ul><li>加载服务器端文件时，需要提前设置系统变量 <a href="../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/11500.secure_file_priv-global.md">secure_file_priv</a>，配置导入或导出文件时可以访问的路径。</li><li>加载客户端本地文件时，需要在启动 MySQL/OBClient 客户端时添加 <code>--local-infile[=1]</code> 选项来启用从本地文件系统加载数据的功能。</li></ul></li></ul></p>
+</main>
+
+OceanBase 数据库 `LOAD DATA` 语句支持加载以下输入文件：
+
+* 服务器端（OBServer 节点）文件：文件位于 OceanBase 数据库的 OBServer 节点上。可以使用 `LOAD DATA INFILE` 语句，将服务器端文件中加载数据到数据库表中。
+
+* 客户端（本地）文件：文件位于客户端本地文件系统中。可以使用 `LOAD DATA LOCAL INFILE` 语句，将客户端本地文件中的数据加载到数据库表中。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>OceanBase 数据库 MySQL 模式从 V4.2.2 版本起，开始支持使用 <code>LOAD DATA LOCAL INFILE</code> 语法加载本地数据文件。并且在执行 <code>LOAD DATA LOCAL INFILE</code> 命令时，系统会自动添加 <code>IGNORE</code> 选项。</p>
+  </main>
+
+* OSS 文件：文件位于 OSS 文件系统。可以使用 `LOAD DATA REMOTE_OSS INFILE` 语句，将 OSS 文件中的数据加载到数据库表中。
+
+`LOAD DATA` 目前可以对 CSV 格式的文本文件进行导入，整个导入的过程可以分为以下的流程：
+
+1. 解析文件：OceanBase 数据库会根据用户输入的文件名，读取文件中的数据，并且根据指定的并行度来决定并行或者串行解析输入文件中的数据。
+
+2. 分发数据：由于 OceanBase 是分布式数据库，各个分区的数据可能分布在各个不同的 OBServer 节点，`LOAD DATA` 会对解析出来的数据进行计算，决定数据需要被发送到哪个 OBServer 节点。
+
+3. 插入数据：当目标 OBServer 节点收到数据后，在本地执行 `INSERT` 操作将数据插入到对应的分区当中。
+
+## 语法
+
+```sql
+LOAD DATA
+    [/*+ PARALLEL(N) load_batch_size(M) APPEND */]
+   |[/*+ PARALLEL(N) direct(bool, int) */]
+    [REMOTE_OSS | LOCAL] INFILE 'file_name'
+    [REPLACE | IGNORE]
+    INTO TABLE table_name
+    [{FIELDS | COLUMNS}
+        [TERMINATED BY 'string']
+        [[OPTIONALLY] ENCLOSED BY 'char']
+        [ESCAPED BY 'char']
+    ]
+    [LINES
+        [STARTING BY 'string']
+        [TERMINATED BY 'string']
+    ]
+    [IGNORE number {LINES | ROWS}]
+    [(column_name_var
+        [, column_name_var] ...)]
+```
+
+## 参数解释
+
+|                参数                |            描述                   |
+|----------------------------------|-------------------------------------------|
+| parallel(N)                      | 加载数据的并行度，`N` 默认为 `4`。   |
+| load_batch_size(M)               | 指定每次插入的批量大小，`M` 默认为 `100`。推荐取值范围为 \[100,1000\]。    |
+| APPEND | 使用 Hint 启用旁路导入功能，即支持直接在数据文件中分配空间并写入数据。`APPEND` Hint 默认等同于使用的 `direct(true, 0)`，同时可以实现 在线收集统计信息（`GATHER_OPTIMIZER_STATISTICS` Hint）的功能。   |
+| direct | 使用 Hint 启用旁路导入。`direct(bool, int)` 中的 `bool` 参数表示给定的 CSV 文件是否需要排序，`true` 表示需要排序；`int` 表示最大容忍的错误行数。 |
+| REMOTE_OSS \| LOCAL | 可选项，<ul><li> <code>REMOTE_OSS</code> 用于指定是否从 OSS 文件系统读取数据。<main id="notice" type='notice'><h4>注意</h4><p>如果使用了此参数，<code>file_name</code> 必须是一个 OSS 的地址。</p></main>  </li><li> <code>LOCAL</code> 用于指定是否从客户端的本地文件系统读取数据。如果不使用 `LOCAL` 参数，那么将从服务器端（OBServer 节点）的文件系统读取数据。</li></ul> |
+| file_name                        | 指定输入文件的路径和文件名。 <code>file_name</code> 有以下格式：<ul><li>导入文件在 OBServer 节点或客户端：<code>/\$PATH/\$FILENAME</code>。</li><li>导入文件在 OSS 上：<code>oss://\$PATH/\$FILENAME/?host=\$HOST&access_id=\$ACCESS_ID&access_key=\$ACCESSKEY</code>。</li></ul>     参数解释如下：<ul><li><code>\$PATH</code>：指定了存储桶中的文件路径，表示文件所在的目录。</li><li><code>\$FILENAME</code>：指定了文件的名称，表示要访问的具体文件。</li><li><code>\$HOST</code>：指定了 OSS 服务的主机名或 CDN 加速的域名，即要访问的 OSS 服务的地址。</li><li><code>\$ACCESS_ID</code>：指定了访问 OSS 服务所需的 Access Key ID，用于身份验证。</li><li><code>\$ACCESSKEY</code>：指定了访问 OSS 服务所需的 Access Key Secret，用于身份验证。</li></ul>    <main id="notice" type='explain'> <h4>说明</h4> <p>在导入 OSS 上的文件时，需要确保以下信息：<ul><li>确保访问 OSS 存储桶和文件的权限。你需要拥有足够的权限来读取指定的存储桶和文件。这通常需要在 OSS 控制台或通过 OSS API 设置访问权限，并将访问密钥（Access Key ID 和 Access Key Secret）配置为具有适当权限的凭据。</li><li>确保数据库服务器可以通过网络连接到指定的 <code>$HOST</code> 地址，以访问 OSS 服务。如果使用的是 OSS 服务的 CDN 加速域名，还需要确保 CDN 配置正确，并且网络连接正常。</li></ul></p> </main>  |
+| REPLACE \| IGNORE                | 如果遇到唯一键冲突，`REPLACE` 表示覆盖冲突行，`IGNORE` 表示忽略冲突行。 `LOAD DATA` 通过表的主键来判断数据是否重复，如果表不存在主键，则 `REPLACE` 与 `IGNORE` 选项没有区别。缺省时，遇到重复数据的时候，`LOAD DATA` 会将出现错误的数据记录到日志文件中。 <main id="notice" type='notice'><h4>注意</h4><p><ul><li>在 MySQL 模式中执行 <code>LOAD DATA LOCAL INFILE</code> 命令时，系统会自动添加 <code>IGNORE</code> 选项。这种行为提供了与 MySQL 数据库更好的兼容性。</li><li>使用 <code>REPLACE</code> 或者 <code>IGNORE</code> 子句的情况下，如果并行度大于 <code>1</code>，发生冲突的行最后插入的记录可能与串行执行的结果不同。如果需要严格保证冲突记录的插入结果，请不要指定该语句的并行度（或将并行度设置为 <code>1</code>）。</li></ul></p></main> |
+| table_name                       | 导入数据的表的名称，支持分区表与非分区表。  |
+| FIELDS \| COLUMNS                | 指定字段的格式。 <ul><li> `ENCLOSED BY`：设置导出值的修饰符。  </li> <li> `TERMINATED BY`：设置导出列的结束符。 </li> <li>`ESCAPED BY`：设置导出值忽略的字符。</li></ul>    |
+| LINES STARTING BY                | 指定行起始符。   |
+| LINES TERMINATED BY              | 指定行结束符。  |
+| IGNORE number { LINES \| ROWS } | 忽略前几行，`LINES` 表示文件的前几行，`ROWS` 表示由字段分隔符指定的前几行数据。 缺省时，会将输入文件中的字段逐个与表中的列进行对应。 如果输入文件中并没有包含所有的列，那么缺少的列按照以下的规则会被默认填充：  <ul><li> 字符类型：空字符串。   </li> <li> 数值类型：0。    </li> <li> 日期类型：`0000-00-00`。</li></ul>    |
+| column_name_var                  | 指定导入的列名。  |
+
+## 注意事项
+
+### 进行旁路导入时的通配符规则
+
+`LOAD DATA` 语句中，使用 `Hint direct` 指明是否进行旁路导入。为便于多文件导入，引入文件通配符功能，适用于 server_disk 和 OSS 类型的文件源，不适用于客户端磁盘（client_disk）。
+
+#### 集群内文件系统（server_disk）旁路导入使用方法
+
+* server_disk 示例：
+
+  * 匹配文件名：`load data /*+ parallel(20) direct(true, 0) */ infile '/xxx/test.*.csv' replace into table t1 fields terminated by '|';`
+
+  * 匹配目录：`load data /*+ parallel(20) direct(true, 0) */ infile '/aaa*bb/test.1.csv' replace into table t1 fields terminated by '|';`
+
+  * 同时匹配目录和文件名：`load data /*+ parallel(20) direct(true, 0) */ infile '/aaa*bb/test.*.csv' replace into table t1 fields terminated by '|';`
+
+* server_disk 注意事项：
+
+  * 必须存在至少一个匹配的文件，否则报错 `OB_FILE_NOT_EXIST`。
+
+  * 对 `load data /*+ parallel(20) direct(true, 0) */ infile '/xxx/test.1*.csv,/xxx/test.6*.csv' replace into table t1 fields terminated by '|';` 的输入，`/xxx/test.1*.csv,/xxx/test.6*.csv` 会被认为是整体匹配，若无匹配则报错 `OB_FILE_NOT_EXIST`。
+
+  * 只支持 POSIX 的 GLOB 函数能支持的通配符，例如 `test.6*(6|0).csv` 和 `test.6*({0.csv,6.csv}|.csv)` 尽管可通过 `ls` 命令查找，但 GLOB 函数无法匹配，会报 `OB_FILE_NOT_EXIST`。
+
+#### 云对象存储服务（OSS）旁路导入使用方法
+
+* oss 示例：
+
+  * 匹配文件名：`load data /*+ parallel(20) direct(true, 0) */ remote_oss infile 'oss://xxx/test.*.csv?host=xxx&access_id=xxx&access_key=xxx' replace into table t1 fields terminated by '|';`
+
+* oss 注意事项：
+
+  * 不支持目录匹配。例如：`load data /*+ parallel(20) direct(true, 0) */ remote_oss infile 'oss://aa*bb/test.*.csv?host=xxx&access_id=xxx&access_key=xxx' replace into table t1 fields terminated by '|';` 会返回 `OB_NOT_SUPPORTED`。
+
+  * 文件名通配符只支持 `*` 和 `?`。其他通配符虽然允许输入，但无法匹配任何结果。
+
+更多信息，请参见 [使用 LOAD DATA 语句旁路导入数据/文件](../../../../../500.data-migration/1100.bypass-import/200.use-load-data-statement-to-bypass-import-data.md)。
+
+## 示例
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><code>LOAD DATA</code> 加载数据时支持使用 <code>\N</code> 代表 <code>NULL</code>。</p>
+</main>
+
+### 从服务器端文件导入数据
+
+示例 1：服务器端文件导入数据。
+
+1. 设置全局安全路径。
+
+   ```shell
+   obclient> SET GLOBAL secure_file_priv = "/"
+   Query OK, 0 rows affected
+   obclinet> \q
+   Bye
+   ```
+
+   <main id="notice" type='explain'>
+     <h4>说明</h4>
+     <p>由于 <code>secure_file_priv</code> 是 <code>GLOBAL</code> 变量，所以需要执行 <code>\q</code> 退出使之生效。</p>
+   </main>
+
+2. 重连数据库后，从外部文件导入数据。
+
+   ```shell
+   obclient> LOAD DATA INFILE 'test.sql' INTO TABLE t1;
+   Query OK, 0 rows affected
+   ```
+
+示例 2：使用 `APPEND` Hint 启用旁路导入功能。
+
+```shell
+LOAD DATA /*+ PARALLEL(4) APPEND */
+   INFILE '/home/admin/a.csv'
+   INTO TABLE t;
+```
+
+示例 3：使用 `direct(bool, int)` Hint 启用旁路导入功能，旁路导入文件可在 oss 上。
+
+```shell
+load data /*+ parallel(1) direct(false,0)*/ remote_oss infile 'oss://antsys-oceanbasebackup/backup_rd/xiaotao.ht/lineitem2.tbl?host=***.oss-cdn.***&access_id=***&access_key=***' into table lineitem fields terminated by '|' enclosed by '' lines starting by '' terminated by '\n';
+```
+
+### 从客户端（本地）文件导入数据
+
+示例 4：使用以下语句，从本地文件导入数据至 OceanBase 数据库表中。
+
+1. 打开终端或命令提示符窗口，并输入以下命令来启动客户端。
+
+    ```shell
+    obclient --local-infile -hxxx.xxx.xxx.xxx -P2881 -uroot@mysql001 -p****** -A -Dtest
+    ```
+
+    返回结果如下：
+
+    ```shell
+    Welcome to the OceanBase.  Commands end with ; or \g.
+    Your OceanBase connection id is 3221719526
+    Server version: OceanBase 4.2.2.0 (r100000022023121309-f536833402c6efe9364d5a4b61830a858ef24d82) (Built Dec 13 2023 09:58:18)
+
+    Copyright (c) 2000, 2018, OceanBase and/or its affiliates. All rights reserved.
+
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+    obclient [test]>
+    ```
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>为了使用 <code>LOAD DATA LOCAL INFILE</code> 功能，请使用 V2.2.4 或之后的版本的 OBClient 客户端。如果您没有要求版本的 OBClient 客户端，也可以使用 MySQL 客户端来连接数据库。</p>
+    </main>
+
+2. 在客户端中，执行 `LOAD DATA LOCAL INFILE` 语句来加载本地数据文件。
+
+    ```shell
+    obclient [test]> LOAD DATA LOCAL INFILE '/home/admin/test_data/tbl1.csv' INTO TABLE tbl1 FIELDS TERMINATED BY ',';
+    ```
+
+    返回结果如下：
+
+    ```shell
+    Query OK, 3 rows affected
+    Records: 3  Deleted: 0  Skipped: 0  Warnings: 0
+    ```
+
+### 从 OSS 文件导入数据
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>使用对象存储路径时，对象存储路径的各项参数由 <code>&</code> 符号进行分隔，请确保您输入的参数值中仅包含英文字母大小写、数字、<code>\/-_$+=</code> 以及通配符。如果您输入了上述以外的其他字符，可能会导致设置失败。</p>
+</main>
+
+使用 `direct(bool, int)` Hint 启用旁路导入功能，导入文件可在 OSS 上。
+
+```shell
+LOAD DATA /*+ direct(true,1024) parallel(16) */ REMOTE_OSS INFILE 'oss://antsys-oceanbasebackup/backup_rd/xiaotao.ht/lineitem2.tbl?host=***.oss-cdn.***&access_id=***&access_key=***' INTO TABLE tbl1 FIELDS TERMINATED BY ',';
+```
+
+## 相关文档
+
+* 更多有关连接 OceanBase 数据库的信息，请参见 [连接方式概述](../../../../../300.develop/100.application-development-of-mysql-mode/100.connect-to-oceanbase-database-of-mysql-mode/100.connection-methods-overview-of-mysql-mode.md)。
+* 更多有关使用 `LOAD DATA` 语句的示例信息，请参见 [使用 LOAD DATA 语句导入数据](../../../../../500.data-migration/700.migrate-data-from-csv-file-to-oceanbase-database/200.use-the-load-command-to-load-the-csv-data-file-to-the-oceanbase-database.md)。
+* 更多有关使用 `LOAD DATA` 旁路导入的示例信息，请参见 [使用 LOAD DATA 语句旁路导入数据](../../../../../500.data-migration/1100.bypass-import/200.use-load-data-statement-to-bypass-import-data.md)。

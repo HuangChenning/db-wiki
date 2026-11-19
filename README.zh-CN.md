@@ -29,7 +29,16 @@ Oracle、MySQL、达梦、瀚高与 OceanBase 数据库文档的 Markdown 阅读
 | 达梦 DM8 | 56 | [版本总目录](dameng/dm8/catalog.md) · [系统管理](dameng/dm8/administrator/contents.md) |
 | 瀚高 V4.5 | 23 | [版本总目录](highgo/highgov45/catalog.md) · [安装手册](highgo/highgov45/develop-installation-manual/contents.md) |
 | 瀚高 V9 | 24 | [版本总目录](highgo/highgov9/catalog.md) · [管理员指南](highgo/highgov9/safety-administrator-guide/contents.md) |
-| OceanBase V5.0.1 | 28 | [版本总目录](OceanBase/OceanBase-v5.0.1/catalog.md) · [OceanBase 简介](OceanBase/OceanBase-v5.0.1/learn-more-about-oceanbase/contents.md) |
+| OceanBase V5.0.1（分布式） | 28 | [版本总目录](OceanBase/OceanBase-v5.0.1/catalog.md) · [OceanBase 简介](OceanBase/OceanBase-v5.0.1/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.6.0（分布式） | 30 | [版本总目录](OceanBase/OceanBase-v4.6.0/catalog.md) · [OceanBase 简介](OceanBase/OceanBase-v4.6.0/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.5.0（分布式） | 29 | [版本总目录](OceanBase/OceanBase-v4.5.0/catalog.md) · [OceanBase 简介](OceanBase/OceanBase-v4.5.0/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.4.2（分布式） | 31 | [版本总目录](OceanBase/OceanBase-v4.4.2/catalog.md) · [OceanBase 简介](OceanBase/OceanBase-v4.4.2/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.3.5（分布式） | 31 | [版本总目录](OceanBase/OceanBase-v4.3.5/catalog.md) · [OceanBase 简介](OceanBase/OceanBase-v4.3.5/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.2.5（分布式） | 25 | [版本总目录](OceanBase/OceanBase-v4.2.5/catalog.md) · [OceanBase 简介](OceanBase/OceanBase-v4.2.5/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.1.0（分布式） | 16 | [版本总目录](OceanBase/OceanBase-v4.1.0/catalog.md) · [OceanBase 介绍](OceanBase/OceanBase-v4.1.0/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.4.2 LTS（集中式） | 17 | [版本总目录](OceanBase/OceanBase-standalone-v4.4.2/catalog.md) · [集中式版简介](OceanBase/OceanBase-standalone-v4.4.2/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.3.5 LTS（集中式） | 18 | [版本总目录](OceanBase/OceanBase-standalone-v4.3.5/catalog.md) · [集中式版简介](OceanBase/OceanBase-standalone-v4.3.5/learn-more-about-oceanbase/contents.md) |
+| OceanBase V4.2.5 LTS（集中式） | 17 | [版本总目录](OceanBase/OceanBase-standalone-v4.2.5/catalog.md) · [集中式版简介](OceanBase/OceanBase-standalone-v4.2.5/learn-more-about-oceanbase/contents.md) |
 
 例如，阅读 [Oracle 19c 数据库概念目录](Oracle/Oracle19c/concepts/contents.md)，再进入 [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md)，即可查看完整章节；章节开头的 `source` 字段记录官方原文地址。
 

@@ -1,0 +1,42 @@
+---
+title: TIME_TO_SEC
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005288245.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# TIME_TO_SEC
+
+## 声明
+
+```sql
+TIME_TO_SEC(time)
+```
+
+## 说明
+
+将时间类型参数 `time` 转换为秒。
+
+## 示例
+
+```sql
+obclient> SELECT TIME_TO_SEC('22:23:00');
++-------------------------+
+| TIME_TO_SEC('22:23:00') |
++-------------------------+
+|                   80580 |
++-------------------------+
+1 row in set
+
+obclient> SELECT TIME_TO_SEC('00:39:38');
++-------------------------+
+| TIME_TO_SEC('00:39:38') |
++-------------------------+
+|                    2378 |
++-------------------------+
+1 row in set
+```

@@ -1,0 +1,542 @@
+---
+title: "更改表"
+book: "数据库对象管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501905.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 更改表
+
+表创建成功后，您可以使用 `ALTER TABLE` 语句对表进行修改。
+
+## 更改表的 Collation 和字符集
+
+创建表时，如果未明确定义表的 Collation 和字符集，则默认使用数据库的字符集和字符序，数据库的 Collation 和字符集的详细介绍信息请参见 [数据库级字符集和字符序](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/100.basic-elements-of-mysql-mode/300.character-set-and-collation-of-mysql-mode/400.specify-character-set-and-collation-of-mysql-mode.md)。
+
+表创建后，您可以修改表的 Collation 和字符集设置。 语句如下：
+
+```sql
+ALTER TABLE table_name [[DEFAULT] CHARACTER SET [=] charset_name] [COLLATE [=] collation_name];
+```
+
+OceanBase 数据库中表的 Collation 和字符集的详细介绍信息请参见 [表级字符集和字符序](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/100.basic-elements-of-mysql-mode/300.character-set-and-collation-of-mysql-mode/500.table-level-character-set-and-collation-of-mysql-mode.md)。
+
+<main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>修改表的 Collation 和字符集设置仅影响后续添加的字符类型的列的数据保存方式，已有字符类型的列的数据保存方式不会被修改。</p>
+</main>
+
+示例：
+
+1. 创建表 `tbl1`。
+
+   ```sql
+   obclient> CREATE TABLE tbl1 (c1 int, c2 varchar(32), c3 varchar(32), PRIMARY KEY(c1), UNIQUE KEY uk1(c2));
+   ```
+
+2. 修改表的 Collation 和字符集。
+
+   ```sql
+   obclient> ALTER TABLE tbl1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin;
+   ```
+
+   如果表中已有数据，您可以修改表中已有数据的 Collation 和字符集，并将表的 Collation 和字符集也修改为对应的设置。示例如下：
+
+   ```sql
+   obclient> ALTER TABLE tbl1 CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+   ```
+
+## 更改表结构
+
+OceanBase 数据库支持增加列、修改列及其属性、删除列等。
+
+### 增加列
+
+在表中增加列，但不支持直接增加主键列。如果需要增加主键列，可以先增加列后再为列添加主键。添加主键的相关操作请参见 [定义列的约束类型](../200.manage-tables-of-mysql-mode/400.define-the-constraint-type-for-a-column-of-mysql-mode.md)。
+
+假设有一表 `test`，其表结构如下所示。
+
+```shell
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| c1    | int(11)     | NO   | PRI | NULL    |       |
+| c2    | varchar(50) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set
+```
+
+* 添加任意列 `c3`。
+
+  ```sql
+  obclient> ALTER TABLE test ADD c3 int;
+  ```
+
+  修改后，执行语句 `DESCRIBE test` 查询表结构，结果如下。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c2    | varchar(50) | YES  |     | NULL    |       |
+  | c3    | int(11)     | YES  |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  3 rows in set
+  ```
+
+* 在 `c1` 列后面指定添加 `c4` 列。
+
+  ```sql
+  obclient> ALTER TABLE test ADD COLUMN c4 INT NULL AFTER c1;
+  ```
+
+  修改后，执行语句 `DESCRIBE test` 查询表结构，结果如下。  
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c4    | int(11)     | YES  |     | NULL    |       |
+  | c2    | varchar(50) | YES  |     | NULL    |       |
+  | c3    | int(11)     | NO   |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  4 rows in set
+  ```
+
+* 在 `c1` 列前面指定添加 `c6` 列。
+
+  ```sql
+  obclient> ALTER TABLE test ADD COLUMN c6 INT NULL BEFORE c1;
+  ```
+
+  修改后，执行语句 `DESCRIBE test` 查询表结构，结果如下。  
+  
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c6    | int(11)     | YES  |     | NULL    |       |
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c4    | int(11)     | YES  |     | NULL    |       |
+  | c2    | varchar(50) | YES  |     | NULL    |       |
+  | c3    | int(11)     | NO   |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  5 rows in set
+  ```
+
+  显示的字段解释如下：
+
+  * `Field`：字段信息为列名。
+
+  * `Type`：该列的数据类型。
+
+  * `Null`：表示该列是否允许为空，`NO` 表示不允许为空，`YES` 表示允许为空。
+
+  * `key`：字段信息显示为 `PRI` 代表改列为主键列。
+
+### 修改列属性
+
+支持重命名列、修改列类型以及列的默认值。
+
+* 重命名列
+
+  使用 `RENAME COLUMN` 关键字重命名列时，需要注意以下事项：
+
+  * 如果待重命名的列上有索引或者外键约束，列名可以修改成功，并且索引定义和外键约束会自动级联修改。
+
+  * 如果待重命名的列被视图或存储过程引用，列名可以修改成功，但需要手动修改视图或存储过程的定义。
+
+  * 不支持同时进行重命名列和删除列的操作。
+
+  * 不支持同时进行重命名列与修改分区（增加分区、删除分区等）的操作。
+
+  假设有一表 `test`，其表结构如下所示。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c2    | varchar(50) | YES  |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+  
+  将表 `test` 的 `c2` 列重命名为 `c` 的示例如下。
+
+  ```sql
+  obclient> ALTER TABLE test RENAME COLUMN c2 TO c;
+  ```
+
+  修改后，执行语句 `DESCRIBE test` 查询表结构，结果如下。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c     | varchar(50) | YES  |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+  注意，以下场景下，重命名列会失败：
+
+  * 目标列名在当前表中已存在
+
+    有一个特殊场景，如果重命名的列出现了循环的场景，可以重命名成功。例如，本示例中，将原 `c1` 列重命名为 `c2`,同时将原 `c2` 列重命名为 `c1`，执行语句 `ALTER TABLE test RENAME COLUMN c1 TO c2, rename column c2 TO c1;`，可以重命名成功。
+
+  * 待重命名的列被生成列表达式引用
+
+  * 待重命名的列被分区表达式引用
+
+  * 待重命名的列被 CHECK 约束引用
+
+* 修改列类型
+
+  OceanBase 数据库暂不支持修改外键列以及被外键依赖的列的列类型。
+
+  有关 OceanBase 数据库中 MySQL 模式下列类型的转换规则及详细信息，请参见 [列类型变更规则](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/700.ddl-function-of-mysql-mode/900.column-type-change-rule-of-mysql-mode.md)。
+
+  此外，对于列类型为 INTEGER 的主键列，从 V4.2.2 版本开始，修改列类型支持 Online DDL。
+  
+  假设有一表 `test`，其表结构如下所示。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c2    | varchar(50) | YES  |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+  将表 `test` 的 `c2` 列修改为 BIGINT 类型的示例如下。
+
+  ```sql
+  obclient> ALTER TABLE test MODIFY c1 BIGINT(50);
+  ```
+
+  修改后，执行语句 `DESCRIBE test` 查询表结构，结果如下。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | bigint(50)  | NO   | PRI | NULL    |       |
+  | c2    | varchar(50) | YES  |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+* 修改列名同时修改列类型
+
+  假设有一表 `test`，其表结构如下所示。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c2    | varchar(50) | YES  |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+  将表 `test` 的 `c2` 列重命名为 `c` 并将其数据类型修改为 CHAR 类型的示例如下。
+
+  ```sql
+  obclient> ALTER TABLE test CHANGE COLUMN c2 c CHAR(60);
+  ```
+
+  修改后，执行语句 `DESCRIBE test` 查询表结构，结果如下。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c     | char(60)    | YES  |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+* 修改列的默认值。
+
+  修改列的 `default` 值为 `2` 的示例如下：
+
+  ```sql
+  obclient> ALTER TABLE test CHANGE COLUMN c c2 varchar(50) DEFAULT 2;
+  ```
+
+  修改后，执行语句 `DESCRIBE test` 查询表结构，结果如下。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c2    | varchar(50) | YES  |     | 2       |       |
+  +-------+-------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+  或者您也可以通过以下语句修改列的默认值。
+
+  ```sql
+  ALTER TABLE table_name ALTER [COLUMN] column_name {SET DEFAULT const_value | DROP DEFAULT}
+  ```
+
+### 修改列的 Collation 和字符集
+
+如果添加列时，未在各个列的定义中指定列的字符集和字符序，则各个列将默认使用表的字符集和字符序。您可以根据业务需要，修改各个列的 Collation 和字符集设置。
+
+假设有表 `tbl1` 的建表语句如下。
+
+```sql
+obclient> CREATE TABLE tbl1 (c1 int, c2 varchar(32), c3 varchar(32), PRIMARY KEY(c1), UNIQUE KEY uk1(c2));
+```
+
+修改表 `tbl1` 中 `c2` 列的 Collation 的示例如下：
+
+```sql
+obclient> ALTER TABLE tbl1 MODIFY COLUMN c2 varchar(32) COLLATE utf8mb4_bin;
+```
+
+OceanBase 数据库中，列的 Collation 和字符集的详细介绍信息请参见 [列级字符集和字符序](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/100.basic-elements-of-mysql-mode/300.character-set-and-collation-of-mysql-mode/600.column-level-character-set-and-collations-of-mysql-mode.md)。
+
+### 删除列
+
+支持删除表中的普通列和含索引的列，但不允许删除主键列。
+
+假设有一表 `test`，其表结构如下所示。
+
+```shell
++-------+----------+------+-----+---------+-------+
+| Field | Type     | Null | Key | Default | Extra |
++-------+----------+------+-----+---------+-------+
+| c1    | int(11)  | NO   | PRI | NULL    |       |
+| c     | char(60) | YES  |     | NULL    |       |
++-------+----------+------+-----+---------+-------+
+2 rows in set
+```
+
+* 删除表中的普通列。
+
+  假设有一表 `test`，其表结构如下所示。
+
+  ```shell
+  +-------+----------+------+-----+---------+-------+
+  | Field | Type     | Null | Key | Default | Extra |
+  +-------+----------+------+-----+---------+-------+
+  | c1    | int(11)  | NO   | PRI | NULL    |       |
+  | c     | char(60) | YES  |     | NULL    |       |
+  +-------+----------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+  执行以下语句，删除 `c` 列。
+
+  ```sql
+  obclient> ALTER TABLE test DROP c;
+  ```
+
+  删除后，执行语句 `DESCRIBE test` 查询表结构，结果如下。
+
+  ```shell
+  +-------+---------+------+-----+---------+-------+
+  | Field | Type    | Null | Key | Default | Extra |
+  +-------+---------+------+-----+---------+-------+
+  | c1    | int(11) | NO   | PRI | NULL    |       |
+  +-------+---------+------+-----+---------+-------+
+  1 row in set
+  ```
+
+* 删除表中含索引的列。
+
+  假设有一表 `test`，其表结构如下所示。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c2    | varchar(32) | YES  | MUL | NULL    |       |
+  | c3    | varchar(32) | YES  |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  3 rows in set
+  ```
+
+  执行以下语句，删除 `c2` 列。
+
+  ```sql
+  obclient> ALTER TABLE test DROP c2;
+  ```
+
+  删除后，执行语句 `DESCRIBE test` 查询表结构，结果如下。
+
+  ```shell
+  +-------+-------------+------+-----+---------+-------+
+  | Field | Type        | Null | Key | Default | Extra |
+  +-------+-------------+------+-----+---------+-------+
+  | c1    | int(11)     | NO   | PRI | NULL    |       |
+  | c3    | varchar(32) | YES  |     | NULL    |       |
+  +-------+-------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+#### 删除多列
+
+删除多列的 SQL 语法如下：
+
+```sql
+ALTER TABLE table_name DROP COLUMN column_name1, DROP COLUMN column_name2, ...;
+```
+
+**示例如下：**
+
+1. 创建测试表 `test_tbl5`。
+
+    ```sql
+    CREATE TABLE test_tbl5 (
+      col1 NUMBER(38),
+      col2 VARCHAR(50),
+      col3 NUMBER(38),
+      col4 NUMBER(38),
+      col5 NUMBER(38),
+      col6 NUMBER(38),
+      col7 NUMBER(38),
+      PRIMARY KEY(col1));
+    ```
+
+2. 删除表 `test_tbl5` 的列 `col4` 和 `col5`。
+
+    ```sql
+    ALTER TABLE test_tbl5 DROP COLUMN col4, DROP COLUMN col5;
+    ```
+
+3. 查看表 `test_tbl5` 的结构。
+
+    ```sql
+    DESC test_tbl5;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +-------+--------------+------+------+---------+-------+
+    | FIELD | TYPE         | NULL | KEY  | DEFAULT | EXTRA |
+    +-------+--------------+------+------+---------+-------+
+    | COL1  | NUMBER(38)   | NO   | PRI  | NULL    | NULL  |
+    | COL2  | VARCHAR(50) | YES  | NULL | NULL    | NULL  |
+    | COL3  | NUMBER(38)   | YES  | NULL | NULL    | NULL  |
+    | COL6  | NUMBER(38)   | YES  | NULL | NULL    | NULL  |
+    | COL7  | NUMBER(38)   | YES  | NULL | NULL    | NULL  |
+    +-------+--------------+------+------+---------+-------+
+    3 rows in set
+    ```
+
+### 清除废弃列
+
+当某些列被删除，即使这些列不再被使用，它们仍然占据物理存储空间。如果要移除这些废弃列并回收相关空间，需要清除废弃列。
+清除废弃列的 SQL 语法如下：
+
+```sql
+ALTER TABLE table_name FORCE;
+```
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 OceanBase 数据库 V4.2.5 版本，从 V4.2.5 BP5 版本开始支持清除废弃列。</p>
+</main>
+
+**示例如下：**
+
+```sql
+ALTER TABLE test_tbl5 FORCE;
+```
+
+## 修改索引
+
+OceanBase 数据库支持增加唯一索引和普通索引，同时还支持修改索引的属性。
+
+* 增加唯一索引
+
+  OceanBase 数据库支持在创建表后为表增加唯一索引。如果创建表时同时设置了主键，OceanBase 数据库会默认为主键列创建一个唯一索引。
+
+  为表增加唯一索引的示例如下：
+
+  1. 创建表 `test`。
+
+     ```sql
+     obclient> CREATE TABLE test (c1 int PRIMARY KEY, c2 VARCHAR(50));
+     ```
+
+  2. 为表增加唯一索引。
+
+     ```sql
+     obclient> ALTER TABLE test ADD UNIQUE INDEX index_name(c2);
+     ```
+
+* 增加普通索引
+
+  OceanBase 数据库支持一次增加多个索引，索引关键字用 `INDEX` 或 `KEY` 均可以。
+
+  为表增加普通索引的示例如下：
+
+  1. 创建表 `test`。
+
+     ```sql
+     obclient> CREATE TABLE test (c1 int PRIMARY KEY, c2 VARCHAR(50));
+     ```
+
+  2. 同时为表的 `c1`、`c2` 列添加名为 `myidx` 的索引。
+
+     ```sql
+     obclient> ALTER TABLE test ADD INDEX myidx(c1,c2);
+     ```
+  
+* 删除索引
+
+  OceanBase 数据库支持删除索引，删除多个索引时用逗号隔开，索引关键字用 `INDEX` 或 `KEY` 均可以。示例如下：
+
+  ```sql
+  obclient> ALTER TABLE test DROP KEY index_name, DROP KEY index_name1;
+  ```
+
+## 更改表的主键、外键及 Check 约束
+
+OceanBase 数据库支持更改表的主键、外键及 Check 约束，具体操作及详细说明请参见 [定义列的约束类型](../200.manage-tables-of-mysql-mode/400.define-the-constraint-type-for-a-column-of-mysql-mode.md)。
+
+## 更改表的副本数
+
+设置表的副本数为 `2`。示例如下：
+
+```sql
+obclient> ALTER TABLE test SET REPLICA_NUM=2;
+```
+
+## 重命名表
+
+表创建成功后，您可以更改表名。OceanBase 数据库支持重命名表。
+
+示例如下：
+
+```sql
+obclient> ALTER TABLE test RENAME TO t1;
+```
+
+或者也可以使用以下语句：
+
+```sql
+obclient> RENAME TABLE test TO t1;
+```
+
+更多 `ALTER TABLE` 语句的介绍，请参见 [ALTER TABLE](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/1600.alter-table-of-mysql-mode.md)。

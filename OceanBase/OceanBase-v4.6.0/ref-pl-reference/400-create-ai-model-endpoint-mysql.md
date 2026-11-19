@@ -1,0 +1,209 @@
+---
+title: CREATE_AI_MODEL_ENDPOINT
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686364.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CREATE_AI_MODEL_ENDPOINT
+
+`CREATE_AI_MODEL_ENDPOINT` 过程用于创建 AI 模型对象的访问端点，需指定端点的地址、访问密钥、模型供应商等属性。
+
+## 语法
+
+```sql
+PROCEDURE create_ai_model_endpoint(
+    IN name VARCHAR(128), 
+    IN params JSON);
+```
+
+## 参数说明
+
+<table>
+  <thead>
+    <tr>
+      <th>参数</th>
+      <th>描述</th>
+      <th>类型</th>
+      <th>取值范围</th>
+      <th>是否可空</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td>AI 模型对象的访问端点的名称。</td>
+      <td>VARCHAR(128)</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td rowspan="6">params</td>
+      <td><code>ai_model_name</code>，表示由 <code>CREATE_AI_MODEL</code> 过程创建的 AI 模型对象的名称</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>url</code>，表示 AI 模型服务访问端点的完整 URL，即聊天、嵌入或重排序等功能的具体接口地址，而非基础 URL</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>access_key</code>，表示访问端点的访问密钥</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>request_model_name</code>，表示用户自定义的模型名称，例如 <code>big-m3-custom</code>，放在请求消息体里面</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>YES，可以为空或不指定</td>
+    </tr>
+    <tr>
+      <td><code>provider</code>，表示模型供应商</td>
+      <td>JSON STRING</td>
+      <td><ul><li><code>aliyun-openAI</code>：阿里云 OpenAI</li><li><code>aliyun-dashscope</code>：阿里云 DashScope</li><li><code>deepseek</code>：DeepSeek</li><li><code>siliconflow</code>：SiliconFlow</li><li><code>hunyuan-openAI</code>：混元 OpenAI</li><li><code>openAI</code>：OpenAI</li></ul></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>parameters</code>，表示端点的扩展参数，用于配置 <code>AI_COMPLETE</code> 和 <code>AI_EMBED</code> 函数处理多行数据时的并发批处理行为。该字段的值是 <b>JSON 字符串</b>（不是 JSON 对象），推荐使用 <code>JSON_OBJECT()</code> 函数构建参数，避免复杂的转义问题。支持的子参数见下文 <a href="#parameters-sub-params">parameters 参数说明</a>。<main id="notice" type='explain'><h4>说明</h4><p>该参数从 V5.0.1 版本开始引入。不配置时使用默认并发范围 10~100。</p></main></td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>YES，可以为空或不指定</td>
+    </tr>
+  </tbody>
+</table>
+
+### url 参数取值范围
+
+<table>
+  <thead>
+    <tr>
+      <th>厂商</th>
+      <th>类型</th>
+      <th>说明/示例</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">阿里云<br>（兼容 OpenAI 格式）</td>
+      <td>complete</td>
+      <td>https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions</td>
+    </tr>
+    <tr>
+      <td>embedding</td>
+      <td>https://dashscope.aliyuncs.com/compatible-mode/v1/embeddings</td>
+    </tr>
+    <tr>
+      <td rowspan="3">阿里云 DashScope<br>（非兼容 OpenAI 格式）</td>
+      <td>complete</td>
+      <td>https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation</td>
+    </tr>
+    <tr>
+      <td>embed</td>
+      <td>https://dashscope.aliyuncs.com/api/v1/services/embeddings/text-embedding/text-embedding</td>
+    </tr>
+    <tr>
+      <td>rerank</td>
+      <td>https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank</td>
+    </tr>
+    <tr>
+      <td>deepseek<br>（兼容 OpenAI 格式）</td>
+      <td>complete</td>
+      <td>https://api.deepseek.com/chat/completions</td>
+    </tr>
+    <tr>
+      <td rowspan="3">硅基流动<br>（兼容 OpenAI 格式）</td>
+      <td>complete</td>
+      <td>https://api.siliconflow.cn/v1/chat/completions</td>
+    </tr>
+    <tr>
+      <td>embedding</td>
+      <td>https://api.siliconflow.cn/v1/embeddings</td>
+    </tr>
+    <tr>
+      <td>rerank</td>
+      <td>https://api.siliconflow.cn/v1/rerank</td>
+    </tr>
+    <tr>
+      <td rowspan="2">腾讯混元大模型<br>（兼容 OpenAI 接口）</td>
+      <td>complete</td>
+      <td>https://api.hunyuan.cloud.tencent.com/v1/chat/completions</td>
+    </tr>
+    <tr>
+      <td>embedding</td>
+      <td>https://api.hunyuan.cloud.tencent.com/v1/embeddings</td>
+    </tr>
+  </tbody>
+</table>
+
+### parameters 参数说明
+
+`parameters` 字段用于配置并发批处理参数。系统采用 AIMD 自适应算法，根据模型服务响应动态调整并发数，在吞吐量和稳定性之间取得平衡。
+
+| 参数 | 描述 | 类型 | 默认值 | 是否可空 |
+| --- | --- | --- | --- | --- |
+| `min_concurrency` | 并发数下限。AIMD 自适应降速时不低于此值。 | int | 10 | YES，可以为空、不指定或设为 0（表示使用默认值） |
+| `max_concurrency` | 并发数上限。初始并发数等于此值。 | int | 100 | YES，可以为空、不指定或设为 0（表示使用默认值） |
+
+参数调优说明如下：
+
+* 公有云 API（如 OpenAI/DeepSeek 等）建议 `max_concurrency` 不超过 50，避免触发限流。
+* 自建模型服务可根据算力适当放大。
+* 如果频繁出现 429 限流日志，说明 `max_concurrency` 偏高，应调低或依赖自适应降速。
+
+## 示例
+
+创建 AI 模型访问端点，类型为 `dense_embedding`，大模型为 `text-embedding-v2`。不配置 `parameters`，使用默认并发范围 10~100。
+
+```sql
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+  'my_model_endpoint1', '{
+    "ai_model_name": "my_model1",
+    "url": "https://api.deepseek.com/chat/completions",
+    "access_key": "sk-xxxxxxxxxxxx",
+    "request_model_name": "deepseek-chat",
+    "provider": "deepseek"
+  }');
+```
+
+创建 AI 模型访问端点，并通过 **JSON 对象方式（推荐使用）** 配置并发批处理参数。
+
+```sql
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT('my_model_endpoint2',
+  JSON_OBJECT(
+    "ai_model_name", "my_model1",
+    "url", "https://api.deepseek.com/chat/completions",
+    "access_key", "sk-xxxxxxxxxxxx",
+    "provider", "deepseek",
+    "request_model_name", "deepseek-chat",
+    "parameters", '{"min_concurrency": 5, "max_concurrency": 50}'
+  )
+);
+```
+
+创建 AI 模型访问端点，并通过纯 JSON 字符串方式配置并发批处理参数，需要双重转义 `\\\"`。
+
+```sql
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT('my_model_endpoint3', '{
+  "ai_model_name": "my_model1",
+  "url": "https://api.deepseek.com",
+  "access_key": "sk-xxxx",
+  "provider": "deepseek",
+  "request_model_name": "deepseek-chat",
+  "parameters": "{\\\"min_concurrency\\\": 5, \\\"max_concurrency\\\": 50}"
+}');
+```
+
+## 相关文档
+
+* [DBMS_AI_SERVICE 子程序概览](100.dbms-ai-service-overview-mysql.md)
+* [ALTER_AI_MODEL_ENDPOINT](500.alter-ai-model-endpoint-mysql.md)
+* [DROP_AI_MODEL_ENDPOINT](600.drop-ai-model-endpoint-mysql.md)

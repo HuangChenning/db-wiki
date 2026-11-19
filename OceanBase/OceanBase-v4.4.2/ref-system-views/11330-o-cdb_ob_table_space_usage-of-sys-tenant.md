@@ -1,0 +1,66 @@
+---
+title: oceanbase.CDB_OB_TABLE_SPACE_USAGE
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284420.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_TABLE_SPACE_USAGE
+
+<main id="notice" type='explain'>
+ <h4>说明</h4>
+ <p>该视图从 V4.3.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+用于展示所有租户下所有用户表（多副本环境下以 Leader 副本为准）的大小。
+
+## 字段说明
+
+| **字段名称** | **类型**  | **是否可以为 NULL** | **描述**                               |
+|------------|-------------|---------------------|----------------------------------------|
+| TENANT_ID     | varchar(128)  | NO   | 租户 ID     |
+| TABLE_ID      | bigint(20)    | NO   | 表 ID     |
+| TENANT_NAME   | varchar(128)  | NO   | 租户名     |
+| DATABASE_NAME | varchar(128)  | NO   | 数据库名     |
+| TABLE_NAME    | varchar(256)  | NO   | 表名     |
+| OCCUPY_SIZE   | decimal(42,0) | NO   | 表压缩后落盘的数据量，单位为字节     |
+| REQUIRED_SIZE | decimal(42,0) | NO   | 表压缩后落盘的数据量实际占用了多少磁盘空间，单位为字节    |
+
+## 查询示例
+
+sys 租户查看所有租户下所有用户表的大小。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OB_TABLE_SPACE_USAGE LIMIT 10;
+```
+
+查询结果如下：
+
+```shell
++-----------+----------+-------------+---------------+---------------------+-------------+---------------+
+| TENANT_ID | TABLE_ID | TENANT_NAME | DATABASE_NAME | TABLE_NAME          | OCCUPY_SIZE | REQUIRED_SIZE |
++-----------+----------+-------------+---------------+---------------------+-------------+---------------+
+| 1         |   500006 | sys         | test          | T1                  |        1094 |          8192 |
+| 1         |   500007 | sys         | test          | __idx_500006_IDX_C1 |         926 |          8192 |
+| 1         |   500008 | sys         | mysql         | t2_m_lr             |        2088 |         16384 |
+| 1         |   500009 | sys         | oceanbase     | __idx_500008_IDX_C1 |         881 |          8192 |
+| 1         |   500010 | sys         | oceanbase     | test1               |         493 |          4096 |
+| 1         |   500011 | sys         | oceanbase     | __idx_500010_b_idx  |         493 |          4096 |
+| 1         |   500012 | sys         | oceanbase     | test2               |         493 |          4096 |
+| 1         |   500013 | sys         | oceanbase     | __idx_500012_b_idx  |         493 |          4096 |
+| 1002      |   500008 | mysql001    | mysql         | t2_m_lr             |        8856 |         73728 |
+| 1002      |   500051 | mysql001    | test          | t1                  |        1233 |          8192 |
++-----------+----------+-------------+---------------+---------------------+-------------+---------------+
+10 rows in set
+```
+
+## 相关视图或文档
+
+* 查看各个租户在所有节点合计占用存储空间的详细情况：[oceanbase.CDB_OB_SPACE_USAGE](10470.o-cdb_ob_space_usage-of-sys-tenant.md)
+* 查看各租户在各个节点存储空间使用的详细信息：[oceanbase.CDB_OB_SERVER_SPACE_USAGE](10450.o-cdb_ob_server_space_usage-of-sys-tenant.md)

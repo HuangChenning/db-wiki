@@ -1,0 +1,54 @@
+---
+title: "关于外表与外部文件"
+book: "数据库对象管理"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685840.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 关于外表与外部文件
+
+外表（External Table）的数据存储在 OceanBase 集群外部的存储系统中（本地目录、对象存储、HDFS 等），数据库内仅保存元数据与访问路径。创建成功后，可像普通表一样用于 `SELECT`、JOIN、聚合等，但**只读**，不支持 DML、约束与索引。
+
+与普通表的差异：
+
+| 特性 | 外表 | 普通表 |
+| ---- | ---- | ------ |
+| 数据位置 | 外部存储 | OceanBase 内部 |
+| 读写 | 外表**只读**：可 `SELECT`，不能对其执行 `INSERT`、`UPDATE`、`DELETE` 等 DML。 | 读写 |
+| 约束与索引 | 不支持 | 支持 |
+| 典型性能 | 受网络与外部系统影响 | 本地访问更快 |
+
+## 注意事项
+
+* 创建时根据 `LOCATION`、`PATTERN` 收集文件列表；新增文件需刷新，参见 [管理外部文件](300.manage-external-files-of-oracle-mode.md) 与 [ALTER EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/100.alter-external-table-of-oracle-mode.md)。
+* 外表分区在 `PARTITION_TYPE = USER_SPECIFIED` 时，可通过 [ALTER EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/100.alter-external-table-of-oracle-mode.md) 增加或删除分区 `LOCATION`（MySQL 模式 ALTER 能力请以对应文档为准）。
+* 已删除的外部文件查询时不报错；并发修改外部文件可能导致非预期结果。
+
+## 外部数据访问方式
+
+| 方式 | 是否创建表对象 | 典型场景 | 语法与文档入口 |
+| ---- | -------------- | -------- | -------------- |
+| **外表（CREATE EXTERNAL TABLE）** | 是 | 需反复查询、需 JOIN 内表、需管理文件列表与分区 | [CREATE EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1600.create-external-table-of-oracle-mode.md)、[创建和查询外表](200.create-a-external-table-of-oracle-mode.md) |
+| **FILES 表函数** | 否 | 临时探查、一次性读取 | [FILES 表函数](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/500.functions-of-oracle-mode/550.table-functions-of-oracle-mode/200.files-table-function-of-oracle-mode.md)、[URL 外表（无元数据）](../../../../../620.obap/400.data-lake/300.url-external-table.md) |
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>文件格式（<code>FORMAT</code>）的完整参数以 <a href="../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1600.create-external-table-of-oracle-mode.md">CREATE EXTERNAL TABLE</a> 为准。External Catalog 等能力以 MySQL 模式文档为主，Oracle 模式请以实际支持的功能为准。</p>
+</main>
+
+## HDFS 外表
+
+访问 HDFS 需[部署 OceanBase 数据库 JAVA SDK 环境](../../../../../400.deploy/300.deploy-oceanbase-enterprise-edition/500.deploy-the-ob-java-sdk-environment.md)，并配置 [ob_enable_java_env](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/300.cluster-level-configuration-items/16630.ob_enable_java_env.md) 等项。详见 [CREATE EXTERNAL TABLE](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1600.create-external-table-of-oracle-mode.md)。故障排查，参见 [外表常见问题排查指南](../../../../../600.manage/1000.troubleshooting/1700.external-table-troubleshooting.md)。
+
+## 相关文档
+
+* [创建和查询外表](200.create-a-external-table-of-oracle-mode.md)
+* [创建外表分区](210.create-table-partition-of-oracle-mode.md)
+* [管理外部文件](300.manage-external-files-of-oracle-mode.md)
+* [数据类型映射](400.data-type-mapping-of-oracle-mode.md)
+* [CREATE EXTERNAL TABLE 语法（权威参考）](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1600.create-external-table-of-oracle-mode.md)
+* [FILES 表函数](../../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/500.functions-of-oracle-mode/550.table-functions-of-oracle-mode/200.files-table-function-of-oracle-mode.md)

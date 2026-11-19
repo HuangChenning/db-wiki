@@ -1,0 +1,22 @@
+---
+title: migration_disable_time
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699332.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# migration_disable_time
+
+migration_disable_time 用于设置因磁盘满等原因导致某个节点数据迁入失败时的暂停迁入时长。
+
+
+|      **属性**      |  **描述**   |
+|------------------|-----------|
+| 参数类型             | 时间类型      |
+| 默认值              | 3600s     |
+| 取值范围             | \[1s, +∞) |
+| 是否重启 OBServer 节点生效 | 否         |

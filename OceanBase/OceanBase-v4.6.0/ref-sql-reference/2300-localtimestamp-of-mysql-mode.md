@@ -1,0 +1,34 @@
+---
+title: LOCALTIMESTAMP
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687932.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# LOCALTIMESTAMP
+
+## 声明
+
+```sql
+LOCALTIMESTAMP([scale])
+```
+
+## 说明
+
+返回当前日期和时间，`scale` 表示微秒部分精度，有效值为 `0` 到 `6` 的整数。`LOCALTIMESTAMP` 和 `LOCALTIMESTAMP()` 是 `NOW()` 的同义词。
+
+## 示例
+
+```sql
+obclient> SELECT LOCALTIMESTAMP,LOCALTIMESTAMP(0),LOCALTIMESTAMP(6);
++---------------------+---------------------+----------------------------+
+| LOCALTIMESTAMP      | LOCALTIMESTAMP(0)   | LOCALTIMESTAMP(6)          |
++---------------------+---------------------+----------------------------+
+| 2021-08-25 17:17:08 | 2021-08-25 17:17:08 | 2021-08-25 17:17:08.952508 |
++---------------------+---------------------+----------------------------+
+1 row in set
+```

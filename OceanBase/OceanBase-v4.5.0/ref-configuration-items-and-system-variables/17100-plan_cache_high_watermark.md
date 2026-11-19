@@ -1,0 +1,30 @@
+---
+title: plan_cache_high_watermark
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479213.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# plan_cache_high_watermark
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于该配置项对应功能并未生效过，该配置项从 V4.2.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`plan_cache_high_watermark` 用于设置执行计划缓存占用内存的阈值，如果超过该阈值时将触发自动淘汰。
+
+## 属性说明
+
+|      **属性**             |  **描述**               |
+|---------------------------|-------------------------|
+| 参数类型                   | Capacity   |
+| 默认值                     | 2000M，默认单位为 MB，配置时需说明单位。  |
+| 取值范围                   | [0, +∞)   |
+| 是否重启 OBServer 节点生效  | 否      |

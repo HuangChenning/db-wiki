@@ -1,0 +1,34 @@
+---
+title: INSTR
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687999.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# INSTR
+
+## 声明
+
+```sql
+INSTR(str,substr)
+```
+
+## 说明
+
+返回字符串 `str` 中子字符串的第一个出现位置。这和 `LOCATE()` 的双参数形式相同，除非参数的顺序被颠倒。
+
+## 示例
+
+```sql
+obclient> SELECT INSTR('foobarbar', 'bar'), INSTR('xbar', 'foobar');
++---------------------------+-------------------------+
+| INSTR('foobarbar', 'bar') | INSTR('xbar', 'foobar') |
++---------------------------+-------------------------+
+|                         4 |                       0 |
++---------------------------+-------------------------+
+1 row in set
+```

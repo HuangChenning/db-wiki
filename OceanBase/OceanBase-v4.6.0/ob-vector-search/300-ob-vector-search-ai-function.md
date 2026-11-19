@@ -1,0 +1,476 @@
+---
+title: "AI 函数服务语法及示例"
+book: OceanBase AI
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682097.html"
+tags:
+  - oceanbase
+  - distributed
+  - ob-vector-search
+---
+
+# AI 函数服务语法及示例
+
+本文档为 AI 函数服务的参考文档，介绍 OceanBase 数据库中 AI 函数服务的功能、各函数的语法与参数、以及多种使用示例。目前支持的函数有 `AI_SPLIT_DOCUMENT`、`AI_EMBED`、`AI_COMPLETE`、`AI_PROMPT` 和 `AI_RERANK`。
+
+AI 函数通过 SQL 表达式，将 AI 模型能力直接集成到数据库内的数据处理中。它极大地简化了利用 AI 大模型进行数据读取、分析、总结和保存等操作，是当前数据库和数据仓库领域的重要新特性。在 MySQL 模式下，OceanBase 数据库通过 `DBMS_AI_SERVICE` 包提供 AI 模型和端点管理，并新增了几个内置 AI 函数表达式，并支持通过视图监控 AI 模型调用情况。
+
+## 前提条件（除 `AI_SPLIT_DOCUMENT` 外）
+
+* 已具备 AI 模型相关权限，具体请参见 [AI 函数服务权限](150.ob-vector-search-ai-function-permission.md)。
+* 若尚未注册 AI 模型与端点，请先按 [AI 模型注册](200.ob-vector-search-ai-function-register-model.md) 完成注册。
+
+## 注意事项（除 `AI_SPLIT_DOCUMENT` 外）
+
+* `CREATE AI MODEL` 和 `DROP AI MODEL` 操作会在主备租户间同步，但 `CREATE AI MODEL ENDPOINT`、`ALTER AI MODEL ENDPOINT` 和 `DROP AI MODEL ENDPOINT` 操作不会。因此，备租户需要手动配置 AI 模型端点才能使用 AI 函数服务。
+* 混合搜索（Hybrid Search）依赖 AI 函数服务的模型管理和嵌入（embedding）功能。在删除 AI 模型时，需检查其是否被混合搜索引用，以避免潜在问题。
+* `AI_COMPLETE` 和 `AI_EMBED` 在处理多行数据时会自动并发发送请求，而非逐行串行调用。并发度可通过端点的 `parameters` 字段配置，详见 [CREATE_AI_MODEL_ENDPOINT](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/1000.dbms-ai-service-mysql/400.create-ai-model-endpoint-mysql.md)。
+
+## 函数语法及示例
+
+本节介绍 AI 函数服务的语法及示例。
+
+### AI_SPLIT_DOCUMENT
+
+`AI_SPLIT_DOCUMENT` 函数将文本切分为多个片段，为后续处理做准备。
+
+#### 使用
+
+语法如下：
+
+```sql
+AI_SPLIT_DOCUMENT(content TEXT, [parameters JSON]) [AS alias_name]
+```
+
+参数说明：
+
+| 参数 | 描述 | 类型 | 是否可空 |
+|------|------|------|----------|
+| content | 用户输入的文本数据，目前仅支持 markdown 格式，UTF-8 编码的文本。 | VARCHAR / TEXT | No。必须指定，如果为空，则返回空表。 |
+| parameters | 用于支持配置 API 提供的可选项，格式为 JSON 对象或 JSON 格式的字符串。目前支持：<ul><li><code>type</code>：取值范围为 <code>text</code> 或 <code>markdown</code>，默认为 <code>markdown</code></li><li><code>by</code>：取值范围为 <code>word</code> 或 <code>sentence</code>，表示切分单位是词数还是句子数，默认为 <code>word</code></li><li><code>max</code>：表示每个块（Chunk）最切分的词（或者语句）数，默认为 256。取值范围：[1,1000]</li><li><code>overlap</code>：相邻块之间有最多交叉多少词（或者句子数），默认值为 0，不能超过最大值的一半。</li></ul> | JSON | Yes |
+| alias_name | 指定返回结果的别名。 | VARCHAR(128) | Yes |
+
+返回值：
+
+* 返回一个关系表，包含四个字段：`CHUNK_ID`、`CHUNK_OFFSET`、`CHUNK_LENGTH`、`CHUNK_TEXT`。其中，`CHUNK_ID` 为切分后的块 ID，`CHUNK_OFFSET` 为切分后的块起始位置，`CHUNK_LENGTH` 为切分后的块长度（字节），`CHUNK_TEXT` 为切分后的块的文本内容。
+
+限制如下：
+
+* 目前仅支持对 UTF-8 编码的数据进行切分。
+* 该函数只能在 `FROM` 子句后作为表函数使用，不支持直接作为标量函数出现在 `SELECT` 列表中。
+
+#### 示例
+
+```sql
+SELECT * FROM ai_split_document("你好世界",'{"max":1}');
+```
+
+返回结果如下：
+
+```sql
++----------+--------------+--------------+------------+
+| CHUNK_ID | CHUNK_OFFSET | CHUNK_LENGTH | CHUNK_TEXT |
++----------+--------------+--------------+------------+
+|        0 |            0 |            6 | 你好       |
+|        1 |            6 |            6 | 世界       |
++----------+--------------+--------------+------------+
+```
+
+### AI_EMBED
+
+`AI_EMBED` 函数通过 `model_key` 指定一个已注册的嵌入模型（Embedding Model），将用户提供的文本或图片数据转换为向量数据。当模型支持多个维度时，允许通过 `dim` 参数指定输出相关维度的向量；对图片输入时，通过 JSON 参数 `{"type":"image"}` 指定输入类型。
+
+#### 使用
+
+语法如下：
+
+```sql
+AI_EMBED(model_key, input, [dim_or_parameters])
+```
+
+参数说明：
+
+| 参数 | 描述 | 类型 | 是否可空 |
+|------|------|------|----------|
+| model_key | 数据库内注册的模型。 | VARCHAR(128) | No |
+| input | 待转换的文本或图片数据。文本为字符串；图片可为 HTTPS URL，或通过 `FROM_BASE64(...)` 传入的二进制数据。 | VARCHAR | No |
+| dim_or_parameters | 可选第三参数。文本嵌入时可为 `dim`（INT64），指定输出向量维度；图片嵌入时传入 JSON 字符串 `'{"type":"image"}'`。<main id="notice" type='notice'><h4>注意</h4><p>图片嵌入从 V5.0.1 版本开始支持。</p></main> | INT64 / JSON | Yes |
+
+必须指定 `model_key`、`input`，并且其中一个为 `NULL` 时，函数提示报错。
+
+返回值：
+
+* vector 格式的字符串，嵌入模型根据文本转换的向量。
+
+#### 示例
+
+1. 嵌入单行数据
+
+    ```sql
+    SELECT AI_EMBED("ob_embed","Hello world") AS embedding;
+    ```
+
+    返回结果如下：
+
+    ```sql
+    +----------------+
+    | embedding      |
+    +----------------+
+    | [0.1, 0.2, 0.3]|	
+    +----------------+
+    ```
+
+2. 嵌入表上列
+
+    ```sql
+    CREATE TABLE comments (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        content TEXT
+    );
+
+    INSERT INTO comments (content) VALUES ('hello world!');
+
+    SELECT AI_EMBED("ob_embed",content) AS embedding FROM comments;
+    ```
+
+    返回结果如下：
+
+    ```sql
+    +----------------+
+    | embedding      |
+    +----------------+
+    | [0.1, 0.2, 0.3]|	
+    +----------------+
+    ```
+
+3. 图片嵌入
+
+    ```sql
+    SET @img_url = 'https://example.com/image.jpg';
+
+    -- 图片 URL 向量化
+    SELECT AI_EMBED('ob_vl_embed', @img_url, '{"type":"image"}') AS embedding;
+
+    -- 图片二进制数据向量化（BASE64）
+    SELECT AI_EMBED('ob_vl_embed', FROM_BASE64(@img_base64), '{"type":"image"}') AS embedding;
+    ```
+
+4. 以图搜图
+
+    结合 `cosine_distance` 比较图片向量相似度：
+
+    ```sql
+    SET @query_vec = AI_EMBED('ob_vl_embed', @img_url, '{"type":"image"}');
+    SELECT
+        id,
+        cosine_distance(
+            AI_EMBED('ob_vl_embed', image_url, '{"type":"image"}'),
+            @query_vec
+        ) AS distance
+    FROM image_table
+    WHERE image_url IS NOT NULL
+    ORDER BY distance ASC
+    LIMIT 3;
+    ```
+
+### AI_COMPLETE 和 AI_PROMPT
+
+`AI_COMPLETE` 函数通过 `model_key` 指定一个已注册的文本生成大模型（LLM），对用户提供的提示词（prompt）和数据进行处理，并返回大模型生成的文本信息。用户可以在 `prompt` 参数中自定义组织提示词和数据库内的数据格式。结合 `AI_PROMPT` 的图片占位符，亦可对图片进行处理与分析。这种方式不仅支持对文本数据进行多样化处理，还能在数据库内部实现批量处理，有效避免了数据在数据库与大模型之间来回拷贝的开销。
+
+考虑到许多 AI 应用场景中，提示词往往具有高度结构化特征，需要动态注入具体数据，而每次手动使用 `CONCAT` 等函数拼接提示词和输入内容，不仅开发成本高，还容易写错导致格式问题。为了支持提示词复用和提示词与数据动态组合的需求，OceanBase 数据库提供了 `AI_PROMPT` 函数。`AI_PROMPT` 将提示词从"静态文本"升级为"可复用、可参数化"的函数模板形式，可以在 `AI_COMPLETE` 中替代 `prompt` 参数直接使用，从而极大地简化了提示词的构建过程，提升了开发效率和准确性。
+
+#### AI_PROMPT 函数
+
+`AI_PROMPT` 函数用于基于提示词模版动态构建格式化的提示词，支持动态插入数据。
+
+##### 语法
+
+`AI_PROMPT` 函数语法如下：
+
+```sql
+AI_PROMPT('template', expr0 [ , expr1, ... ]);
+```
+
+参数说明：
+
+| 参数 | 描述 | 类型 | 是否可空 |
+|------|------|------|----------|
+| template | 用户输入的提示词模板。支持文本占位符 `{0}`、`{1}` 等，以及图片占位符 `{img_0}`、`{img_1}` 等。 | VARCHAR(max_length) | No |
+| expr | 用户输入的数据。文本占位符对应字符串；图片占位符对应 HTTPS URL 或 `FROM_BASE64(...)` 返回的二进制数据。<main id="notice" type='notice'><h4>注意</h4><p>图片处理从 V5.0.1 版本开始支持。</p></main> | VARCHAR(max_length) | No |
+
+参数 `template` 和 `expr` 为必填项，不允许为空。其中，`expr` 参数只支持 `VARCHAR` 类型，不支持 `JSON` 类型。
+
+<main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>提示词模板中的参数占位符索引不能重复，否则会报错。例如，<code>AI_PROMPT("tell me {0}+{0}=?", '10', '10')</code> 中模板出现了多个 <code>{0}</code>，这是不被允许的。正确用法应为每个占位符只出现一次，例如 <code>AI_PROMPT("tell me {0}+{1}=?", '10', '10')</code>。</p>
+</main>
+
+返回值：
+
+* 返回值为格式化后的提示词，返回值类型为 JSON。URL 图片在 JSON 中包含 `type=image` 与 `url` 字段；二进制图片包含 `type=image`、`format` 与 `data` 字段。
+
+##### 示例
+
+`AI_PROMPT` 函数将模板字符串和动态数据组织成 JSON 格式，便于下游 AI 函数自动替换和复用。其使用主要分为两类场景：**文本占位**与**图片占位**，分别支持在提示词模板中插入文本和图片参数，下面分别举例说明。
+
+1. 文本占位符使用示例
+
+    文本占位符通过 `{0}`、`{1}` 等在模板中进行标记，随后会用参数顺序对应的文本自动替换。常用于动态生成带有特定数据（如数量、物品名称等）的提示词。
+
+    示例如下：
+
+    ```sql
+    SELECT AI_PROMPT('Recommend {0} of the most popular {1} to me.', 'ten', 'mobile phones');
+    ```
+
+    返回结果如下：
+
+    ```json
+    {
+    "template": "Recommend {0} of the most popular {1} to me.",
+    "args": ["ten", "mobile phones"]
+    }
+    ```
+
+    基于上个例子，在 `AI_COMPLETE` 函数中使用 `AI_PROMPT` 函数：
+
+    ```sql
+    SELECT AI_COMPLETE("ob_complete",AI_PROMPT('Recommend {0} of the most popular {1} to me.just output name in json array format', 'two', 'mobile phones')) AS ans;
+    ```
+
+    返回结果如下：
+
+    ```json
+    +--------------------------------------------------+
+    | ans                                              |
+    +--------------------------------------------------+
+    | ["iPhone 15 Pro Max","Samsung Galaxy S24 Ultra"] |
+    +--------------------------------------------------+
+    ```
+
+2. 图片占位符使用示例
+
+    图片占位符通过 `{img_0}`、`{img_1}` 等在模板中进行标记，对应的参数传入图片 URL 或二进制数据。支持多模态大模型进行图片内容处理。
+
+    图片占位符规则如下：
+
+    * 如果所有参数都是图片，只需要用 `{img_0}`、`{img_1}` 等方式依次标记，每个图片参数对应一个编号，编号从 0 开始，和文本占位符 `{0}`、`{1}` 没有关系。
+    * 如果图片参数和文本参数混合使用，那么 `{img_N}` 中的 N 就是这个参数在所有参数中的位置（下标，从 0 开始），和文本占位符 `{N}` 的编号一致。比如第二个参数（下标 1）如果是图片，就写 `{img_1}`；第四个参数（下标 3）如果是图片，就写 `{img_3}`，不用按第几张图单独编号。
+
+    示例如下：
+
+    ```sql
+    -- 单图片 URL
+    SELECT AI_PROMPT('请描述这张图片 {img_0}', @img_url) AS result;
+
+    -- 多图片对比
+    SELECT AI_PROMPT(
+        '比较这两张图片 {img_0} 和 {img_1} 的差异',
+        @img_url_1,
+        @img_url_2
+    ) AS result;
+
+    -- 文本与图片混合（图片在下标 1，故用 {img_1}）
+    SELECT AI_PROMPT(
+        '请用 {0} 句话描述这张 {img_1} 图片',
+        '3',
+        @img_url
+    ) AS result;
+
+    -- 文本与图片交错（第二张图在下标 3，故用 {img_3}）
+    SELECT AI_PROMPT(
+        '对比 {0} 格式的图片 {img_1} 和 {2} 格式的图片 {img_3}，用一句话总结差异',
+        'JPEG',
+        @img_jpeg,
+        'PNG',
+        @img_png
+    ) AS result;
+    ```
+
+通过这种格式，开发者可以灵活构建结构化、多模态的 AI 提示词，实现批量自动化智能处理。
+
+#### AI_COMPLETE 函数
+
+##### 语法
+
+`AI_COMPLETE` 函数语法如下：
+
+```sql
+AI_COMPLETE(model_key, prompt[, parameters])
+--如果使用 AI_PROMPT 函数，则将 prompt 参数替换为 AI_PROMPT 函数，示例见 AI_PROMPT 函数。
+AI_COMPLETE(model_key, AI_PROMPT(prompt_template, data))
+```
+
+参数说明：
+
+| 参数 | 描述 | 类型 | 是否可空 |
+|------|------|------|----------|
+| model_key | 数据库内注册的模型。 | VARCHAR(128) | No |
+| prompt | 用户输入的提示词信息。 | VARCHAR/TEXT(LONGTEXT) | No |
+| parameters | 用于支持配置 API 提供的可选项。模型的可选字段，会被直接放入到生成的消息体里，在不同厂商这里有一定差异。通常来说，常见的可选项有这些：`temperature`、`top_p`、`max_tokens`。一般情况下无需指定用默认配置即可。 | JSON | Yes |
+
+必须指定 `model_key`、`prompt`，并且其中一个为 `NULL` 时，函数提示报错。
+
+返回值：
+
+* text，大模型根据提示词生成的文本。
+
+##### 示例
+
+1. 情感分析示例
+
+    ```sql
+    SELECT AI_COMPLETE("ob_complete","你的任务是对提供的文本进行情感分析，判断其情感倾向为正面还是负面。
+    以下是需要分析的文本：
+    <text>
+    天气真好啊
+    </text>
+    判断标准如下：
+    如果文本表达的是正面情感，输出1；如果文本表达的是负面情感，输出 -1。不要输出其他东西.\n") AS ans;
+    ```
+
+    返回结果如下：
+
+    ```sql
+    +-----+
+    | ans |
+    +-----+
+    | 1   |
+    +-----+
+    ```
+
+2. 翻译示例
+
+    ```sql
+    CREATE TABLE comments (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        content TEXT
+    );
+
+    INSERT INTO comments (content) VALUES ('hello world!');
+
+    -- 以 concat 表达式形式将处理的数据替换成数据库中表上的列名，自然地就能对数据库中的数据进行批量处理，而无需将数据从数据库拷贝到大模型和将大模型结果拷贝回数据库内
+    SELECT AI_COMPLETE("ob_complete",
+    concat("你是一个翻译大师，你需要将以下将英语翻译成中文。以下是需要翻译的文本：<text>",
+        content,
+        "</text>")) AS ans FROM comments;
+    ```
+    返回结果如下：
+
+    ```sql
+    +-------------+
+    | ans         |
+    +-------------+
+    | 你好，世界！  |
+    +-------------+
+    ```
+
+3. 分类示例
+
+    ```sql
+    SELECT AI_COMPLETE("ob_complete","你是一个分类大师，你会获取到一堆问题文本，你需要区分这些问题的归属，归属列表为[\"硬件部\",\"软件部\",\"其他\"].以下是需要分析的文本：
+    <text>
+    这块屏幕质量真差
+    </text>") AS res;
+    ```
+
+    返回结果如下：
+
+    ```sql
+    +--------+
+    | res    |
+    +--------+
+    | 硬件部 |
+    +--------+
+    ```
+
+4. 图片处理
+
+    <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>本功能从 V5.0.1 版本开始支持。</p>
+    </main>
+
+    ```sql
+    SET @img_url = 'https://example.com/image.jpg';
+
+    -- 单图片处理（URL）
+    SELECT AI_COMPLETE(
+        'ob_vl_complete',
+        AI_PROMPT('请描述这张图片 {img_0}', @img_url)
+    ) AS result;
+
+    -- 单图片处理（BASE64）
+    SELECT AI_COMPLETE(
+        'ob_vl_complete',
+        AI_PROMPT('请描述这张图片 {img_0}', FROM_BASE64(@img_base64))
+    ) AS result;
+
+    -- 多图片对比
+    SELECT AI_COMPLETE(
+        'ob_vl_complete',
+        AI_PROMPT(
+            '对比 {0} 格式的图片 {img_1} 和 {2} 格式的图片 {img_3}，用一句话总结差异',
+            'JPEG',
+            @img_jpeg,
+            'PNG',
+            @img_png
+        )
+    ) AS result;
+    ```
+
+### AI_RERANK
+
+`AI_RERANK` 函数通过 `model_key` 指定一个已注册的重排序模型（Rerank Model），将用户提供的查询词和文档列表按厂商规则组织消息发送给指定模型，解析并返回模型返回的排序结果，适用于 RAG 的 rerank 场景。
+
+#### 使用
+
+语法如下：
+
+```sql
+AI_RERANK(model_key, query, documents[, document_key])
+```
+
+参数说明：
+
+| 参数 | 描述 | 类型 | 是否可空 |
+|------|------|------|----------|
+| model_key | 数据库内注册的模型。 | VARCHAR(128) | No |
+| query | 用户输入的文本。 | VARCHAR(1024) | No |
+| documents | 用户输入的文档列表。 | JSON ARRAY，例如 `'["apple", "banana"]'` | No |
+
+必须指定 `model_key`、`query`、`documents`，并且其中一个为 `NULL` 时，函数提示报错。
+
+返回值：
+
+* JSON 数组，包含重排序模型返回的文档及其相关性分数，并按相关性分数降序排列。
+
+#### 示例
+
+```sql
+SELECT AI_RERANK("ob_rerank","Apple",'["apple","banana","fruit","vegetable"]');
+```
+
+返回结果如下：
+
+```sql
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ai_rerank("ob_rerank","Apple",'["apple","banana","fruit","vegetable"]')                                                                                                                                                                                                                                                                                   |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| [{"index": 0, "document": {"text": "apple"}, "relevance_score": 0.9912109375}, {"index": 1, "document": {"text": "banana"}, "relevance_score": 0.0033512115478515625}, {"index": 2, "document": {"text": "fruit"}, "relevance_score": 0.0003669261932373047}, {"index": 3, "document": {"text": "vegetable"}, "relevance_score": 0.00001996755599975586}] |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+```
+
+## 查看 AI 模型信息
+
+OceanBase 数据库支持通过视图查看已注册的 AI 模型和 AI 模型端点信息，具体请参见：
+
+* [CDB/DBA_OB_AI_MODELS](../../700.reference/700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5720.o-dba_ob_ai_models-of-mysql-mode.md)：查看 AI 模型信息。
+* [CDB/DBA_OB_AI_MODEL_ENDPOINTS](../../700.reference/700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5710.o-dba_ob_ai_model_endpoints-of-mysql-mode.md)：查看 AI 模型端点信息。
+
+## 相关文档
+
+* [AI 模型注册](200.ob-vector-search-ai-function-register-model.md)：注册模型与端点的完整命令。
+* [AI 函数服务快速上手](100.ob-vector-search-ai-function-quick-start.md)：首次使用指引，从注册到运行第一个示例的最少步骤。
+* [向量嵌入技术](../150.ob-vector-search-generate-vector-embeddings.md)
+* [MySQL 模式下的权限分类](../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)

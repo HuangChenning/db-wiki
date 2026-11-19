@@ -1,0 +1,53 @@
+---
+title: default_compress_func
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479092.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# default_compress_func
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`default_compress_func` 用于设置表数据的默认压缩算法，也可以在建表的时候指定其他压缩算法。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|      **属性**  |    **描述**  |
+|----------------|--------------|
+| 参数类型             | String      |
+| 默认值               | zstd_1.3.8   |
+| 取值范围             | <ul><li>none </li><li>lz4_1.0 </li><li>snappy_1.0 </li><li>zstd_1.0 </li><li>zstd_1.3.8 </li><li>zlib_lite_1.0 </li><li>zstd_1.5.7</li><main id="notice" type='explain'><h4>说明</h4><p>对于 V4.5.x 版本，该取值从 V4.5.0 版本开始引入。</p></main></ul>      |
+| 是否可修改           | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。           |
+
+## 使用说明
+
+由于 zlib 不同小版本的压缩算法可能存在对同一数据进行压缩后，出现压缩结果不一致的情况，为了避免 OceanBase 数据库在升级过程中出现无法恢复副本数据的问题，从 V4.2.2 版本开始，OceanBase 数据库不再支持 <code>zlib_1.0</code> 压缩算法。
+
+## 配置示例
+
+设置表数据的默认压缩算法为 lz4_1.0。
+
+```shell
+obclient> ALTER SYSTEM SET default_compress_func = 'lz4_1.0';
+```

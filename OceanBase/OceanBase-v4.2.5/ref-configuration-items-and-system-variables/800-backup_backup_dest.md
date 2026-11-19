@@ -1,0 +1,29 @@
+---
+title: backup_backup_dest
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502201.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# backup_backup_dest
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>在 V4.x 版本中，不再支持备份的备份（二次备份）功能，该配置项从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`backup_backup_dest` 用于设置备份数据备份的目的端。
+
+## 属性说明
+
+|        属性        |  描述   |
+|------------------|-------|
+| 参数类型             | String |
+| 默认值              | 空字符串  |
+| 是否重启 OBServer 节点生效 | 否     |

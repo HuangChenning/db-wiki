@@ -1,0 +1,78 @@
+---
+title: dump_data_dictionary_to_log_interval
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502051.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# dump_data_dictionary_to_log_interval
+
+|---|---|
+|keywords||
+|dir-name||
+|dir-name-en||
+|tenant-type||
+|machine-translation|en,ja-marker,ja-autoPR|
+|slug|dump_data_dictionary_to_log_interval|
+
+# dump_data_dictionary_to_log_interval
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.1.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`dump_data_dictionary_to_log_interval` 用于控制租户数据字典持久化的周期。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户均可修改该配置项。
+
+## 属性说明
+
+<main id="notice" type='explain'>
+  <h4>注意</h4>
+  <p>从低版本升级到 V4.2.5 BP1 版本，该配置项值会维持低版本的值不变。</p>
+</main>
+
+| **属性** | **描述** |
+| -------- | -------- |
+| 参数类型 | Time |
+| 默认值   | 0，默认单位为秒<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，从 V4.2.5 BP1 版本开始默认值由 24H 调整为 0。值为 0 时，将不会根据该配置项调度生成数据字典；如需停止生产数据字典，需要配合 `DBMS_DATA_DICT.DISABLE_DUMP()` 命令。</p></main> |
+| 取值范围 | [0s, +∞)<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，从 V4.2.5 BP1 版本开始取值范围由 (0s, +∞) 调整为 [0s, +∞) 。</p></main>|
+| 是否可修改 | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBSever 节点生效 | 否，设置后立即生效。 |
+
+## 使用说明
+
+数据字典仅服务于用户租户，通过 PALF 持久化在普通租户的系统日志流（SYS_LS）中。用户租户建立后数据字典服务自动开启，运行在租户 SYS_LS 的 LEADER 副本上。
+
+日志归档服务开启时，会自动触发一次异步数据字典生成任务。OceanBase 数据库支持通过租户级配置项 `dump_data_dictionary_to_log_interval` 和 DBMS_DATA_DICT 系统包（自 V4.2.5 BP1 起支持）调度定时生成数据字典，推荐通过 [DBMS_DATA_DICT](../../../../700.reference/500.sql-reference/300.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/21000.dbms-data-dict-mysql/100.dbms-data-dict-mysql.md) 系统包调度生成数据字典。
+
+OceanBase 数据库自 V4.2.0 版本起支持通过 DBA/CDB 视图来记录数据字典的生成记录，可在系统租户下查询 [CDB_OB_DATA_DICTIONARY_IN_LOG](../../../700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/7800.o-cdb_ob_data_dictionary_in_log-of-sys-tenant.md) 视图，或普通租户下查询 [DBA_OB_DATA_DICTIONARY_IN_LOG](../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/7900.o-dba_ob_data_dictionary_in_log-of-mysql-mode.md) 视图获取字典位置信息。
+
+## 配置示例
+
+设置租户数据字典持久化的周期为 24H。
+
+```shell
+obclient> ALTER SYSTEM SET dump_data_dictionary_to_log_interval = '24H';
+```
+
+## 相关文档
+
+* 有关数据字典的更多介绍，请参见[obcdc 支持数据字典](../../../../700.reference/1500.components-and-tools/300.data-integrate/400.cdc/700.cdc-supports-data-dictionary.md)
+
+* 有关日志归档的更多介绍，请参见 [日志归档](../../../../600.manage/600.backup-and-recovery/300.log-archive/100.overview-of-log-archive.md) 章节。

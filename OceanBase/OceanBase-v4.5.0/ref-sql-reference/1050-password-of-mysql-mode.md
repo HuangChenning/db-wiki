@@ -1,0 +1,39 @@
+---
+title: PASSWORD
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480657.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# PASSWORD
+
+## 声明
+
+```sql
+PASSWORD(str)
+```
+
+## 说明
+
+用于加密字符串。它接收一个明文字符串作为参数，并返回该字符串的加密版本。
+
+## 示例
+
+```sql
+obclient [test]> SELECT PASSWORD('***1***');
+```
+
+返回结果如下：
+
+```shell
++--------------------------------------------+
+| PASSWORD('***1***')                        |
++--------------------------------------------+
+| *BA10AFC5C8D9F9D1A5704E9C274C1A63EE9CB94B  |
++--------------------------------------------+
+1 row in set, 1 warning
+```

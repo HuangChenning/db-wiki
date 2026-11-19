@@ -1,0 +1,325 @@
+---
+title: "物化视图经典场景实践"
+book: OceanBase AP
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005789667.html"
+tags:
+  - oceanbase
+  - distributed
+  - obap
+---
+
+# 物化视图经典场景实践
+
+本文提供 **MySQL 模式**下的 **分步 SQL 跟练**（`orders` 入门、`tbl*` 小片段、**外表** 全量 MV 等），可按小节顺序操作。**与 [物化视图查询加速](200.ap-materialized-view-query-acceleration.md) 中 `sales` / `items` 主线示例配合使用**：需要业务表一贯通的完整演练时，请优先阅读该文档。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>语法、限制条件等详细信息，参见：<a href="../../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/300.create-materialized-views-of-mysql-mode.md">创建物化视图</a>、<a href="../../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/400.refresh-materialized-views-of-mysql-mode.md">刷新物化视图</a>、<a href="../../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/500.materialized-views-rewrite-of-mysql-mode.md">物化视图查询改写</a>。</p>
+</main>
+
+## 用物化视图构建实时数仓：场景选型
+
+为便于在实时数仓建设中快速决策，可按“数据新鲜度要求 -> 计算复杂度 -> 数据来源类型”的顺序选型。
+
+| 目标场景 | 推荐能力组合 | 典型特征 | 对应章节 |
+| --- | --- | --- | --- |
+| 周期汇总看板、分钟级更新 | `REFRESH FAST` + 定时调度 | 增量维护成本低，适合稳定口径聚合 | 入门实践；场景二：实时指标加工链路 |
+| 明细宽表扫描、报表钻取 | 列存 MV + 查询改写（可选） | 扫描列少于全列时收益更明显 | 场景一：运营分析与报表钻取 |
+| 低延迟在线查询（查询触发补算） | `ENABLE ON QUERY COMPUTATION` | 以读时计算换取更新时简化，适合热点查询模型 | 场景二：实时指标加工链路 |
+| SQL 透明加速（尽量少改业务 SQL） | `ENABLE QUERY REWRITE` + 索引/口径对齐 | 依赖改写匹配规则，适合固定分析模板 | 场景二：实时指标加工链路 |
+| 文件入湖后周期装载 | 外表 + `REFRESH COMPLETE` | 数据源来自文件，先离线同步再查询 | 场景三：湖仓入库与周期装载 |
+
+推荐实践应用的顺序如下：
+
+1. **先定义口径与刷新策略**：明确是“分钟级增量”还是“查询时实时计算”。
+2. **再定刷新机制**：优先评估 FAST 是否满足条件，不满足再用 COMPLETE。
+3. **最后做查询侧优化**：按需叠加列存、索引与 QUERY REWRITE，避免一次引入过多变量。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>实时数仓并不等于“所有查询都实时刷新”。若业务可接受分钟级延迟，优先采用 FAST + 调度；仅在确有低延迟要求且可接受读时开销时，再引入 <code>ENABLE ON QUERY COMPUTATION</code>。</p>
+</main>
+
+## 入门实践：订单表上的全量刷新与增量刷新
+
+以下用业务库中常见的 **订单表** 演示：**默认全量维护** 的物化视图、**FAST** 的增量维护、**手动刷新** 与 **定时调度** 的基本用法（与 [刷新物化视图](../../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/400.refresh-materialized-views-of-mysql-mode.md) 一致）。
+
+### 建表、造数、创建全量物化视图
+
+```sql
+CREATE TABLE orders (
+  order_id INT PRIMARY KEY,
+  user_id INT,
+  item_id INT,
+  item_count INT,
+  item_price INT,
+  region VARCHAR(100)
+);
+
+INSERT INTO orders VALUES
+  (1, 10001, 1, 20, 100, 'HZ'),
+  (2, 10002, 1, 10, 150, 'BJ'),
+  (3, 10001, 2, 50, 50, 'SH');
+
+CREATE MATERIALIZED VIEW mv1
+AS
+SELECT region, SUM(item_count * item_price) AS sum_price
+FROM orders
+GROUP BY region;
+
+SELECT * FROM mv1;
+```
+
+创建物化视图时会先做 **首次物化**；未显式声明刷新策略时，通常需 **手动全量刷新** 才能与基表持续对齐。
+
+### 手动全量刷新（DBMS_MVIEW.REFRESH）
+
+继续写入基表后，物化结果不会自动变化，需触发刷新：
+
+```sql
+INSERT INTO orders VALUES
+  (4, 10002, 2, 10, 100, 'SH'),
+  (5, 10003, 1, 2, 20, 'HZ');
+
+SELECT * FROM mv1;
+```
+
+返回结果：
+
+```shell
++--------+-----------+
+| region | sum_price |
++--------+-----------+
+| HZ     |      2000 |
+| BJ     |      1500 |
+| SH     |      2500 |
++--------+-----------+
+3 rows in set
+```
+
+可以看到物化视图结果没有自动变化，需要执行下面的 SQL 触发刷新：
+
+```sql
+CALL DBMS_MVIEW.REFRESH('mv1', 'c', refresh_parallel => 2);
+
+SELECT * FROM mv1;
+```
+
+返回结果：
+
+```shell
++--------+-----------+
+| region | sum_price |
++--------+-----------+
+| HZ     |      2040 |
+| BJ     |      1500 |
+| SH     |      3500 |
++--------+-----------+
+3 rows in set
+```
+
+`'c'` 表示 **complete** 全量刷新；`refresh_parallel` 等参数以 [DBMS_MVIEW.REFRESH](../../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/9950.dbms-mview-mysql/300.refresh-mysql.md) 为准。
+
+可查询刷新运行情况（示例）：
+
+```sql
+SELECT MVIEWS, METHOD, START_TIME, END_TIME
+FROM oceanbase.DBA_MVREF_RUN_STATS;
+```
+
+### 删除后改用增量刷新
+
+```sql
+DROP MATERIALIZED VIEW mv1;
+```
+
+```sql
+CREATE MATERIALIZED VIEW mv1(region, c, sum_price, cnt_price)
+    REFRESH FAST
+    ON DEMAND START WITH sysdate() NEXT sysdate() + INTERVAL 5 MINUTE
+    AS SELECT
+           region,
+           SUM(item_count * item_price) AS sum_price
+       FROM orders
+       GROUP BY region;
+```
+
+插入新订单后，再 **手动增量刷新**：
+
+1. 插入数据。
+
+    ```sql
+    INSERT INTO orders VALUES (6, 10001, 3, 30, 70, 'HZ');
+    ```
+
+2. 手动刷新。
+
+    ```sql
+    CALL DBMS_MVIEW.REFRESH('mv1', 'f');
+    ```
+
+3. 查看物化视图数据。
+
+    ```sql
+    SELECT region, sum_price FROM mv1;
+    ```
+
+    若创建时配置了 `START WITH ... NEXT ...`，也可在 `DBA_SCHEDULER_JOBS` 中查看后台刷新任务（具体字段以当前版本字典说明为准）。
+
+### 清理对象顺序
+
+删除物化视图与基表时，需注意 **先删 MV，再删基表**。
+
+```sql
+DROP MATERIALIZED VIEW mv1;
+```
+
+```sql
+DROP TABLE orders;
+```
+
+## 场景一：运营分析与报表查询
+
+在运营分析和报表查询场景中，常见问题是明细表列多、扫描范围大、查询条件变化多。
+
+这类场景通常以读取为主，适合通过列存物化视图减少无关列扫描，并在需要时配合索引和查询改写进一步优化查询性能。
+
+本节将通过一个简单示例，说明如何使用列存物化视图支持宽表查询和多维分析。
+
+```sql
+CREATE TABLE IF NOT EXISTS tbl1 (col1 INT PRIMARY KEY, col2 VARCHAR(20), col3 INT);
+
+CREATE MATERIALIZED VIEW mv_ec_tbl1
+    WITH COLUMN GROUP(each column)
+    AS SELECT *
+       FROM tbl1;
+```
+
+若配合 **查询改写**，通常需保证改写后的条件能使用物化视图上的索引（规则见 [物化视图查询改写](../../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/500.materialized-views-rewrite-of-mysql-mode.md)）：
+
+```sql
+CREATE INDEX idx1_mv_ec_tbl1 ON mv_ec_tbl1(col1);
+```
+
+## 场景二：实时指标计算与查询
+
+在实时指标场景中，常见需求包括分层汇总、增量维护、低延迟查询以及尽量少改业务 SQL。
+
+这类场景通常不是单一能力就能覆盖，而是需要根据业务时效要求，使用 FAST 刷新、实时物化视图和查询改写等能力。
+
+### 增量刷新（FAST）
+
+如果业务更关注刷新效率，而不是每次都重新计算全部数据，可以考虑使用 `FAST` 刷新。这种方式会记录基表变化，并在刷新时尽量只处理增量数据。
+
+```sql
+CREATE TABLE IF NOT EXISTS tbl5 (col1 INT PRIMARY KEY, col2 INT, col3 INT);
+```
+
+```sql
+CREATE MATERIALIZED VIEW mv_tbl5
+    REFRESH FAST
+    AS SELECT
+           col2,
+           SUM(col3) sum_col3
+       FROM tbl5
+       GROUP BY col2;
+```
+
+```sql
+CALL DBMS_MVIEW.REFRESH('mv_tbl5');
+```
+
+```sql
+CALL DBMS_MVIEW.REFRESH('mv_tbl5', 'c');
+```
+
+### 实时物化视图
+
+面向场景对查询时效要求更高，希望尽量接近实时结果，但又不适合频繁主动刷新。这时可以根据实际需求评估是否使用实时物化视图，通过查询时计算来换取更高的数据新鲜度。
+
+```sql
+CREATE TABLE IF NOT EXISTS tbl2(col1 INT, col2 INT, col3 INT);
+```
+
+```sql
+CREATE MATERIALIZED VIEW mv_tbl2_rt
+    ENABLE ON QUERY COMPUTATION
+    AS SELECT
+           col1
+       FROM tbl2
+       GROUP BY col1;
+```
+
+### 查询改写（ENABLE QUERY REWRITE）
+
+如果希望业务 SQL 尽量少改，同时让优化器自动使用物化视图结果，可以结合查询改写功能。查询改写适合固定分析场景，但是否能够命中改写，取决于查询条件和物化视图定义是否匹配。
+
+```sql
+CREATE TABLE IF NOT EXISTS test_tbl1 (col1 INT, col2 INT, col3 INT);
+```
+
+```sql
+CREATE TABLE IF NOT EXISTS test_tbl2 (col1 INT, col2 INT, col3 INT);
+```
+
+```sql
+CREATE MATERIALIZED VIEW mv_test_tbl1_tbl2
+    ENABLE QUERY REWRITE
+    AS SELECT
+           t1.col1 col1,
+           t1.col2 t1col2,
+           t1.col3 t1col3,
+           t2.col2 t2col2,
+           t2.col3 t2col3
+    FROM test_tbl1 t1, test_tbl2 t2
+    WHERE t1.col1 = t2.col1;
+```
+
+```sql
+SET query_rewrite_enabled = 'force';
+```
+
+```sql
+SELECT
+    COUNT(*),
+    test_tbl1.col1 col1
+FROM test_tbl1, test_tbl2
+WHERE test_tbl1.col1 = test_tbl2.col1
+AND test_tbl2.col2 > 10
+GROUP BY col1;
+```
+
+## 场景三：文件数据导入与定期刷新
+
+当数据来源于文件而不是在线业务表时，可以先通过外表读取文件数据，再基于外表创建全量刷新物化视图。这种方式适合周期更新、离线同步后查询以及湖仓一体场景中的定期入库需求。
+
+V4.3.5 BP2 起支持以外表为基表创建 **全量刷新** 物化视图。须先配置 `secure_file_priv`、准备外部文件并 `CREATE EXTERNAL TABLE`（完整步骤见 [创建物化视图 — 基于外表](../../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/300.create-materialized-views-of-mysql-mode.md)）。
+
+```sql
+CREATE EXTERNAL TABLE ext_tbl1 (
+    id INT,
+    name VARCHAR(50),
+    c_date DATE
+)
+LOCATION = '/home/admin'
+FORMAT = (
+  TYPE = 'CSV'
+  FIELD_DELIMITER = ','
+  FIELD_OPTIONALLY_ENCLOSED_BY = '\''
+)
+PATTERN = 'ext_tbl1.csv';
+
+CREATE MATERIALIZED VIEW mv_ext_tbl1
+    REFRESH COMPLETE
+    AS SELECT * FROM ext_tbl1;
+```
+
+更多外表实践，参见：[通过外表 INSERT INTO SELECT 导入](../../300.obap-data-transfer/300.data-import/300.insert-into/200.insert-into-select-from-external-table.md)、[外表概述](../../400.data-lake/200.data-lake-integration/400.catalog-externaltable.md)。
+
+## 相关文档
+
+* [物化视图查询加速](200.ap-materialized-view-query-acceleration.md)
+* [创建物化视图（MySQL）](../../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/300.create-materialized-views-of-mysql-mode.md)
+* [刷新物化视图（MySQL）](../../../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/600.manage-views-of-mysql-mode/200.manage-materialized-views-of-mysql-mode/400.refresh-materialized-views-of-mysql-mode.md)
+* [DBMS_MVIEW.REFRESH](../../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/9950.dbms-mview-mysql/300.refresh-mysql.md)

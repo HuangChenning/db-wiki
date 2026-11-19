@@ -1,0 +1,37 @@
+---
+title: CONCAT
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687983.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CONCAT
+
+## 声明
+
+```sql
+CONCAT(str1, str2, ...)
+```
+
+## 说明
+
+把多个字符串连接成一个字符串。如果所有参数都是非二进制字符串，则结果是一个非二进制字符串。如果参数包含任何二进制字符串，则结果是一个二进制字符串。对于数值类型的参数，会被转换为等价的非二进制字符串形式。
+
+参数中包含 `NULL` 时，返回 `NULL`。
+
+## 示例
+
+```sql
+obclient> SELECT
+     CONCAT('test','obclient', '1.0'),
+     CONCAT('test','obclient', NULL)
+     \G
+*************************** 1. row ***************************
+CONCAT('test','obclient', '1.0'): testobclient1.0
+ CONCAT('test','obclient', NULL): NULL
+1 row in set
+```

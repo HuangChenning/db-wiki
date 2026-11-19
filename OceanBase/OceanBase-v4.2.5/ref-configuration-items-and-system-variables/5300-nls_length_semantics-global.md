@@ -1,0 +1,76 @@
+---
+title: nls_length_semantics
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502632.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# nls_length_semantics
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该变量从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`nls_length_semantics` 表示 char、varchar2 类型 的 length 语义。
+
+<main id="notice">
+  <h4>功能适用性</h4>
+  <p>该变量仅适用于 OceanBase 数据库 Oracle 模式。</p>
+</main>
+
+## 权限要求
+
+* 查询变量
+
+  * Global 级别
+
+    `sys` 租户和所有用户租户均可以使用 `SHOW VARIABLES` 语句或视图 `SYS.TENANT_VIRTUAL_GLOBAL_VARIABLE`（Oracle 模式）查看 Global 系统变量的值。
+
+  * Session 级别
+
+    `sys` 租户和所有用户租户均可以使用 `SHOW VARIABLES` 语句或视图 `SYS.TENANT_VIRTUAL_SESSION_VARIABLE`（Oracle 模式）查看 Session 系统变量的值。
+
+* 修改变量
+
+  * Global 生效
+
+    * `sys` 租户可以直接修改 Global 系统变量的值。
+
+    * Oracle 用户租户需要拥有 `ALTER SYSTEM` 权限才能修改 Global 系统变量的值。
+
+  * Session 生效
+
+    `sys` 租户和所有用户租户均可以直接修改本租户的 Session 系统变量的值。
+
+## 属性说明
+
+|  **属性**  |                                                   **描述**                                                   |
+|----------|------------------------------------------------------------------------------------------------------------|
+| 参数类型     | Varchar                 |
+| 默认值      | BYTE                    |
+| 取值范围     | <ul><li>BYTE </li><li>CHAR </li></ul>  |
+| 生效范围     | <ul><li> Global </li><li> Session </li></ul> |
+| 是否可修改  | 是，支持通过 `SET` 语句修改。|
+
+## 配置示例
+
+设置 CHAR、VARCHAR2 类型的 LENGTH 语义为 `CHAR`。
+
+* Session 生效
+
+  ```shell
+  obclient> SET nls_length_semantics='CHAR';
+  ```
+
+* Global 生效
+
+  ```shell
+  obclient> SET GLOBAL nls_length_semantics='CHAR';
+  ```

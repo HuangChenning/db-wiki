@@ -1,0 +1,642 @@
+---
+title: "外部存储函数"
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285269.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# 外部存储函数
+
+## Java UDF
+
+Java UDF 是指用 Java 语言实现的用户自定义函数（User-Defined Function，通过支持 Java UDF，您可以将大量 Java 生态产品融入 OceanBase 数据库，提升了 UDF 的开发效率。
+
+### 构造 Java UDF 函数
+
+您可以编译并打包下述代码为 `my_add.jar` 后，然后可以在 OBServer 中创建 Java UDF，示例如下：
+
+```java
+package org.example;
+
+public class MyAdd {
+    public Integer evaluate(Integer a, Integer b) {
+        if (a == null || b == null) {
+            return null;
+        }
+        return a + b;
+    }
+}
+```
+
+### 创建 Java UDF
+
+为了适应 Java UDF 使用场景的灵活性，我们提供了两种方式来创建 Java UDF，分别是通过 URL 和外部资源创建。
+
+#### 通过 URL 创建 Java UDF
+
+执行如下 SQL 语句创建名为 `my_add` 的 Java UDF。
+
+```shell
+CREATE FUNCTION my_add(x int, y int)
+RETURNS int
+PROPERTIES (
+  symbol = 'org.example.MyAdd',
+  type = 'odpsjar',
+  file = '<URL to Jar>'
+);
+```
+
+其中：
+
+* `symbol`：表示指定的入口类名。
+* `type`：表示外部 UDF 的类型，目前支持 `odpsjar`、`UDAFJar`、`UDTFJar`、`Python`。
+* `file`：表示 Jar 包所在的 URL。
+
+创建成功之后即可像使用 PL UDF 一样使用 Java UDF，使用示例如下：
+
+```shell
+obclient> CREATE FUNCTION my_add(x int, y int)
+    -> RETURNS int
+    -> PROPERTIES (
+    ->   symbol = 'org.example.MyAdd',
+    ->   type = 'odpsjar',
+    ->   file = 'http://******/my_add.jar'
+    -> );
+Query OK, 0 rows affected (0.113 sec)
+
+obclient> SELECT my_add(1, 2);
++--------------+
+| my_add(1, 2) |
++--------------+
+|            3 |
++--------------+
+1 row in set (0.021 sec)
+```
+
+#### 通过外部资源创建 Java UDF
+
+OBServer 通过外部资源管理 Java UDF Jar 包等外部存储过程的依赖资源，需要将 Jar 包通过 `DBMS_JAVA.LOADJAVA` 系统包函数上传到 OBServer，并在创建的 Java UDF 中引用这个 Jar 包对应的外部资源。
+
+外部资源的上传和 UDF 的创建没有严格的先后次序要求，只要保证 UDF 调用时，资源已经上传即可。并且，一个外部资源可以被多个 UDF 使用。
+
+操作步骤如下：
+
+1. 上传 Jar 包
+
+    调用 `DBMS_JAVA.LOADJAVA` 将 Jar 包作为外部资源上传到 OBServer。
+
+    ``` java
+    String url = "<URL to Jar>";
+    InputStream is = new URL(url).openStream();
+
+    // conn is a connection to OceanBase
+    PreparedStatement ps = conn.prepareStatement("call dbms_java.loadjava(? ,? ,? )");
+    ps.setString(1, "my_add_jar");
+    ps.setBlob(2, is);
+    ps.setString(3, "my add UDF jar");
+
+    ps.execute();
+    ```
+
+2. 创建 Java UDF
+
+    执行如下 SQL 语句创建名为 my_add 的 Java UDF。
+
+    ```sql
+    CREATE FUNCTION my_add(x int, y int)
+    RETURNS int
+    PROPERTIES (
+      symbol = 'org.example.MyAdd',
+      type = 'odpsjar',
+      file = 'my_add_jar'
+    );
+    ```
+
+    其中：
+
+     * `symbol`：表示指定的入口类名。
+     * `type`：表示外部 UDF 的类型，目前支持 `odpsjar`、`UDAFJar`、`UDTFJar`、`Python`。
+     * `file`：表示为 Jar 包对应的外部资源名称。
+
+创建成功之后即可像使用 PL UDF 一样使用 Java UDF，使用示例如下：
+
+```shell
+obclient> CREATE FUNCTION my_add(x int, y int)
+    -> RETURNS int
+    -> PROPERTIES (
+    ->   symbol = 'org.example.MyAdd',
+    ->   type = 'odpsjar',
+    ->   file = 'my_add_jar'
+    -> );
+Query OK, 0 rows affected (0.118 sec)
+
+obclient> SELECT my_add(1, 2);
++--------------+
+| my_add(1, 2) |
++--------------+
+|            3 |
++--------------+
+1 row in set (0.005 sec)
+```
+
+## Java UDTF
+
+Java UDTF 是指用 Java 语言实现的用户自定义表函数（Java User-Defined Table Function），UDTF 与一般 UDF 最大的不同是，一般 UDF 返回一个标量值，即一行数据，而 UDTF 可以返回多行数据。
+
+### 创建 Java UDTF
+
+为了适应 Java UDTF 使用场景的灵活性，我们提供了两种方式来创建 Java UDTF，分别是通过 URL 和外部资源创建。
+
+#### 通过 URL 创建 Java UDTF
+
+您可以编译并打包下述代码为 `my_split.jar` 后，然后可以在 OBServer 中创建 Java UDTF，示例如下：
+
+```java
+package my.test;
+
+public class MySplit {
+    public String[] process(String str) {
+        if (str == null) return null;
+        return str.split(" ");
+    }
+}
+```
+
+**创建 Java UDTF**
+
+```sql
+CREATE FUNCTION my_split(x longtext)
+RETURNS varchar(1024)
+PROPERTIES (
+  symbol = 'my.test.MySplit',
+  type = 'UDTFJar',
+  file = 'http://******/my_split.jar'
+);
+```
+
+创建外部函数时，您可以通过指定 `type` 为 `UDTFJar` 来创建 Java UDTF。之后可以在 SQL 语句中与`table function` 联合使用，可以作为单标查询，也可以与其它表做 `join` 操作。
+
+**调用 Java UDTF 函数**
+
+调用示例如下：
+
+1. 创建表 `t1` 并插入几条数据。
+
+    ```shell
+    obclient> CREATE TABLE t1(a int, b decimal(10, 2), c1 varchar(32));
+    ```
+
+    ```shell
+    obclient> INSERT INTO t1 VALUES
+    (1, 2.1, 'hello oceanbase'),
+    (2, 2.2, 'hello UDTF')
+    ;
+    ```
+
+2. 执行如下命令调用 Java UDTF。
+
+    ```shell
+    obclient> SELECT t1.a,t1.b, COLUMN_VALUE FROM t1, table(my_split(t1.c1));
+    +------+------+--------------+
+    | a    | b    | COLUMN_VALUE |
+    +------+------+--------------+
+    |    1 | 2.10 | hello        |
+    |    1 | 2.10 | oceanbase    |
+    |    2 | 2.20 | hello        |
+    |    2 | 2.20 | UDTF         |
+    +------+------+--------------+
+    ```
+
+#### 通过外部资源创建 Java UDTF
+
+OBServer 通过外部资源管理 Java UDTF Jar 包等外部存储过程的依赖资源，需要将 Jar 包通过 `DBMS_JAVA.LOADJAVA` 系统包函数上传到 OBServer，并在创建的 Java UDTF 中引用这个 Jar 包对应的外部资源。
+
+操作步骤如下：
+
+1. 上传 Jar 包
+
+    调用 `DBMS_JAVA.LOADJAVA` 将 Jar 包作为外部资源上传到 OBServer。
+
+2. 创建 Java UDTF
+
+    执行如下 SQL 语句创建名为 `my_split` 的 Java UDTF。
+
+    ```sql
+    CREATE FUNCTION my_split(x int, y int)
+    RETURNS int
+    PROPERTIES (
+      symbol = 'my.test.MySplit',
+      type = 'UDTFJar',
+      file = 'my_split_jar'
+    );
+    ```
+
+    其中：
+
+     * `symbol`：表示指定的入口类名。
+     * `type`：表示外部 UDF 的类型，目前支持 `odpsjar`、`UDAFJar`、`UDTFJar`、`Python`。
+     * `file`：表示为 Jar 包对应的外部资源名称。
+
+创建成功之后即可像使用 PL UDF 一样使用 Java UDTF，使用示例如下：
+
+```shell
+obclient> SELECT t1.a,t1.b, COLUMN_VALUE FROM t1, table(my_split(t1.c1));
+    +------+------+--------------+
+    | a    | b    | COLUMN_VALUE |
+    +------+------+--------------+
+    |    1 | 2.10 | hello        |
+    |    1 | 2.10 | oceanbase    |
+    |    2 | 2.20 | hello        |
+    |    2 | 2.20 | UDTF         |
+    +------+------+--------------+
+```
+
+## Java UDAF
+
+Java UDAF 是指使用 Java 语言实现的用户自定义聚合函数（Java User-Defined Aggregate Function），
+UDAF 可以将多行数据中的一列或多列通过用户自定义逻辑聚合成一个标量数据，通常与 `GROUP BY` 语句同时使用，对于每个 `GROUP` 各返回一个聚合后的结果。
+
+### 创建Java UDAF
+
+为了适应 Java UDAF 使用场景的灵活性，我们提供了两种方式来创建 Java UDAF，分别是通过 URL 和外部资源创建。
+
+### 通过 URL 创建 Java UDAF
+
+编译并打包下述 Java 代码为 `my_avg.jar` ，然后可以在 OBServer 中创建 Java UDAF，示例如下：
+
+```java
+package my.test;
+
+public class MyAvg {
+    private double sum = 0;
+    private double count = 0;
+
+    public void iterate(Double x) {
+        sum += x;
+        count += 1;
+    }
+
+    public void merge(MyAvg other) {
+        sum += other.sum;
+        count += other.count;
+    }
+
+    public Double terminate() {
+        return sum / count;
+    }
+}
+```
+
+**创建 Java UDAF**
+
+```sql
+CREATE FUNCTION my_avg(x double)
+RETURNS double
+PROPERTIES (
+  symbol = 'my.test.MyAvg',
+  type = 'UDAFJar',
+  file = 'http://******/my_avg.jar'
+);
+```
+
+**调用 Java UDAF 函数**
+
+调用示例如下：
+
+1. 创建表 `t` 并插入几条数据。
+
+    ```shell
+    obclient> CREATE TABLE t(a int, b int);
+    ```
+
+    ```shell
+    obclient> INSERT INTO t VALUES(1, 10),(2, 100),(1, 20),(2, 200),(3, 0);
+    ```
+
+2. 执行如下命令调用 Java UDAF。
+
+    ```shell
+    obclient> SELECT my_avg(b) FROM t GROUP BY a;
+    +--------------+
+    |my_avg(b)     |
+    +--------------+
+    |15.0          |
+    +--------------+
+    |150.0         |
+    +--------------+
+    |0.0           |
+    +--------------+
+    ```
+
+#### 通过外部资源创建 Java UDAF
+
+OBServer 通过外部资源管理 Java UDAF Jar 包等外部存储过程的依赖资源，需要将 Jar 包通过 `DBMS_JAVA.LOADJAVA` 系统包函数上传到 OBServer，并在创建的 Java UDAF 中引用这个 Jar 包对应的外部资源。
+
+操作步骤如下：
+
+1. 上传 Jar 包
+
+    调用 `DBMS_JAVA.LOADJAVA` 将 Jar 包作为外部资源上传到 OBServer。
+
+2. 创建 Java UDAF
+
+    执行如下 SQL 语句创建名为 `my_avg` 的 Java UDAF。
+
+    ```sql
+    CREATE FUNCTION my_avg(x int, y int)
+    RETURNS int
+    PROPERTIES (
+      symbol = 'my.test.MyAvg',
+      type = 'UDAFJar',
+      file = 'my_avg_jar'
+    );
+    ```
+
+    其中：
+
+     * `symbol`：表示指定的入口类名。
+     * `type`：表示外部 UDF 的类型，目前支持 `odpsjar`、`UDAFJar`、`UDTFJar`、`Python`。
+     * `file`：表示为 Jar 包对应的外部资源名称。
+
+创建成功之后即可像使用 PL UDF 一样使用 Java UDAF，使用示例如下：
+
+```shell
+obclient> SELECT my_avg(b) FROM t GROUP BY a;
++--------------+
+|my_avg(b)     |
++--------------+
+|15.0          |
++--------------+
+|150.0         |
++--------------+
+|0.0           |
++--------------+
+```
+
+### Java UDF 沙箱模式
+
+自 V4.4.2 BP3 版本开始，Java UDF 支持运行在独立的沙箱子进程中。开启沙箱模式后，JVM 与 Observer 主进程隔离运行，避免 JVM 异常影响数据库主进程。公有云部署场景建议开启。
+
+开启方式：在开启 `ob_enable_java_udf` 和 `ob_enable_java_env` 配置项之后，设置 `ob_enable_java_udf_sandbox` 配置项为 `TRUE`。
+
+```sql
+ALTER SYSTEM SET ob_enable_java_udf_sandbox = TRUE;
+```
+
+更多信息请参考 [ob_enable_java_udf_sandbox](../../../800.configuration-items-and-system-variables/100.system-configuration-items/300.cluster-level-configuration-items/16655.ob_enable_java_udf_sandbox.md)。
+
+## Python UDF
+
+Python UDF 是指使用 Python 语言实现的用户自定义函数。
+
+OceanBase 数据库在创建 Python UDF 时只需指定 Python 脚本和入口类，执行期 OBServer 会实例化入口类并调用其 `evaluate` 方法。
+
+以如下所示的 `varcharUrl.py` 为例创建一个 Python UDF:e
+
+```python
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+"""
+# @File     : varcharUrl.py
+"""
+
+class varcharUrl(object):
+    def evaluate(self, c1, c2):
+      if c1 == None:
+        return c2
+      if c2 == None:
+        return c1
+      return c1 + c2
+```
+
+上述 `varcharUrl.py` 脚本是标准的 OceanBase 风格，同时也支持了 ODPS 风格，可以将 ODPS UDF Python 脚本直接迁移到 OceanBase 中，脚本示例如下：
+
+```python
+#!/usr/bin/env python3e
+# -*- coding:utf-8 -*-
+"""
+# @File     : varcharUrl_ODPS.py
+"""
+
+from odps.udf import annotate
+
+@annotate("string, string -> string")
+class varcharUrl(object):
+    def evaluate(self, c1, c2):
+      if c1 == None:
+        return c2
+      if c2 == None:
+        return c1
+      return c1 + c2
+```
+
+### 创建 Python UDF
+
+为了适应 Python UDF 使用场景的灵活性，OceanBase 提供了两种方式来创建 Python UDF，分别是通过 URL 和外部资源创建。通过 URL 创建的 Python UDF 不存在 Python 脚本和数据库的耦合，在包含 Python UDF 的 SQL 每次执行前都会从 URL 拉取最新版本的 Python 脚本，适合调试等频繁更新 Python 脚本的场景，但存在额外的性能开销。通过外部资源创建的 Python UDF，将 Python 脚本作为外部资源保存在数据库内部，利用 OceanBase 的分布式能力将 Python 脚本分发到各个节点，适合稳定和对性能有一定要求的场景。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>自 OceanBase 数据库 V4.4.2 BP2 版本开始，Python UDF 的执行是在独立的子进程中执行的，不会影响到 observer 主进程。子进程在受限的安全环境中运行，禁用了高危的系统调用、不具备网络访问权限、无法访问沙箱环境外部的文件系统</p>
+</main>
+
+#### Python 环境安装
+
+OceanBase 数据库对于 python 依赖包的版本、架构要求及下载地址如下表所示：
+
+|平台|架构|下载地址|
+|--|--|--|
+|EL7| x86_64| <https://mirrors.aliyun.com/oceanbase/development-kit/el/7/x86_64/devdeps-python3-3.13.3-152026052814.el7.x86_64.rpm>|
+|EL7| aarch64| <https://mirrors.aliyun.com/oceanbase/development-kit/el/7/aarch64/devdeps-python3-3.13.3-152026052814.el7.aarch64.rpm>|
+|AL8| x86_64| <https://mirrors.aliyun.com/oceanbase/development-kit/al/8/x86_64/devdeps-python3-3.13.3-152026052814.al8.x86_64.rpm>|
+|AL8| aarch64| <https://mirrors.aliyun.com/oceanbase/development-kit/al/8/aarch64/devdeps-python3-3.13.3-152026052814.al8.aarch64.rpm>|
+
+OceanBase 数据库对于 pyarrow 依赖包的版本、架构要求及下载地址如下表所示：
+
+|架构| glibc 版本| pyarrow 版本| 下载地址|
+|---|-----------|--------------|-----------|
+|x86_64| >= 2.28| 23.0.1| <https://mirrors.aliyun.com/pypi/packages/b3/93/10a48b5e238de6d562a411af6467e71e7aedbc9b87f8d3a35f1560ae30fb/pyarrow-23.0.1-cp313-cp313-manylinux_2_28_x86_64.whl>|
+|x86_64| >= 2.17, < 2.28| 20.0.0 |<https://mirrors.aliyun.com/pypi/packages/da/ab/7dbf3d11db67c72dbf36ae63dcbc9f30b866c153b3a22ef728523943eee6/pyarrow-20.0.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl>|
+|aarch64| >= 2.28 |23.0.1 |<https://mirrors.aliyun.com/pypi/packages/f9/63/d2747d930882c9d661e9398eefc54f15696547b8983aaaf11d4a2e8b5426/pyarrow-23.0.1-cp313-cp313-manylinux_2_28_aarch64.whl>|
+|aarch64| >= 2.17, < 2.28| 18.1.0| <https://mirrors.aliyun.com/pypi/packages/41/d7/ed85001edfb96200ff606943cff71d64f91926ab42828676c0fc0db98963/pyarrow-18.1.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl>|
+
+PyArrow 不区分 EL7/AL8，只区分架构（x86_64 / aarch64）和 glibc 版本。
+
+下面以 AL8 环境为例，完整的安装步骤如下：
+
+1. 执行如下命令，下载 Python 依赖包
+
+    ```shell
+    wget https://mirrors.aliyun.com/oceanbase/development-kit/al/8/x86_64/devdeps-python3-3.13.3-152026052814.al8.x86_64.rpm
+    ```
+
+2. 执行如下命令将包内的所有文件提取到当前目录
+
+    ```shell
+    rpm2cpio devdeps-python3-3.13.3-132025070111.al8.x86_64.rpm | cpio -div
+    ```
+
+3. 切换到 Python 相关库文件的安装位置
+
+    ```shell
+    cd usr/local/oceanbase/deps/devel/python3
+    ```
+
+4. 通过 pip 自动安装 PyArrow
+
+    PyArrow 是 Apache Arrow 项目在 Python 中的官方实现库，它是一个高性能、跨语言的内存数据处理和交换工具。其核心价值在于为大数据分析、机器学习以及跨系统数据交换提供了一个标准化且高效的底层格式支持。
+
+    ```shell
+    bin/python3.13 -m ensurepip
+    bin/python3.13 -m pip install pyarrow
+    ```
+
+    如上一条命令，默认下载源没有 `wheel` 包，会自动下载源码包，如 `pyarrow-24.0.0.tar.gz`，此时可指定镜像源安装,命令如下：
+
+    ```shell
+    bin/python3.13 -m pip install pyarrow --only-binary=pyarrow -i https://mirrors.aliyun.com/pypi/simple/
+    ```
+
+如果不能访问公网，您也可以通过如下步骤手动安装手动下载安装 PyArrow
+
+1. 可访问公网的环境下载好 pyarrow 的 wheel 包
+
+    ```shell
+    wget https://mirrors.aliyun.com/pypi/packages/b3/93/10a48b5e238de6d562a411af6467e71e7aedbc9b87f8d3a35f1560ae30fb/pyarrow-23.0.1-cp313-cp313-manylinux_2_28_x86_64.whl
+    ```
+
+2. 将 PyArrow Python wheel 包解压并安装到 OceanBase 开发环境中的 Python 库目录下
+
+    ```shell
+    unzip pyarrow-23.0.1-cp313-cp313-manylinux_2_28_x86_64.whl -d usr/local/oceanbase/deps/devel/python3/lib/python3.13/site-packages/
+    ```
+
+在系统租户下，需要将 `ob_python_home` 配置项设置为的 Python 安装路径，命令如下：
+
+```sql
+obclient> ALTER SYSTEM STE ob_python_home ="devdeps_python_path/usr/local/oceanbase/deps/devel/python3";
+```
+
+其中，`devdeps_python_path` 为提取 devdeps-python3 依赖包所在的目录。
+
+Python 环境安装完成后，您可以通过如下命令，指定租户开启 Python UDF 功能：
+
+```sql
+obclient> ALTER SYSTEM STE ob_enable_python_udf = TRUE tenant tenant_name;
+```
+
+#### 通过 URL 创建 Python UDF
+
+执行如下 SQL 语句创建名为 `varchar_test` 的 Python UDF。
+
+```shell
+obclient> CREATE FUNCTION varchar_test(c1 varchar(1000), c2 varchar(1000))
+RETURNS varchar(1000)
+PROPERTIES (
+  symbol = 'varcharUrl',
+  type = 'Python',
+  file = '<URL to Python>'
+);
+```
+
+其中：
+
+* `symbol`：表示指定的入口类名。
+
+    <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p><code>symbol</code> 大小写敏感， 支持两个格式，<code>class_name</code>和 <code>module_name.class_name</code>。如果定义<code>class_name</code>，OceanBase 内部会生成一个唯一的 <code>module_name</code>保证每个 Python 类的唯一性。如果是 <code>module_name.class_name</code>, 需要用户保证其唯一性，否则在同一条语句中调用两个不同 UDF，如果两个 UDF 定义中的 <code>module_name.class_name</code>相同，会出现覆盖情况，即只有一个 Python 类会起作用。</p>
+    </main>
+
+* `type`：表示外部 UDF 的类型，目前支持 `odpsjar`、`UDAFJar`、`UDTFJar`、`Python`。
+* `file`：表示 Python 脚本所在的 URL。
+
+创建成功之后即可像使用 PL UDF 一样使用 Python UDF，使用示例如下：
+
+```shell
+obclient> CREATE FUNCTION varchar_test(c1 varchar(1000), c2 varchar(1000))
+    -> RETURNS varchar(1000)
+    -> PROPERTIES (
+    ->   symbol = 'varcharUrl',
+    ->   type = 'Python',
+    ->   file = 'http://*****/varcharUrl.py'
+    -> );
+Query OK, 0 rows affected (0.289 sec)
+obclient> SELECT varchar_test('OceanBase', '海扬数据库');
++----------------------------------------------+
+| varchar_test('OceanBase', '海扬数据库')      |
++----------------------------------------------+
+| OceanBase海扬数据库                          |
++----------------------------------------------+
+```
+
+#### 通过外部资源创建 Python UDF
+
+OBServer 通过外部资源管理 Python 脚本等外部存储过程的依赖资源，需要将 Python 脚本通过 `DBMS_PYTHON.LOADPYHON` 系统包函数上传到 OBServer，并在创建的 Python UDF 中引用这个 Python 脚本对应的外部资源。
+
+外部资源的上传和 UDF 的创建没有严格的先后次序要求，只要保证 UDF 调用时，资源已经上传即可。并且，一个外部资源可以被多个 UDF 使用。
+
+操作步骤如下：
+
+1. 上传 Python 脚本
+
+    可以调用 `DBMS_PYTHON.LOADPYHON` 将 Python 脚本作为外部资源上传到 OBServer。脚本文件示例如下：
+
+    ```sql
+    String url = "<URL to Python>";
+    InputStream is = new URL(url).openStream();
+
+    // conn is a connection to OceanBase
+    PreparedStatement ps = conn.prepareStatement("call DBMS_PYTHON.LOADPYHON(? ,? ,? )");
+    ps.setString(1, "varchar_test_script");
+    ps.setBlob(2, is);
+    ps.setString(3, "varcharUrl Python script");
+
+    ps.execute();
+    ```
+
+    创建成功后，DBA 用户可以在当前租户下查询 `DBA_OB_EXTERNAL_RESOURCES` 视图获取当前租户所有的外部资源，或登录 SYS 租户查询 `CDB_OB_EXTERNAL_RESOURCES` 获取所有租户的外部资源。
+
+2. 创建 Python UDF
+
+   执行如下 SQL 语句创建名为 `varchar_test` 的 Python UDF：
+
+   ```sql
+   obclient> CREATE FUNCTION varchar_test(c1 varchar(1000), c2 varchar(1000))
+    RETURNS varchar(1000)
+    PROPERTIES (
+    symbol = 'varcharUrl',
+    type = 'Python',
+    file = 'varchar_test_script'
+    );
+   ```
+
+    其中：
+
+    * `symbol`：表示指定的入口类名。
+    * `type`：表示 Python 的类型，目前仅支持 Python 类型。
+    * `file`：为 Python 脚本对应的外部资源名称。
+
+创建成功之后即可像使用 PL UDF 一样使用 Python UDF，使用示例如下：
+
+```shell
+obclient> CREATE FUNCTION varchar_test(c1 varchar(1000), c2 varchar(1000))
+    -> RETURNS varchar(1000)
+    -> PROPERTIES (
+    ->   symbol = 'varcharUrl',
+    ->   type = 'Python',
+    ->   file = 'varchar_test_script'
+    -> );
+Query OK, 0 rows affected (0.221 sec)
+
+obclient> SELECT varchar_test('OceanBase', '海扬数据库');
++----------------------------------------------+
+| varchar_test('OceanBase', '海扬数据库')      |
++----------------------------------------------+
+| OceanBase海扬数据库                          |
++----------------------------------------------+
+1 row in set (0.060 sec)
+```

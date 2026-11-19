@@ -1,0 +1,125 @@
+---
+title: "GV$OB_UNITS"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500609.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$OB_UNITS
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `GV$OB_UNITS` 展示租户所在的 OBServer 节点的 Unit 信息，系统租户看到本集群所有 OBServer 节点的 Unit 信息。
+
+## 字段说明
+
+|       字段名称       |      类型      | 是否可以为 NULL |                         描述            |
+|------------------|--------------|------------|-------------------------------------------------------------------------|
+| SVR_IP           | VARCHAR2(46)  | NO         | 服务器 IP 地址                                                              |
+| SVR_PORT         | NUMBER(38)   | NO         | 服务器端口号                                                                 |
+| Unit_ID          | NUMBER(38)   | NO         | Unit ID                                                                |
+| TENANT_ID        | NUMBER(38)   | NO         | Unit 所属的租户 ID                                                          |
+| ZONE             | VARCHAR2(128) | NO         | Zone 名称                                                                |
+| ZONE_TYPE        | VARCHAR2(128) | NO         | Unit 所在 Zone 的 Zone 类型，取值如下：<ul><li>`NULL`：表示该列值无效，OBServer 节点重启的场景下会短暂出现一段时间的无效值。</li> <li>`ReadWrite`：读写 Zone</li> <li>`Encryption`：加密 Zone</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入。</p></main> |
+| REGION           | VARCHAR2(128) | NO         | Unit 所在 Zone 所属的 Region 名。未设置时，默认为 `default_region`。取值为 `NULL` 时，表示该列值无效，OBServer 节点重启的场景下会短暂出现一段时间的无效值。<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入。</p></main>  |
+| MIN_CPU          | NUMBER(38)       | NO         | CPU 规格下限                                                               |
+| MAX_CPU          | NUMBER(38)       | NO         | CPU 规格上限                                                               |
+| MEMORY_SIZE       | NUMBER(38)   | NO         | 内存大小，单位为字节                                                           |
+| MIN_IOPS         | NUMBER(38)   | NO         | 磁盘 IOPS 规格下限                                                           |
+| MAX_IOPS         | NUMBER(38)   | NO         | 磁盘 IOPS 规格上限                                                           |
+| IOPS_WEIGHT    | NUMBER(38)   | NO         | IOPS 权重                          |
+| LOG_DISK_SIZE  | NUMBER(38)   | NO         | 日志盘大小，单位为字节                |
+| LOG_DISK_IN_USE | NUMBER(38)   | NO         | 日志盘已使用大小，单位为字节                                                               |
+| DATA_DISK_IN_USE | NUMBER(38)   | NO         | 数据盘已使用大小，单位为字节                                                               |
+| STATUS           | VARCHAR2(64)  | NO         | Unit 的状态：<ul><li>`NORMAL`：正常状态</li><li>`MIGRATING IN`：正在迁入 </li><li>`MIGRATING OUT`：正在迁出  </li><li>`MARK DELETING`：标记删除</li><li>`WAIT GC`：等待 GC 数据</li><li>`DELETING`：GC 完成，正在删除中</li><li>`ERROR`：错误状态 </li></ul> |
+| CREATE_TIME      | NUMBER(38) | NO         | Unit 在 OBServer 节点上的创建时间                                                 |
+| REPLICA_TYPE     | VARCHAR2(7)   | NO         | 副本类型，默认为 `FULL` <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，字段 <code>REPLICA_TYPE</code> 从 V4.2.5 BP7 版本开始引入。</p></main>    |
+
+## 查询示例
+
+查看本租户所在的所有 OBServer 节点的 Unit 信息。
+
+```shell
+obclient(SYS@oracle001)[SYS]> SELECT * FROM SYS.GV$OB_UNITS\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+          SVR_IP: xxx.xx.xxx.239
+        SVR_PORT: 2882
+         UNIT_ID: 1004
+       TENANT_ID: 1004
+            ZONE: zone1
+       ZONE_TYPE: ReadWrite
+          REGION: default_region
+         MIN_CPU: 1
+         MAX_CPU: 1
+     MEMORY_SIZE: 4294967296
+        MIN_IOPS: 9223372036854775807
+        MAX_IOPS: 9223372036854775807
+     IOPS_WEIGHT: 1
+   LOG_DISK_SIZE: 14495514624
+ LOG_DISK_IN_USE: 209020357
+DATA_DISK_IN_USE: 0
+          STATUS: NORMAL
+     CREATE_TIME: 1760498068922558
+    REPLICA_TYPE: FULL
+*************************** 2. row ***************************
+          SVR_IP: xxx.xx.xxx.198
+        SVR_PORT: 2882
+         UNIT_ID: 1006
+       TENANT_ID: 1004
+            ZONE: zone3
+       ZONE_TYPE: ReadWrite
+          REGION: default_region
+         MIN_CPU: 1
+         MAX_CPU: 1
+     MEMORY_SIZE: 4294967296
+        MIN_IOPS: 9223372036854775807
+        MAX_IOPS: 9223372036854775807
+     IOPS_WEIGHT: 1
+   LOG_DISK_SIZE: 14495514624
+ LOG_DISK_IN_USE: 209020357
+DATA_DISK_IN_USE: 0
+          STATUS: NORMAL
+     CREATE_TIME: 1760498068922498
+    REPLICA_TYPE: FULL
+*************************** 3. row ***************************
+          SVR_IP: xxx.xx.xxx.201
+        SVR_PORT: 2882
+         UNIT_ID: 1005
+       TENANT_ID: 1004
+            ZONE: zone2
+       ZONE_TYPE: ReadWrite
+          REGION: default_region
+         MIN_CPU: 1
+         MAX_CPU: 1
+     MEMORY_SIZE: 4294967296
+        MIN_IOPS: 9223372036854775807
+        MAX_IOPS: 9223372036854775807
+     IOPS_WEIGHT: 1
+   LOG_DISK_SIZE: 14495514624
+ LOG_DISK_IN_USE: 209020357
+DATA_DISK_IN_USE: 0
+          STATUS: NORMAL
+     CREATE_TIME: 1760498068922606
+    REPLICA_TYPE: FULL
+3 rows in set
+```
+
+## 相关视图或文档
+
+* 查看本 OBServer 节点的 Unit 信息：[V$OB_UNITS](34500.v-ob_units-of-oracle-mode.md)
+
+* [查看租户和资源信息](../../../../600.manage/200.tenant-management/600.common-tenant-operations/400.view-tenant-information.md)

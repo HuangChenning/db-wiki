@@ -1,0 +1,47 @@
+---
+title: BASE64_DECODE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503697.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# BASE64_DECODE
+
+`BASE64_DECODE` 函数用于读取基于 Base64 编码的 `RAW` 输入字符串，并将其解码为原始 `RAW` 值。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 语法 
+
+```sql
+UTL_ENCODE.BASE64_DECODE (
+   r  IN RAW) 
+RETURN RAW;
+```
+
+
+
+## 参数解释 
+
+
+
+| 参数 |                  解释                   |
+|----|---------------------------------------|
+| r  | 包含基于 Base64 编码数据的 `RAW` 字符串。没有默认值或可选参数。 |
+
+
+
+## 返回值 
+
+
+
+| 返回值 |    描述     |
+|-----|-----------|
+| RAW | 包含解码后的字符串 |

@@ -1,0 +1,22 @@
+---
+title: balancer_log_interval
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702078.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# balancer_log_interval
+
+`balancer_log_interval` 用于负载均衡等后台任务线程打印统计日志的间隔时间。
+
+
+|      **属性**      |   **描述**   |
+|------------------|------------|
+| 参数类型             | 时间类型       |
+| 默认值              | 1m，表示 1 分钟 |
+| 取值范围             | \[1s, +∞)  |
+| 是否重启 OBServer 节点生效 | 否          |

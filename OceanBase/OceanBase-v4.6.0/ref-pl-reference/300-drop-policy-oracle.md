@@ -1,0 +1,48 @@
+---
+title: DROP_POLICY
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006316335.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DROP_POLICY
+
+`DROP_POLICY` 过程用于删除指定表或视图上的安全策略。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_RLS.DROP_POLICY(
+    object_schema IN VARCHAR2 := NULL,
+    object_name   IN VARCHAR2,
+    policy_name   IN VARCHAR2);
+```
+
+## 参数说明
+
+| 参数 | 说明 |
+|------|------|
+| object_schema | 表或视图所属的模式名称。默认为 `NULL`，表示当前模式。 |
+| object_name   | 表或视图的名称。 |
+| policy_name   | 要删除的策略名称。 |
+
+## 示例
+
+```sql
+BEGIN
+  DBMS_RLS.DROP_POLICY(
+    object_schema => 'hr',
+    object_name   => 'employees',
+    policy_name   => 'emp_policy');
+END;
+/
+```

@@ -1,0 +1,326 @@
+---
+title: "SELECT 语句"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504234.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SELECT 语句
+
+SELECT 的语法相对比较复杂。本节首先会介绍普通的 SELECT 语法结构，然后介绍集合类 SELECT 的语法结构。
+
+## 描述
+
+该语句用于查询表中的内容。
+
+## 语法
+
+```sql
+SELECT
+        [/*+ hint statement */]
+        [ALL | DISTINCT | UNIQUE | SQL_CALC_FOUND_ROWS]
+        [HIGH_PRIORITY]
+        [STRAIGHT_JOIN]
+        [SQL_SMALL_RESULT] [SQL_BIG_RESULT] [SQL_BUFFER_RESULT]
+        select_expr_list
+        [FROM from_list [WHERE condition]]
+        [GROUP BY group_expression_list [WITH ROLLUP] [HAVING condition]]
+        [ORDER BY order_expression_list]
+        [limit_clause]
+        [FOR UPDATE [opt_for_update_wait]]
+        [LOCK IN SHARE MODE];
+select_expr:
+ table_name.*
+  | table_alias_name.*
+  | expr [[AS] column_alias_name]
+
+from_list:
+      DUAL
+    | table_reference [, table_reference ...]
+
+table_reference:
+      simple_table
+    | joined_table
+    | table_name@dblink_name
+
+simple_table:
+    table_factor [partition_option]
+        [sample_clause [opt_seed]]
+        [[AS] table_alias_name][index_hint]
+    | (select_stmt [sample_clause [opt_seed])
+        [AS] table_alias_name [index_hint]
+    | (table_reference_list) [index_hint]
+
+joined_table:
+      table_reference [NATURAL][INNER] JOIN simple_table [join_condition]
+    | table_reference outer_join_type JOIN simple_table join_condition
+
+partition_option:
+    PARTITION (partition_name_list)
+
+sample_clause:
+    SAMPLE [BLOCK] [ ALL | BASE | INCR] (sample_percent)
+
+opt_seed:
+    SEED(integer)
+
+index_hint:
+    {USE | FORCE | IGNORE} {KEY | INDEX}
+       [FOR {JOIN | ORDER BY | GROUP BY}] (index_list)
+
+index_list:
+    index_name [, index_name ...]
+
+partition_name_list:
+    partition_name [, partition_name ...]
+
+outer_join_type:
+    [NATURAL]{LEFT | RIGHT | FULL} [OUTER]
+
+join_condition:
+    ON expression
+
+condition:
+    expression
+
+group_expression_list:
+    group_expression [, group_expression ...]
+
+group_expression:
+    expression [ASC | DESC]
+
+order_expression_list:
+    order_expression [, order_expression ...]
+
+order_expression:
+    expression [ASC | DESC]
+
+limit_clause:
+  LIMIT {[offset,] row_count |row_count OFFSET offset}
+
+opt_for_update_wait:
+    WAIT { DECIMAL | INTNUM }
+  | NOWAIT | NO_WAIT
+  | SKIP LOCKED
+```
+
+## 参数解释
+
+|                                参数                                |                           描述                       |
+|--------------------------------------------------------------------|---------------------------------------------------------|
+| ALL \| DISTINCT \| UNIQUE \| SQL_CALC_FOUND_ROWS                                            | 在数据库表中，可能会包含重复值。 <ul><li> `DISTINCT` \| `UNIQUE`：在查询结果中相同的行只显示一行。</li>   <li> `ALL`：则列出所有的行，缺省为 `ALL`。  </li>   <li>  `SQL_CALC_FOUND_ROWS`：在带有 `LIMIT` 子句的查询中，记录全部返回的行数，并可以在接下来执行的 `FOUND_ROWS()` 函数获取全部行数。</li></ul>    |
+| HIGH_PRIORITY | 可选项，指定该 `SELECT` 语句比更新表操作更高的优先级。当前版本仅支持该关键字语法，功能不生效。|
+| STRAIGHT_JOIN | 可选项，强制优化器按照 `FROM` 子句中所列出的顺序连接表。调优命令，不影响执行结果。 <main id="notice" type='notice'><h4>注意</h4><p>OceanBase 数据库并不完全兼容 MySQL 中的 <code>STRAIGHT_JOIN</code> 语法。当 <code>STRAIGHT_JOIN</code> 能够明确指定表连接的顺序时，OceanBase 数据库会按照这个命令执行。如果 <code>STRAIGHT_JOIN</code> 无法确定唯一的连接顺序，OceanBase 数据库将会忽略这个命令。</p></main>|
+| SQL_SMALL_RESULT \| SQL_BIG_RESULT  | 可选项，当使用 `GROUP BY` 或 `DISTINCT` 时，可以通过指定 `SQL_BIG_RESULT` 或 `SQL_SMALL_RESULT` 来告知优化器结果集的大小。当前版本仅支持该关键字语法，功能不生效。|
+| SQL_BUFFER_RESULT | 可选项，使用 `SQL_BUFFER_RESULT` 选项会强制将结果集存储到一个临时表中。当前版本仅支持该关键字语法，功能不生效。|
+| select_expr                                                                                 | 列出要查询的表达式或列名，以逗号（,）分隔。也可以用星号（\*）表示所有列。   |
+| AS othername                                                                                | 为输出字段重新命名。   |
+| FROM table_references                                                                       | 指明了从哪个表或哪些表中读取数据（支持多表查询）。   |
+| WHERE where_conditions                                                                      | 可选项，`WHERE` 字句用来设置一个筛选条件，查询结果中仅包含满足条件的数据。`where_conditions` 为表达式。  |
+| GROUP BY group_by_list                                                                      | 用于进行分类汇总。    |
+| WITH ROLLUP                                                                                 | 将各分组进行汇总以表示更高级的聚合（也称为超聚合），并产生额外的行。  |
+| HAVING search_confitions                                                                    | `HAVING` 字句与 `WHERE` 字句类似，但是 `HAVING` 字句可以使用聚合函数（如 `SUM`，`AVG` 等）。 |
+| SAMPLE \[BLOCK\] \[ ALL \| BASE \| INCR\] (sample_percent)                                  | 只扫描一部分记录。 <ul><li> `BLOCK` 表示扫描随机数据块进行，默认为扫描随机行。   </li>   <li>  `ALL` 表示扫描所有数据，缺省为 `ALL`。   </li>   <li>  `BASE` 表示扫描基线数据。   </li>   <li>  `INCR` 表示扫描增量数据。   </li>   <li>  `sample_percent` 表示采样比例，单位为 %，可以使用 `INTEGER` 或 `DECIMAL` 类型。  </li></ul>                          |
+| SEED integer                                                                                | 采样的种子值，取值范围为 \[0,4294967295\]，相同的采样种子值总会返回相同的结果。  |
+| {USE \| FORCE \| IGNORE} {KEY \| INDEX} \[FOR {JOIN \| ORDER BY \| GROUP BY}\] (index_list) | 进行查询是否使用指定的索引。 <ul><li> `USE`：指示某项操作使用索引。   </li>   <li>  `FORCE`：指示某些操作强制使用索引。   </li>   <li>  `IGNORE`：是指某项操作不使用索引。   </li>   <li>  `FOR JOIN`：指定索引进行连接。   </li>   <li>  `FOR ORDER BY`：指定索引进行排序。   </li>   <li>  `FOR GROUP BY`：指定索引进行分组。</li></ul>    |
+| SQL_CALC_FOUND_ROWS                                                                         | 用来按升序（`ASC`）或者降序（`DESC`）显示查询结果。缺省为 `ASC`。  |
+| \[LIMIT {\[offset,\] row_count \|row_count OFFSET offset}\]                                 | 强制 `SELECT` 语句返回指定的记录数。 `LIMIT` 接受一个或两个数字参数。参数必须是一个整数常量。 <ul><li> 如果给定两个参数，第一个参数指定第一个返回记录行的偏移量，第二个参数指定返回记录行的最大数目。 初始记录行的偏移量是 0。   </li>   <li>  如果只给定一个参数，它表示返回记录行的最大数目，偏移量为 0。 </li></ul>    |
+| FOR UPDATE                                                                                  | 对查询结果所有行上排他锁，以阻止其他事务的并发修改，或阻止在某些事务隔离级别时的并发读取。更多锁选项信息，参见 [opt_for_update_wait](#opt_for_update_wait)。 |
+| PARTITION(partition_list)                                                                   | 指定查询表的分区信息。例如 `partition(p0,p1...)`。     |
+| dblink_name | 使用 dblink 查询远端数据库表的数据。<main id="notice" ><h4>说明</h4><p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持 <code>dblink</code> 功能。</p></main>|
+| LOCK IN SHARE MODE | 锁定查询结果。|
+
+### opt_for_update_wait
+
+* `WAIT`：表示等待其他事务释放资源的时间，如果超过该时间，则返回无法获得资源，单位为秒。
+* `NOWAIT` 或 `NO_WAIT`：表示不会等待其他事务释放资源，直接返回无法获得资源。
+* `SKIP LOCKED`：表示不会等待获取行锁，查询会立即执行，从结果集中移除被锁定的行。
+
+更多使用 `FOR UPDATE` 的示例信息，参见 [锁定查询结果 SELECT FOR UPDATE](../../../../../../300.develop/100.application-development-of-mysql-mode/500.read-data-of-mysql-mode/300.use-operators-and-functions-in-query-of-mysql-mode/1000.lock-query-results-select-for-update-of-mysql-mode.md)。
+
+## 示例
+
+### 简单的表查询示例
+
+以如下表 `a` 为例。
+
+![](img/4cb38732e892bc3d.png)
+
+* 从表 `a` 中读取 `name` 数据。
+
+  ```sql
+  obclient> SELECT name FROM a;
+  +------+
+  | name |
+  +------+
+  | a    |
+  | b    |
+  | a    |
+  +------+
+  ```
+
+* 在查询结果中对 `name` 进行去重处理。
+
+  ```sql
+  obclient> SELECT DISTINCT name FROM a;
+  +------+
+  | name |
+  +------+
+  | a    |
+  | b    |
+  +------+
+  ```
+
+* 从表 `a` 中查询 `id`、`name`、`num`，然后把 `num` 列除以 2 输出，输出的列名为 `avg`。
+
+  ```sql
+  obclient> SELECT id, name, num/2 AS avg FROM a;
+  +------+------+----------+
+  | id   | name | avg      |
+  +------+------+----------+
+  |    1 | a    |  50.0000 |
+  |    2 | b    | 100.0000 |
+  |    3 | a    |  25.0000 |
+  +------+------+----------+
+  ```
+
+* 从表 `a` 中根据筛选条件 `name = 'a'`，输出对应的 `id` 、`name` 和 `num`。
+
+  ```sql
+  obclient> SELECT id, name, num FROM a WHERE name = 'a';
+  +------+------+------+
+  | id   | name | num  |
+  +------+------+------+
+  |    1 | a    |  100 |
+  |    3 | a    |   50 |
+  +------+------+------+
+  ```
+
+* 从表 `a` 中查询 `id`、`name`，按照 `name` 分组对 `num` 求和，并输出。
+
+  ```sql
+  obclient> SELECT id, name, SUM(num) FROM a GROUP BY name;
+  +------+------+----------+
+  | id   | name | SUM(num) |
+  +------+------+----------+
+  |    1 | a    |      150 |
+  |    2 | b    |      200 |
+  +------+------+----------+
+  ```
+
+* 从表 `a` 中查询 `id`、`name`，按照 `name` 分组对 `num` 求和，查询 `num` 总和小于 `160` 的行，并输出。
+
+  ```sql
+  obclient> SELECT id, name, SUM(num) as sum FROM a GROUP BY name HAVING SUM(num) < 160;
+  +------+------+------+
+  | id   | name | sum  |
+  +------+------+------+
+  |    1 | a    |  150 |
+  +------+------+------+
+  ```
+
+* 从表 `a` 中查询 `id`、`name`、`num`，根据 `num` 按升序（`ASC`）输出查询结果。
+
+  ```sql
+  obclient> SELECT * FROM a ORDER BY num ASC;
+  +------+------+------+
+  | id   | name | num  |
+  +------+------+------+
+  |    3 | a    |   50 |
+  |    1 | a    |  100 |
+  |    2 | b    |  200 |
+  +------+------+------+
+  ```
+
+* 从表 `a` 中查询 `id`、`name`、`num`，根据 `num` 按降序（`DESC`）输出查询结果。
+
+  ```sql
+  obclient> SELECT * FROM a ORDER BY num DESC;
+  +------+------+------+
+  | id   | name | num  |
+  +------+------+------+
+  |    2 | b    |  200 |
+  |    1 | a    |  100 |
+  |    3 | a    |   50 |
+  +------+------+------+
+  ```
+
+* 从表 `a` 中查询 `id`、`name`、`num`，使用 `LIMIT` 强制从第 2 行开始，返回表 `a` 的两行结果。
+
+  ```sql
+  obclient> SELECT * FROM a LIMIT 1,2;
+  +------+------+------+
+  | id   | name | num  |
+  +------+------+------+
+  |    2 | b    |  200 |
+  |    3 | a    |   50 |
+  +------+------+------+
+  ```
+
+* 可以通过 `SELECT ... FOR UPDATE` 为表加行级锁。如果使用了 `LIMIT 1` 子句，则会在查询优化中将算子下压到表扫描的步骤中，只为 `LIMIT` 返回的行加锁。
+
+  ```sql
+  obclient> SELECT * FROM a LIMIT 1 FOR UPDATE;
+  ```
+
+* 如果您使用了 `ORDER BY` 子句对查询结果进行排序，则会先对结果进行排序，然后再执行 `LIMIT 1`，因此这种情况下，会为选择的所有行加锁。
+
+  ```sql
+  obclient> SELECT * FROM a ORDER BY id LIMIT 1 FOR UPDATE;
+  ```
+
+* 使用 `LOCK IN SHARE MODE` 锁定对表 `a` 的查询结果。
+
+  ```shell
+  obclient> SELECT * FROM a LOCK IN SHARE MODE;
+  +------+------+------+
+  | id   | name | num  |
+  +------+------+------+
+  |    1 | a    |  100 |
+  |    2 | b    |  200 |
+  |    3 | a    |  50 |
+  +------+------+------+
+  3 row in set
+  ```
+
+### 使用 dblink 查询数据的示例
+
+* 读取远端 `test` 库中的 `number_t` 表
+
+  ```shell
+  obclient> SELECT * FROM number_t@ob_dblink;
+  +--------+-------------+---------+---------------------+--------------------------------+
+  | c_int  | c_bigint    | c_float |    c_double         |   c_decimal                    |
+  +--------+-------------+---------+---------------------+--------------------------------+
+  | 214748 | 92233720368 | 3.40282 | 1.7976931348623157  | 123456789123456789.1234567890  |
+  +--------+-------------+---------+---------------------+--------------------------------+
+  1 row in set
+  ```
+
+* 读取远端 `test` 库中的 `number_t` 表，并和本地的 `number_t` 表做 JOIN 操作。
+
+  ```sql
+  obclient> SELECT a.c_decimal, b.c_double FROM number_t a, number_t@ob_dblink b where a.c_int = b.c_int;
+  +--------------------------------+---------------------+
+  |   c_decimal                    |    c_double         |
+  +---------------------+--------------------------------+
+  | 123456789123456789.1234567890  |  1.7976931348623157 |
+  +---------------------+--------------------------------+
+  1 row in set
+  ```
+
+* 读取远端 `mysql` 库中的 `datetime_t` 表。
+
+  ```sql
+  obclient> SELECT * FROM mysql.datetime_t@ob_dblink;
+  +-------------+------------+---------+----------------------+----------------------+
+  | c_date      | c_time     | c_year  | c_datetime           |  c_timestamp         |
+  +-------------+------------+---------+-----------------------+---------------------+
+  |  2023-04-13 | 12:12:12   |  2078   | 2100-11-01 12:12:13  | 2100-12-01 21:14:15  |
+  +-------------+------------+---------+----------------------+----------------------+
+  1 row in set
+  ```

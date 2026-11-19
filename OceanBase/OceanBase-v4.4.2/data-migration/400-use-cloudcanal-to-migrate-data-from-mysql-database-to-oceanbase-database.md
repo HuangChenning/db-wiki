@@ -1,0 +1,155 @@
+---
+title: "使用 CloudCanal 从 MySQL 数据库迁移数据到 OceanBase 数据库"
+book: "数据迁移"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005282711.html"
+tags:
+  - oceanbase
+  - distributed
+  - data-migration
+---
+
+# 使用 CloudCanal 从 MySQL 数据库迁移数据到 OceanBase 数据库
+
+CloudCanal 是一款数据迁移同步工具，帮助企业快速构建高质量数据流通通道，产品包含 SaaS 模式和私有输出专享模式。开发团队核心成员来自大厂，具备数据库内核、大规模分布式系统、云产品构建背景，懂数据库，懂分布式，懂云产品商业和服务模式。
+
+本文将介绍如何使用 CloudCanal 社区版 v2.2.5.36 将 MySQL 数据库中的数据同步到目标端 OceanBase 数据库 MySQL 模式中。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <ul>
+    <li>CloudCanal 社区版从 v2.2.0.7 版本开始支持从 MySQL 数据库迁移数据至 OceanBase 数据库 MySQL 模式。详情请参见 <a href="https://www.clougence.com/cc-doc/releaseNote/rn-cloudcanal-2-2-0-7">v2.2.0.7</a>。</li>
+    <li>CloudCanal 暂时只支持 MySQL 数据库 V5.6 之后的版本作为源库。</li>
+    </ul>
+  </main>
+
+## 前置条件
+
+参考 [全新安装(Linux/MacOS)](https://www.clougence.com/cc-doc/productOP/docker/install_linux_macos) 完成 CloudCanal 社区版的安装部署以及申请免费 License 并激活。
+
+## 数据迁移操作步骤
+
+1. 添加数据源。
+2. 创建任务。
+3. 查看任务。
+
+### 添加数据源
+
+1. 登录 CloudCanal 平台。
+
+    ![CloudCanal登录](img/e6af6005fe461322.png)
+
+2. 进入数据源管理界面，点击新增数据源。
+
+   ![新增数据源](img/e5442b607306b327.png)
+
+3. 在新增数据源页面，填写数据源信息。
+
+   * 部署类型：有 **自建数据库** 和 **阿里云**。
+
+     * 阿里云：用户在阿里云上购买的数据库实例。
+     * 自建数据库：用户自己部署的数据库实例。
+
+   * 数据库类型：选择数据源类型。
+
+      新增两个数据源 MySQL 和 OceanBase，分别作为同步的源库和目标库：
+
+      * 选择自建数据库中 MySQL，添加自己部署的 MySQL 数据库实例。
+
+         MySQL 数据源设置：
+
+         * 网络地址：填写 MySQL 数据库的 IP。
+         * 认证方式：有 **账号密码**、**有账号密码** 和 **无账号密码** 三种方式。默认 **账号密码** 方式。
+         * 账号：连接 MySQL 数据库的用户名。
+         * 密码：连接 MySQL 数据库的用户名对应的密码。
+         * 描述：选填项，备注便于记忆的名字，方便使用时识别，如交易库、用户库、测试库等。
+
+        ![MySQL](img/482dd7d8ea0e2826.png)
+
+      * 选择自建数据库中 OceanBase，添加自己部署的 OceanBase 数据库实例。
+
+         OceanBase 数据源设置：
+
+         * 网络地址：填写连接 OceanBase 数据库的 IP，直连或通过 ODP 连接。
+         * oblogproxy host：OceanBase Binglog 服务 的 IP 地址。OceanBase 数据库作为源库增量同步时，不可以为空；OceanBase 数据库作为目标库时，可为空。有关 OceanBase Binlog 服务的详细信息，请参考 [OceanBase Binlog 服务](../../700.reference/1500.Components-and-Tools/300.data-integrate/100.oblogproxy-overview.md)。
+         * OceanBaseRpcPort：OceanBase Rpc 端口，默认 2882。
+         * 认证方式：分别为 **账号密码**、**有账号密码** 和 **无账号密码**。默认账号密码。
+         * 账号：连接 OceanBase 数据库的用户名。直连格式：**用户名@租户名称**；ODP 连接格式：**用户名@租户名称#集群名称**。
+         * 密码：连接 OceanBase 数据库的用户名对应的密码。
+         * 描述：选填项，备注便于记忆的名字，方便使用时识别，如交易库、用户库、测试库等。
+
+        ![OceanBase](img/871ac208f0e30172.png)
+
+4. 查看新增的两个数据源。
+
+   ![查看数据源](img/3ac1749be4f54984.png)
+
+### 创建任务
+
+添加好数据源之后可以按照如下步骤进行数据全量迁移、增量同步和结构迁移。
+
+1. 任务管理 -> 创建任务。
+
+   ![任务管理](img/59e1ffebd7a69fc5.png)
+
+2. 源库和目标库设置。
+
+   * 选择 **任务运行集群**，任务会被调度到绑定集群的一台机器上执行。社区版部署完成后，会有一个默认的运行集群。
+
+   * 选择源库 MySQL 和目标数据库 OceanBase，并点击 **测试连接**。
+
+   * 选择需要 **迁移同步或校验的数据库**，指定数据库映射关系。
+
+   * 完成设置后点击 **下一步**。
+
+   ![源目标设置](img/dadc96900315026f.png)
+
+3. 功能配置。
+
+   选择 **增量同步** 功能，第一次会先查表进行全量同步，之后消费 binlog 增量同步数据。
+
+   * 任务类型具有以下功能：
+
+     * 全量迁移：以数据迁移为主，适合数据的全量搬迁及短期的增量同步任务。
+     * 增量同步：默认选项，默认附带 **全量初始化**。以数据同步为主，适合长期的增量同步任务。
+     * 数据校验：对比源端与目标端的数据，一次性或定时多次校验数据迁移的准确性。社区版不支持此功能。
+     * 结构迁移：根据所选数据库、表自动创建对应的数据库、表。
+     * 数据订正：对比源端与目标端的数据，将不一致的数据自动覆盖成和源端一致。社区版不支持此功能。
+
+   * 任务规格：默认 **平衡型**、**2G** 规格即可。
+
+   * 完成配置后，点击 **下一步**。
+
+   ![功能配置](img/2c12ccdfd0061e29.png)
+
+4. 表&action 过滤。
+
+   * 选择要同步的表，要保证目标库的 `UPDATE` 和 `DELETE` 操作和源库的一致，需要保证源库表中有主键或者唯一约束。
+
+   * 完成配置后，点击 **下一步**。
+
+   ![表&action过滤](img/341346c393ae77d7.png)
+
+5. 数据处理。
+
+   * 选择表中要同步的列。
+
+   * 完成设置后，点击 **下一步**。
+
+   ![数据处理](img/c324508ed8ad2bf2.png)
+
+6. 确认创建任务。
+
+   最后一步，确认创建内容无误后点击确认创建。
+
+    ![创建确认](img/2f4e05e73a2d11f6.png)
+
+### 查看任务状态
+
+任务创建成功后，会默认进行结构迁移、全量迁移、增量同步，进度条会逐步发生变化。回到 CloudCanal 任务管理控制台，刷新并查看任务实时状态，从结构迁移、数据初始化，到数据同步。
+
+![查看任务](img/40acea661adfe3ac.png)
+
+## 相关文档
+
+有关 CloudCanal 的详细信息，请参见 [CloudCanal 官方文档](https://www.clougence.com/cc-doc/intro/product_intro/)。

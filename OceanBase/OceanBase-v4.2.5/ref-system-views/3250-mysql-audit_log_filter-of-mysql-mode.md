@@ -1,0 +1,56 @@
+---
+title: mysql.audit_log_filter
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501734.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# mysql.audit_log_filter
+
+<main id="notice" type='explain'>
+ <h4>说明</h4>
+ <p>该视图从 V4.2.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `mysql.audit_log_filter` 用于展示审计过滤器的定义。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版，OceanBase 数据库社区版暂不支持审计功能。</p>
+</main>
+
+## 字段说明
+
+| **字段名称** | **类型**  | **是否可以为 NULL** | **描述**                               |
+|------------|-------------|---------------------|----------------------------------------|
+| NAME   | varchar(64) | NO | 过滤器名称 |
+| FILTER | longtext	   | NO | 过滤器定义 |
+
+## 查询示例
+
+查看审计过滤器的定义。
+
+```shell
+obclient [mysql]> select * from mysql.audit_log_filter;
+```
+
+查询结果如下：
+
+```shell
++---------+-------------------------------+
+| NAME    | FILTER                        |
++---------+-------------------------------+
+| log_all | { "filter": { "log": true } } |
++---------+-------------------------------+
+1 row in set (0.003 sec)
+```
+
+## 相关文档
+
+[mysql.audit_log_user](3260.mysql.audit_log_user-of-mysql-mode.md)

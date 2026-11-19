@@ -1,0 +1,87 @@
+---
+title: "合并管理概述"
+book: "系统管理"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684834.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-management
+---
+
+# 合并管理概述
+
+本节主要介绍合并的分类、状态及压缩算法。
+
+合并操作（Major Compaction）是将动静态数据做归并，会比较费时。当转储产生的增量数据积累到一定程度时，通过 Major Freeze 实现大版本的合并。合并与转储的最大区别在于，合并是租户在一个统一的快照点与其对应的静态数据进行合并的行为，最终会形成一个租户级的快照。
+
+## 合并分类
+
+按照合并数据量，合并可以分为：
+
+* 全量合并：将静态数据全部读出并和动态数据合并为最终的静态数据。合并时间长，耗费 IO 和 CPU。
+
+* 增量合并：仅仅合并被修改过的宏块，没有改变的宏块进行复用。
+
+  增量合并极大地减少了合并的工作量，是 OceanBase 数据库目前默认的合并算法。
+  
+* 渐进合并：每次全量合并一部分，若干轮次后整体数据被重写一遍。
+
+* 窗口合并：在指定时间窗口执行的增量式、按需式的合并。
+  
+按照合并的操作粒度，合并可以分为：
+
+* 租户级合并：指定一个特定的 Frozen SCN 对租户内所有的表做冻结，强制租户内所有表都合并到同一个版本。
+
+  租户级合并可以通过以下方式触发：
+
+  * 自动触发：当租户冻结（minor freeze）的次数达到一定的阈值时，就会自动触发合并。
+
+  * 定时触发：通过租户级配置项 `major_freeze_duty_time` 指定触发时间，每天定时触发。
+
+  * 手动触发：通过执行 `ALTER SYSTEM MAJOR FREEZE` 语句触发。
+
+* 表级合并：指定某个租户下的某个表，对该表下的所有分区发起一次分区级合并，不保证所有分区都合并到同一个版本。
+
+  表级合并可以通过执行 `ALTER SYSTEM MAJOR FREEZE TABLE_ID = table_id` 语句手动触发。
+
+* 分区级合并：基于统一的合并版本位点（Snapshot Version）对指定分区的所有副本执行 Major Compaction，并生成一个新的 Major SSTable。
+
+  分区级合并可以通过以下方式触发：
+
+  * 自适应触发：根据多种自适应合并策略与 Buffer 表策略来自动调度热点分区的 Medium Compaction。
+
+  * 手动触发：通过执行 `ALTER SYSTEM MAJOR FREEZE TABLET_ID = tablet_id` 语句触发。
+
+## 合并状态
+
+合并的状态可以通过视图 `DBA_OB_ZONE_MAJOR_COMPACTION` 中的 `status` 列来查看。
+
+合并状态主要有以下几种：
+
+* `IDLE`：表示未进行合并。
+
+* `COMPACTING`：表示正在进行合并。
+
+* `VERIFYING`：表示正在校验 Checksum 中。
+
+## 合并的压缩算法
+
+OceanBase 数据库不会实时将小部分数据刷盘，而是通过合并的方式集中对数据进行刷盘，因此可以采用压缩的方式来写入磁盘，此时磁盘的空间利用率得到提升。在压缩算法和压缩功能的选择上，您可以根据实际情况选择高压缩率但是耗费更多 CPU 的方式，也可以选择普通的压缩方式。
+
+您可以通过参数 `default_compress_func` 来配置压缩方式，默认值为 `zstd_1.3.8`。其他可指定的值还有 `none`、`lz4_1.0`、`snappy_1.0`、和 `zstd_1.0`。
+
+<main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>更高的压缩率将更节约磁盘空间，但是也意味着性能的牺牲。例如，通常 ZSTD 比 LZ4 节省更多的空间，但是 ZSTD 合并的时间更长，同时需要 IO 查询的 RT 也更大。</p>
+</main>
+
+如果希望为单独的表选择特别的压缩算法，您可以在创建数据表时指定压缩算法。
+
+租户创建表并指定压缩算法的语法请参见 [CREATE TABLE（MySQL 模式）](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2600.create-table-of-mysql-mode.md) 和 [CREATE TABLE（Oracle 模式）](../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/2400.create-table-of-oracle-mode.md)。
+
+## 相关文档
+
+* [合并](../../../100.oceanbase-database-concepts/900.storage-architecture/300.dump-and-merge/300.about-merge.md)
+
+* [修改合并配置](../200.merge-management/700.modify-a-merge-configuration.md)

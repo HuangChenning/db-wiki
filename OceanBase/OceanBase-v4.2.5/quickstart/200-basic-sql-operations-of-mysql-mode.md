@@ -1,0 +1,1360 @@
+---
+title: "SQL 基础操作（MySQL 模式）"
+book: "快速上手"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001499627.html"
+tags:
+  - oceanbase
+  - distributed
+  - quickstart
+---
+
+# SQL 基础操作（MySQL 模式）
+
+本节主要介绍 OceanBase 数据库 MySQL 模式下的一些 SQL 基本操作。
+
+## 创建数据库
+
+使用 `CREATE DATABASE` 语句创建数据库。
+
+示例：创建数据库 `db1`，指定字符集为 `utf8mb4`，并创建读写属性。
+
+```shell
+obclient(root@mysqltenant)[(none)]> CREATE DATABASE db1 DEFAULT CHARACTER SET utf8mb4 READ WRITE;
+```
+
+更多 `CREATE DATABASE` 语句相关的语法说明，参见 [CREATE DATABASE](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2100.create-database-of-mysql-mode.md)。
+
+创建完成后，可以通过 `SHOW DATABASES` 命令查看当前数据库服务器中所有的数据库。
+
+```shell
+obclient(root@mysqltenant)[(none)]> SHOW DATABASES;
+```
+
+返回结果如下：
+
+```shell
++--------------------+
+| Database           |
++--------------------+
+| db1                |
+| information_schema |
+| mysql              |
+| oceanbase          |
+| test               |
+| test_db            |
++--------------------+
+6 rows in set
+```
+
+## 表操作
+
+在 OceanBase 数据库中，表是最基础的数据存储单元，包含了所有用户可以访问的数据，每个表包含多行记录，每个记录由多个列组成。本节主要提供数据库中表的创建、查看、修改和删除的语法和示例。
+
+### 创建表
+
+使用 `CREATE TABLE` 语句在数据库中创建新表。
+
+示例：在数据库 `db1` 中创建表 `test`。
+
+1. 切换到数据库 `db1` 中。
+
+   ```shell
+   obclient(root@mysqltenant)[(none)]> USE db1;
+   ```
+
+2. 创建表 `test`。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> CREATE TABLE test (c1 INT PRIMARY KEY, c2 VARCHAR(3));
+   ```
+
+更多 `CREATE TABLE` 语句相关的语法说明，参见 [CREATE TABLE](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2600.create-table-of-mysql-mode.md)。
+
+### 查看表
+
+使用 `SHOW CREATE TABLE` 语句查看建表语句。
+
+示例：查看表 `test` 的建表语句。
+
+```shell
+obclient(root@mysqltenant)[db1]> SHOW CREATE TABLE test\G
+```
+
+返回结果如下：
+
+```shell
+*************************** 1. row ***************************
+        Table: test
+  Create Table: CREATE TABLE `test` (
+    `c1` int(11) NOT NULL,
+    `c2` varchar(3) DEFAULT NULL,
+    PRIMARY KEY (`c1`)
+  ) ORGANIZATION INDEX DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE ENABLE_MACRO_BLOCK_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0
+1 row in set
+```
+
+还可以使用 `SHOW TABLES` 查看指定数据库下的所有表。
+
+示例：查看 `db1` 数据库下的所有表。
+
+```shell
+obclient(root@mysqltenant)[db1]> SHOW TABLES FROM db1;
+```
+
+返回结果如下：
+
+```shell
++---------------+
+| Tables_in_db1 |
++---------------+
+| test          |
++---------------+
+1 row in set
+```
+
+更多 `SHOW` 语句相关的语法说明，参见 [SHOW](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/8700.show-of-mysql-mode.md)。
+
+### 修改表
+
+使用 `ALTER TABLE` 语句来修改已存在的表的结构，包括修改表及表属性、新增列、修改列及属性、删除列等。
+
+示例：
+
+* 将表 `test` 的字段 `c2` 改名为 `c3`，并同时修改其字段类型。
+
+  1. 查看表 `test` 的列定义。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DESCRIBE test;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+------------+------+-----+---------+-------+
+     | Field | Type       | Null | Key | Default | Extra |
+     +-------+------------+------+-----+---------+-------+
+     | c1    | int(11)    | NO   | PRI | NULL    |       |
+     | c2    | varchar(3) | YES  |     | NULL    |       |
+     +-------+------------+------+-----+---------+-------+
+     2 rows in set
+     ```
+
+  2. 将表 `test` 的字段 `c2` 改名为 `c3`，并同时修改其字段类型为 `char`。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> ALTER TABLE test CHANGE COLUMN c2 c3 CHAR(10);
+     ```
+
+  3. 再次查看表 `test` 的列定义，确认修改成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DESCRIBE test;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+----------+------+-----+---------+-------+
+     | Field | Type     | Null | Key | Default | Extra |
+     +-------+----------+------+-----+---------+-------+
+     | c1    | int(11)  | NO   | PRI | NULL    |       |
+     | c3    | char(10) | YES  |     | NULL    |       |
+     +-------+----------+------+-----+---------+-------+
+     2 rows in set
+     ```
+
+* 在表 `test` 中增加、删除列。
+
+  1. 查看当前表 `test` 的列定义。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DESCRIBE test;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+----------+------+-----+---------+-------+
+     | Field | Type     | Null | Key | Default | Extra |
+     +-------+----------+------+-----+---------+-------+
+     | c1    | int(11)  | NO   | PRI | NULL    |       |
+     | c3    | char(10) | YES  |     | NULL    |       |
+     +-------+----------+------+-----+---------+-------+
+     2 rows in set
+     ```
+
+  2. 向表 `test` 中添加一列 `c4`。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> ALTER TABLE test ADD c4 int;
+     ```
+
+  3. 再次查看表 `test` 的列定义，确认 `c4` 列添加成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DESCRIBE test;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+----------+------+-----+---------+-------+
+     | Field | Type     | Null | Key | Default | Extra |
+     +-------+----------+------+-----+---------+-------+
+     | c1    | int(11)  | NO   | PRI | NULL    |       |
+     | c3    | char(10) | YES  |     | NULL    |       |
+     | c4    | int(11)  | YES  |     | NULL    |       |
+     +-------+----------+------+-----+---------+-------+
+     3 rows in set
+     ```
+
+  4. 删除表 `test` 中 `c3` 列。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> ALTER TABLE test DROP c3;
+     ```
+
+  5. 再次查看表 `test` 的列定义，确认 `c3` 列删除成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DESCRIBE test;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +-------+---------+------+-----+---------+-------+
+     | Field | Type    | Null | Key | Default | Extra |
+     +-------+---------+------+-----+---------+-------+
+     | c1    | int(11) | NO   | PRI | NULL    |       |
+     | c4    | int(11) | YES  |     | NULL    |       |
+     +-------+---------+------+-----+---------+-------+
+     2 rows in set
+     ```
+
+更多 `ALTER TABLE` 语句相关的语法说明，参见 [ALTER TABLE](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/1600.alter-table-of-mysql-mode.md)。
+
+### 删除表
+
+使用 `DROP TABLE` 语句删除表。
+
+示例：删除表 `test`。
+
+```shell
+obclient(root@mysqltenant)[db1]> DROP TABLE test;
+```
+
+更多 `DROP TABLE` 语句相关的语法说明，参见 [DROP TABLE](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/3700.drop-table-of-mysql-mode.md)。
+
+## 索引操作
+
+索引是创建在表上并对数据库表中一列或多列的值进行排序的一种结构。其作用主要在于提高查询的速度，降低数据库系统的性能开销。本节主要介绍数据库中索引的创建、查看、删除的语法和示例。
+
+### 创建索引
+
+使用 `CREATE INDEX` 语句创建表的索引。
+
+示例：在表 `test` 中创建索引。
+
+1. 查看表 `test` 的列定义。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> DESCRIBE test;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +-------+----------+------+-----+---------+-------+
+   | Field | Type     | Null | Key | Default | Extra |
+   +-------+----------+------+-----+---------+-------+
+   | c1    | int(11)  | NO   | PRI | NULL    |       |
+   | c2    | char(3)  | YES  |     | NULL    |       |
+   +-------+----------+------+-----+---------+-------+
+   2 rows in set
+   ```
+
+2. 在表 `test` 的 `c1`、`c2` 列上创建一个名为 `test_index` 的复合索引。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> CREATE INDEX test_index ON test (c1, c2);
+   ```
+
+更多 `CREATE INDEX` 语句相关的语法说明，参见 [CREATE INDEX](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2200.create-index-of-mysql-mode.md)。
+
+### 查看索引
+
+使用 `SHOW INDEX` 语句查看表的索引。
+
+示例：查看表 `test` 中的索引信息。
+
+```shell
+obclient(root@mysqltenant)[db1]> SHOW INDEX FROM test\G
+```
+
+返回结果如下：
+
+```shell
+*************************** 1. row ***************************
+        Table: test
+   Non_unique: 0
+     Key_name: PRIMARY
+ Seq_in_index: 1
+  Column_name: c1
+    Collation: A
+  Cardinality: NULL
+     Sub_part: NULL
+       Packed: NULL
+         Null:
+   Index_type: BTREE
+      Comment: available
+Index_comment:
+      Visible: YES
+   Expression: NULL
+*************************** 2. row ***************************
+        Table: test
+   Non_unique: 1
+     Key_name: test_index
+ Seq_in_index: 1
+  Column_name: c1
+    Collation: A
+  Cardinality: NULL
+     Sub_part: NULL
+       Packed: NULL
+         Null:
+   Index_type: BTREE
+      Comment: available
+Index_comment:
+      Visible: YES
+   Expression: NULL
+*************************** 3. row ***************************
+        Table: test
+   Non_unique: 1
+     Key_name: test_index
+ Seq_in_index: 2
+  Column_name: c2
+    Collation: A
+  Cardinality: NULL
+     Sub_part: NULL
+       Packed: NULL
+         Null: YES
+   Index_type: BTREE
+      Comment: available
+Index_comment:
+      Visible: YES
+   Expression: NULL
+3 rows in set
+```
+
+更多 `SHOW` 语句相关的语法说明，参见 [SHOW](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/8700.show-of-mysql-mode.md)。
+
+### 删除索引
+
+使用 `DROP INDEX` 语句删除表的索引。
+
+示例：删除表 `test` 中的索引。
+
+```shell
+obclient(root@mysqltenant)[db1]> DROP INDEX test_index ON test;
+```
+
+更多 `DROP INDEX` 语句相关的语法说明，参见 [DROP INDEX](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/3500.drop-index-of-mysql-mode.md)。
+
+## 插入数据
+
+使用 `INSERT` 语句在已经存在的表中插入数据。
+
+示例：
+
+* 创建表 `t1` 并插入一行数据。
+
+  1. 创建表 `t1`。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> CREATE TABLE t1(c1 INT PRIMARY KEY, c2 int) PARTITION BY KEY(c1) PARTITIONS 4;
+     ```
+
+  2. 查看表中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t1;
+     ```
+
+     查询结果为空，表中无数据。
+
+  3. 向表 `t1` 中插入一行数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> INSERT t1 VALUES(1,1);
+     ```
+
+  4. 再次查看表中的数据，确认插入一行数据成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t1;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  1 |    1 |
+     +----+------+
+     1 row in set
+     ```
+
+* 向表 `t1` 中插入多行数据。
+
+  1. 查看当前表中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t1;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  1 |    1 |
+     +----+------+
+     1 row in set
+     ```
+
+  2. 向表 `t1` 中同时插入多行数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> INSERT t1 VALUES(2,2),(3,default),(2+2,3*4);
+     ```
+
+  3. 再次查看表中的数据，确认数据插入成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t1;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  1 |    1 |
+     |  2 |    2 |
+     |  3 | NULL |
+     |  4 |   12 |
+     +----+------+
+     4 rows in set
+     ```
+
+更多 `INSERT` 语句相关的语法，参见 [INSERT](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/5700.insert-sql-of-mysql-mode.md)。
+
+## 删除数据
+
+使用 `DELETE` 语句删除数据，支持单表删除和多表删除数据。
+
+为了便于示例说明，下面先创建示例表 `t2` 和 `t3`，并向表中插入数据。
+
+1. 创建示例表 `t2` 并插入数据。
+
+   1. 创建一个非分区表 `t2`。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> CREATE TABLE t2(c1 INT PRIMARY KEY, c2 INT);
+      ```
+
+   2. 向表 `t2` 中插入多行数据。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> INSERT t2 VALUES(1,1),(2,2),(3,3),(5,5);
+      ```
+
+   3. 查看表中的数据，确认插入成功。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> SELECT * FROM t2;
+      ```
+
+      返回结果如下：
+
+      ```shell
+      +----+------+
+      | c1 | c2   |
+      +----+------+
+      |  1 |    1 |
+      |  2 |    2 |
+      |  3 |    3 |
+      |  5 |    5 |
+      +----+------+
+      4 rows in set
+      ```
+
+2. 创建示例表 `t3` 并插入数据。
+
+   1. 创建一个 `KEY` 分区的一级分区表 `t3`，其分区名由系统根据分区命令规则自动生成，即分区名为 `p0`、`p1`、`p2`、`p3`。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> CREATE TABLE t3(c1 INT PRIMARY KEY, c2 INT) PARTITION BY KEY(c1) PARTITIONS 4;
+      ```
+
+   2. 向表 `t3` 中插入多行数据。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> INSERT INTO t3 VALUES(5,5),(1,1),(2,2),(3,3);
+      ```
+
+   3. 查看表中的数据，确认插入成功。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> SELECT * FROM t3;
+      ```
+
+      返回结果如下：
+
+      ```shell
+      +----+------+
+      | c1 | c2   |
+      +----+------+
+      |  5 |    5 |
+      |  1 |    1 |
+      |  2 |    2 |
+      |  3 |    3 |
+      +----+------+
+      4 rows in set
+      ```
+
+示例：
+
+* 删除表中指定的行。
+
+  1. 查看删除前表 `t2` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t2;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  1 |    1 |
+     |  2 |    2 |
+     |  3 |    3 |
+     |  5 |    5 |
+     +----+------+
+     4 rows in set
+     ```
+
+  2. 删除表 `t2` 中 `c1=2` 的行，其中 `c1` 列为表 `t2` 中的 `PRIMARY KEY`。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DELETE FROM t2 WHERE c1 = 2;
+     ```
+
+  3. 查看删除后表 `t2` 中的数据，确认删除成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t2;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  1 |    1 |
+     |  3 |    3 |
+     |  5 |    5 |
+     +----+------+
+     3 rows in set
+     ```
+
+* 删除表中满足条件的行。
+
+  1. 查看删除前表 `t2` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t2;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  1 |    1 |
+     |  3 |    3 |
+     |  5 |    5 |
+     +----+------+
+     3 rows in set
+     ```
+
+  2. 删除表 `t2` 中按照 `c2` 列排序之后的第一行的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DELETE FROM t2 ORDER BY c2 LIMIT 1;
+     ```
+
+  3. 查看删除后表 `t2` 中的数据，确认删除成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t2;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  3 |    3 |
+     |  5 |    5 |
+     +----+------+
+     3 rows in set
+     ```
+
+* 删除表中指定分区的数据。
+
+  1. 查看删除前表 `t3` 中 `p2` 分区的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t3 PARTITION(p2);
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  1 |    1 |
+     |  2 |    2 |
+     |  3 |    3 |
+     +----+------+
+     3 rows in set
+     ```
+
+  2. 删除表 `t3` 的 `p2` 分区的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DELETE FROM t3 PARTITION(p2);
+     ```
+
+  3. 查看删除后表 `t3` 中的数据，确认删除成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t3;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  5 |    5 |
+     +----+------+
+     1 row in set
+     ```
+
+* 同时删除多个表中的数据。
+
+  1. 查看删除前表 `t2`、`t3` 中的数据。
+
+     查看表 `t2` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t2;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  3 |    3 |
+     |  5 |    5 |
+     +----+------+
+     2 rows in set
+     ```
+
+     查看表 `t3` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t3;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  5 |    5 |
+     +----+------+
+     1 row in set
+     ```
+
+  2. 删除 `t2`、`t3` 表中 `t2.c1 = t3.c1` 的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DELETE t2, t3 FROM t2, t3 WHERE t2.c1 = t3.c1;
+     ```
+
+     该语句等价于
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> DELETE FROM t2, t3 USING t2, t3 WHERE t2.c1 = t3.c1;
+     ```
+
+  3. 查看删除后表 `t2`、`t3` 中的数据，确认删除成功。
+
+     查看表 `t2` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t2;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     |  3 |    3 |
+     +----+------+
+     1 row in set
+     ```
+
+     查看表 `t3` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t3;
+     ```
+
+     返回结果为空，表 `t3` 中的数据已删除。
+
+更多 `DELETE` 语句相关的语法说明，参见 [DELETE](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/3200.delete-of-mysql-mode.md)。
+
+## 更新数据
+
+使用 `UPDATE` 语句修改表中的字段值。
+
+为了便于示例说明，下面先创建示例表 `t4` 和 `t5`，并向表中插入数据。
+
+1. 创建示例表 `t4` 并插入数据。
+
+   1. 创建一个非分区表 `t2`。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> CREATE TABLE t4(c1 INT PRIMARY KEY, c2 INT);
+      ```
+
+   2. 向表 `t4` 中插入多行数据。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> INSERT t4 VALUES(10,10),(20,20),(30,30),(40,40);
+      ```
+
+   3. 查看表中的数据，确认插入成功。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> SELECT * FROM t4;
+      ```
+
+      返回结果如下：
+
+      ```shell
+      +----+------+
+      | c1 | c2   |
+      +----+------+
+      | 10 |   10 |
+      | 20 |   20 |
+      | 30 |   30 |
+      | 40 |   40 |
+      +----+------+
+      4 rows in set
+      ```
+
+2. 创建示例表 `t5` 并插入数据。
+
+   1. 创建一个 `KEY` 分区的一级分区表 `t5`，其分区名由系统根据分区命令规则自动生成，即分区名为 `p0`、`p1`、`p2`、`p3`。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> CREATE TABLE t5(c1 INT PRIMARY KEY, c2 INT) PARTITION BY KEY(c1) PARTITIONS 4;
+      ```
+
+   2. 向表 `t5` 中插入多行数据。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> INSERT t5 VALUES(50,50),(10,10),(20,20),(30,30);
+      ```
+
+   3. 查看表中的数据，确认插入成功。
+
+      ```shell
+      obclient(root@mysqltenant)[db1]> SELECT * FROM t5;
+      ```
+
+      返回结果如下：
+
+      ```shell
+      +----+------+
+      | c1 | c2   |
+      +----+------+
+      | 20 |   20 |
+      | 10 |   10 |
+      | 50 |   50 |
+      | 30 |   30 |
+      +----+------+
+      4 rows in set
+      ```
+
+示例：
+
+* 更新表中指定行指定列的值。
+
+  1. 查看更新前表 `t4` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t4;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 10 |   10 |
+     | 20 |   20 |
+     | 30 |   30 |
+     | 40 |   40 |
+     +----+------+
+     4 rows in set
+     ```
+
+  2. 将表 `t4` 中 `t4.c1=10` 对应的那一行数据的 `c2` 列值修改为 `100`。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> UPDATE t4 SET t4.c2 = 100 WHERE t4.c1 = 10;
+     ```
+
+  3. 查看更新后表 `t4` 中的数据，确认更新成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t4;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 10 |  100 |
+     | 20 |   20 |
+     | 30 |   30 |
+     | 40 |   40 |
+     +----+------+
+     4 rows in set
+     ```
+
+* 将表 `t4` 中按照 `c2` 列排序的前两行数据的 `c2` 列值修改为 `100`。
+
+  1. 查看更新前表 `t4` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t4;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 10 |  100 |
+     | 20 |   20 |
+     | 30 |   30 |
+     | 40 |   40 |
+     +----+------+
+     4 rows in set
+     ```
+
+  2. 将表 `t4` 中按照 `c2` 列排序的前两行数据的 `c2` 列值修改为 `100`。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> UPDATE t4 set t4.c2 = 100 ORDER BY c2 LIMIT 2;
+     ```
+
+  3. 查看更新后表 `t4` 中的数据，确认更新成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t4;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 10 |  100 |
+     | 20 |  100 |
+     | 30 |  100 |
+     | 40 |   40 |
+     +----+------+
+     4 rows in set
+     ```
+
+* 更新表中指定分区的值。
+
+  1. 查看更新前表 `t5` 中 `p1` 分区的值。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t5 PARTITION (p1);
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 10 |   10 |
+     | 50 |   50 |
+     +----+------+
+     2 rows in set
+     ```
+
+  2. 将表 `t5` 中 `p1` 分区的数据中 `t5.c1 > 20` 的对应行数据的 `c2` 列值修改为 `100`。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> UPDATE t5 PARTITION(p1) SET t5.c2 = 100 WHERE t5.c1 > 20;
+     ```
+
+  3. 查看更新后表 `t5` 中 `p1` 分区的值，确认更新成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t5 PARTITION (p1);
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 10 |   10 |
+     | 50 |  100 |
+     +----+------+
+     2 rows in set
+     ```
+
+* 对于表 `t4` 和表 `t5` 中满足 `t4.c2 = t5.c2` 对应行的数据，将表 `t4` 中的 `c2` 列值修改为 `100`，表 `t5` 中的 `c2` 列值修改为 `200`。
+
+  1. 查看更新前表 `t4`、`t5` 中的数据。
+
+     查看表 `t4` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t4;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 10 |  100 |
+     | 20 |  100 |
+     | 30 |  100 |
+     | 40 |   40 |
+     +----+------+
+     4 rows in set
+     ```
+
+     查看表 `t5` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t5;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 20 |   20 |
+     | 10 |   10 |
+     | 50 |  100 |
+     | 30 |   30 |
+     +----+------+
+     4 rows in set
+     ```
+
+  2. 对于表 `t4` 和表 `t5` 中满足 `t4.c2 = t5.c2` 对应行的数据，将表 `t4` 中的 `c2` 列值修改为 `100`，表 `t5` 中的 `c2` 列值修改为 `200`。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> UPDATE t4,t5 SET t4.c2 = 100, t5.c2 = 200 WHERE t4.c2 = t5.c2;
+     ```
+
+  3. 查看更新后表 `t4`、`t5` 中的数据，确认更新成功。
+
+     查看表 `t4` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t4;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 10 |  100 |
+     | 20 |  100 |
+     | 30 |  100 |
+     | 40 |   40 |
+     +----+------+
+     4 rows in set
+     ```
+
+     查看表 `t5` 中的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t5;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +----+------+
+     | c1 | c2   |
+     +----+------+
+     | 20 |   20 |
+     | 10 |   10 |
+     | 50 |  200 |
+     | 30 |   30 |
+     +----+------+
+     4 rows in set
+     ```
+
+更多 `UPDATE` 语句相关的语法，参见 [UPDATE](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/9000.update-of-mysql-mode.md)。
+
+## 查询数据
+
+使用 `SELECT` 语句查询表中的内容。
+
+示例：
+
+* 通过 `CREATE TABLE` 创建表 `t6`。从表 `t6` 中读取 `name` 的数据。
+
+  1. 创建表 `t6`。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> CREATE TABLE t6 (id INT, name VARCHAR(50), num INT);
+     ```
+
+  2. 向表 `t6` 中插入多行数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> INSERT INTO t6 VALUES(1,'a',100),(2,'b',200),(3,'a',50);
+     ```
+
+  3. 查看表 `t6` 中的数据，确认插入成功。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT * FROM t6;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +------+------+------+
+     | ID   | NAME | NUM  |
+     +------+------+------+
+     |    1 | a    |  100 |
+     |    2 | b    |  200 |
+     |    3 | a    |   50 |
+     +------+------+------+
+     3 rows in set
+     ```
+
+  4. 从表 `t6` 中读取 `name` 的数据。
+
+     ```shell
+     obclient(root@mysqltenant)[db1]> SELECT name FROM t6;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +------+
+     | NAME |
+     +------+
+     | a    |
+     | b    |
+     | a    |
+     +------+
+     3 rows in set
+     ```
+
+* 在查询结果中对 `name` 进行去重处理。
+
+  ```shell
+  obclient(root@mysqltenant)[db1]> SELECT DISTINCT name FROM t6;
+  ```
+
+  返回结果如下：
+
+  ```shell
+  +------+
+  | NAME |
+  +------+
+  | a    |
+  | b    |
+  +------+
+  2 rows in set
+  ```
+
+* 从表 `t6` 中根据筛选条件 `name = 'a'`，输出对应的 `id` 、`name` 和 `num`。
+
+  ```shell
+  obclient(root@mysqltenant)[db1]> SELECT id, name, num FROM t6 WHERE name = 'a';
+  ```
+
+  返回结果如下：
+
+  ```shell
+  +------+------+------+
+  | ID   | NAME | NUM  |
+  +------+------+------+
+  |    1 | a    |  100 |
+  |    3 | a    |   50 |
+  +------+------+------+
+  2 rows in set
+  ```
+
+更多 `SELECT` 语句相关的语法说明，参见 [SELECT](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/8100.select-of-mysql-mode/100.select-of-mysql-mode.md)。
+
+## 提交事务
+
+使用 `COMMIT` 语句提交事务。
+
+在提交事务（COMMIT）之前：
+
+* 您的修改只对当前会话可见，对其他数据库会话均不可见。
+* 您的修改没有持久化，您可以通过 ROLLBACK 语句撤销修改。
+
+在提交事务（COMMIT）之后：
+
+* 您的修改对所有数据库会话可见。
+* 您的修改持久化成功，不能通过 ROLLBACK 语句回滚修改。
+
+示例：通过 `CREATE TABLE` 创建表 `t_insert`。使用 `COMMIT` 语句提交事务。
+
+1. 创建表 `t_insert`。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> CREATE TABLE t_insert(
+      id number NOT NULL PRIMARY KEY,
+      name varchar(10) NOT NULL,
+      value number,
+      gmt_create DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+   );
+   ```
+
+2. 开启事务。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> BEGIN;
+   ```
+
+3. 向表 `t_insert` 中插入多行数据。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> INSERT INTO t_insert(id, name, value, gmt_create) VALUES(1,'CN',10001, current_timestamp),(2,'US',10002, current_timestamp),(3,'EN',10003, current_timestamp);
+   ```
+
+4. 查看修改后表 `t_insert` 中的数据。可以看到，数据插入成功。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> SELECT * FROM t_insert;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+---------------------+
+   | id   | name | value | gmt_create          |
+   +------+------+-------+---------------------+
+   |    1 | CN   | 10001 | 2025-11-07 17:46:35 |
+   |    2 | US   | 10002 | 2025-11-07 17:46:35 |
+   |    3 | EN   | 10003 | 2025-11-07 17:46:35 |
+   +------+------+-------+---------------------+
+   3 rows in set
+   ```
+
+5. 再次向表 `t_insert` 中插入一行数据。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> INSERT INTO t_insert(id,name) VALUES(4,'JP');
+   ```
+
+6. 提交事务。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> COMMIT;
+   ```
+
+7. 退出当前登录。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> exit;
+   ```
+
+8. 重新登录数据库。
+
+   ```shell
+   obclient -h127.0.0.1 -ur**t@mysqltenant -P2881 -p****** -Ddb1
+   ```
+
+9. 再次查看表 `t_insert` 中的数据。发现表 `t_insert` 中数据的修改持久化成功。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> SELECT * FROM t_insert;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+---------------------+
+   | id   | name | value | gmt_create          |
+   +------+------+-------+---------------------+
+   |    1 | CN   | 10001 | 2025-11-07 17:46:35 |
+   |    2 | US   | 10002 | 2025-11-07 17:46:35 |
+   |    3 | EN   | 10003 | 2025-11-07 17:46:35 |
+   |    4 | JP   |  NULL | 2025-11-07 17:46:53 |
+   +------+------+-------+---------------------+
+   4 rows in set
+   ```
+
+更多事务控制语句相关的说明，参见 [事务管理概述](../../300.develop/100.application-development-of-mysql-mode/600.transaction-in-develop-of-mysql-mode/100.transaction-management-overview-of-mysql-mode.md)。
+
+## 回滚事务
+
+使用 `ROLLBACK` 语句回滚事务。
+
+回滚一个事务指将事务的修改全部撤销。可以回滚当前整个未提交的事务，也可以回滚到事务中任意一个保存点。如果要回滚到某个保存点，必须结合使用 `ROLLBACK` 和 `TO SAVEPOINT` 语句。
+其中：
+
+* 如果回滚整个事务，则：
+
+  * 事务会结束
+  * 所有的修改会被丢弃
+  * 清除所有保存点
+  * 释放事务持有的所有锁
+
+* 如果回滚到某个保存点，则：
+
+  * 事务不会结束
+  * 保存点之前的修改被保留，保存点之后的修改被丢弃
+  * 清除保存点之后的保存点（不包括保存点自身）
+  * 释放保存点之后事务持有的所有锁
+
+示例：回滚事务的全部修改。
+
+1. 查看修改前表 `t_insert` 中的数据。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> SELECT * FROM t_insert;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+---------------------+
+   | id   | name | value | gmt_create          |
+   +------+------+-------+---------------------+
+   |    1 | CN   | 10001 | 2025-11-07 17:46:35 |
+   |    2 | US   | 10002 | 2025-11-07 17:46:35 |
+   |    3 | EN   | 10003 | 2025-11-07 17:46:35 |
+   +------+------+-------+---------------------+
+   3 rows in set
+   ```
+
+2. 开启事务。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> BEGIN;
+   ```
+
+3. 向表 `t_insert` 中插入多行数据。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> INSERT INTO t_insert(id, name, value) VALUES(4,'JP',10004),(5,'FR',10005),(6,'RU',10006);
+   ```
+
+4. 查看修改后表 `t_insert` 中的数据。可以看到，数据插入成功。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> SELECT * FROM t_insert;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+---------------------+
+   | id   | name | value | gmt_create          |
+   +------+------+-------+---------------------+
+   |    1 | CN   | 10001 | 2025-11-07 17:46:35 |
+   |    2 | US   | 10002 | 2025-11-07 17:46:35 |
+   |    3 | EN   | 10003 | 2025-11-07 17:46:35 |
+   |    4 | JP   | 10004 | 2025-11-07 17:48:01 |
+   |    5 | FR   | 10005 | 2025-11-07 17:48:01 |
+   |    6 | RU   | 10006 | 2025-11-07 17:48:01 |
+   +------+------+-------+---------------------+
+   6 rows in set
+   ```
+
+5. 回滚事务。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> ROLLBACK;
+   ```
+
+6. 回滚后，再次查看表 `t_insert` 中的数据，发现插入的数据已回滚。
+
+   ```shell
+   obclient(root@mysqltenant)[db1]> SELECT * FROM t_insert;
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------+------+-------+---------------------+
+   | id   | name | value | gmt_create          |
+   +------+------+-------+---------------------+
+   |    1 | CN   | 10001 | 2025-11-07 17:46:35 |
+   |    2 | US   | 10002 | 2025-11-07 17:46:35 |
+   |    3 | EN   | 10003 | 2025-11-07 17:46:35 |
+   +------+------+-------+---------------------+
+   3 rows in set
+   ```
+
+更多事务控制语句相关的说明，参见 [事务管理概述](../../300.develop/100.application-development-of-mysql-mode/600.transaction-in-develop-of-mysql-mode/100.transaction-management-overview-of-mysql-mode.md)。

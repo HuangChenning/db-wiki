@@ -1,0 +1,41 @@
+---
+title: DROP OUTLINE
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286457.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP OUTLINE
+
+## 描述
+
+该语句用于删除 OceanBase 数据库中的 Outline。
+
+## 语法
+
+```sql
+DROP OUTLINE outline_name
+    [BINDING_RULE (binding_item)];
+
+binding_item:
+    SCOPE = {DATABASE | TENANT}
+```
+
+## 参数解释
+
+|    **参数**  | **描述** |
+|--------------|----------|
+| outline_name | 指定要删除的 Outline 名称。|
+| BINDING_RULE (binding_item) | 可选项，用于指定删除 Outline 的级别。<ul><li>`BINDING_RULE (SCOPE = DATABASE)`：默认值，指定删除当前库级别的 Outline（等价于不显示指定 `BINDING_RULE` 参数）。</li><li>`BINDING_RULE (SCOPE = TENANT)`：删除指定名称的跨库（租户级）Outline。</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，从 V4.4.2 BP3 版本开始引入 <code>BINDING_RULE</code> 子句。</p></main>|
+
+## 示例
+
+删除 Outline `ol_1`。
+
+```shell
+obclient> DROP OUTLINE ol_1;
+```

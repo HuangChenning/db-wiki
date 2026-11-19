@@ -1,0 +1,56 @@
+---
+title: DBA_OB_TABLE_SPACE_USAGE
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002672301.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_TABLE_SPACE_USAGE
+
+<main id="notice" type='explain'>
+ <h4>说明</h4>
+ <p>对于 V4.2.5 版本，该视图从 V4.2.5 BP3 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+用于展示当前租户下所有用户表（多副本环境下以 Leader 副本为准）的大小。
+
+## 字段说明
+
+| **字段名称** | **类型**  | **是否可以为 NULL** | **描述**                               |
+|------------|-------------|---------------------|----------------------------------------|
+| TABLE_ID      | bigint(20)    | NO   | 表 ID     |
+| DATABASE_NAME | varchar(128)  | NO   | 数据库名     |
+| TABLE_NAME    | varchar(256)  | NO   | 表名     |
+| OCCUPY_SIZE   | decimal(42,0) | NO   | 表压缩后落盘的数据量，单位为字节     |
+| REQUIRED_SIZE | decimal(42,0) | NO   | 表压缩后落盘的数据量实际占用了多少磁盘空间，单位为字节     |
+
+## 查询示例
+
+用户租户查看本租户下所有用户表的大小。
+
+```shell
+obclient [test]> SELECT * FROM SYS.DBA_OB_TABLE_SPACE_USAGE WHERE ROWNUM <= 3;
+```
+
+查询结果如下：
+
+```shell
++----------+---------------+--------------------------------+-------------+---------------+
+| TABLE_ID | DATABASE_NAME | TABLE_NAME                     | OCCUPY_SIZE | REQUIRED_SIZE |
++----------+---------------+--------------------------------+-------------+---------------+
+|   500011 | test          | wide_table_row_storage2        |  4495925120 |    4613763072 |
+|   500012 | test          | wide_table_column_storage2     |  3915023145 |    4195397632 |
+|   500014 | test          | wide_table_row_column_storage2 |  8410964107 |    9805275136 |
++----------+---------------+--------------------------------+-------------+---------------+
+3 rows in set
+```
+
+## 相关视图或文档
+
+查看表所占用的磁盘空间相关操作，参见 [查看表所占用的磁盘空间](../../../200.system-management/1000.disk-data-file-management/200.view-the-disk-usage.md)。

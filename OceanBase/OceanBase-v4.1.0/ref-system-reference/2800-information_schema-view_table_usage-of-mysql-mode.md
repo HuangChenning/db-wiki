@@ -1,0 +1,27 @@
+---
+title: information_schema.VIEW_TABLE_USAGE
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702020.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# information_schema.VIEW_TABLE_USAGE
+
+## 功能
+
+展示视图定义中使用的表和视图的信息。
+
+## 字段说明
+
+|     字段名称      |      类型      | 是否可以为 NULL |               描述                |
+|---------------|--------------|------------|---------------------------------|
+| VIEW_CATALOG  | varchar(64)   | NO         | 视图所属的目录名称                       |
+| VIEW_SCHEMA   | varchar(128) | NO         | 视图所属的 SCHEMA 名称                 |
+| VIEW_NAME     | varchar(256) | NO         | 视图名称                            |
+| TABLE_SCHEMA  | varchar(128) | NO         | 视图定义中使用的表或视图所属的 SCHEMA 名称       |
+| TABLE_NAME    | varchar(256) | NO         | 视图定义中使用的表或视图的名称                 |
+| TABLE_CATALOG | varchar(64)   | NO         | 视图定义中使用的表或视图所属的目录名称。该值始终为 `def` |

@@ -1,0 +1,62 @@
+---
+title: oceanbase.DBA_OB_CLUSTER_EVENT_HISTORY
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501072.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_CLUSTER_EVENT_HISTORY
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.1.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+仅系统租户可访问，视图 `DBA_OB_CLUSTER_EVENT_HISTORY` 用于展示集群级别重要事件，当前仅支持展示集群升级相关事件。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| TIMESTAMP | timestamp(6) | NO  | 创建时间 |
+| MODULE  | varchar(256) | NO  | 模块名称 |
+| EVENT   | varchar(256)  | NO  | 事件名称 |
+| NAME1   | varchar(256) | NO  | 第一个事件属性名称 |
+| VALUE1  | text    | NO  | 第一个事件属性值 |
+| NAME2 | varchar(256) | NO  | 第二个事件属性名称 |
+| VALUE2 | text  | NO  | 第二个事件属性值 |
+| NAME3 | varchar(256) | NO  | 第三个事件属性名称 |
+| VALUE3  | text | NO  | 第三个事件属性值 |
+| NAME4 | varchar(256) | NO  | 第四个事件属性名称 |
+| VALUE4 | text | NO  | 第四个事件属性值 |
+| NAME5 | varchar(256) | NO  | 第五个事件属性名称 |
+| VALUE5 | text | NO  | 第五个事件属性值 |
+| NAME6  | varchar(256) | NO  | 第六个事件属性名称 |
+| VALUE6 | text | NO  | 第六个事件属性值 |
+| EXTRA_INFO | text  | NO  | 额外信息 |
+
+## 查询示例
+
+查询集群级别的重要事件。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OB_CLUSTER_EVENT_HISTORY;
+```
+
+查询结果如下：
+
+```shell
++----------------------------+-----------+-------------------+-----------------+---------+---------------+-------------------------------------------------------------------------------------------+---------------------+---------+----------------------+---------+-----------+--------+-------+--------+------------+
+| TIMESTAMP                  | MODULE    | EVENT             | NAME1           | VALUE1  | NAME2         | VALUE2                                                                                    | NAME3               | VALUE3  | NAME4                | VALUE4  | NAME5     | VALUE5 | NAME6 | VALUE6 | EXTRA_INFO |
++----------------------------+-----------+-------------------+-----------------+---------+---------------+-------------------------------------------------------------------------------------------+---------------------+---------+----------------------+---------+-----------+--------+-------+--------+------------+
+| 2023-12-15 15:06:31.586618 | BOOTSTRAP | BOOTSTRAP_SUCCESS | cluster_version | 4.2.1.0 |               |                                                                                           |                     |         |                      |         |           |        |       |        |            |
+| 2023-12-15 16:10:33.035367 | UPGRADE   | UPGRADE_ALL       | cluster_version | 4.2.1.0 | build_version | 4.2.2.0_100000012023120716-c33e61340b84acea88d8cfe868d2a75f7f3b042d(Dec  7 2023 16:30:05) | target_data_version | 4.2.2.0 | current_data_version | 4.2.1.0 | tenant_id | 1      |       |        |            |
++----------------------------+-----------+-------------------+-----------------+---------+---------------+-------------------------------------------------------------------------------------------+---------------------+---------+----------------------+---------+-----------+--------+-------+--------+------------+
+2 rows in set
+```

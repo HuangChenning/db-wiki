@@ -1,0 +1,29 @@
+---
+title: clog_transport_compress_func
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002174542.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# clog_transport_compress_func
+
+clog_transport_compress_func 
+=================================================
+
+`clog_transport_compress_func` 用于设置事务日志内部传输时使用的压缩算法。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始弃用。</p>
+</main>
+
+|      **属性**      |                                                                                                                                                **描述**                                                                                                                                                |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 参数类型             | 字符串类型                                                                                                                                                                                                                                                                                                |
+| 默认值              | lz4_1.0                                                                                                                                                                                                                                                                                              |
+| 取值范围             | </li><li> none   </li><li> lz4_1.0   </li><li> snappy_1.0   </li><li> zlib_1.0   </li><li> zstd_1.0   </li><li> zstd_1.3.8    |
+| 是否重启 OBServer 节点生效 | 否                                                                                                                                                                                                                                                                                                    |

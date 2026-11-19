@@ -1,0 +1,72 @@
+---
+title: USER_PLSQL_COLL_TYPES
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500842.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# USER_PLSQL_COLL_TYPES
+
+<main id="notice" >
+    <h4>说明</h4>
+    <p>该视图从 V4.2.5 版本开始引入。只有在 package 成功编译的情况下，package 中的类型才能在该视图中展示。</p>
+  </main>
+
+## 功能描述
+
+`USER_PLSQL_COLL_TYPES` 视图用于展示当前用户拥有的 package 中定义的 collection type 总体信息。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该视图仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 字段说明
+
+|         **字段名称**          |     **类型**     | **是否可以为 NULL** |**描述**|
+|---------------------------|---|---|--------------------------------------------|
+| TYPE_NAME          | VARCHAR2(128) | NO   | 表示 PL/SQL 集合类型的名称。|
+| PACKAGE_NAME       | VARCHAR2(128) | YES  | 表示 PL/SQL 集合类型所属的包名称。|
+| COLL_TYPE          | VARCHAR2(18)  | NO   | 表示集合的类型。|
+| UPPER_BOUND        | NUMBER(38)    | NO   | 表示集合的上限。|
+| ELEM_TYPE_OWNER    | VARCHAR2(128) | NO   | 表示元素类型的所有者。|
+| ELEM_TYPE_NAME     | VARCHAR2(136) | NO   | 表示元素类型的名称。|
+| ELEM_TYPE_PACKAGE  | VARCHAR2(128) | NO   | 表示元素类型所属的包名称。|
+| LENGTH             | NUMBER(38)    | NO   | 表示集合长度。|
+| PRECISION          | NUMBER(38)    | NO   | 表示精度。|
+| SCALE              | NUMBER(38)    | NO   | 表示刻度。|
+| CHARACTER_SET_NAME | VARCHAR2(44)  | NO   | 表示字符集名称。|
+| ELEM_STORAGE       | VARCHAR2(7)   | NO   | 表示元素存储类型。|
+| NULLS_STORED       | VARCHAR2(3)   | NO   | 表示是否存储空值。|
+| CHAR_USED          | VARCHAR2(1)   | NO   | 表示是否使用字符型数据类型。|
+| INDEX_BY           | VARCHAR2(14)  | NO   | 表示索引方式。|
+| ELEM_TYPE_MOD      | VARCHAR2(7)   | NO   | 表示元素类型修改。|
+
+## 查询示例
+
+查看当前用户拥有的 package 中定义的 collection type 总体信息。
+
+```sql
+obclient> SELECT * FROM SYS.USER_PLSQL_COLL_TYPES;
+```
+
+查询结果如下：
+
+```shell
++-----------+--------------+-----------+-------------+-----------------+----------------+-------------------+--------+-----------+-------+--------------------+--------------+--------------+-----------+----------+---------------+
+| TYPE_NAME | PACKAGE_NAME | COLL_TYPE | UPPER_BOUND | ELEM_TYPE_OWNER | ELEM_TYPE_NAME | ELEM_TYPE_PACKAGE | LENGTH | PRECISION | SCALE | CHARACTER_SET_NAME | ELEM_STORAGE | NULLS_STORED | CHAR_USED | INDEX_BY | ELEM_TYPE_MOD |
++-----------+--------------+-----------+-------------+-----------------+----------------+-------------------+--------+-----------+-------+--------------------+--------------+--------------+-----------+----------+---------------+
+| TY1       | PKG1         | TABLE     |        NULL | NULL            | VARCHAR2       | NULL              |  32767 |         2 |    -1 | CHAR_CS            | NULL         | YES          | B         | NULL     | NULL          |
+| TY2       | PKG1         | TABLE     |        NULL | NULL            | NUMBER         | NULL              |     -1 |        -1 |   -85 | CHAR_CS            | NULL         | YES          | B         | NULL     | NULL          |
++-----------+--------------+-----------+-------------+-----------------+----------------+-------------------+--------+-----------+-------+--------------------+--------------+--------------+-----------+----------+---------------+
+2 rows in set
+```
+
+## 相关视图或文档
+
+* 查看当前用户可访问的 package 中集合类型的信息：[ALL_PLSQL_COLL_TYPES](2760.all-plsql-coll-type-of-oracle-mode.md)
+* 查看当前租户内所有 package 中集合类型的信息：[DBA_PLSQL_COLL_TYPES](16360.dba-plsql-coll-types-of-oracle-mode.md)

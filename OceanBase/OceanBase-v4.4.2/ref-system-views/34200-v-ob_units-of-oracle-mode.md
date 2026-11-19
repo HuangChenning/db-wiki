@@ -1,0 +1,91 @@
+---
+title: "V$OB_UNITS"
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283941.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_UNITS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本 OBServer 节点的 Unit 信息。
+
+## 字段说明
+
+|       字段名称       |      类型      | 是否可以为 NULL |                                            描述                |
+|------------------|--------------|------------|-------------------------------------------------------------------------|
+| SVR_IP           | VARCHAR2(46)  | NO         | 服务器 IP 地址                                                              |
+| SVR_PORT         | NUMBER(38)   | NO         | 服务器端口号                                                                 |
+| UNIT_ID          | NUMBER(38)   | NO         | Unit ID                                                                |
+| TENANT_ID        | NUMBER(38)   | NO         | Unit 所属的租户 ID                                                          |
+| ZONE             | VARCHAR2(128) | NO         | Zone 名称                                                                |
+| ZONE_TYPE        | VARCHAR2(128) | NO         | Unit 所在 Zone 的 Zone 类型，取值如下：<ul><li>`NULL`：表示该列值无效，OBServer 节点重启的场景下会短暂出现一段时间的无效值。</li> <li>`ReadWrite`：读写 Zone</li> <li>`Encryption`：加密 Zone</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入。</p></main> |
+| REGION           | VARCHAR2(128) | NO         | Unit 所在 Zone 所属的 Region 名。未设置时，默认为 `default_region`。取值为 `NULL` 时，表示该列值无效，OBServer 节点重启的场景下会短暂出现一段时间的无效值。<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.0 版本开始引入。</p></main>  |
+| MIN_CPU          | NUMBER(38)       | NO         | CPU 规格下限                                                               |
+| MAX_CPU          | NUMBER(38)       | NO         | CPU 规格上限                                                               |
+| MEMORY_SIZE      | NUMBER(38)   | NO         | 内存大小，单位为字节                                                           |
+| MIN_IOPS         | NUMBER(38)   | NO         | 磁盘 IOPS 规格下限                                                           |
+| MAX_IOPS         | NUMBER(38)   | NO         | 磁盘 IOPS 规格上限                                                           |
+| IOPS_WEIGHT      | NUMBER(38)   | NO         | IOPS 权重 |
+| MAX_NET_BANDWIDTH| NUMBER(38)   | YES        | Unit 的最大网络带宽，单位为字节  <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.3.4 版本开始引入。</p></main> |
+| NET_BANDWIDTH_WEIGHT |NUMBER(38)| YES        | Unit 的网络带宽的权重值 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.3.4 版本开始引入。</p></main>  |
+| LOG_DISK_SIZE    | NUMBER(38)   | NO         | 日志盘大小，单位为字节                                                                    |
+| LOG_DISK_IN_USE  | NUMBER(38)   | NO         | 日志盘已使用大小，单位为字节                                                               |
+| DATA_DISK_SIZE   | NUMBER(38)   | YES        | 该字段值为 `NULL`，表示未定义，允许竞争使用其他租户的磁盘空间。 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.3.4 版本开始引入。</p></main>     |
+| DATA_DISK_IN_USE | NUMBER(38)   | NO         | 表示 Unit 已使用的数据盘大小，单位为字节。   |
+| STATUS           | VARCHAR2(64)  | NO         | Unit 的状态：<ul><li>`NORMAL`：正常状态   </li><li> `MIGRATING IN`：正在迁入   </li><li> `MIGRATING OUT`：正在迁出   </li><li> `MARK DELETING`：标记删除</li><li>`WAIT GC`：等待 GC 数据 </li><li>`DELETING`：GC 完成，正在删除中 </li><li> `ERROR`：错误状态 </li></ul> |
+| CREATE_TIME      | NUMBER(38) | NO         | Unit 在 OBServer 节点上的创建时间                                                 |
+| REPLICA_TYPE     | VARCHAR2(7)   | NO         | 副本类型，默认为 `FULL` <main id="notice" type='explain'><h4>说明</h4><ul><li>对于 V4.4.x 版本，字段 <code>REPLICA_TYPE</code> 从 V4.4.0 BP1 版本开始引入。</li> <li>对于 V4.5.x 版本，字段 <code>REPLICA_TYPE</code> 从 V4.5.0 版本开始引入。</li><li>对于 V4.2.5 版本，字段 <code>REPLICA_TYPE</code> 从 V4.2.5 BP7 版本开始引入。</li></ul></main>  |
+
+## 查询示例
+
+用户租户查看本 OBServer 节点的 Unit 信息。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.V$OB_UNITS\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+              SVR_IP: 172.xx.xxx.xxx
+            SVR_PORT: 2882
+             UNIT_ID: 1002
+           TENANT_ID: 1004
+                ZONE: zone1
+           ZONE_TYPE: ReadWrite
+              REGION: default_region
+             MIN_CPU: 2
+             MAX_CPU: 2
+         MEMORY_SIZE: 5368709120
+            MIN_IOPS: 9223372036854775807
+            MAX_IOPS: 9223372036854775807
+         IOPS_WEIGHT: 2
+   MAX_NET_BANDWIDTH: 9223372036854775807
+NET_BANDWIDTH_WEIGHT: 2
+       LOG_DISK_SIZE: 17394617549
+     LOG_DISK_IN_USE: 1751668778
+      DATA_DISK_SIZE: NULL
+    DATA_DISK_IN_USE: 29081600
+              STATUS: NORMAL
+         CREATE_TIME: 1766108583193577
+        REPLICA_TYPE: FULL
+1 row in set
+```
+
+## 相关视图或文档
+
+* 查看所有节点的 Unit 信息：[GV$OB_UNITS](4500.gv-ob_units-of-oracle-mode.md)
+
+* 有关租户资源的相关介绍，参见 [查看租户和资源信息](../../../../600.manage/200.tenant-management/600.common-tenant-operations/400.view-tenant-information.md)。

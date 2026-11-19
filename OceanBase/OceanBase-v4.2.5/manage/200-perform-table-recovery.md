@@ -1,0 +1,161 @@
+---
+title: "执行表级恢复"
+book: "管理数据库"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001499859.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 执行表级恢复
+
+本节主要介绍如何进行表级恢复。
+
+## 使用限制
+
+* 仅支持恢复用户表，不支持单独恢复临时表、视图、索引等。
+
+* 表恢复的源租户与目标租户的兼容性必须一致，例如，均为 Oracle 兼容性租户，或者均为 MySQL 兼容性租户。
+
+* 恢复表时，指定的表名需要与系统实际存储的表名一致。例如，Oracle 模式租户下创建表 `test`，而系统内部实际存储的表名为 `TEST`，故在恢复表时需要指定表名为 `TEST`，否则系统会报错，提示表不存在。
+
+* 与租户级恢复支持的备份数据版本一样，表级恢复当前也是仅支持将低版本的备份数据中的表恢复到同版本或高版本中，同版本下的小版本之间也不支持逆向恢复。有关租户级恢复支持的备份数据版本的详细说明，参见 [恢复前准备](../600.restore-data/100.preparation-before-recovery.md)。
+
+* 表级恢复除了恢复表，与该表相关联的很多信息也会被恢复，但仍有部分信息不恢复，具体可恢复的信息参见 [表级恢复的 Schema 恢复说明](230.the-schema-for-table-recovery.md)。
+
+## 前提条件
+
+由于指定表的恢复过程中需要使用辅助租户，因此，在进行表恢复前，您需要在目标租户所在的集群内为辅助租户创建所需的资源池。为辅助租户创建所需资源池的详细操作，请参见 [表级恢复前准备](100.preparation-before-table-recovery.md)。
+
+## 操作步骤
+
+1. 使用 `root` 用户登录目标租户所在集群的 `sys` 租户。
+
+2. （可选）如果恢复指定的表时所使用的备份数据配置了加密功能，则需要配置备份集的加密信息。
+
+   仅在数据备份时添加了密码的场景下才需要设置备份的恢复密码。
+
+   ```sql
+   SET DECRYPTION IDENTIFIED BY 'password';
+   ```
+
+   其中，`password` 需要替换为备份时添加的密码。如果全量备份和增量备份设置的密码不一样，则需要输入多个密码，密码之间使用英文逗号分隔（全量备份密码放在前面，增量备份密码放在后面）。
+
+   全量备份和增量备份设置的密码相同时的示例如下：
+
+   ```sql
+   SET DECRYPTION IDENTIFIED BY '******';
+   ```
+
+   全量备份和增量备份设置的密码不一样时的示例如下：
+
+   ```sql
+   SET DECRYPTION IDENTIFIED BY '******','******';
+   ```
+
+3. （可选）设置表级恢复并行度。
+
+   * 单表并行恢复
+
+      在执行表级恢复之前，可通过配置项 [recover_table_dop](../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7815.recover_table_dop.md) 设置并发度。设置后，系统会在以下两个阶段使用该并行度：
+
+      * 主表数据恢复阶段：系统会将主表的每个分区拆分成多个子任务并行执行。
+      * 索引恢复阶段：系统会基于恢复的主表数据，借助并行执行（Parallel Execution, PX）重建表的索引。
+
+      语法如下：
+
+      ```sql
+      -- tenant_name 为目标租户
+      ALTER SYSTEM SET recover_table_dop=INT_VALUE tenant=tenant_name;
+      ```
+
+   * 多表并行恢复（可选）
+
+      在执行多表表级恢复之前，可通过配置项 [recover_table_concurrency](../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7810.recover_table_concurrency.md) 设置并发度。设置后多个表能够并行执行恢复任务，提升恢复性能。
+
+      语法如下：
+
+      ```sql
+      -- tenant_name 为目标租户
+      ALTER SYSTEM SET recover_table_concurrency=INT_VALUE tenant=tenant_name;
+      ```
+
+   * 设置租户每个 observer 节点上的主表数据恢复工作线程数
+
+      在设置单表并行度 `recover_table_dop` 和多表并行度 `recover_table_concurrency` 之后，也需要通过 [ddl_thread_score](../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/1950.ddl_thread_score.md) 配置项设置租户每个 observer 节点补数据工作线程数。表级恢复的跨租户导表阶段，主表数据恢复依赖于目标租户上的特定的 DAG 线程。
+
+      语法如下：
+
+      ```sql
+      -- tenant_name 为目标租户
+      ALTER SYSTEM SET ddl_thread_score=INT_VALUE tenant=tenant_name;
+      ```
+
+      <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>
+      <ul>
+        <li><b>物理恢复辅助租户执行阶段</b>，可以通过调整 <a href="../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/3500.ha_high_thread_score.md">ha_high_thread_score</a> 配置项来动态调整恢复的并行度，调整后立即生效。其中，辅助租户名可以通过表级恢复的任务进度表 <a href="../../../700.reference/700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/10000.o-cdb_ob_recover_table_jobs-of-sys-tenant.md">CDB_OB_RECOVER_TABLE_JOBS</a> 查看。具体调整请参见<a href="../600.restore-data/200.initiate-the-tenant-restore.md">物理恢复</a></li>
+        <li><b>跨租户导表阶段</b>，你可以通过调整目标租户的 <code>recover_table_concurrency</code> 或 <code>recover_table_dop</code> 配置项来动态调整多表/单表恢复的并行度，调整后立即生效。</li>
+      </ul>
+      </p>
+      </main>
+
+4. 执行以下命令，恢复指定的表。
+
+   语法如下：
+
+   ```sql
+   ALTER SYSTEM 
+   RECOVER TABLE table_name_list 
+   TO [TENANT [=]] dest_tenant_name 
+   FROM uri 
+   [UNTIL {TIME='timestamp'} | {SCN=scn} ]
+   WITH 'restore_option' 
+   [WITH KEY FROM 'backup_key_path' ENCRYPTED BY 'password']
+   [REMAP TABLE remap_table_name_list] 
+   [REMAP TABLEGROUP remap_tablegroup_list] 
+   [REMAP TABLESPACE remap_tablespace_list]
+   [DESCRIPTION [=] description];
+   ```
+
+   参数详细说明请参见 [表级恢复相关参数介绍](600.parameters-of-the-table-recovery.md)。
+
+   假设将 `infodb` 库中的表 `tbl1`、`tbl2` 恢复到目标租户的 `infodb` 库中，并且将表 `tbl1` 重命名为 `newtbl`，同时将表所属的表组重定向为 `newtg1`，表所属的表空间重定向为 `newts1`。示例如下：
+
+   ```sql
+   ALTER SYSTEM 
+   RECOVER TABLE infodb.tbl1,infodb.tbl2 
+   TO TENANT oracle001 
+   FROM 'file:///data/nfs/backup/data,file:///data/nfs/backup/archive' 
+   UNTIL TIME='2023-09-30 00:00:00' 
+   WITH 'pool_list=restore_pool'
+   REMAP TABLE infodb.tbl1:newtbl 
+   REMAP TABLEGROUP tg1:newtg1
+   REMAP TABLESPACE ts1:newts1;
+   ```
+
+  <main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p><ul><li>表数据恢复成功即表示表恢复成功，允许索引、约束或其他关联的 Schema 恢复失败。</li><li>表级恢复结束后，建议还原 <code>ddl_thread_score</code>、<code>recover_table_concurrency</code> 和 <code>recover_table_dop</code> 配置项设置。如果不恢复，则后续的表级恢复都会按照设置的并行参数执行。</li></ul></p>
+  </main>
+
+## 后续操作
+
+* 发起指定表的恢复后，您可以通过视图查看表恢复的进度和结果，具体操作参见 [查看表级恢复的进度](400.view-the-table-recovery-progress.md) 和 [查看表级恢复结果](500.view-the-table-recovery-history.md)。
+
+* 指定表的恢复结束后，您还需要在辅助租户所在的集群中执行以下命令，手动释放为辅助租户创建的资源池。
+
+    ```sql
+    DROP RESOURCE POOL restore_pool;
+    ```
+
+    其中，`restore_pool` 表示在恢复前准备时为辅助租户创建的资源池名。
+
+    有关删除资源池的详细操作及介绍，请参见 [删除资源池](../../200.tenant-management/600.common-tenant-operations/1500.resource-pool-management/600.delete-resource-pool.md)。
+
+## 相关文档
+
+有关表级恢复中各 Schema 信息的恢复情况，参见 [表级恢复的 Schema 恢复说明](230.the-schema-for-table-recovery.md)。

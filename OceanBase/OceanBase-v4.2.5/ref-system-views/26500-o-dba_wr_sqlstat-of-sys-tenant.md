@@ -1,0 +1,182 @@
+---
+title: oceanbase.DBA_WR_SQLSTAT
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501245.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_WR_SQLSTAT
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.2.2 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `DBA_WR_SQLSTAT` 用于展示本租户执行过的 SQL 的基本性能统计数据，每个 SQL 语句为一行（即每个 `SQL_ID` + `Plan_Hash` 的唯一值为一行）。其中，含 `_DELTA` 的列表示从上次采集 WR 快照到当前时间为止统计值的增量。
+
+## 字段说明
+
+| **字段名称**                  | **类型**            | **是否可以为 NULL** | **描述**                               |
+|-------------------------------|---------------------|---------------------|----------------------------------------|
+| SNAP_ID                       | bigint(20)          | NO   |    快照 ID  |
+| SVR_IP                        | varchar(46)         | NO   |    节点 IP |
+| SVR_PORT                      | bigint(20)          | NO   |    节点端口号     |
+| SQL_ID                        | varchar(32)         | NO   |    SQL 语句 ID   |
+| PLAN_HASH                     | bigint(20) unsigned | NO   |    执行计划的 Hash 值   |
+| PLAN_ID                       | bigint(20)          | NO   |    执行计划 ID   |
+| PLAN_TYPE                     | bigint(20)          | NO   |    对于 SQL 计划的缓存，该字段表示计划的类型：<ul><li>`1`：表示 Local Plan </li> <li>`2`：表示 Remote Plan</li> <li>`3`：表示 Distributed Plan </li></ul> </br>对于 PL 对象缓存，该字段表示 PL 对象的类型：<ul><li>`1`：表示 Procedure</li> <li>`2`：表示 Function</li> <li>`3`：表示 Package</li> <li>`4`：表示 Anonymous Block </li></ul> |
+| MODULE                        | varchar(64)         | YES  |   该语句第一次被解析时的应用程序 Module，通过 `DBMS_APPLICATION_INFO.SET_MODULE` 包设置    |
+| ACTION                        | varchar(64)         | YES  |   该语句第一次被解析时的应用程序 Action，通过 `DBMS_APPLICATION_INFO.SET_ACTION` 包设置      |
+| PARSING_DB_ID                 | bigint(20)          | NO   |   语句解析时的数据库 ID    |
+| PARSING_DB_NAME               | varchar(128)        | NO   |   语句解析时的数据库名称     |
+| PARSING_USER_ID               | bigint(20)          | NO   |   语句解析时的用户 ID     |
+| EXECUTIONS_TOTAL              | bigint(20)          | NO   |   计划缓存中该计划的总执行次数     |
+| EXECUTIONS_DELTA              | bigint(20)          | NO   |   计划缓存中该计划总执行次数的增量      |
+| DISK_READS_TOTAL              | bigint(20)          | NO   |   磁盘读的总次数 |
+| DISK_READS_DELTA              | bigint(20)          | NO   |   磁盘读次数的增量 |
+| BUFFER_GETS_TOTAL             | bigint(20)          | NO   |   从缓存中逻辑读的总次数       |
+| BUFFER_GETS_DELTA             | bigint(20)          | NO   |   从缓存中逻辑读次数的增量      |
+| ELAPSED_TIME_TOTAL            | bigint(20)          | NO   |   该语句消耗的总时间。对于并行执行场景，该值为每个执行线程的累加值。          |
+| ELAPSED_TIME_DELTA            | bigint(20)          | NO   |   该语句消耗时间的增量   |
+| CPU_TIME_TOTAL                | bigint(20)          | NO   |   总的 CPU 耗时       |
+| CPU_TIME_DELTA                | bigint(20)          | NO   |   总 CPU 耗时的增量     |
+| CCWAIT_TOTAL                  | bigint(20)          | NO   |   并发类等待事件的总耗时       |
+| CCWAIT_DELTA                  | bigint(20)          | NO   |   并发类等待事件总耗时的增量       |
+| USERIO_WAIT_TOTAL             | bigint(20)          | NO   |   I/O 等待的总耗时      |
+| USERIO_WAIT_DELTA             | bigint(20)          | NO   |   I/O 等待的总耗时的增量      |
+| APWAIT_TOTAL                  | bigint(20)          | NO   |   应用类等待事件的总耗时        |
+| APWAIT_DELTA                  | bigint(20)          | NO   |   应用类等待事件总耗时的增量      |
+| PHYSICAL_READ_REQUESTS_TOTAL  | bigint(20)          | NO   |   物理读请求的总次数       |
+| PHYSICAL_READ_REQUESTS_DELTA  | bigint(20)          | NO   |   物理读请求次数的增量      |
+| PHYSICAL_READ_BYTES_TOTAL     | bigint(20)          | NO   |   物理读的总字节数     |
+| PHYSICAL_READ_BYTES_DELTA     | bigint(20)          | NO   |   物理读字节数的增量   |
+| WRITE_THROTTLE_TOTAL          | bigint(20)          | NO   |   写入 MemStore 时被限流的总时间    |
+| WRITE_THROTTLE_DELTA          | bigint(20)          | NO   |   写入 MemStore 时被限流的总时间的增量    |
+| ROWS_PROCESSED_TOTAL          | bigint(20)          | NO   |   语句处理的总行数    |
+| ROWS_PROCESSED_DELTA          | bigint(20)          | NO   |   语句处理的总行数的增量     |
+| MEMSTORE_READ_ROWS_TOTAL      | bigint(20)          | NO   |   从 MemStore 读取的总行数    |
+| MEMSTORE_READ_ROWS_DELTA      | bigint(20)          | NO   |   从 MemStore 读取的总行数的增量    |
+| MINOR_SSSTORE_READ_ROWS_TOTAL | bigint(20)          | NO   |   从 MINOR SSStore 读取的总行数   |
+| MINOR_SSSTORE_READ_ROWS_DELTA | bigint(20)          | NO   |   从 MINOR SSStore 读取的总行数的增量  |
+| MAJOR_SSSTORE_READ_ROWS_TOTAL | bigint(20)          | NO   |   从 MAJOR SSStore 读取的总行数     |
+| MAJOR_SSSTORE_READ_ROWS_DELTA | bigint(20)          | NO   |   从 MAJOR SSStore 读取的总行数的增量   |
+| RPC_TOTAL                     | bigint(20)          | NO   |   RPC 的总次数    |
+| RPC_DELTA                     | bigint(20)          | NO   |   RPC 次数的增量   |
+| FETCHES_TOTAL                 | bigint(20)          | NO   |   获取结果集的总次数   |
+| FETCHES_DELTA                 | bigint(20)          | NO   |   获取结果集次数的增量     |
+| RETRY_TOTAL                   | bigint(20)          | NO   |   SQL 重试的总次数   |
+| RETRY_DELTA                   | bigint(20)          | NO   |   SQL 重试次数的增量      |
+| PARTITION_TOTAL               | bigint(20)          | NO   |   SQL 执行扫描的分区数的总量      |
+| PARTITION_DELTA               | bigint(20)          | NO   |   SQL 执行扫描的分区数的增量    |
+| NESTED_SQL_TOTAL              | bigint(20)          | NO   |   嵌套 SQL 执行的总量，每多执行一次子 SQL 即增加 1     |
+| NESTED_SQL_DELTA              | bigint(20)          | NO   |   嵌套 SQL 执行的增量    |
+| SOURCE_IP                     | varchar(46)         | NO   |   请求来源的 IP     |
+| SOURCE_PORT                   | bigint(20)          | NO   |   请求来源的端口号      |
+| ROUTE_MISS_TOTAL              | bigint(20)          | NO   | 自执行计划生成以来，未正确命中请求分区的总次数     |
+| ROUTE_MISS_DELTA              | bigint(20)          | NO   | 自上次 WR 快照采集后至今，未正确命中请求分区的总次数     |
+| FIRST_LOAD_TIME               | timestamp(6)      | YES  | 执行计划生成时间  |
+| PLAN_CACHE_HIT_TOTAL          | bigint(20)        | NO   | 自执行计划生成以来，命中 Plan Cache 的总次数  |
+| PLAN_CACHE_HIT_DELTA          | bigint(20)        | NO   | 自上次 WR 快照采集后至今，命中 Plan Cache 的次数  |
+| MUTI_QUERY_TOTAL              | bigint(20)        | NO   | 自执行计划生成以来，该 SQL 位于 Muti Query 的次数<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP7 版本开始引入。</p></main>|
+| MUTI_QUERY_DELTA              | bigint(20)        | NO   | 自上次 WR 快照采集后至今，该 SQL 位于 Muti Query 中的次数<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP7 版本开始引入。</p></main>|
+| MUTI_QUERY_BATCH_TOTAL        | bigint(20)        | NO   | 自执行计划生成以来，该 SQL Batch 执行的次数<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP7 版本开始引入。</p></main>|
+| MUTI_QUERY_BATCH_DELTA        | bigint(20)        | NO   | 自上次 WR 快照采集后至今，该 SQL Batch 执行的次数<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP7 版本开始引入。</p></main>|
+| FULL_TABLE_SCAN_TOTAL         | bigint(20)        | NO   | 自执行计划生成以来，该 SQL 全表扫的次数<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP7 版本开始引入。</p></main>|
+| FULL_TABLE_SCAN_DELTA         | bigint(20)        | NO   | 自上次 WR 快照采集后至今，该 SQL 全表扫的次数<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP7 版本开始引入。</p></main>|
+| ERROR_COUNT_TOTAL             | bigint(20)        | NO   | 自执行计划生成以来，该 SQL 报错的次数<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP7 版本开始引入。</p></main>|
+| ERROR_COUNT_DELTA             | bigint(20)        | NO   | 自上次 WR 快照采集后至今，该 SQL 报错的次数<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP7 版本开始引入。</p></main>|
+
+## 查询示例
+
+查看本租户执行过的 SQL 的基本性能统计数据，展示第 1 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_WR_SQLSTAT LIMIT 1\G
+```
+
+查询结果如下;
+
+```shell
+*************************** 1. row ***************************
+                      SNAP_ID: 456
+                       SVR_IP: xx.xx.xx.xx
+                     SVR_PORT: 2882
+                       SQL_ID: 048206AF7CB71453E7C321E01B466FAD
+                    PLAN_HASH: 9223643895202507952
+                    PLAN_TYPE: 1
+                       MODULE: NULL
+                       ACTION: NULL
+                PARSING_DB_ID: 201001
+              PARSING_DB_NAME: oceanbase
+              PARSING_USER_ID: 200001
+             EXECUTIONS_TOTAL: 5
+             EXECUTIONS_DELTA: 0
+             DISK_READS_TOTAL: 0
+             DISK_READS_DELTA: 0
+            BUFFER_GETS_TOTAL: 0
+            BUFFER_GETS_DELTA: 0
+           ELAPSED_TIME_TOTAL: 5484
+           ELAPSED_TIME_DELTA: 0
+               CPU_TIME_TOTAL: 0
+               CPU_TIME_DELTA: 0
+                 CCWAIT_TOTAL: 0
+                 CCWAIT_DELTA: 0
+            USERIO_WAIT_TOTAL: 0
+            USERIO_WAIT_DELTA: 0
+                 APWAIT_TOTAL: 0
+                 APWAIT_DELTA: 0
+ PHYSICAL_READ_REQUESTS_TOTAL: 0
+ PHYSICAL_READ_REQUESTS_DELTA: 0
+    PHYSICAL_READ_BYTES_TOTAL: 0
+    PHYSICAL_READ_BYTES_DELTA: 0
+         WRITE_THROTTLE_TOTAL: 0
+         WRITE_THROTTLE_DELTA: 0
+         ROWS_PROCESSED_TOTAL: 32
+         ROWS_PROCESSED_DELTA: 0
+     MEMSTORE_READ_ROWS_TOTAL: 24
+     MEMSTORE_READ_ROWS_DELTA: 0
+MINOR_SSSTORE_READ_ROWS_TOTAL: 0
+MINOR_SSSTORE_READ_ROWS_DELTA: 0
+MAJOR_SSSTORE_READ_ROWS_TOTAL: 24
+MAJOR_SSSTORE_READ_ROWS_DELTA: 0
+                    RPC_TOTAL: 0
+                    RPC_DELTA: 0
+                FETCHES_TOTAL: 0
+                FETCHES_DELTA: 0
+                  RETRY_TOTAL: 0
+                  RETRY_DELTA: 0
+              PARTITION_TOTAL: 5
+              PARTITION_DELTA: 0
+             NESTED_SQL_TOTAL: 0
+             NESTED_SQL_DELTA: 0
+                    SOURCE_IP: xx.xx.xx.xx
+                  SOURCE_PORT: 2882
+             ROUTE_MISS_TOTAL: 0
+             ROUTE_MISS_DELTA: 0
+              FIRST_LOAD_TIME: 2025-10-12 22:00:03.780273
+         PLAN_CACHE_HIT_TOTAL: 4
+         PLAN_CACHE_HIT_DELTA: 0
+             MUTI_QUERY_TOTAL: 0
+             MUTI_QUERY_DELTA: 0
+       MUTI_QUERY_BATCH_TOTAL: 0
+       MUTI_QUERY_BATCH_DELTA: 0
+        FULL_TABLE_SCAN_TOTAL: 0
+        FULL_TABLE_SCAN_DELTA: 0
+            ERROR_COUNT_TOTAL: 0
+            ERROR_COUNT_DELTA: 0
+1 row in set (0.004 sec)
+```
+
+## 相关视图或文档
+
+* [oceanbase.CDB_WR_SQLSTAT](13600.o-cdb_wr_sqlstat-of-sys-tenant.md)
+
+* [GV$OB_SQLSTAT](../300.performance-view-of-sys-tenant/3200.gv-ob_sqlstat-of-sys-tenant.md)
+
+* [V$OB_SQLSTAT](../300.performance-view-of-sys-tenant/33600.v-ob_sqlstat-of-sys-tenant.md)

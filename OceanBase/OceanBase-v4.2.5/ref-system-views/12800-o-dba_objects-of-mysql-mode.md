@@ -1,0 +1,79 @@
+---
+title: oceanbase.DBA_OBJECTS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501679.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OBJECTS
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `oceanbase.DBA_OBJECTS` 用于展示本租户的所有数据库对象，视图定义与视图 `ALL_OBJECTS` 一致。
+
+## 字段说明
+
+|       字段名称        |      类型      | 是否可以为 NULL |              描述               |
+|-------------------|--------------|------------|-------------------------------|
+| OWNER             | varchar(128) | NO         | 对象所属的拥有者                      |
+| OBJECT_NAME       | varchar(128) | NO         | 对象名字                          |
+| SUBOBJECT_NAME    | varchar(128) | NO         | 子对象名字（例如，partition）           |
+| OBJECT_ID         | bigint(20)   | NO         | 对象的字典 ID 值                    |
+| DATA_OBJECT_ID    | bigint(20)   | NO         | 包含该对象 Segment 的字典 ID值         |
+| OBJECT_TYPE       | varchar(23)  | NO         | 对象类型，包括表、索引、分区、包、存储过程、同义词、序列等 |
+| CREATED           | datetime     | NO         | 对象创建时间                        |
+| LAST_DDL_TIME     | datetime     | NO         | 对象最后一次 DDL 时间                 |
+| TIMESTAMP         | datetime     | NO         | 对象指定的时间戳，以字符形式输出              |
+| STATUS            | varchar(7)   | NO         | 对象状态：<ul><li>`VALID`：有效的</li><li> `INVALID`：无效的 </li></ul>  |
+| TEMPORARY         | varchar(1)   | NO         | 该对象是否是一个临时对象                  |
+| GENERATED         | varchar(1)   | NO         | 该对象的名字是否是由系统生成              |
+| SECONDARY         | varchar(1)   | NO         | 目前该字段暂未使用                     |
+| NAMESPACE         | bigint(1)    | NO         | 对象的命名空间                       |
+| EDITION_NAME      | varchar(128) | NO         | 保留字段                          |
+| SHARING           | varchar(18)  | NO         | 该字段默认为 `NULL`                           |
+| EDITIONABLE       | varchar(1)   | NO         | 该字段默认为 `NULL`  |
+| ORACLE_MAINTAINED | varchar(1)   | NO         | 该字段默认为 `NULL`                              |
+| APPLICATION       | varchar(1)   | NO         | 该字段默认为 `NULL`                             |
+| DEFAULT_COLLATION | varchar(1)   | NO         | 该字段默认为 `NULL`                            |
+| DUPLICATED        | varchar(1)   | NO         | 该字段默认为 `NULL`         |
+| SHARDED           | varchar(1)   | NO         | 该字段默认为 `NULL`                             |
+| IMPORTED_OBJECT   | varchar(1)   | NO         | 该字段默认为 `NULL`                            |
+| CREATED_APPID     | bigint(0)    | NO         | 该字段默认为 `NULL`      |
+| CREATED_VSNID     | bigint(0)    | NO         | 该字段默认为 `NULL`           |
+| MODIFIED_APPID    | bigint(0)    | NO         | 该字段默认为 `NULL`     |
+| MODIFIED_VSNID    | bigint(0)    | NO         | 该字段默认为 `NULL`      |
+
+## 查询示例
+
+查询本租户的所有数据库对象，展示前 2 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OBJECTS limit 2;
+```
+
+查询结果如下：
+
+```shell
++-----------+---------------------------+----------------+-----------+----------------+-------------+---------------------+---------------------+---------------------+--------+-----------+-----------+-----------+-----------+--------------+---------+-------------+-------------------+-------------+-------------------+------------+---------+-----------------+---------------+---------------+----------------+----------------+
+| OWNER     | OBJECT_NAME               | SUBOBJECT_NAME | OBJECT_ID | DATA_OBJECT_ID | OBJECT_TYPE | CREATED             | LAST_DDL_TIME       | TIMESTAMP           | STATUS | TEMPORARY | GENERATED | SECONDARY | NAMESPACE | EDITION_NAME | SHARING | EDITIONABLE | ORACLE_MAINTAINED | APPLICATION | DEFAULT_COLLATION | DUPLICATED | SHARDED | IMPORTED_OBJECT | CREATED_APPID | CREATED_VSNID | MODIFIED_APPID | MODIFIED_VSNID |
++-----------+---------------------------+----------------+-----------+----------------+-------------+---------------------+---------------------+---------------------+--------+-----------+-----------+-----------+-----------+--------------+---------+-------------+-------------------+-------------+-------------------+------------+---------+-----------------+---------------+---------------+----------------+----------------+
+| oceanbase | __all_core_table          | NULL           |         1 |              1 | TABLE       | 2024-01-05 14:33:03 | 2024-01-05 14:33:03 | 2024-01-05 14:33:03 | VALID  | N         | N         | N         |         0 | NULL         | NULL    | NULL        | NULL              | NULL        | NULL              | NULL       | NULL    | NULL            |          NULL |          NULL |           NULL |           NULL |
+| oceanbase | __idx_3_idx_data_table_id | NULL           |    100001 |         100001 | TABLE       | 2024-01-05 14:33:03 | 2024-01-05 14:33:03 | 2024-01-05 14:33:03 | VALID  | N         | N         | N         |         0 | NULL         | NULL    | NULL        | NULL              | NULL        | NULL              | NULL       | NULL    | NULL            |          NULL |          NULL |           NULL |           NULL |
++-----------+---------------------------+----------------+-----------+----------------+-------------+---------------------+---------------------+---------------------+--------+-----------+-----------+-----------+-----------+--------------+---------+-------------+-------------------+-------------+-------------------+------------+---------+-----------------+---------------+---------------+----------------+----------------+
+2 rows in set
+```
+
+## 相关视图或文档
+
+* [ALL_OBJECTS](../../500.system-view-of-oracle-mode/200.dictionary-view-of-oracle-mode/2200.all_objects-of-oracle-mode.md)
+
+* [USER_OBJECTS](../../500.system-view-of-oracle-mode/200.dictionary-view-of-oracle-mode/26300.user_objects-of-oracle-mode.md)

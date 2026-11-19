@@ -1,0 +1,52 @@
+---
+title: min_observer_version
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285889.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# min_observer_version
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该配置项从 V2.2.50 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`min_observer_version` 用于设置本集群最低的 OBServer 节点应用程序版本号。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|      **属性**      | **描述**  |
+|------------------|---------|
+| 参数类型             | Int     |
+| 默认值              | 4.4.2.2 |
+| 是否可修改          | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。    |
+
+## 配置示例
+
+设置本集群最低的 OBServer 节点应用程序版本号为 4.4.2.0。
+
+```shell
+obclient> ALTER SYSTEM SET min_observer_version='4.4.2.0';
+```
+
+## 相关文档
+
+[升级 OceanBase 集群](../../../../450.oceanbase-version-upgrade/200.upgrade-oceanbase-enterprise-edition/300.start-upgrade.md)

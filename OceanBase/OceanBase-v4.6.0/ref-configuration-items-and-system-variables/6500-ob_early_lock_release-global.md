@@ -1,0 +1,30 @@
+---
+title: ob_early_lock_release
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685252.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# ob_early_lock_release
+
+<main id="notice" type='explain'>
+ <h4>说明</h4>
+ <p>该变量从 V2.2.30 版本开始废弃。ELR 产品行为调整为受租户级别配置项 <a href="../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2500.enable_early_lock_release.md">enable_early_lock_release</a> 控制。</p>
+</main>
+
+## 功能描述
+
+`ob_early_lock_release` 用于控制事务是否开启提前解锁（ELR）功能。
+
+## 属性说明
+
+| **属性**  |       **描述**       |
+|-----------|----------------------|
+| 参数类型    | Bool                |
+| 默认值      | 0                   |
+| 取值范围    | <ul><li>0：不开启  </li><li>1：开启 </li></ul>   |
+| 生效范围    | Global              |

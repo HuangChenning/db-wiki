@@ -1,0 +1,146 @@
+---
+title: GRANT
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687595.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# GRANT
+
+## 描述
+
+该语句用于系统管理员授予用户权限，包括对象权限、系统权限和角色。
+
+## 权限要求
+
+执行 `GRANT` 语句时，当前用户必须拥有被授予的权限，以及被授予权限的转授权限。例如，想要使用用户 `user1` 为用户 `user2` 授予表 `tbl1` 的 `SELECT` 权限，则用户 `user1` 必须拥有表 `tbl1` 的 `SELECT` 权限，以及表 `tbl1` 的 `SELECT` 权限的转授权限。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>为用户授权后，该用户需重新连接 OceanBase 数据库，权限才能生效。</p>
+</main>
+
+## 语法
+
+```sql
+/* 授予对象权限 */
+GRANT {obj_all_col_priv [, obj_all_col_priv...]}
+    ON obj_clause
+    TO {grant_user [, grant_user...]}
+    [WITH GRANT OPTION]
+
+/* 授予系统权限或角色 */
+GRANT obj_all_col_priv [, obj_all_col_priv...]
+    TO grantee_clause
+    [WITH ADMIN OPTION]
+
+grantee_clause:
+      grant_user [, grant_user...]
+    | grant_user IDENTIFIED BY password
+
+obj_all_col_priv:
+      role
+    | sys_and_obj_priv [(column_list)]
+    | ALL [PRIVILEGES] [(column_list)]
+    | READ
+    | WRITE
+
+obj_clause:
+    schema_name.relation_name
+    | LOCATION location_name
+    | SENSITIVE RULE relation_name
+```
+
+## 参数解释
+
+|        参数         |                                         描述                                          |
+|-------------------|-------------------------------------------------------------------------------------|
+| obj_all_col_priv | 指定授予的权限，您可通过授予权限或角色来直接或间接授予用户权限，同时把多个权限赋予用户时，权限类型使用英文逗号（`,`）隔开。具体的权限类型及其说明请参见 [Oracle 模式下的权限分类](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/000.permission-classification-of-oracle-mode.md)。         |
+| obj_clause | 指定授权的对象。详细介绍可参见下文 [obj_clause](#obj_clause)。|
+| grant_user | 指定要授予权限的用户或角色，有如下几种取值。<ul><li>`user [USER_VARIABLE]`：授权给具体的用户。</li><li>`CONNECT`：授权给 CONNECT 角色。</li><li>`RESOURCE`：授权给 RESOURCE 角色。</li><li>`PUBLIC`：授权给公共角色。</li></ul>|
+| IDENTIFIED BY password | 为待授权的用户指定一个密码，此处密码为明文，存入 `dba_users` 表后，服务器端会变为密文存储下来。如果密码中包含特殊字符 <code>~!@#%^&*_-+=`\|(){}[]:;',.?/</code>，需使用英文双引号（<code>""</code>）包含。  |
+| WITH GRANT OPTION | 指定权限是否允许转授，取消授权时级联。                                                                 |
+| WITH ADMIN OPTION | 指定权限是否允许转授，取消授权时不级联。                                                                |
+| role | 指定授予的角色，有如下几种取值。<ul><li>`role_name`：表示自定义角色的名称。</li><li>`DBA`：表示数据库管理员角色，具有完全的数据库管理权限。授予 DBA 角色的用户可以执行任何数据库操作。</li><li>`RESOURCE`：表示 RESOURCE 角色。</li><li>`CONNECT`：表示 CONNECT 角色。</li><li>`PUBLIC`：表示公共角色。</li></ul> |
+
+### obj_clause
+
+* `schema_name.relation_name`：表示权限应用的对象类型是数据库对象，表、视图、序列等。
+* `LOCATION location_name`：表示权限应用的对象类型是 Location。可以授予用户 Location 对象的权限如下：
+
+  * `READ`：表示 Location 对象的读权限。
+  * `WRITE`：表示 Location 对象的写权限。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>对于 OceanBase 数据库 V4.4.x 版本，<code>GRANT</code> 语句从 V4.4.1 版本开始支持 <code>LOCATION</code> 参数及对应的 <code>READ</code> 和 <code>WRITE</code> 权限。</p>
+  </main>
+
+* `SENSITIVE RULE relation_name`：表示权限作用在指定名称的**敏感数据保护规则**上。`relation_name` 为敏感规则名称，规则语义参见 [CREATE SENSITIVE RULE](../100.ddl-of-oracle-mode/2150.create-sensitive-rule-of-oracle-mode.md)。
+
+### 敏感规则相关系统权限
+
+除对象级授权外，还支持在**系统权限**维度授予与敏感规则相关的权限，例如：
+
+* `CREATE SENSITIVE RULE`：允许创建敏感数据保护规则。
+* `PLAINACCESS ANY SENSITIVE RULE`：允许以明文方式访问受敏感规则保护的列（用于运维等需绕过脱敏的场景，请谨慎授权）。
+
+系统权限使用 `GRANT ... TO grantee_clause` 形式授予，不要求书写 `ON` 子句。
+
+## 示例
+
+* 为用户 `user1` 赋予 `CREATE VIEW` 权限，并设置允许转授其他用户相同的权限。
+
+  ```shell
+  obclient> GRANT CREATE VIEW TO user1 WITH ADMIN OPTION;
+  ```
+
+* 为用户 `user1` 授予 `CONNECT` 角色，并修改 `user1` 的密码。
+
+  ```shell
+  obclient> GRANT CONNECT TO user1 IDENTIFIED by '********';
+  ```
+
+  执行后查看 `dba_users` 表中 `user1` 用户的密码，会看到已更新为最新设置的密码。
+
+* 将 COMMENT ANY TABLE 权限授予角色 `role1`。
+
+  ```shell
+  obclient> GRANT COMMENT ANY TABLE TO role1;
+  ```
+
+* 授予 `user006` 对 Location 的对象 `local_t` 的读取权限。
+
+  ```sql
+  obclient> GRANT READ ON LOCATION local_t TO user006;
+  ```
+
+* 授予用户 `user1` 创建敏感数据保护规则的系统权限。
+
+  ```sql
+  obclient> GRANT CREATE SENSITIVE RULE TO user1;
+  ```
+
+* 授予用户 `user1` 明文访问任意敏感规则的系统权限（请谨慎使用）。
+
+  ```sql
+  obclient> GRANT PLAINACCESS ANY SENSITIVE RULE TO user1;
+  ```
+
+* 授予用户 `user1` 在受限会话（Restricted Session）模式下登录的系统权限。
+
+  ```sql
+  obclient> GRANT RESTRICTED SESSION TO user1;
+  ```
+
+## 相关文档
+
+* 查看用户权限的操作可参见 [查看用户权限](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/600.view-user-permissions-of-oracle-mode.md)。
+
+* 查看角色和角色中的权限的操作可参见 [查看角色](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/400.manage-roles-of-oracle-mode/600.view-roles-of-oracle-mode.md)。
+
+* 可从 `dba_users` 表中查看创建的用户信息，`dba_users` 表的详细介绍可参见 [DBA_USERS](../../../../../700.system-views/500.system-view-of-oracle-mode/200.dictionary-view-of-oracle-mode/22500.dba_users-of-oracle-mode.md)。

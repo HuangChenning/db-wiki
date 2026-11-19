@@ -1,0 +1,23 @@
+---
+title: recyclebin
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002183503.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# recyclebin
+
+`recyclebin` 用于设置是否开启回收站功能。
+
+| **属性** |                                                       **描述**                                                        |
+|--------|---------------------------------------------------------------------------------------------------------------------|
+| 参数类型   | bool                             |
+| 默认值    | OFF                              |
+| 取值范围   | <li> OFF（0）：表示不开启   <li> ON（1）：表示开启    |
+| 生效范围   | <li> Global   <li> Session             |
+
+启用回收站后，删除的表及其依赖对象将放置在回收站中；当禁用回收站时，删除的表及其依赖对象不会放置在回收站中，会直接删除。

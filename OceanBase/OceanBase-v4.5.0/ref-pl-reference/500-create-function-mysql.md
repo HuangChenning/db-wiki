@@ -1,0 +1,291 @@
+---
+title: CREATE FUNCTION
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478387.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CREATE FUNCTION
+
+## 描述
+
+`CREATE FUNCTION` 语句用于创建存储函数。
+
+## 权限要求
+
+使用 `CREATE FUNCTION` 语句需要 `CREATE FUNCTION` 权限。
+
+默认情况下，在创建完 `FUNCTION` 之后，OceanBase 数据库自动将 `ALTER ROUTINE` 和 `EXECUTE` 权限授予例程（存储过程和函数）创建者。如果存在 `DEFINER` 子句，则所需的权限取决于 `user` 的值。
+
+## 语法
+
+```sql
+CREATE
+    [DEFINER = user]
+    FUNCTION [IF NOT EXISTS] sp_name ([func_parameter[,...]])
+    RETURNS type
+    [characteristic ...] routine_body
+
+func_parameter:
+    param_name type
+
+type:
+    Any valid MySQL data type
+
+characteristic: {
+    COMMENT 'string'
+  | LANGUAGE SQL
+  | [NOT] DETERMINISTIC
+  | { CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA }
+  | SQL SECURITY { DEFINER | INVOKER }
+}
+
+routine_body:
+    Valid SQL routine statement
+```
+
+## 参数解释
+
+| 参数 | 说明 |
+|------|------|
+| DEFINER | 指定函数的定义者（创建者）。如果省略，默认为执行 `CREATE FUNCTION` 语句的用户。可以指定为 `'user_name'@'host_name'` 或 `CURRENT_USER`。 |
+| IF NOT EXISTS | 如果函数已存在，则不报错。 |
+| sp_name | 要创建的存储函数名称。可以使用 `database_name.sp_name` 指定数据库。 |
+| func_parameter | 函数参数列表。存储函数的参数只能是 `IN` 类型，不需要显式指定 `IN` 关键字。参数格式为 `param_name type`。 |
+| RETURNS type | 指定函数的返回类型。函数体必须包含至少一个 `RETURN value` 语句。 |
+| characteristic | 函数特性，可以包括：<br>- `COMMENT 'string'`：函数注释<br>- `LANGUAGE SQL`：指定语言（仅 SQL，可忽略）<br>- `[NOT] DETERMINISTIC`：指定函数是否为确定性的<br>- `CONTAINS SQL \| NO SQL \| READS SQL DATA \| MODIFIES SQL DATA`：指定函数的数据访问特性<br>- `SQL SECURITY { DEFINER \| INVOKER }`：指定执行权限模式 |
+| routine_body | 函数体，包含函数的具体实现逻辑。必须包含至少一个 `RETURN value` 语句。 |
+
+默认情况下，存储函数与默认数据库相关联。要将存储函数与指定数据库的相关联，请使用 `database_name.sp_name` 指定名称。
+
+要调用存储函数，可以在表达式中引用该函数。该函数在表达式求值期间返回一个值。
+
+`DEFINER` 和 `SQL SECURITY` 子句指定在例程执行时检查访问权限要使用的安全上下文。
+
+`IF NOT EXISTS` 防止创建已经存在的同名例程。如果存储名称与内置 SQL 函数的名称相同，则会发生语法错误，除非在定义例程或稍后调用例程时在名称和随后的括号之间使用空格。因此，请避免使用现有 SQL 函数的名称创建用户自己的存储例程。
+
+括号内的 `func_parameter` 参数列表必须始终存在。如果没有参数，则应使用空括号 `()` 表示空参数列表。这里的参数名称不区分大小写。对于存储函数的每个参数都是 `IN` 参数，不需要显式指定 `IN` 关键字。
+
+`RETURNS` 子句只用于存储函数，用于指定函数的返回类型，函数包体必须包含 `RETURN value` 语句。如果 `RETURN` 语句返回不同类型的值，则该值将强制转换为合适的类型。例如，如果函数在 `RETURNS` 子句中指定了 `ENUM` 或者 `SET` 值，但 `RETURN` 语句返回整数，则从函数返回的值是 `SET` 成员集合中相应 `ENUM` 成员的字符串。
+
+参数类型和函数返回类型可以声明为任何有效的数据类型，如果前面带有 `CHARACTER SET`，则可以使用 `COLLATE` 属性。
+
+`routine_body` 由有效的 SQL 语句组成。SQL 语句可以是一个简单的语句，例如 `SELECT` 或 `INSERT`，也可以是使用由 `BEGIN` 和 `END` 编写的复合语句。复合语句可以包含声明、循环和其他控制结构语句。实际上，存储函数倾向于使用复合语句，除非主体由单个 `RETURN` 语句组成。
+
+不允许在存储例程中使用 `USE` 语句。调用例程时，将隐式执行 `USE database_name`（并在例程终止时撤消），为执行例程指定默认数据库。如果要引用例程默认数据库以外的其他数据库对象，可以使用数据库名称进行限定。
+
+如果在严格 SQL 模式下定义例程，却在非严格模式下调用它，则不会在严格模式下为例程的参数赋值。如果在严格 SQL 模式下分配传递给例程的表达式，则应在严格模式下调用例程。
+
+`COMMENT` 特性可以用来描述存储的例程，使用 `SHOW CREATE PROCEDURE` 和 `SHOW CREATE FUNCTION` 语句可以显示注释信息。
+
+`LANGUAGE` 特性表示编写例程所用的语言。仅适用于 SQL 例程，服务器会忽略此特征。
+
+如果一个例程总是对相同的输入参数产生相同的结果，那么它被认为是"确定性的"，否则就被认为是"不确定性的"。如果例程定义中既没有给出 `DETERMINISTIC` 也没有给出 `NOT DETERMINISTIC`，则默认为 `NOT DETERMINISTIC`。要声明函数是确定性的，必须显式指定 `DETERMINISTIC`。
+
+有关例程使用数据的特性信息如下：
+
+* `CONTAINS SQL` 表示例程不包含读写数据的语句，这是默认值。例如，`SET@x=1` 或 `DO RELEASE_LOCK('abc')` 会被执行但既不读取也不写入数据。
+
+* `NO SQL` 表示例程不包含 SQL 语句。
+
+* `READS SQL DATA` 表示例程包含读取数据的语句（例如 `SELECT`），但不包含写入数据的语句。
+
+* `MODIFIES SQL DATA` 表示例程包含可能写入数据的语句（例如 `INSERT` 或 `DELETE`）。
+
+`SQL SECURITY` 可以是 `DEFINER` 或 `INVOKER`，来指定例程是使用指定账号（此账号必须具有访问与例程关联的数据库的权限）的权限执行，还是使用调用者的权限执行。默认值为 `DEFINER`。调用例程的用户必须具有该例程的 `EXECUTE` 权限。
+
+`DEFINER` 子句指定在例程执行检查例程的访问权限时所使用的账号。如果存在 `DEFINER` 子句，则 `user` 值应为指定为 `'user_name'@'host_name'` 的账号（例如 `'admin'@'oblocalhost'`）或者由 `CURRENT_USER()` 函数获取的账户。如果省略 `DEFINER` 子句，则默认定义者是执行 `CREATE FUNCTION` 语句的用户。在使用 `SQL SECURITY DEFINER` 特性定义的存储例程的主体中，可以使用 `CURRENT_USER` 函数返回例程的 `DEFINER` 值。
+
+服务器对例程参数、使用 `DECLARE` 创建的本地例程变量或函数返回值的数据类型的处理方式如下：
+
+* 检查是否存在数据类型不匹配和溢出。转换和溢出问题会导致在严格 SQL 模式下出现告警或错误。
+
+* 只能指定标量值。例如 `SET val=(SELECT 1, 2)` 语句是无效的。
+
+* 对于字符数据类型，如果声明中包含 `CHARACTER SET`，则使用指定的字符集及其默认排序规则。如果使用了 `COLLATE` 属性，则使用指定的排序规则，而不使用默认排序规则。
+
+  如果不存在 `CHARACTER SET` 和 `COLLATE`，则使用在例程创建时应用的数据库字符集和排序规则。为避免服务器使用数据库字符集和排序规则，请为参数显式指定 `CHARACTER SET` 和 `COLLATE` 特性。
+
+  如果要更改数据库默认字符集或排序规则，则必须删除并重新创建存储例程以应用新的数据库默认值。
+
+  `character_set_database` 和 `collation_database` 系统变量可以用于指定数据库字符集和排序规则。
+
+## 示例
+
+**示例 1：创建简单的计算函数。**
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE FUNCTION calculate_total_price(unit_price DECIMAL(10,2), quantity INT)
+    RETURNS DECIMAL(10,2)
+    DETERMINISTIC
+    BEGIN
+        RETURN unit_price * quantity;
+    END //
+
+obclient> DELIMITER ;
+```
+
+查询结果如下：
+
+```sql
+obclient> SELECT calculate_total_price(99.99, 3);
+```
+
+```sql
++-------------------------------+
+| calculate_total_price(99.99, 3) |
++-------------------------------+
+|                        299.97 |
++-------------------------------+
+1 row in set
+```
+
+**示例 2：创建带条件判断的函数。**
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE FUNCTION get_discount_level(order_amount DECIMAL(10,2))
+    RETURNS VARCHAR(20)
+    DETERMINISTIC
+    BEGIN
+        IF order_amount >= 1000 THEN
+            RETURN 'VIP';
+        ELSEIF order_amount >= 500 THEN
+            RETURN 'Gold';
+        ELSE
+            RETURN 'Standard';
+        END IF;
+    END //
+
+obclient> DELIMITER ;
+```
+
+查询结果如下：
+
+```sql
+obclient> SELECT get_discount_level(1500);
+```
+
+```sql
++------------------------+
+| get_discount_level(1500) |
++------------------------+
+| VIP                    |
++------------------------+
+1 row in set
+
+```sql
+obclient> SELECT get_discount_level(600);
+```
+
+```sql
++------------------------+
+| get_discount_level(600) |
++------------------------+
+| Gold                   |
++------------------------+
+1 row in set
+```
+
+**示例 3：使用 DEFINER 子句创建函数。**
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE DEFINER='admin'@'localhost' FUNCTION calculate_bonus(base_salary DECIMAL(10,2), performance_rate DECIMAL(3,2))
+    RETURNS DECIMAL(10,2)
+    DETERMINISTIC
+    COMMENT 'Calculate employee bonus based on base salary and performance'
+    BEGIN
+        RETURN base_salary * performance_rate;
+    END //
+
+obclient> DELIMITER ;
+```
+
+**示例 4：创建无参数的函数。**
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE FUNCTION get_current_year()
+    RETURNS INT
+    DETERMINISTIC
+    BEGIN
+        RETURN YEAR(CURDATE());
+    END //
+
+obclient> DELIMITER ;
+```
+
+查询结果如下：
+
+```sql
+obclient> SELECT get_current_year();
+```
+
+```sql
++-------------------+
+| get_current_year() |
++-------------------+
+|              2025 |
++-------------------+
+1 row in set
+```
+
+**示例 5：创建使用数据库表的函数。**
+
+```sql
+obclient> CREATE TABLE employee_info(
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50),
+    salary DECIMAL(10,2)
+);
+
+obclient> INSERT INTO employee_info VALUES
+    (1, 'Alice', 8000.00),
+    (2, 'Bob', 12000.00),
+    (3, 'Charlie', 9500.00);
+
+obclient> DELIMITER //
+
+obclient> CREATE FUNCTION get_employee_count()
+    RETURNS INT
+    READS SQL DATA
+    BEGIN
+        DECLARE emp_count INT;
+        SELECT COUNT(*) INTO emp_count FROM employee_info;
+        RETURN emp_count;
+    END //
+
+obclient> DELIMITER ;
+```
+
+查询结果如下：
+
+```sql
+obclient> SELECT get_employee_count();
+```
+
+```sql
++----------------------+
+| get_employee_count() |
++----------------------+
+|                    3 |
++----------------------+
+1 row in set
+```
+
+## 相关文档
+
+* [存储函数](../200.storage-object-mysql/400.pl-storage-function-mysql.md)
+* [ALTER FUNCTION](./100.alter-function-mysql.md)
+* [DROP FUNCTION](./800.drop-function-mysql.md)
+* [SHOW CREATE FUNCTION](../700.pl-database-management-statements-mysql/100.show-create-function-mysql.md)

@@ -1,0 +1,16 @@
+---
+title: "收集统计信息概述"
+book: "管理数据库"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004481076.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 收集统计信息概述
+
+OceanBase 数据库 V4.0 版本的统计信息收集目前主要依靠手动统计信息收集和自动统计信息收集两种方式。
+
+需要注意的是，目前每日合并不会收集统计信息，同时如无特殊说明，统计信息收集在 OceanBase 数据库 MySQL 模式和 Oracle 模式的使用是相同的，不区分模式，以减少用户的学习成本。

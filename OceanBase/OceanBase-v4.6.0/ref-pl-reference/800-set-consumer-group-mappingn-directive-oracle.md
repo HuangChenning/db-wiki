@@ -1,0 +1,78 @@
+---
+title: SET_CONSUMER_GROUP_MAPPING
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686877.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# SET_CONSUMER_GROUP_MAPPING
+
+基于会话的登录和运行时的属性，`SET_CONSUMER_GROUP_MAPPING` 过程用于添加、删除或修改将会话映射到资源组的条目。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+    attribute        IN VARCHAR2,
+    value            IN VARCHAR2,
+    consumer_group   IN VARCHAR2 DEFAULT NULL);
+```
+
+## 参数说明
+
+|       参数      |      说明          |
+|----------------|---------------------|
+| attribute      | 要添加或修改的映射属性。当前版本仅支持 `USER`（即数据库的用户名）、`COLUMN` 属性值和 `FUNCTION`。由于 OceanBase 数据库后台执行的诸如合并转储、备份恢复和数据补全等任务，由于其宏观上不属于 User 范畴而且在执行任务的时候很可能挤占其他用户和任务的 CPU、IO 资源。因此，针对 OceanBase 数据库不同后台任务可以指定 `FUNCTION` 映射关系，后台任务的资源可以被限制在其对应的资源组内。  |
+| value          | 要匹配的属性值，包括绝对映射和正则表达式。  |
+| consumer_group | 映射的使用组的名称，如果为 `NULL` 则删除映射。  |
+
+## 使用说明
+
+如果指定属性和值不存在映射，则将创建指定使用组的映射。如果指定属性和值的映射已经存在，则映射的使用组将更新为指定的使用组。如果 `consumer_group` 参数为 `NULL`，则来自指定属性和值的任何映射都将被删除。
+
+下表为 OceanBase 数据库中预定义的 `FUNCTION` 资源组映射规则，您可以使用 `DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING` 过程来修改或删除这些映射规则。
+
+| 属性名称 | 取值 | 说明 |
+| --- | --- | --- |
+| FUNCTION | COMPACTION_HIGH | Mini Merge 和 DDL KV Merge 任务 |
+| FUNCTION | COMPACTION_MID | Minor Merge 任务 |
+| FUNCTION | COMPACTION_LOW | Major Merge 任务 |
+| FUNCTION | HA_HIGH | 复制、Rebuild、恢复任务 |
+| FUNCTION | HA_MID | 迁移任务 |
+| FUNCTION | HA_LOW | 备份、备份清理等任务 |
+| FUNCTION | DDL | 唯一索引校验、删列和补数据操作 |
+| FUNCTION | DDL_HIGH | DDL MemTable 的转储操作 |
+| FUNCTION | CLOG_HIGH | clog 日志提交任务 |
+| FUNCTION | CLOG_MID | 日志归档读本地盘等任务 |
+| FUNCTION | CLOG_LOW | 物理备库和 CDC 读取任务 |
+| FUNCTION | OPT_STATS | 统计信息收集任务 |
+| FUNCTION | GC_MACRO_BLOCK | 宏块回收和复用任务 |
+| FUNCTION | SQL_AUDIT | SQL 审计日志落盘 |
+| FUNCTION | IMPORT | 导入任务 |
+| FUNCTION | MVIEW | 物化视图增量刷新、MLOG Purge 的 IO、CPU 资源使用操作 |
+| FUNCTION | REPLAY_HIGH | 日志回放 |
+
+## 示例
+
+```sql
+obclient> CALL DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+      attribute        => 'COLUMN' ,
+      value            => 't2.c3 = 3 for user1',
+      consumer_group   => 'group1');
+Query OK, 0 rows affected
+```
+
+## 相关文档
+
+* [资源隔离概述](../../../../../600.manage/200.tenant-management/600.common-tenant-operations/300.resource-isolation/100.resource-isolation-overview.md)
+
+* [配置租户内资源隔离](../../../../../600.manage/200.tenant-management/600.common-tenant-operations/300.resource-isolation/200.resource-isolation-of-oracle-mode/200.resource-isolation-at-user-level-of-oracle-mode.md)

@@ -1,0 +1,247 @@
+---
+title: oceanbase.DBA_TABLES
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285123.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_TABLES
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>对于 V4.4.x 版本，该视图从 V4.4.2 版本开始引入。</li><li>对于 V4.5.x 版本，该视图从 V4.5.0 版本开始引入。</li></ul></p>
+</main>
+
+## 功能描述
+
+该视图用于展示当前租户所有表信息。
+
+## 字段说明
+
+|          字段名称          |    类型      | 是否可以为 NULL |         描述            |
+|---------------------------|--------------|----------------|-------------------------|
+| OWNER                     | char(128)    | NO   | 表的拥有者。|
+| TABLE_NAME                | char(128)    | NO   | 表名。|
+| TABLESPACE_NAME           | varchar(30)  | NO   | 包含该表的表空间名字。|
+| CLUSTER_NAME              | varchar(128) | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| IOT_NAME                  | varchar(128) | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| STATUS                    | varchar(8)   | NO   | 表状态：<ul><li>VALID</li><li>UNUSABLE</li></ul>|
+| PCT_FREE                  | bigint(20)   | NO   | 块的最小空闲空间比例。|
+| PCT_USED                  | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| INI_TRANS                 | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| MAX_TRANS                 | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| INITIAL_EXTENT            | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| NEXT_EXTENT               | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| MIN_EXTENTS               | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| MAX_EXTENTS               | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| PCT_INCREASE              | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| FREELISTS                 | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| FREELIST_GROUPS           | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| LOGGING                   | varchar(3)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| BACKED_UP                 | varchar(1)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| NUM_ROWS                  | bigint(20)   | NO   | 表行数。|
+| BLOCKS                    | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| EMPTY_BLOCKS              | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| AVG_SPACE                 | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| CHAIN_CNT                 | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| AVG_ROW_LEN               | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| AVG_SPACE_FREELIST_BLOCKS | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| NUM_FREELIST_BLOCKS       | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| DEGREE                    | varchar(10)  | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| INSTANCES                 | varchar(10)  | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| CACHE                     | varchar(5)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| TABLE_LOCK                | varchar(8)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| SAMPLE_SIZE               | bigint(0)    | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| LAST_ANALYZED             | date         | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| PARTITIONED               | varchar(3)   | NO   | 指定表是否是分区：<ul><li>YES</li><li>NO</li></ul>|
+| IOT_TYPE                  | varchar(12)  | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| TEMPORARY                 | varchar(1)   | NO   | 指定表是否是临时表。|
+| SECONDARY                 | varchar(1)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| NESTED                    | varchar(3)   | NO   | 指定表是否是嵌套表：<ul><li>YES</li><li>NO</li></ul>|
+| BUFFER_POOL               | varchar(7)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| FLASH_CACHE               | varchar(7)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| CELL_FLASH_CACHE          | varchar(7)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| ROW_MOVEMENT              | varchar(8)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| GLOBAL_STATS              | varchar(3)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| USER_STATS                | varchar(3)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| DURATION                  | varchar(15)  | NO   | 指示临时表的持续时间。|
+| SKIP_CORRUPT              | varchar(8)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| MONITORING                | varchar(3)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| CLUSTER_OWNER             | varchar(128) | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| DEPENDENCIES              | varchar(8)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| COMPRESSION               | varchar(30)  | NO   | <ul><li>V4.4.2 BP2 之前版本返回 NULL。</li><li>V4.4.2 BP2 及之后版本表示使用压缩算法，取值为 `none`、`lz4_1.0`、`zstd_1.3.8` 等。|
+| COMPRESS_FOR              | varchar(30)  | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| DROPPED                   | varchar(3)   | NO   | 表示被删除表是否在回收站里。|
+| READ_ONLY                 | varchar(3)   | NO   | <ul><li>V4.4.2 BP2 之前版本返回 NULL。</li><li>V4.4.2 BP2 及之后版本表示表是否为只读表，取值为：<ul><li>`YES`</li><li>`NO`</li></ul>|
+| SEGMENT_CREATED           | varchar(3)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| RESULT_CACHE              | varchar(7)   | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| CLUSTERING                | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| ACTIVITY_TRACKING         | varchar(23)  | NO   | 当前该字段默认为 NULL。|
+| DML_TIMESTAMP             | varchar(25)  | NO   | 当前该字段默认为 NULL。|
+| HAS_IDENTITY              | varchar(3)   | NO   | <ul><li>V4.4.2 BP2 之前版本返回 NULL。</li><li>V4.4.2 BP2 及之后版本表示表是否包含自增列，取值为：<ul><li>`YES`</li><li>`NO`</li></ul>|
+| CONTAINER_DATA            | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| INMEMORY                  | varchar(8)   | NO   | 当前该字段默认为 NULL。|
+| INMEMORY_PRIORITY         | varchar(8)   | NO   | 当前该字段默认为 NULL。|
+| INMEMORY_DISTRIBUTE       | varchar(15)  | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| INMEMORY_COMPRESSION      | varchar(17)  | NO   | 当前该字段默认为 NULL。|
+| INMEMORY_DUPLICATE        | varchar(13)  | NO   | 当前该字段默认为 NULL。|
+| DEFAULT_COLLATION         | varchar(100) | NO   | 当前该字段默认为 NULL。|
+| DUPLICATED                | varchar(1)   | NO   | 当前该字段默认为 NULL。|
+| SHARDED                   | varchar(1)   | NO   | 当前该字段默认为 NULL。|
+| EXTERNALLY_SHARDED        | varchar(1)   | NO   | 当前该字段默认为 NULL。|
+| EXTERNALLY_DUPLICATED     | varchar(1)   | NO   | 当前该字段默认为 NULL。|
+| EXTERNAL                  | varchar(3)   | NO   | 指示表是否为外部表：<ul><li>YES</li><li>NO</li></ul>|
+| HYBRID                    | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| CELLMEMORY                | varchar(24)  | NO   | 目前暂不支持该字段，当前该字段默认为 NULL。|
+| CONTAINERS_DEFAULT        | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| CONTAINER_MAP             | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| EXTENDED_DATA_LINK        | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| EXTENDED_DATA_LINK_MAP    | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| INMEMORY_SERVICE          | varchar(12)  | NO   | 当前该字段默认为 NULL。|
+| INMEMORY_SERVICE_NAME     | text         | NO   | 当前该字段默认为 NULL。|
+| CONTAINER_MAP_OBJECT      | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| MEMOPTIMIZE_READ          | varchar(8)   | NO   | 当前该字段默认为 NULL。|
+| MEMOPTIMIZE_WRITE         | varchar(8)   | NO   | 当前该字段默认为 NULL。|
+| HAS_SENSITIVE_COLUMN      | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| ADMIT_NULL                | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| DATA_LINK_DML_ENABLED     | varchar(3)   | NO   | 当前该字段默认为 NULL。|
+| LOGICAL_REPLICATION       | varchar(8)   | NO   | 当前该字段默认为 NULL。|
+| AUTO_SPLIT                | varchar(16)  | NO   | 表示表是否开启了自动分区。取值如下：<ul><li>`FALSE`（默认值）：表示表关闭了自动分区。</li><li>`TRUE`：表示表开启了自动分区。</li></ul>|
+| AUTO_SPLIT_TABLET_SIZE    | varchar(128) | NO   | 表示自动分区分裂阈值。当字段 `AUTO_SPLIT` 取值为 `FALSE` 时，`AUTO_SPLIT_TABLET_SIZE` 取值为 0。|
+| MERGE_ENGINE                    | varchar(32)  | NO             | 表示表的更新模型，取值如下：<ul><li>`PARTIAL_UPDATE`：表示部分更新。</li><li>`DELETE_INSERT`：表示删除后插入。</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| STORE_FORMAT                    | varchar(24)  | NO             | 表示行列存模式，取值如下：<ul><li>`ROW`：表示纯行存。</li><li>`COLUMN`：表示纯列存。</li><li>`ROW_WITH_COLUMN`：表示行列混存。</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| TABLE_MODE                      | varchar(32)  | NO             | 表示表模式，取值如下：<ul><li>`NORMAL`（默认值）</li><li>`QUEUING`</li><li>`MODERATE`</li><li>`SUPER`</li><li>`EXTREME`</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| BLOCK_SIZE                      | bigint(20)   | NO             | 表示微块大小，单位：字节。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| PROGRESSIVE_MERGE_NUM           | bigint(20)   | NO             | 表示渐进合并轮次，0 表示不启用。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| MICRO_BLOCK_FORMAT_VERSION      | bigint(20)   | NO             | 表示微块格式版本号。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| ENABLE_MACRO_BLOCK_BLOOM_FILTER | varchar(3)   | NO             | 表示是否启用宏块布隆过滤，取值如下：<ul><li>`YES`：表示启用。</li><li>`NO`：表示不启用。</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| AUTO_INCREMENT                  | bigint(20)   | NO             | 表示自增列当前最大分配值。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| AUTO_INCREMENT_CACHE_SIZE       | bigint(20)   | NO             | 表示自增缓存大小（批量申请步长）。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| LOB_INROW_THRESHOLD             | bigint(20)   | NO             | 表示 LOB 内联存储阈值，单位：字节。小于该值的 LOB 存储在行内。 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| ORGANIZATION                    | varchar(8)   | NO             | 表示表组织形式，取值如下：<ul><li>`INDEX`：表示索引组织表。</li><li>`HEAP`：表示堆组织表。</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| DYNAMIC_PARTITION_POLICY        | char(4096)   | NO             | 表示动态分区策略配置，空字符串表示该表没有配置动态分区策略。例如，`ENABLE=TRUE,TIME_UNIT=DAY,PRECREATE_TIME=7D,EXPIRE_TIME=30D,TIME_ZONE=+08:00`。<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+| SEMISTRUCT_PROPERTIES           | char(4096)   | NO             | 表示半结构化编码属性。例如，`{"encoding_type":1,"freq_threshold":50}`。<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP2 版本开始引入。</p></main>|
+
+## 查询示例
+
+查看当前租户下表 `tbl1` 的信息。
+
+```shell
+obclient> SELECT * FROM oceanbase.DBA_TABLES WHERE TABLE_NAME = 'tbl1'\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+                          OWNER: test
+                     TABLE_NAME: tbl1
+                TABLESPACE_NAME: NULL
+                   CLUSTER_NAME: NULL
+                       IOT_NAME: NULL
+                         STATUS: VALID
+                       PCT_FREE: 0
+                       PCT_USED: NULL
+                      INI_TRANS: NULL
+                      MAX_TRANS: NULL
+                 INITIAL_EXTENT: NULL
+                    NEXT_EXTENT: NULL
+                    MIN_EXTENTS: NULL
+                    MAX_EXTENTS: NULL
+                   PCT_INCREASE: NULL
+                      FREELISTS: NULL
+                FREELIST_GROUPS: NULL
+                        LOGGING: NULL
+                      BACKED_UP: NULL
+                       NUM_ROWS: NULL
+                         BLOCKS: NULL
+                   EMPTY_BLOCKS: NULL
+                      AVG_SPACE: NULL
+                      CHAIN_CNT: NULL
+                    AVG_ROW_LEN: NULL
+      AVG_SPACE_FREELIST_BLOCKS: NULL
+            NUM_FREELIST_BLOCKS: NULL
+                         DEGREE: NULL
+                      INSTANCES: NULL
+                          CACHE: NULL
+                     TABLE_LOCK: NULL
+                    SAMPLE_SIZE: NULL
+                  LAST_ANALYZED: NULL
+                    PARTITIONED: NO
+                       IOT_TYPE: NULL
+                      TEMPORARY: N
+                      SECONDARY: NULL
+                         NESTED: NO
+                    BUFFER_POOL: NULL
+                    FLASH_CACHE: NULL
+               CELL_FLASH_CACHE: NULL
+                   ROW_MOVEMENT: NO
+                   GLOBAL_STATS: NULL
+                     USER_STATS: NULL
+                       DURATION: NULL
+                   SKIP_CORRUPT: NULL
+                     MONITORING: NULL
+                  CLUSTER_OWNER: NULL
+                   DEPENDENCIES: NULL
+                    COMPRESSION: zstd_1.3.8
+                   COMPRESS_FOR: NULL
+                        DROPPED: NO
+                      READ_ONLY: NO
+                SEGMENT_CREATED: NULL
+                   RESULT_CACHE: NULL
+                     CLUSTERING: NULL
+              ACTIVITY_TRACKING: NULL
+                  DML_TIMESTAMP: NULL
+                   HAS_IDENTITY: NO
+                 CONTAINER_DATA: NULL
+                       INMEMORY: NULL
+              INMEMORY_PRIORITY: NULL
+            INMEMORY_DISTRIBUTE: NULL
+           INMEMORY_COMPRESSION: NULL
+             INMEMORY_DUPLICATE: NULL
+              DEFAULT_COLLATION: NULL
+                     DUPLICATED: NULL
+                        SHARDED: NULL
+             EXTERNALLY_SHARDED: NULL
+          EXTERNALLY_DUPLICATED: NULL
+                       EXTERNAL: NO
+                         HYBRID: NULL
+                     CELLMEMORY: NULL
+             CONTAINERS_DEFAULT: NULL
+                  CONTAINER_MAP: NULL
+             EXTENDED_DATA_LINK: NULL
+         EXTENDED_DATA_LINK_MAP: NULL
+               INMEMORY_SERVICE: NULL
+          INMEMORY_SERVICE_NAME: NULL
+           CONTAINER_MAP_OBJECT: NULL
+               MEMOPTIMIZE_READ: NULL
+              MEMOPTIMIZE_WRITE: NULL
+           HAS_SENSITIVE_COLUMN: NULL
+                     ADMIT_NULL: NULL
+          DATA_LINK_DML_ENABLED: NULL
+            LOGICAL_REPLICATION: NULL
+                     AUTO_SPLIT: FALSE
+         AUTO_SPLIT_TABLET_SIZE: 0
+                   MERGE_ENGINE: PARTIAL_UPDATE
+                   STORE_FORMAT: ROW
+                     TABLE_MODE: NORMAL
+                     BLOCK_SIZE: 16384
+          PROGRESSIVE_MERGE_NUM: 0
+     MICRO_BLOCK_FORMAT_VERSION: 1
+ENABLE_MACRO_BLOCK_BLOOM_FILTER: NO
+                 AUTO_INCREMENT: 1
+      AUTO_INCREMENT_CACHE_SIZE: 0
+            LOB_INROW_THRESHOLD: 8192
+                   ORGANIZATION: INDEX
+       DYNAMIC_PARTITION_POLICY:
+          SEMISTRUCT_PROPERTIES:
+1 row in set
+```
+
+## 相关视图或文档
+
+[oceanbase.CDB_TABLES](../../300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/13200.o-cdb_tables-of-sys-tenant.md)

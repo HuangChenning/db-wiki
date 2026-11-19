@@ -1,0 +1,306 @@
+---
+title: "配置用户级资源隔离"
+book: "管理数据库"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699659.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 配置用户级资源隔离
+
+用户级资源隔离是通过将某个用户执行的 SQL 绑定到指定资源组上执行来实现的。本文主要介绍了 MySQL 模式下用户级资源隔离的配置方法。
+
+## 前提条件
+
+* 开始配置用户级资源隔离前，建议您先了解资源组、资源管理计划、资源管理计划内容等基础概念，用户级资源隔离相关的基础概念及适用场景请参见 [资源隔离概述](../100.resource-isolation-overview.md)。
+
+* 由于 CPU 的资源隔离依赖 cgroup，如果需要控制 CPU 的资源隔离，则在开始配置用户级资源隔离前，必须配置 cgroup 目录并开启 cgroup 功能。配置 cgroup 目录并开启 cgroup 功能的相关操作请参见 [配置 cgroup](../300.resource-isolation-of-mysql-mode/100.config-cgroups-of-enterprise-of-mysql.md)。
+
+  如果仅需要控制 IOPS 的资源隔离，则不需要配置 cgroup。
+
+* 在进行 IOPS 资源隔离前，需要先进行磁盘性能校准，磁盘性能校准的相关操作请参见 [磁盘性能校准](../300.resource-isolation-of-mysql-mode/150.disk-performance-calibration-of-mysql-mode.md)。
+  
+  如果仅需要控制 CPU 的资源隔离，则不需要进行磁盘性能校准。
+
+* 请确认已创建好需要进行资源隔离的用户。创建用户的详细操作请参见 [创建用户](../../../../../700.reference/200.administrator-guide/200.basic-database-management/400.manage-tenants/900.manage-users-and-permissions/300.mysql-mode/100.create-a-user-of-mysql-mode.md)。
+
+## 背景信息
+
+  用户级的资源隔离又分为用户级 user 资源隔离和用户级 function 资源隔离两种。有关两种资源隔离的更详细说明请参见 [资源隔离概述](../100.resource-isolation-overview.md)。
+
+## 步骤一（可选）：将租户的 MAX_IOPS 和 MIN_IOPS 配置为有效值
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>如果您在创建租户所使用的 Unit 规格时，已将 <code>MAX_IOPS</code> 和 <code>MIN_IOPS</code> 设置为 16 KB 读对应的 IOPS 值，或者，您不需要控制 IOPS 的资源隔离，请忽略本步骤。</p>
+</main>
+
+完成磁盘校准后，在配置资源隔离计划前，需要保证租户的资源规格中 `MAX_IOPS` 和 `MIN_IOPS` 的值为有效值，这里的有效值指的是以 16 KB 读对应的 IOPS 值作为租户 IOPS 配置的参考值。
+
+1. 使用 `root` 用户登录集群的 `sys` 租户。
+
+2. 执行以下命令，查看待进行资源隔离的租户的资源规格。
+
+   ```sql
+   obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OB_UNIT_CONFIGS;
+   ```
+
+   查询结果的示例如下：
+
+   ```shell
+   +----------------+-----------------+----------------------------+----------------------------+---------+---------+-------------+---------------+---------------------+---------------------+-------------+
+   | UNIT_CONFIG_ID | NAME            | CREATE_TIME                | MODIFY_TIME                | MAX_CPU | MIN_CPU | MEMORY_SIZE | LOG_DISK_SIZE | MAX_IOPS            | MIN_IOPS            | IOPS_WEIGHT |
+   +----------------+-----------------+----------------------------+----------------------------+---------+---------+-------------+---------------+---------------------+---------------------+-------------+
+   |              1 | sys_unit_config | 2023-12-19 13:55:04.463295 | 2023-12-19 13:56:08.969718 |       3 |       3 |  2147483648 |    3221225472 | 9223372036854775807 | 9223372036854775807 |           3 |
+   |           1001 | small_unit      | 2023-12-19 13:56:09.851665 | 2023-12-19 13:56:09.851665 |       1 |       1 |  2147483648 |    6442450944 | 9223372036854775807 | 9223372036854775807 |           1 |
+   |           1002 | medium_unit     | 2023-12-19 13:56:10.030914 | 2023-12-19 13:56:10.030914 |       8 |       4 |  8589934592 |   25769803776 | 9223372036854775807 | 9223372036854775807 |           4 |
+   |           1003 | large_unit      | 2023-12-19 13:56:10.112115 | 2023-12-19 13:56:10.112115 |      16 |       8 | 21474836480 |   64424509440 | 9223372036854775807 | 9223372036854775807 |           8 |
+   +----------------+-----------------+----------------------------+----------------------------+---------+---------+-------------+---------------+---------------------+---------------------+-------------+
+   4 rows in set
+   ```
+
+   根据查询结果，如果该租户的 `MAX_IOPS` 和 `MIN_IOPS` 均为默认值 `INT64_MAX`（9223372036854775807），则需要对租户可使用的 IOPS 资源重新进行规划。
+   
+3. 执行以下命令，确认租户部署在哪些 OBServer 节点上。
+
+   ```sql
+   obclient [oceanbase]> SELECT DISTINCT SVR_IP, SVR_PORT FROM oceanbase.CDB_OB_LS_LOCATIONS WHERE tenant_id = xxxx;
+   ```
+
+   查询结果的示例如下：
+
+   ```shell
+   +----------------+----------+
+   | SVR_IP         | SVR_PORT |
+   +----------------+----------+
+   | xx.xxx.xxx.xx1 |    xxxx1 |
+   | xx.xxx.xxx.xx1 |    xxxx2 |
+   | xx.xxx.xxx.xx1 |    xxxx3 |
+   +----------------+----------+
+   3 rows in set
+   ```
+
+4. 执行以下命令，确认待进行资源隔离的租户所在的 OBServer 节点上的磁盘校准值，使用 16 KB 读的磁盘校准值作为该节点 IOPS 设置的上限值。
+
+   ```sql
+   obclient [oceanbase]> SELECT * FROM oceanbase.GV$OB_IO_BENCHMARK WHERE MODE='READ' AND SIZE=16384;
+   ```
+
+   查询结果的示例如下：
+
+   ```shell
+   +----------------+----------+--------------+------+-------+-------+------+---------+
+   | SVR_IP         | SVR_PORT | STORAGE_NAME | MODE | SIZE  | IOPS  | MBPS | LATENCY |
+   +----------------+----------+--------------+------+-------+-------+------+---------+
+   | xx.xxx.xxx.xx1 |    xxxx1 | DATA         | READ | 16384 | 48162 |  752 |     331 |
+   | xx.xxx.xxx.xx1 |    xxxx2 | DATA         | READ | 16384 | 47485 |  741 |     336 |
+   | xx.xxx.xxx.xx1 |    xxxx3 | DATA         | READ | 16384 | 48235 |  753 |     331 |
+   +----------------+----------+--------------+------+-------+-------+------+---------+
+   3 rows in set
+   ```
+
+   根据查询结果，将获取到的各节点的磁盘校准值作为上限值来规划租户可用的 IOPS。由于集群内可能有多个租户部署在相同的 OBServer 节点，您可以需要根据业务实际情况来分配这些 IOPS。
+   
+   假设某集群下有两个租户，且两个租户都部署在相同的 OBServer 节点上，每个 OBServer 节点的 16 KB 读的磁盘 IOPS 基准值均相同，为 20000 IOPS，同时，预计两个租户的负载差不多，则可以将 20000 IOPS 平分给两个租户（具体可根据实际业务情况来为租户划分可用的 IOPS），即每个租户的 `MAX_IOPS` 和 `MIN_IOPS` 均配置为 10000，您也可以根据业务考虑，将 `MIN_IOPS` 设置为小于 `MAX_IOPS` 的某个值。
+
+5. 执行以下命令，修改租户的 `MAX_IOPS` 和 `MIN_IOPS` 值。
+
+   建议先修改 `MIN_IOPS` 后再修改 `MAX_IOPS`。
+
+   ```sql
+   ALTER RESOURCE UNIT unit_name MIN_IOPS = xxx;
+   ```
+
+   ```sql
+   ALTER RESOURCE UNIT unit_name MAX_IOPS = xxx;
+   ```
+
+## 步骤二：配置资源隔离计划
+
+以下示例中，将 `tp_user` 用户、`ap_user `用户或 `compaction_high` 任务、`ddl_high` 任务分别绑定在 `interactive_group` 和 `batch_group` 2 个资源组上，再通过资源管理计划 `daytime` 来控制不同用户或后台任务使用不同的 CPU 资源和 IOPS 资源。
+
+1. 租户管理员登录集群的 MySQL 租户。
+
+2. 调用 `DBMS_RESOURCE_MANAGER` 系统包中的 `CREATE_CONSUMER_GROUP` 子程序，创建 2 个资源组。
+
+   ```sql
+   obclient [test]> CALL DBMS_RESOURCE_MANAGER.CREATE_CONSUMER_GROUP(
+   CONSUMER_GROUP => 'interactive_group' ,
+   COMMENT => 'TP'
+   );
+
+   obclient [test]> CALL DBMS_RESOURCE_MANAGER.CREATE_CONSUMER_GROUP(
+   CONSUMER_GROUP => 'batch_group' ,
+   COMMENT => 'AP'
+   );
+   ```
+
+   相关参数说明如下：
+
+   * `CONSUMER_GROUP`：定义资源组名称。
+
+   * `COMMENT`：填写资源组的备注信息。
+
+   创建成功后，可以查询 `oceanbase.DBA_RSRC_CONSUMER_GROUPS` 视图进行确认。有关 `oceanbase.DBA_RSRC_CONSUMER_GROUPS` 视图的详细介绍请参见 [oceanbase.DBA_RSRC_CONSUMER_GROUPS](../../../../../700.reference/500.system-reference/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/20800.oceanbase-dba_rsrc_consumer_groups.md)。
+
+3. 调用 `DBMS_RESOURCE_MANAGER` 系统包中的 `CREATE_PLAN` 子程序，创建资源管理计划。
+
+   ```sql
+   obclient [test]> CALL DBMS_RESOURCE_MANAGER.CREATE_PLAN(
+   PLAN => 'daytime',
+   comment => 'TP优先');
+   ```
+
+   相关参数说明如下：
+
+   * `PLAN`：定义资源管理计划名称。
+  
+   * `COMMENT`：填写资源管理计划的备注信息。
+
+   创建成功后，可以查询 `oceanbase.DBA_RSRC_PLANS` 视图进行确认。有关 `oceanbase.DBA_RSRC_PLANS` 视图的详细介绍请参见 [oceanbase.DBA_RSRC_PLANS](../../../../../700.reference/500.system-reference/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/20500.oceanbase-dba_rsrc_plans-mysql.md)。
+
+4. 调用 `DBMS_RESOURCE_MANAGER` 系统包中的 `CREATE_PLAN_DIRECTIVE` 子程序，创建资源管理计划内容。用于启用资源管理计划时，限制资源组所使用的 CPU 资源和 IOPS 资源。
+
+   ```sql
+   obclient [test]> CALL DBMS_RESOURCE_MANAGER.CREATE_PLAN_DIRECTIVE(
+   PLAN => 'daytime',
+   GROUP_OR_SUBPLAN => 'interactive_group' ,
+   COMMENT  => '',
+   MGMT_P1 => 30,
+   UTILIZATION_LIMIT =>80,
+   MIN_IOPS => 30,
+   MAX_IOPS => 90,
+   WEIGHT_IOPS => 80);
+
+   obclient [test]> CALL DBMS_RESOURCE_MANAGER.CREATE_PLAN_DIRECTIVE(
+   PLAN => 'daytime',
+   GROUP_OR_SUBPLAN => 'batch_group' ,
+   COMMENT  => '',
+   MGMT_P1 => 50,
+   UTILIZATION_LIMIT => 40,
+   MIN_IOPS => 40,
+   MAX_IOPS => 80,
+   WEIGHT_IOPS => 70);
+   ```
+
+   相关参数说明如下：
+
+   * `PLAN`：指定资源管理计划名称。
+
+   * `GROUP_OR_SUBPLAN`：指定资源组。
+  
+   * `COMMENT`：填写资源管理计划内容的备注信息，默认值为 `NULL`。
+
+   * `MGMT_P1`：指定系统满负载情况下，承诺分配给本资源组的 CPU 占比。默认值为 `100`。
+  
+   * `UTILIZATION_LIMIT`：指定资源组使用的 CPU 资源的上限。该参数的默认值为 `100`，取值范围为 (0, 100\]。`100` 表示最大可使用租户全部 CPU 资源。如果取值为 `70` 则表示最大可使用租户 70% 的 CPU 资源。
+
+   * `MIN_IOPS`：用于出现 IO 争用时，资源组预留的 IOPS 资源，总和不超过 100，默认值为 `0`。
+
+   * `MAX_IOPS`：用于指定资源组最大可使用的 IOPS 资源，总和可以超过 100，默认值为 `100`。
+
+   * `WEIGHT_IOPS`：用于指定 IOPS 的权重值，总和可以超过100，默认值为 `0`。
+
+   创建成功，可以查询 `oceanbase.DBA_RSRC_PLAN_DIRECTIVES` 视图和 `oceanbase.DBA_OB_RSRC_IO_DIRECTIVES` 视图进行确认。
+
+   有关 `oceanbase.DBA_RSRC_PLAN_DIRECTIVES` 视图的详细介绍，请参见 [oceanbase.DBA_RSRC_PLAN_DIRECTIVES](../../../../../700.reference/500.system-reference/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/20600.oceanbase-dba_rsrc_plan_directives.md)。
+
+   有关 `oceanbase.DBA_OB_RSRC_IO_DIRECTIVES` 视图的详细介绍，请参见 [oceanbase.DBA_OB_RSRC_IO_DIRECTIVES](../../../../../700.reference/500.system-reference/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/20400.oceanbase.dba_ob_rsrc_io_directives.md)。
+
+5. 调用 `DBMS_RESOURCE_MANAGER` 系统包中的 `SET_CONSUMER_GROUP_MAPPING`子程序，根据实际使用场景，创建用户级资源隔离匹配规则。
+
+   * 创建用户级 user 资源隔离匹配规则。
+
+      ```sql
+      obclient [test]> CALL DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+      ATTRIBUTE => 'user',
+      VALUE => 'tp_user',
+      CONSUMER_GROUP => 'interactive_group');
+
+      obclient [test]> CALL DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+      ATTRIBUTE => 'user',
+      VALUE => 'ap_user',
+      CONSUMER_GROUP => 'batch_group');
+      ```
+
+      相关参数说明如下：
+
+      * `ATTRIBUTE`：指定属性类型，`column` 表示 SQL 级资源隔离，`user` 表示用户级 user 资源隔离，`function` 表示用户级 function 资源隔离，属性名称不区分大小写。
+
+      * `VALUE`：指定属性值，此处指定用户名即可。当前仅支持指定一个用户。
+
+      * `CONSUMER_GROUP`：指定需要绑定的资源组。表示当 SQL 命中 `VALUE` 中所设置的匹配规则后，需要绑定在哪个资源组上执行该语句。当前仅支持绑定一个资源组。
+
+        如果未指定要绑定的资源组，则默认绑定系统内置的 `OTHER_GROUPS`。系统内置的 `OTHER_GROUPS` 对应的资源如下：
+        
+        * MIN_IOPS = 100 - SUM(租户内其他资源组的总和)
+        
+        * MAX_IOPS = 100
+        
+        * WEIGHT_IOPS = 100
+
+   * 创建用户级 function 资源隔离匹配规则。
+
+      ```sql
+      obclient [test]> CALL DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+      ATTRIBUTE => 'function',
+      VALUE => 'compaction_high',
+      CONSUMER_GROUP => 'interactive_group');
+
+      obclient [test]> CALL DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+      ATTRIBUTE => 'function',
+      VALUE => 'ddl_high',
+      CONSUMER_GROUP => 'batch_group');
+      ```
+
+      相关参数说明如下：
+
+      * `ATTRIBUTE`：指定属性类型，`column` 表示 SQL 级资源隔离，`user` 表示用户级 user 资源隔离，`function` 表示用户级 function 资源隔离，属性名称不区分大小写。
+
+      * `VALUE`：指定属性值，此处指定 DAG 线程对应的 8 种后台任务：compaction_high、ha_high、compaction_mid、ha_mid、compaction_low、ha_low、ddl 和 ddl_high，填写其中一个即可。当前仅支持指定一个任务。
+
+      * `CONSUMER_GROUP`：指定需要绑定的资源组。表示当 SQL 命中 `VALUE` 中所设置的匹配规则后，需要绑定在哪个资源组上执行该语句。当前仅支持绑定一个资源组。
+
+        如果未指定要绑定的资源组，则默认绑定系统内置的 `OTHER_GROUPS`。系统内置的 `OTHER_GROUPS` 对应的资源如下：
+        
+        * MIN_IOPS = 100 - SUM(租户内其他资源组的总和)
+        
+        * MAX_IOPS = 100
+        
+        * WEIGHT_IOPS = 100
+
+   创建成功后，可以查询 `oceanbase.DBA_RSRC_GROUP_MAPPINGS` 视图进行确认。有关 `oceanbase.DBA_RSRC_GROUP_MAPPINGS` 视图的详细介绍请参见 [oceanbase.DBA_RSRC_GROUP_MAPPINGS](../../../../../700.reference/500.system-reference/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/20700.oceanbase-dba_rsrc_group_mappings.md)。
+
+6. 为资源组启用合适的资源管理计划。
+
+   由于不同的资源管理计划中，同一个资源组被限制的资源可能不同。您需要为资源组启用合适的资源管理计划。
+
+   ```sql
+   obclient [test]> SET GLOBAL resource_manager_plan = 'daytime';
+   ```
+
+   <main id="notice" type='explain'>
+   <h4>说明</h4>
+   <p>如果不需要对资源进行限制，可以使用 <code>SET GLOBAL resource_manager_plan = '';</code> 语句禁用所有资源计划。</p>
+   </main>
+
+## 配置后注意事项
+
+* 资源隔离匹配规则添加后，如果删除了用户后再重建，资源隔离匹配规则仍然适用。
+
+* 资源隔离匹配规则添加成功后不是立即生效，预计可能在 10 秒内开始生效，具体以实际环境为准。
+
+* 用户级资源隔离的优先级低于 SQL 级资源隔离。
+
+* 资源隔离匹配规则添加后，目前仅在 `SELECT`、`INSERT`、`UPDATE`、`DELETE` 等语句中生效，在 DDL 和 DCL 语句中不生效，在 PL 中也不生效。在 prepareStatement 中可以生效。
+
+## 配置项后性能影响
+
+用户级资源隔离在 SQL 未解析前即可确认使用哪个资源组的资源，故对性能无影响。
+
+## 相关文档
+
+[SQL 级资源隔离](../300.resource-isolation-of-mysql-mode/300.resource-isolation-at-sql-level-of-mysql-mode.md)

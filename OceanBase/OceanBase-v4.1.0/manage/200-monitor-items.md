@@ -1,0 +1,530 @@
+---
+title: "监控项"
+book: "管理数据库"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002073059.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 监控项
+
+监控项是最常见的诊断监控信息，监控项是一个特定的打点数值，比如执行 SQL 数、执行时间、IO 数等。OceanBase 数据库目前已经有 14 个大类，600 多个监控项，涵盖网络、请求队列、事务、SQL、缓存、存储、资源配额、日志等所有关键的执行信息。在这些监控项中，部分指标的实时性要求较高（比如 QPS、TPS、QPS_RT、TPS_RT、Active_sessions 等），对于这类信息，OceanBase 数据库支持秒级采集。对于其他信息，支持分钟级采集。
+
+监控项的数据来源于 `GV$SYSSTAT` 视图，其主要字段介绍如下：
+
+* `CON_ID`：租户 ID。
+
+* `SVR_IP`：节点 IP。
+
+* `CLASS`：监控项类别。
+
+* `STAT_ID`：监控项 ID。
+
+* `NAME`：监控项名称。
+
+* `VALUE`：监控项值。
+
+* `VALUE_TYPE`：监控项值类型。
+
+`CLASS` 描述了监控项类别，OceanBase 数据库 V4.x 主要包括以下 14 个大类，具体如下：
+
+|监控项类别 |监控项类别名|
+|---|---|
+|1 |网络|
+|2 |请求队列|
+|4 |事务|
+|8 |SQL|
+|16 |    缓存|
+|32| 存储|
+|64 |资源|
+|128 |日志|
+|256 |CLOG|
+|512 |选举|
+|1024 |OBServer|
+|2048 |Root Service|
+|3072 |Analyze Report|
+|4096 |TableAPI|
+
+`STAT_ID` 和 `NAME` 分别描述了监控项 ID 和监控项名称，例如 SQL 大类下所有的监控项如下：
+
+```shell
+obclient> select distinct class,stat_id,name,VALUE_TYPE from gv$sysstat where class=8;
++-------+---------+------------------------------------+------------+
+| class | stat_id | name                               | VALUE_TYPE |
++-------+---------+------------------------------------+------------+
+|     8 |   40000 | sql select count                   | ADD_VALUE  |
+|     8 |   40001 | sql select time                    | ADD_VALUE  |
+|     8 |   40002 | sql insert count                   | ADD_VALUE  |
+|     8 |   40003 | sql insert time                    | ADD_VALUE  |
+|     8 |   40004 | sql replace count                  | ADD_VALUE  |
+|     8 |   40005 | sql replace time                   | ADD_VALUE  |
+|     8 |   40006 | sql update count                   | ADD_VALUE  |
+|     8 |   40007 | sql update time                    | ADD_VALUE  |
+|     8 |   40008 | sql delete count                   | ADD_VALUE  |
+|     8 |   40009 | sql delete time                    | ADD_VALUE  |
+|     8 |   40018 | sql other count                    | ADD_VALUE  |
+|     8 |   40019 | sql other time                     | ADD_VALUE  |
+|     8 |   40020 | ps prepare count                   | ADD_VALUE  |
+|     8 |   40021 | ps prepare time                    | ADD_VALUE  |
+|     8 |   40022 | ps execute count                   | ADD_VALUE  |
+|     8 |   40023 | ps close count                     | ADD_VALUE  |
+|     8 |   40024 | ps close time                      | ADD_VALUE  |
+|     8 |   40030 | opened cursors current             | ADD_VALUE  |
+|     8 |   40031 | opened cursors cumulative          | ADD_VALUE  |
+|     8 |   40010 | sql local count                    | ADD_VALUE  |
+|     8 |   40011 | sql remote count                   | ADD_VALUE  |
+|     8 |   40012 | sql distributed count              | ADD_VALUE  |
+|     8 |   40013 | active sessions                    | ADD_VALUE  |
+|     8 |   40014 | single query count                 | ADD_VALUE  |
+|     8 |   40015 | multiple query count               | ADD_VALUE  |
+|     8 |   40016 | multiple query with one stmt count | ADD_VALUE  |
+|     8 |   40100 | sql inner select count             | ADD_VALUE  |
+|     8 |   40101 | sql inner select time              | ADD_VALUE  |
+|     8 |   40102 | sql inner insert count             | ADD_VALUE  |
+|     8 |   40103 | sql inner insert time              | ADD_VALUE  |
+|     8 |   40104 | sql inner replace count            | ADD_VALUE  |
+|     8 |   40105 | sql inner replace time             | ADD_VALUE  |
+|     8 |   40106 | sql inner update count             | ADD_VALUE  |
+|     8 |   40107 | sql inner update time              | ADD_VALUE  |
+|     8 |   40108 | sql inner delete count             | ADD_VALUE  |
+|     8 |   40109 | sql inner delete time              | ADD_VALUE  |
+|     8 |   40110 | sql inner other count              | ADD_VALUE  |
+|     8 |   40111 | sql inner other time               | ADD_VALUE  |
+|     8 |   40112 | user logons cumulative             | ADD_VALUE  |
+|     8 |   40113 | user logouts cumulative            | ADD_VALUE  |
+|     8 |   40114 | user logons failed cumulative      | ADD_VALUE  |
+|     8 |   40115 | user logons time cumulative        | ADD_VALUE  |
++-------+---------+------------------------------------+------------+
+42 rows in set (0.07 sec)
+```
+
+参数说明：
+
+| NAME | 描述 |
+| --- | --- |
+| sql select count | SELECT 语句执行次数 |
+| sql select time | SELECT 语句执行总耗时 |
+| sql insert count | INSERT 语句执行次数 |
+| sql insert time | INSERT 语句执行总耗时 |
+| sql replace count | REPLACE 语句执行次数 |
+| sql replace time | REPLACE 语句执行总耗时 |
+| sql update count | UPDATE 语句执行次数 |
+| sql update time | UPDATE 语句执行总耗时 |
+| sql delete count | DELETE 语句执行次数 |
+| sql delete time | DELETE 语句执行总耗时 |
+| sql other count | 其他语句执行次数 |
+| sql other time | 其他语句执行总耗时 |
+| ps prepare count | PS 准备计数 |
+| ps prepare time | PS 准备耗时 |
+| ps execute count | PS 执行计数 |
+| ps close count | PS 关闭计数 |
+| ps close time | PS 关闭耗时 |
+| opened cursors current | 当前启动的游标（OCP 使用其作为 Session 缓存的游标数） |
+| opened cursors cumulative | 开启游标的累计数 |
+| sql local count | LOCAL 语句执行次数 |
+| sql remote count | REMOTE 语句执行次数 |
+| sql distributed count | DISTRIBUTED 语句执行次数 |
+| active sessions | 活跃连接数 |
+| single query count | 单个查询的计数 |
+| multiple query count | 以 Multiple Query 协议发过来的语句总数 |
+| sql inner select count | inner sql SELECT 语句执行次数 |
+| sql inner select time | inner sql SELECT 语句执行总耗时 |
+| sql inner insert count | inner sql INSERT 语句执行次数 |
+| sql inner insert time | inner sql INSERT 语句执行总耗时 |
+| sql inner replace count | inner sql REPLACE 语句执行次数 |
+| sql inner replace time | inner sql REPLACE 语句执行总耗时 |
+| sql inner update count | inner sql UPDATE 语句执行次数 |
+| sql inner update time | inner sql UPDATE 语句执行总耗时 |
+| sql inner delete count | inner sql DELETE 语句执行次数 |
+| sql inner delete time | inner sql DELETE 语句执行总耗时 |
+| sql inner other count | inner sql OTHER 语句执行总耗时 |
+| sql inner other time | inner sql OTHER 语句执行总耗时 |
+| user logons cumulative | 用户登录累计 |
+| user logouts cumulative | 用户退出累计 |
+| user logons failed cumulative | 用户登录失败累计数 |
+| user logons time cumulative | 用户登录用时累计 |
+
+对于其中部分实时性要求较高的监控项支持秒级采集，例如 QPS、TPS、QPS_RT、TPS_RT 等。
+
+`CON_ID` 和 `SVR_IP` 描述了监控项的对象，从而在不同的场景下灵活的对监控指标进行聚合。例如，观察租户的请求量变化，可以基于 `CON_ID` 对 QPS、TPS 指标进行聚合；观察节点的请求量变化，可以基于 `SVR_IP` 对 QPS、TPS 指标进行聚合；对集群进行负载均衡时，可以基于 `CON_ID` + `SVR_IP` 对 Unit 维度的 QPS、TPS 指标进行聚合。
+
+`VALUE_TYPE` 描述了监控项值的类型，取值有 `ADD_VALUE`、`SET_VALUE`，分别对应累加型和状态型。对于累加型的监控项，数据库在内部打点时会一直累加，比如 sql count、sql rt、io read bytes 等，外部监控系统定期拉取这些累加型监控项，计算差值来展现这些监控项的数据变化趋势。对于状态型的监控项，数据库在内部打点时会维护监控项的最新值，比如 cache size、cpu usage 等，外部监控系统定期拉取这些状态型监控项，并直接展现出来。一般来说，状态型监控项只有租户级别的汇总，而大多数累加型监控项可以同时支持会话和租户级别的汇总。
+
+根据监控项描述的组件不同，分为 14 个大类，我们着重介绍其中高频使用到的监控项。
+
+## 网络
+
+可以通过以下示例查询网络相关的监控指标。
+
+```shell
+obclient> select distinct class,stat_id,name,VALUE_TYPE from gv$sysstat where class=1 and stat_id in (10000,10001,10002,10003,10004,10005,10006);
++-------+---------+----------------------+------------+
+| class | stat_id | name                 | VALUE_TYPE |
++-------+---------+----------------------+------------+
+|     1 |   10000 | rpc packet in        | ADD_VALUE  |
+|     1 |   10001 | rpc packet in bytes  | ADD_VALUE  |
+|     1 |   10002 | rpc packet out       | ADD_VALUE  |
+|     1 |   10003 | rpc packet out bytes | ADD_VALUE  |
+|     1 |   10004 | rpc deliver fail     | ADD_VALUE  |
+|     1 |   10005 | rpc net delay        | ADD_VALUE  |
+|     1 |   10006 | rpc net frame delay  | ADD_VALUE  |
++-------+---------+----------------------+------------+
+7 rows in set (0.06 sec)
+```
+
+参数说明：
+
+| NAME | 描述 |
+| --- | --- |
+| rpc packet in | 发送到本 OBServer 的 RPC Packet 累积数量 |
+| rpc packet in bytes | 发送到本 OBServer 的 RPC Packet 累积字节数 |
+| rpc packet out | 本 OBServer 发出的 RPC Packet 的累积数量 |
+| rpc packet out bytes | 本 OBServer 发出的 RPC Packet 的累积字节数 |
+| rpc deliver fail | 分发 RPC 失败的累计数量 |
+| rpc net delay | 在分发 RPC 时网络的时延，即接收时间减去发送时间 |
+| rpc net frame delay | 在分发 RPC 时 RPC 框架的时延 |
+
+## 请求队列
+
+可以通过以下示例查询请求队列相关的监控指标。
+
+```shell
+obclient> select distinct class,stat_id,name,VALUE_TYPE from gv$sysstat where class=2 and stat_id in (20000,20001,20002);
++-------+---------+-----------------------+------------+
+| class | stat_id | name                  | VALUE_TYPE |
++-------+---------+-----------------------+------------+
+|     2 |   20000 | request enqueue count | ADD_VALUE  |
+|     2 |   20001 | request dequeue count | ADD_VALUE  |
+|     2 |   20002 | request queue time    | ADD_VALUE  |
++-------+---------+-----------------------+------------+
+3 rows in set (0.07 sec)
+```
+
+参数说明：
+
+| NAME | 描述 |
+| --- | --- |
+| request enqueue count | 进入租户等待队列成功的请求累积量 |
+| request dequeue count | 从租户队列 POP 成功的请求累积数量 |
+| request queue time | 请求从被接收到处理以及排队的累积时间，即等待结束的时间减去进入队列的时间 |
+
+## 事务
+
+可以通过以下示例查询事务相关的监控指标。
+
+```shell
+obclient> select distinct class,stat_id,name,VALUE_TYPE from gv$sysstat where class=4 and stat_id in (30000,30001,30002,30005,30006,30007,30008,30009,30010,30011,30012,30013);
++-------+---------+-------------------------------+------------+
+| class | stat_id | name                          | VALUE_TYPE |
++-------+---------+-------------------------------+------------+
+|     4 |   30000 | trans commit log sync time    | ADD_VALUE  |
+|     4 |   30001 | trans commit log sync count   | ADD_VALUE  |
+|     4 |   30002 | trans commit log submit count | ADD_VALUE  |
+|     4 |   30005 | trans start count             | ADD_VALUE  |
+|     4 |   30006 | trans total used time         | ADD_VALUE  |
+|     4 |   30007 | trans commit count            | ADD_VALUE  |
+|     4 |   30008 | trans commit time             | ADD_VALUE  |
+|     4 |   30009 | trans rollback count          | ADD_VALUE  |
+|     4 |   30010 | trans rollback time           | ADD_VALUE  |
+|     4 |   30011 | trans timeout count           | ADD_VALUE  |
+|     4 |   30012 | trans local trans count       | ADD_VALUE  |
+|     4 |   30013 | trans distribute trans count  | ADD_VALUE  |
++-------+---------+-------------------------------+------------+
+12 rows in set (0.07 sec)
+```
+
+参数说明：
+
+| NAME | 描述 |
+| --- | --- |
+| trans commit log sync time | Commit Log 同步多数派的总耗时 |
+| trans commit log sync count | Commit Log 的总数量 |
+| trans commit log submit count | 租户提交的事务日志数 |
+| trans start count | 租户启动事务计数 |
+| trans total used time | 租户事务总用时 |
+| trans commit count | 事务 Commit 次数 |
+| trans commit time | 事务 Commit 阶段消耗的时间 |
+| trans rollback count | 事务回滚量 |
+| trans rollback time | 事务回滚阶段消耗的时间 |
+| trans timeout count | 超时事务数 |
+| trans local trans count | Local 事务数（3.x 为单分区事务数） |
+| trans distribute trans count | 分布式事务数（3.x 为多分区事务数） |
+
+## SQL
+
+可以通过以下示例查询 SQL 相关的监控指标。
+
+```shell
+obclient> select distinct class,stat_id,name,VALUE_TYPE from gv$sysstat where class=8 and stat_id in (40000, 40001, 40002, 40003, 40004, 40005, 40006, 40007, 40008, 40009, 40010, 40011, 40012, 40018, 40019);
++-------+---------+-----------------------+------------+
+| class | stat_id | name                  | VALUE_TYPE |
++-------+---------+-----------------------+------------+
+|     8 |   40000 | sql select count      | ADD_VALUE  |
+|     8 |   40001 | sql select time       | ADD_VALUE  |
+|     8 |   40002 | sql insert count      | ADD_VALUE  |
+|     8 |   40003 | sql insert time       | ADD_VALUE  |
+|     8 |   40004 | sql replace count     | ADD_VALUE  |
+|     8 |   40005 | sql replace time      | ADD_VALUE  |
+|     8 |   40006 | sql update count      | ADD_VALUE  |
+|     8 |   40007 | sql update time       | ADD_VALUE  |
+|     8 |   40008 | sql delete count      | ADD_VALUE  |
+|     8 |   40009 | sql delete time       | ADD_VALUE  |
+|     8 |   40018 | sql other count       | ADD_VALUE  |
+|     8 |   40019 | sql other time        | ADD_VALUE  |
+|     8 |   40010 | sql local count       | ADD_VALUE  |
+|     8 |   40011 | sql remote count      | ADD_VALUE  |
+|     8 |   40012 | sql distributed count | ADD_VALUE  |
++-------+---------+-----------------------+------------+
+15 rows in set (0.08 sec)
+```
+
+参数说明：
+
+| NAME | 描述 |
+| --- | --- |
+| sql select count | SELECT 语句执行次数 |
+| sql select time | SELECT 语句执行总耗时 |
+| sql insert count | INSERT 语句执行次数 |
+| sql insert time | INSERT 语句执行总耗时 |
+| sql replace count | REPLACE 语句执行次数 |
+| sql replace time | REPLACE 语句执行总耗时 |
+| sql update count | UPDATE 语句执行次数 |
+| sql update time | UPDATE 语句执行总耗时 |
+| sql delete count | DELETE 语句执行次数 |
+| sql delete time | DELETE 语句执行总耗时 |
+| sql other count | 其他语句执行次数 |
+| sql other time | 其他语句执行次数 |
+| sql local count | LOCAL 语句执行次数 |
+| sql remote count | REMOTE 语句执行次数 |
+| sql distributed count | DISTRIBUTED 语句执行次数 |
+
+## KVCache
+
+可以通过以下示例查询 KVCache 相关的监控指标。
+
+```shell
+obclient> select distinct class,stat_id,name,VALUE_TYPE from gv$sysstat where class=16 and stat_id in (50000, 50001, 50004, 50005, 50008, 50009, 50010, 50011, 50037, 50038,120000,120001,120008,120009);
++-------+---------+-------------------------+------------+
+| class | stat_id | name                    | VALUE_TYPE |
++-------+---------+-------------------------+------------+
+|    16 |   50000 | row cache hit           | ADD_VALUE  |
+|    16 |   50001 | row cache miss          | ADD_VALUE  |
+|    16 |   50004 | bloom filter cache hit  | ADD_VALUE  |
+|    16 |   50005 | bloom filter cache miss | ADD_VALUE  |
+|    16 |   50008 | block cache hit         | ADD_VALUE  |
+|    16 |   50009 | block cache miss        | ADD_VALUE  |
+|    16 |   50010 | location cache hit      | ADD_VALUE  |
+|    16 |   50011 | location cache miss     | ADD_VALUE  |
+|    16 |   50037 | tablet ls cache hit     | ADD_VALUE  |
+|    16 |   50038 | tablet ls cache miss    | ADD_VALUE  |
+|    16 |  120000 | location cache size     | SET_VALUE  |
+|    16 |  120001 | tablet ls cache size    | SET_VALUE  |
+|    16 |  120008 | user row cache size     | SET_VALUE  |
+|    16 |  120009 | bloom filter cache size | SET_VALUE  |
++-------+---------+-------------------------+------------+
+14 rows in set (0.07 sec)
+```
+
+参数说明：
+
+| NAME | 描述 |
+| --- | --- |
+| row cache hit | row cache 命中次数 |
+| row cache miss | row cache 没有命中次数 |
+| bloom filter cache hit | bloom filter cache 命中次数 |
+| bloom filter cache miss | bloom filter cache 没有命中次数 |
+| block cache hit | Block Cache 命中的次数 |
+| block cache miss | Block Cache 没有命中的次数 |
+| location cache hit | Location Cache 命中的次数 |
+| location cache miss | Location Cache 没有命中的次数 |
+| tablet ls cache hit | 缓存命中 |
+| tablet ls cache miss | 缓存 MISS |
+| location cache size | Location 缓存大小 |
+| tablet ls cache size | Clog 缓存大小 |
+| user row cache size | 用户行级缓存大小 |
+| bloom filter cache size | Bloom Filter 缓存大小 |
+
+`GV$SYSSTAT` 视图对 KVCache 的命中率进行了描述，如果想进一步探寻 KVCache 各模块实际的内存占用，可以查询 `GV$OB_KVCACHE` 视图。例如：
+
+```shell
+obclient> select DBA_OB_TENANTS.tenant_id,tenant_name, svr_ip,svr_port, cache_name, cache_size 
+from GV$OB_KVCACHE, DBA_OB_TENANTS where DBA_OB_TENANTS.tenant_type!='META' and DBA_OB_TENANTS.tenant_id = GV$OB_KVCACHE.tenant_id limit 10;
++-----------+----------------+------------+----------+-----------------------+------------+
+| tenant_id | tenant_name    | svr_ip     | svr_port | cache_name            | cache_size |
++-----------+----------------+------------+----------+-----------------------+------------+
+|         1 | sys            |xx.xx.xx.xx |     2882 | schema_cache          |   14564352 |
+|         1 | sys            |xx.xx.xx.xx |     2882 | tablet_table_cache    |    6241280 |
+|         1 | sys            |xx.xx.xx.xx |     2882 | vtable_cache          |   35372032 |
+|         1 | sys            |xx.xx.xx.xx |     2882 | opt_column_stat_cache |    6241280 |
+|      1008 | mq_t1          |xx.xx.xx.xx |     2882 | index_block_cache     |    6241280 |
+|      1008 | mq_t1          |xx.xx.xx.xx |     2882 | user_block_cache      |   10402816 |
+|      1008 | mq_t1          |xx.xx.xx.xx |     2882 | user_row_cache        |    6241280 |
+|      1010 | oracle_tenant1 |xx.xx.xx.xx |     2882 | index_block_cache     |    6241280 |
+|      1008 | mq_t1          |xx.xx.xx.xx |     2882 | bf_cache              |    4160512 |
+|      1010 | oracle_tenant1 |xx.xx.xx.xx |     2882 | user_block_cache      |    8322048 |
++-----------+----------------+------------+----------+-----------------------+------------+
+10 rows in set (0.06 sec)
+```
+
+## 存储
+
+可以通过以下示例查询存储相关的监控指标。
+
+```shell
+obclient> select distinct class,stat_id,name,VALUE_TYPE from gv$sysstat where class=32 and stat_id in (60000, 60001, 60002, 60003, 60004, 60005, 60019, 60020, 60021, 60022, 60023, 60024,130000,130001,130002,130004);
++-------+---------+--------------------------------+------------+
+| class | stat_id | name                           | VALUE_TYPE |
++-------+---------+--------------------------------+------------+
+|    32 |   60000 | io read count                  | ADD_VALUE  |
+|    32 |   60001 | io read delay                  | ADD_VALUE  |
+|    32 |   60002 | io read bytes                  | ADD_VALUE  |
+|    32 |   60003 | io write count                 | ADD_VALUE  |
+|    32 |   60004 | io write delay                 | ADD_VALUE  |
+|    32 |   60005 | io write bytes                 | ADD_VALUE  |
+|    32 |   60019 | memstore read lock succ count  | ADD_VALUE  |
+|    32 |   60020 | memstore read lock fail count  | ADD_VALUE  |
+|    32 |   60021 | memstore write lock succ count | ADD_VALUE  |
+|    32 |   60022 | memstore write lock fail count | ADD_VALUE  |
+|    32 |   60023 | memstore wait write lock time  | ADD_VALUE  |
+|    32 |   60024 | memstore wait read lock time   | ADD_VALUE  |
+|    32 |  130000 | active memstore used           | SET_VALUE  |
+|    32 |  130001 | total memstore used            | SET_VALUE  |
+|    32 |  130002 | major freeze trigger           | SET_VALUE  |
+|    32 |  130004 | memstore limit                 | SET_VALUE  |
++-------+---------+--------------------------------+------------+
+16 rows in set (0.06 sec)
+```
+
+参数说明：
+
+| NAME | 描述 |
+| --- | --- |
+| io read count | IO 读次数 |
+| io read delay | IO 读延迟 |
+| io read bytes | IO 读字节数 |
+| io write count | IO 写次数 |
+| io write delay | IO 写延迟 |
+| io write bytes | IO 写字节数 |
+| memstore read lock succ count | 在行上执行快照读检查成功的次数 |
+| memstore read lock fail count | 在行上执行快照读检查失败的次数 |
+| memstore write lock succ count | MemStore 加行锁成功的次数 |
+| memstore write lock fail count | MemStore 加行锁失败的次数 |
+| memstore wait write lock time | 等待行锁的时长 |
+| memstore wait read lock time | 等待快照读的时长 |
+| active memstore used | Active MemStore 使用值（可能偏大） |
+| total memstore used | 总的 MemStore 使用值 |
+| major freeze trigger | 触发 MAJOR FREEZE 阈值 |
+| memstore limit | MemStore 可以使用的内存最大值 |
+
+## 资源
+
+可以通过以下示例查询资源相关的监控指标。
+
+```shell
+obclient> select distinct class,stat_id,name,VALUE_TYPE from gv$sysstat where class=64 and stat_id in (140002,140003,140005,140006);
++-------+---------+-----------------+------------+
+| class | stat_id | name            | VALUE_TYPE |
++-------+---------+-----------------+------------+
+|    64 |  140002 | max memory size | SET_VALUE  |
+|    64 |  140003 | memory usage    | SET_VALUE  |
+|    64 |  140005 | max cpus        | SET_VALUE  |
+|    64 |  140006 | cpu usage       | SET_VALUE  |
++-------+---------+-----------------+------------+
+4 rows in set (0.06 sec)
+```
+
+参数说明：
+
+| NAME | 描述 |
+| --- | --- |
+| max memory size | 租户最大内存限制 |
+| memory usage | 租户当前内存使用量 |
+| min cpus | 该租户 UNIT_CONFIG 中的 `min_cpu *100` |
+| max cpus | 该租户 UNIT_CONFIG 中的 `max_cpu *100` |
+| cpu usage | 逻辑 CPU 使用率，例如 148 表示百分比 148%，表示该租户使用了多个逻辑 CPU 核心 |
+
+基于以上监控项，可以方便的获得租户的 CPU 使用率和内存使用率：
+
+* 租户 CPU 使用率 = cpu usage (stat_id = 140006) / max cpus (stat_id = 140005)
+
+* 租户内存使用率 = memory usage (stat_id = 140003) / max memory size (stat_id = 140002)
+
+## CLOG
+
+可以通过以下示例查询 CLOG 相关的监控指标。
+
+```shell
+obclient> select distinct class,stat_id,name,VALUE_TYPE from gv$sysstat where class=256 and stat_id in (80040,80041,80057);
++-------+---------+---------------------------+------------+
+| class | stat_id | name                      | VALUE_TYPE |
++-------+---------+---------------------------+------------+
+|   256 |   80040 | clog write count          | ADD_VALUE  |
+|   256 |   80041 | clog write time           | ADD_VALUE  |
+|   256 |   80057 | clog trans log total size | ADD_VALUE  |
++-------+---------+---------------------------+------------+
+3 rows in set (0.07 sec)
+```
+
+参数说明：
+
+| NAME | 描述 |
+| --- | --- |
+| clog write count | Clog 写盘次数 |
+| clog write time | Clog 写盘耗时 |
+| clog trans log total size | 提交的事务日志总的大小 |
+
+## 其他
+
+除了 `GV$SYSSTAT` 视图，还有其他丰富的视图对监控项进行了各种角度的描述。
+
+例如，`GV$OB_PROCESSLIST` 描述了系统当前的会话，包括活跃状态，及其执行的 SQL 语句。还包括 `SID`、`SQL_ID`、`TRANS_ID`、`TRACE_ID` 等重要字段，是全链路跟踪的利器。
+
+* 基于 `GV$OB_PROCESSLIST` 视图查询活跃会话：
+
+    ```shell
+    obclient> select TENANT,SVR_IP,SVR_PORT,USER,HOST,COMMAND,STATE,INFO,SQL_ID,TRACE_ID 
+    from GV$OB_PROCESSLIST 
+    where STATE='ACTIVE' or null limit 10;
+    +--------+------------+----------+-----------+-------------------+---------+--------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------+-----------------------------------+
+    | TENANT | SVR_IP     | SVR_PORT | USER      | HOST              | COMMAND | STATE  | INFO                                                                                                                                    | SQL_ID                           | TRACE_ID                          |
+    +--------+------------+----------+-----------+-------------------+---------+--------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------+-----------------------------------+
+    | sys    |xx.xx.xx.xx |     2882 | DBA_query | xx.xx.xx.xx:51588 | Query   | ACTIVE | select TENANT,SVR_IP,SVR_PORT,USER,HOST,COMMAND,STATE,INFO,SQL_ID,TRACE_ID from GV$OB_PROCESSLIST where STATE='ACTIVE' or null limit 10 | D18F6AE855AD0D7478162DD8EF48C781 | YB4206008451-0005F55893CEA363-0-0 |
+    +--------+------------+----------+-----------+-------------------+---------+--------+-----------------------------------------------------------------------------------------------------------------------------------------+----------------------------------+-----------------------------------+
+    1 row in set (0.04 sec)
+    ```
+
+* 基于 `GV$OB_PROCESSLIST` 视图查询 Unit 维度的活跃会话数：
+
+    ```shell
+    obclient>
+    select 
+    tenant_id, tenant_name,  svr_ip,
+    case 
+        when cnt is null then 0 
+        else cnt end 
+    as cnt
+    from (
+        select DBA_OB_TENANTS.tenant_name, DBA_OB_TENANTS.tenant_id, svr_ip, cnt 
+        from DBA_OB_TENANTS 
+        left join (
+            select count(`state`='ACTIVE' OR NULL) as cnt, tenant as tenant_name, svr_ip
+            from GV$OB_PROCESSLIST
+            group by tenant,svr_ip ) t1 
+        on DBA_OB_TENANTS.tenant_name = t1.tenant_name 
+    where DBA_OB_TENANTS.tenant_type!='META'
+    ) t2;
+    +-----------+-----------------+-------------+------+
+    | tenant_id | tenant_name     | svr_ip      | cnt  |
+    +-----------+-----------------+-------------+------+
+    |         1 | sys             | xx.xx.xx.xx |    0 |
+    |         1 | sys             | xx.xx.xx.xx |   0  |
+    |         1 | sys             | xx.xx.xx.xx |   0  |
+    |      1002 | midas0_3790     | xx.xx.xx.xx |    0 |
+    |      1002 | midas0_3790     | xx.xx.xx.xx |   0  |
+    |      1002 | midas0_3790     | xx.xx.xx.xx |   0  |
+    +-----------+-----------------+-------------+------+
+    6 rows in set (0.05 sec)
+    ```

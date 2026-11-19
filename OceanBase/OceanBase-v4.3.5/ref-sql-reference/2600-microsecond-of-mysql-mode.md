@@ -1,0 +1,42 @@
+---
+title: MICROSECOND
+book: "SQL 参考"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002018211.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# MICROSECOND
+
+## 声明
+
+```sql
+MICROSECOND(expr)
+```
+
+## 说明
+
+返回时间或日期时间表达式 `expr` 的微秒数。
+
+## 示例
+
+```sql
+obclient> SELECT MICROSECOND('12:00:00.999999');
++--------------------------------+
+| MICROSECOND('12:00:00.999999') |
++--------------------------------+
+|                         999999 |
++--------------------------------+
+1 row in set
+
+obclient> SELECT MICROSECOND('2021-07-15 18:20:17.000010');
++-------------------------------------------+
+| MICROSECOND('2021-07-15 18:20:17.000010') |
++-------------------------------------------+
+|                                        10 |
++-------------------------------------------+
+1 row in set
+```

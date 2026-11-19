@@ -1,0 +1,32 @@
+---
+title: log_storage_warning_tolerance_time
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702135.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# log_storage_warning_tolerance_time
+
+`log_storage_warning_tolerance_time` 用于设置从日志盘 IO 失败到磁盘被标记为坏盘时触发切主的时间。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.1.0 版本开始引入。</p>
+</main>
+
+| **属性** | **描述** |
+| --- | --- |
+| 参数类型 | 时间类型 |
+| 默认值 | 5s |
+| 取值范围 | \[1s,300s] |
+| 是否重启 OBServer 节点生效 | 否 |
+
+**示例**
+
+```sql
+ALTER SYSTEM SET log_storage_warning_tolerance_time = '5s';
+```

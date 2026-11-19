@@ -1,0 +1,27 @@
+---
+title: "DBMS_SYS_ERROR 概述"
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006306464.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DBMS_SYS_ERROR 概述
+
+`DBMS_SYS_ERROR` 系统包提供 `RAISE_SYSTEM_ERROR` 过程，用于在 PL 程序中引发用户定义的系统错误。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## DBMS_SYS_ERROR 子程序概览
+
+下表列出了 OceanBase 数据库当前版本所支持的 `DBMS_SYS_ERROR` 子程序以及简要描述。
+
+|        子程序            |      描述       |
+|--------------------------|---------------|
+| [RAISE_SYSTEM_ERROR](200.raise-system-error-oracle.md) | 引发用户定义的系统错误。 |

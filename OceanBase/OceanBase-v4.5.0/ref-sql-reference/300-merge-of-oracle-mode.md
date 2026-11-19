@@ -1,0 +1,267 @@
+---
+title: MERGE
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480984.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# MERGE
+
+## 描述
+
+该语句用来根据一张源表更新一张目标表的数据，可以对目标表进行插入、更新或者删除。
+
+## 使用限制及注意事项
+
+* 如果指定了目标表的分区，那么更新操作只会影响目标表中具有指定分区的数据。
+
+* 如果指定了目标表和源表的分区，那么匹配操作将根据目标表中指定分区和源表中指定分区的数据进行匹配。
+
+* 如果目标表和源表中没有匹配的数据，那么不会执行更新操作。
+
+## 语法
+
+```sql
+MERGE [hint_options]
+INTO target_table [PARTITION(partition_name_list)] [t_alias]
+USING { source_table | subquery | TABLE(collection_expression) } [PARTITION(partition_name_list)] [s_alias]
+ON (condition)
+[merge_update_clause] [merge_insert_clause]
+| [merge_insert_clause] [merge_update_clause]
+
+partition_name_list:
+    partition_name [, partition_name ...]
+
+merge_update_clause:
+    WHEN MATCHED [AND condition] THEN UPDATE SET update_asgn_list [WHERE condition] [DELETE WHERE condition]
+
+merge_insert_clause:
+    WHEN NOT MATCHED [AND condition] THEN INSERT [(column [, column ...])] VALUES (expr [, expr ...]) [WHERE condition]
+
+hint_options:
+    /*+ hint_text */
+
+t_alias:
+    [AS] alias
+
+s_alias:
+    [AS] alias
+```
+
+## 参数解释
+
+`MERGE` 语句用于根据源表的数据更新或插入目标表。可以指定 `hint_options` 来优化执行计划。
+
+### 使用说明
+
+| 参数 | 描述 |
+|------|------|
+| hint_options | 可选的优化器提示，用于影响执行计划。例如：`/*+ USE_HASH(t1) */` |
+| target_table | 要更新或插入的目标表名 |
+| PARTITION(partition_name_list) | 可选项，指定目标表或源表的分区。多个分区名间使用英文逗号（,）分隔。|
+| t_alias | 目标表的别名 |
+| source_table | 源表名 |
+| subquery | 子查询，作为数据源 |
+| TABLE(collection_expression) | 集合表达式，作为数据源 |
+| s_alias | 源表的别名 |
+| ON (condition) | 连接条件，指定源表和目标表如何匹配 |
+| WHEN MATCHED | 当目标表中的行与源表中的行匹配时要执行的操作。可以配合 `AND condition` 使用附加条件 |
+| WHEN NOT MATCHED | 当目标表中没有与源表匹配的行时要执行的操作。可以配合 `AND condition` 使用附加条件 |
+| AND condition | 可选的附加条件，用于 `WHEN MATCHED` 或 `WHEN NOT MATCHED` 子句 |
+| UPDATE SET | 在 `WHEN MATCHED` 子句中指定要更新的列和值 |
+| DELETE WHERE | 在 `WHEN MATCHED` 子句中指定在更新后要删除的行 |
+| INSERT | 在 `WHEN NOT MATCHED` 子句中指定要插入的列和值。可以省略列列表，此时必须为表中的每一列提供一个值 |
+| VALUES | 指定要插入的值 |
+
+## 示例
+
+示例中的表和数据基于以下定义：
+
+1. 创建测试表：
+
+   ```sql
+   CREATE TABLE tbl1 (col1 INT, col2 INT);
+   CREATE TABLE tbl2 (col1 INT, col2 INT);
+   ```
+
+2. 插入测试数据：
+
+   ```sql
+   INSERT INTO tbl1 VALUES(0, 0),(1, null),(2, null);
+   ```
+
+   ```sql
+   INSERT INTO tbl2 VALUES(1, 1),(2, 20),(3, 3),(4, 40);
+   ```
+
+3. 查询表数据：
+
+   **查询 tbl1 表数据：**
+
+   ```sql
+   SELECT * FROM tbl1;
+   ```
+
+   执行结果：
+
+   ```sql
+   +------+------+
+   | COL1 | COL2 |
+   +------+------+
+   |    0 |    0 |
+   |    1 | NULL |
+   |    2 | NULL |
+   +------+------+
+   3 rows in set
+   ```
+
+   **查询 tbl2 表数据：**
+
+   ```sql
+   SELECT * FROM tbl2;
+   ```
+
+   执行结果：
+
+   ```sql
+   +------+------+
+   | COL1 | COL2 |
+   +------+------+
+   |    1 |    1 |
+   |    2 |   20 |
+   |    3 |    3 |
+   |    4 |   40 |
+   +------+------+
+   4 rows in set
+   ```
+
+根据 `tbl2` 的数据更新 `tbl1` 的数据：
+
+* 如果 `tbl1.col1` 在 `tbl2` 中能够找到 `tbl1.col1` 取值相同的行，如果 `tbl1.col2` 取值为空，那么使用 `tbl2.col2` 更新 `tbl1.col2`；如果更新之后 `tbl1.col2 >= 10`，那么删除该行。
+
+* 如果 `tbl2.col1` 在 `tbl1` 中找不到取值相同的行，将 `tbl2` 中的这行插入到 `tbl1` 中，且只插入满足 `tbl2.col2 < 10` 的行。
+
+```sql
+obclient>MERGE INTO tbl1 USING tbl2 ON (tbl1.col1 = tbl2.col1)
+       WHEN MATCHED THEN UPDATE SET tbl1.col2 = tbl2.col2 WHERE tbl1.col2 IS NULL DELETE
+       WHERE tbl1.col2 >= 10
+       WHEN NOT MATCHED THEN INSERT VALUES(tbl2.col1, tbl2.col2)
+       WHERE tbl2.col2 < 10;
+Query OK, 3 rows affected
+
+obclient> SELECT * FROM tbl1;
++------+------+
+| COL1 | COL2 |
++------+------+
+|    0 |    0 |
+|    1 |    1 |
+|    3 |    3 |
++------+------+
+3 rows in set
+```
+
+* 指定分区更新数据。
+
+  1. 创建测试分区表 `test_tbl3` 和 `test_tbl4`。
+
+     ```sql
+     CREATE TABLE test_tbl3 (col1 INT, col2 INT, PRIMARY KEY(col1))
+         PARTITION BY RANGE(col1)
+         (PARTITION p0 VALUES LESS THAN(10),
+          PARTITION p1 VALUES LESS THAN(20),
+          PARTITION p2 VALUES LESS THAN(30),
+          PARTITION p3 VALUES LESS THAN(40)
+         );
+     ```
+
+     ```sql
+     CREATE TABLE test_tbl4 (col1 INT, col2 INT, PRIMARY KEY(col1))
+         PARTITION BY RANGE(col1)
+         (PARTITION p0 VALUES LESS THAN(5),
+          PARTITION p1 VALUES LESS THAN(15),
+          PARTITION p2 VALUES LESS THAN(25),
+          PARTITION p3 VALUES LESS THAN(35)
+         );
+     ```
+
+  2. 插入测试数据。
+
+     ```sql
+     INSERT INTO test_tbl3 VALUES(1, 1),(5, 5),(11, 11),(13, 13),(20, 20);
+     ```
+
+     ```sql
+     INSERT INTO test_tbl4 VALUES(1, 11),(5, 55),(11, 1111),(13, 1313),(20, 2020);
+     ```
+
+  3. 查看 `test_tbl3` 中分区 `p0` 的数据。
+
+     ```sql
+     SELECT * FROM test_tbl3 PARTITION(p0);
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +------+------+
+     | COL1 | COL2 |
+     +------+------+
+     |    1 |    1 |
+     |    5 |    5 |
+     +------+------+
+     2 rows in set
+     ```
+
+  4. 查看 `test_tbl4` 中分区 `p0` 和 `p1` 的数据。
+
+     ```sql
+     SELECT * FROM test_tbl4 PARTITION(p0, p1);
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +------+------+
+     | COL1 | COL2 |
+     +------+------+
+     |    1 |   11 |
+     |    5 |   55 |
+     |   11 | 1111 |
+     |   13 | 1313 |
+     +------+------+
+     4 rows in set
+     ```
+
+  5. 将 `test_tbl4` 中分区 `p0` 和 `p1` 的数据与 `test_tbl3` 中分区 `p0` 的数据进行匹配，如果两个表中的数据在 `col1` 列上相等，则将 `test_tbl3` 中的 `col2` 列的值更新为 10000。
+
+     ```sql
+     MERGE INTO test_tbl3 PARTITION(p0) t3
+         USING test_tbl4 PARTITION(p0, p1) t4
+             ON (t3.col1 = t4.col1)
+         WHEN MATCHED THEN UPDATE SET t3.col2 = 10000;
+     ```
+
+  6. 查看 `test_tbl3` 中的数据。
+
+     ```sql
+     SELECT * FROM test_tbl3;
+     ```
+
+     返回结果如下：
+
+     ```shell
+     +------+-------+
+     | COL1 | COL2  |
+     +------+-------+
+     |    1 | 10000 |
+     |    5 | 10000 |
+     |   11 |    11 |
+     |   13 |    13 |
+     |   20 |    20 |
+     +------+-------+
+     5 rows in set
+     ```

@@ -1,0 +1,115 @@
+---
+title: oceanbase.CDB_TABLES
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700878.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# oceanbase.CDB_TABLES
+
+oceanbase.CDB_TABLES
+=========================================
+
+#docslug#/oceanbase-database/oceanbase-database/V4.0.0/oceanbase-cdb_tables
+
+功能
+-------------------
+
+展示所有租户的 TABLE 信息。
+
+字段说明
+----------------------
+
+|           字段名称            |      类型       | 是否可以为 NULL |                                                               描述                                                                |
+|---------------------------|---------------|------------|---------------------------------------------------------------------------------------------------------------------------------|
+| CON_ID                    | bigint(20)    | NO         | 租户 ID                                                                                                                           |
+| OWNER                     | varchar(128)  | NO         | 表的拥有者                                                                                                                           |
+| TABLE_NAME                | varchar(128)  | NO         | 表名                                                                                                                              |
+| TABLESPACE_NAME           | varchar(30)   | NO         | 包含该表的表空间名字                                                                                                                      |
+| CLUSTER_NAME              | varchar(128)  | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| IOT_NAME                  | varchar(128)  | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| STATUS                    | varchar(8)    | NO         | 表状态： <li> VALID   <li> UNUSABLE    |
+| PCT_FREE                  | bigint(20)    | NO         | 块的最小空闲空间比例                                                                                                                      |
+| PCT_USED                  | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| INI_TRANS                 | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| MAX_TRANS                 | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| INITIAL_EXTENT            | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| NEXT_EXTENT               | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| MIN_EXTENTS               | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| MAX_EXTENTS               | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| PCT_INCREASE              | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| FREELISTS                 | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| FREELIST_GROUPS           | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| LOGGING                   | varchar(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| BACKED_UP                 | varchar(1)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| NUM_ROWS                  | bigint(21)    | NO         | 表行数                                                                                                                             |
+| BLOCKS                    | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| EMPTY_BLOCKS              | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| AVG_SPACE                 | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| CHAIN_CNT                 | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| AVG_ROW_LEN               | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| AVG_SPACE_FREELIST_BLOCKS | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| NUM_FREELIST_BLOCKS       | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| DEGREE                    | varchar(10)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| INSTANCES                 | varchar(10)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| CACHE                     | varchar(5)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| TABLE_LOCK                | varchar(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| SAMPLE_SIZE               | bigint(0)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| LAST_ANALYZED             | date          | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| PARTITIONED               | varchar(3)    | NO         | 指定表是否是分区： <li> YES   <li> NO       |
+| IOT_TYPE                  | varchar(12)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| TEMPORARY                 | varchar(1)    | NO         | 指定表是否是临时表                                                                                                                       |
+| SECONDARY                 | varchar(1)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| NESTED                    | varchar(3)    | NO         | 指定表是否是嵌套表： <li> YES   <li> NO      |
+| BUFFER_POOL               | varchar(7)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| FLASH_CACHE               | varchar(7)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| CELL_FLASH_CACHE          | varchar(7)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| ROW_MOVEMENT              | varchar(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| GLOBAL_STATS              | varchar(3)    | NO         | 目前暂不支持该字段，当前该字段默认为  NULL                                                                                                        |
+| USER_STATS                | varchar(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| DURATION                  | varchar(15)   | NO         | 指示临时表的持续时间                                                                                                                      |
+| SKIP_CORRUPT              | varchar(8)    | NO         | 目前暂不支持该字段，当前该字段默认为  NULL                                                                                                        |
+| MONITORING                | varchar(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| CLUSTER_OWNER             | varchar(128)  | NO         | 目前暂不支持该字段，当前该字段默认为  NULL                                                                                                        |
+| DEPENDENCIES              | varchar(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| COMPRESSION               | varchar(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| COMPRESS_FOR              | varchar(30)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| DROPPED                   | varchar(3)    | NO         | 表示被删除表是否在回收站里                                                                                                                   |
+| READ_ONLY                 | varchar(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| SEGMENT_CREATED           | varchar(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| RESULT_CACHE              | varchar(7)    | NO         | 目前暂不支持该字段，当前该字段默认为  NULL                                                                                                        |
+| CLUSTERING                | varchar(3)    | NO         | 表是否有属性聚类子句：<li>YES<li>NO                            |
+| ACTIVITY_TRACKING         | varchar(23)   | NO         | 指示是否在表上启用热图跟踪   |
+| DML_TIMESTAMP             | varchar(25)   | NO         | 自动数据优化的修改时间、创建时间                                                                                                                               |
+| HAS_IDENTITY              | varchar(3)    | NO         | 指示表是否有标识列：<li>YES<li>NO  |
+| CONTAINER_DATA            | varchar(3)    | NO         | 指示表是否包含特定于容器的数据。取值：<li>YES<li>NO  |
+| INMEMORY                  | varchar(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INMEMORY_PRIORITY         | varchar(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INMEMORY_DISTRIBUTE       | varchar(15)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INMEMORY_COMPRESSION      | varchar(17)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL|
+| INMEMORY_DUPLICATE        | varchar(13)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| DEFAULT_COLLATION         | varchar(100)  | NO         | 表的默认排序规则                                                                                                                                |
+| DUPLICATED                | varchar(1)    | NO         | 指示表是否在此分片上重复：<li>YES<li>NO |
+| SHARDED                   | varchar(1)    | NO         | 指示表是否分片：<li>YES<li>NO   |
+| EXTERNALLY_SHARDED        | varchar(1)    | NO         | 指示表是否是否外部分片：<li>YES<li>NO   |
+| EXTERNALLY_DUPLICATED     | varchar(1)    | NO         | 指示表是否在外部重复：<li>YES<li>NO    |
+| EXTERNAL                  | varchar(3)    | NO         | 指示表是否为外部表：<li>YES<li>NO   |
+| HYBRID                    | varchar(3)    | NO         | 指示表是否为混合分区表：<li>YES<li>NO<br>混合分区表可以包含存储在段中的分区和存储在外部的分区的混合   |
+| CELLMEMORY                | varchar(24)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL|
+| CONTAINERS_DEFAULT        | varchar(3)    | NO         | 指示默认情况下是否启用表 CONTAINERS()：<li>YES<li>NO  |
+| CONTAINER_MAP             | varchar(3)    | NO         | 指示是否启用表以与数据库 container_map 属性一起使用：<li>YES<li>NO  |
+| EXTENDED_DATA_LINK        | varchar(3)    | NO         | 指示是否启用表以从根获取扩展数据链接：<li>YES<li>NO  |
+| EXTENDED_DATA_LINK_MAP    | varchar(3)    | NO         | 仅限内部使用   |
+| INMEMORY_SERVICE      | varchar(12)     | NO         | 目前暂不支持该字段，当前该字段默认为 NULL |
+| INMEMORY_SERVICE_NAME | varchar(1000)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL  |
+| CONTAINER_MAP_OBJECT      | varchar(3)    | NO         | 指示是否将表用作数据库 container_map 属性的值：<li>YES<li>NO |
+| MEMOPTIMIZE_READ          | varchar(8)    | NO         | 指示表是否启用了基于快速键的访问：<li>ENABLED<li>DISABLED   |
+| MEMOPTIMIZE_WRITE         | varchar(8)    | NO         | 仅限内部使用   |
+| HAS_SENSITIVE_COLUMN      | varchar(3)    | NO         | 指示表是否有一个或多个敏感列：<li>YES<li>NO  |
+| ADMIT_NULL                | varchar(3)    | NO         | 指示表是否接受空 CON_ID 数据：<li>YES<li>NO  |
+| DATA_LINK_DML_ENABLED     | varchar(3)    | NO         | 指示数据链接表上是否允许 DML：<li>YES<li>NO |
+| LOGICAL_REPLICATION       | varchar(8)    | NO         | 指示表是否启用逻辑复制：<li>ENABLED<li>DISABLED<br>如果启用了数据库范围的列数据补充日志记录，则忽略此设置    |

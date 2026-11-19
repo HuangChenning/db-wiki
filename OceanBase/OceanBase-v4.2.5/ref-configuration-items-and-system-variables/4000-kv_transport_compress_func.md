@@ -1,0 +1,53 @@
+---
+title: kv_transport_compress_func
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502022.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# kv_transport_compress_func
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该配置项从 V4.2.1 BP2 版本开始引入，原配置项名为 <code>tableapi_transport_compress_func</code>。</p>
+</main>
+
+## 功能描述
+
+`kv_transport_compress_func` 用于设置 OBKV-Table 查询结果传输使用的压缩算法。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|   **属性**   |   **描述**    |
+|------------------|--------------|
+| 参数类型             | CAPACITY   |
+| 默认值              | none |
+| 取值范围             | <ul><li>none   </li><li> lz4_1.0   </li><li> snappy_1.0   </li><li> zlib_1.0   </li><li> zstd_1.0   </li><li> zstd 1.3.8</li></ul>  <main id="notice" type='explain'><h4>说明</h4><p>该配置项从 V4.2.1 版本开始，值 zlib_1.0 仅支持查看。</p></main>  |
+| 是否可修改          | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。  |
+
+## 使用说明
+
+该配置项需要和配置项 `kv_transport_compress_threshold` 配合使用，有关配置项 `kv_transport_compress_threshold` 的详细信息请参见 [kv_transport_compress_threshold](4100.kv_transport_compress_threshold.md)。
+
+## 配置示例
+
+设置 OBKV-Table 查询结果传输使用的压缩算法为 lz4_1.0。
+
+```shell
+obclient> ALTER SYSTEM SET kv_transport_compress_func = 'lz4_1.0';
+```

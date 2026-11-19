@@ -1,0 +1,44 @@
+---
+title: ALTER_STATS_HISTORY_RETENTION
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503652.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER_STATS_HISTORY_RETENTION
+
+`ALTER_STATS_HISTORY_RETENTION` 过程用于修改历史统计信息的的保留间隔时间，默认保留间隔时间为 31 天。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 语法 
+
+```sql
+DBMS_STATS.ALTER_STATS_HISTORY_RETENTION (
+    retention       IN     NUMBER);
+```
+
+
+## 参数说明 
+
+`retention` 参数指定统计历史记录的保留时间（以天为单位）。
+
+## 异常情况 
+
+错误码 `ORA-20000` 表示权限不足。
+
+## 示例 
+
+修改历史统计信息的保留间隔时间为 15 天。
+
+```sql
+obclient> CALL DBMS_STATS.ALTER_STATS_HISTORY_RETENTION(15);
+Query OK, 0 rows affected
+```

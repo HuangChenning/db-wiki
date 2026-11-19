@@ -1,0 +1,47 @@
+---
+title: oceanbase.DBA_OB_TRANSFER_PARTITION_TASK_HISTORY
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501300.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_TRANSFER_PARTITION_TASK_HISTORY
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.2.1 BP2 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `DBA_OB_TRANSFER_PARTITION_TASK_HISTORY` 展示了本租户已执行的 Transfer Partition 任务历史。由于不支持对系统租户下的用户表执行 Transfer Partition 操作，该视图的查询结果为空。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| TASK_ID          | bigint(20)   | NO   |  Transfer Partition 任务的唯一标识   |
+| CREATE_TIME      | timestamp(6) | NO   |  创建时间   |
+| FINISH_TIME      | timestamp(6) | NO   |  任务完成时间，包括成功、取消   |
+| TABLE_ID         | bigint(20)   | NO   |  Transfer 的分区所在的表 ID   |
+| OBJECT_ID        | bigint(20)   | NO   |  Transfer 的分区的 `OBJECT_ID`   |
+| DEST_LS          | bigint(20)   | NO   |  目的端日志流   |
+| BALANCE_JOB_ID   | bigint(20)   | NO   |  任务执行时关联的负载均衡工作 ID   |
+| TRANSFER_TASK_ID | bigint(20)   | NO   |  任务执行时关联的 Transfer 任务 ID   |
+| STATUS           | varchar(64)  | NO   |  任务状态：<ul><li>COMPLETED：任务执行成功</li><li>FAILED：任务失败</li></ul>   |
+| COMMENT          | longtext     | YES  |  注释信息   |
+
+## 相关视图或文档
+
+* 查看所有租户正在处理的 Transfer Partition 任务：[CDB_OB_TRANSFER_PARTITION_TASKS](11300.o-cdb_ob_transfer_partition_tasks-of-sys-tenant.md)
+
+* 查看所有租户已执行的 Transfer Partition 任务历史：[CDB_OB_TRANSFER_PARTITION_TASK_HISTORY](11400.o-cdb_ob_transfer_partition_tasks_history-of-sys-tenant.md)
+
+* 有关 Transfer Partition 相关操作，参见以下文档：
+
+  * [Transfer Partition](../../../../600.manage/300.replica-management/500.load-balancing-manage/200.transfer-partition-management.md)
+  * [取消 Transfer Partition](../../../../600.manage/300.replica-management/500.load-balancing-manage/300.cancel-transfer-partition-task.md)

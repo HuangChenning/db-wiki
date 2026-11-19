@@ -1,0 +1,265 @@
+---
+title: "多模数据类型"
+book: "系统原理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503520.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-oceanbase-database-concepts
+---
+
+# 多模数据类型
+
+在 OceanBase  数据库中，将 JSON/GIS/XML 等半结构化类型归为多模数据类型。
+
+## 多模数据的特点
+
+* 多模数据类型组成标准化，比如 RFC8259 是 JSON 的数据交换规范，OGC(Open Geospatial Consortium) 提供了一套文本标记语言 (WKT-CRS) 来描述坐标系统以及其坐标系统间的转换, W3C 也定义了 XML 的标准。
+* 多模数据可通过 SQL 直接访问：多模数据都是半结构化数据，多模数据内部的基础类型都可以和 SQL 类型做映射。多模数据在结构上都是通过逻辑树级联的方式，将一系列基础 SQL 类型组织成复杂的复合数据类型。
+* 多模数据的计算函数比较固定：多模类型都有标准化格式，在标准化格式中不仅规定了数据的交换格式，也对多模数据的计算 API 做了建议。
+
+## 多模数据的查询计算
+
+多模类型结构灵活，数据库基于多模类型的标准，提供了丰富的函数来支持多模数据的构造、查询和计算。
+
+* 数据构造：比如 JSON/XML 提供了聚合函数，从关系表中抽取基础数据，配合一定的聚合规则，来构造 JSON/XML 对象。
+* 数据查询：比如 JSON/XML 可以基于 Path 来访问多模数据对象的子集或某个具体的基础 SQL 元素。
+* 数据计算：比如利用 GIS 的函数来计算空间对象之间的关系。
+
+## 多模数据的存储
+
+多模数据类型是复合类型，数据一般是变长的，而且可以构造出非常大的多模数据。为了存储方便，多模数据一般会继承大对象数据的存储能力。理论上大对象数据的存储上限是多模数据的上限，但是实际上一个超大的多模数据的计算或存储都是非常低效的，所以不建议构造超大多模数据。
+
+* Text/Varchar2 类型：可以基于标准定义的文本格式，直接基于 Text/Varchar2 存储在数据库。这种方式的缺点是每次对多模数据的查询都需要做解析，所以不建议采用这种方式存储多模数据。
+* 原生多模类型：存储的数据格式都是数据库解析优化的，一旦多模数据存入数据库，下次查询不会重新解析，而且在存储空间上也有一定优化，所以建议使用原生多模类型存储。
+
+## 多模数据的数据交换
+
+多模数据都是基于标准定义的格式和其它系统进行数据交换。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <ul>
+  <li>MySQL 模式下多模数据类型在当前版本只支持 GIS 和 JSON。</li>
+  <li>MySQL 模式下，基于 JSON 的虚拟生成函数，可以在任意 JSON 内的子元素上建立二级索引。</li>
+  </ul>
+</main>
+
+## JSON/XML/GIS 数据类型
+
+### JSON 数据类型
+
+JSON 数据类型是一种在数据库中存储和处理 JSON（JavaScript Object Notation）数据的特殊数据类型。JSON 值必须是由对象（JSON 对象）、数组、字符串、数字、布尔值（`false`/`true`）或 `null` 组成。其中 `false`、`true` 和 `null` 只允许小写形式。
+
+#### JSON 文本结构
+
+JSON 文本结构包括字符、字符串、数字和三个字面量名称。在任何一个结构字符的之前或之后都允许使用各种间隔符，包括空格、水平制表符、换行和回车等。
+
+```sql
+       开始数组 =  [ 左方括号
+
+       开始对象 =  { 左大括号
+
+       结束数组 =  ] 右方括号
+
+       最终对象 =  } 右大括号
+
+       名称分隔符 = ： 冒号
+
+       值分隔符 = , 逗号
+```
+
+#### 对象
+
+对象的结构表示为一对大括号包含 0 个或多个名称/值对（或成员）。对象内的名称应该是唯一的。一个名称是一个字符串，每个名称后面都有一个冒号，用于分隔名称和值。单个逗号用于多个名称/值的分割。
+
+示例如下：
+
+```sql
+{ "NAME": "SAM",  "Height": 175, "Weight":  100，"Registered" : false}
+```
+
+#### 数组
+
+数组的结构表示为一个方括号包含 0 个或多个值（也称为元素）。数组元素用逗号分隔，不要求数组中的值相同。
+
+示例如下：
+
+```sql
+["abc", 10, null, true, false]
+```
+
+#### 数字
+
+数字使用十进制格式，包含一个整数分量，也可能是以一个减号（`-`）为前缀（可选），后面可以跟一个分数部分和/或指数部分。不允许前导为零。小数部分是一个小数点后跟一位或多位数字。指数部分以大写或小写字母 `E` 开头，后面可以跟一个加号（`+`）或减号（`-`）。`E` 和可选符号后可以跟随一位或多位数字。
+
+示例如下：
+
+```sql
+[100, 0, -100, 100.11, -12.11, 10.22e2, -10.22e2]
+```
+
+#### 字符串
+
+一个字符串开始和结束都使用引号（`"`）。所有 Unicode 字符都可以放在引号内，除了必须转义的字符（包括引号、反斜线和控制字符）。
+
+JSON 文本应以 UTF-8、UTF-16 或 UTF-32 编码。 默认的编码为 UTF-8。
+
+示例如下：
+
+```sql
+{"Url":    "http://www.example.com/image/481989943"}
+```
+
+#### 创建 JSON 值
+
+OceanBase 数据库支持对 JSON 类型执行以下 DDL 操作：
+
+* 创建带有 JSON 列的表。
+
+* 增加/删除 JSON 列。
+
+* 基于生成列为 JSON 类型的列创建索引。
+
+#### 使用限制
+
+用户可以在每个表上创建多个 JSON 类型的列，但是具有以下的限制：
+
+* JSON 类型的列不能作为 `PRIMARY KEY`、`FOREIGN KEY` 和 `UNIQUE KEY`，但是可以添加 `NOT NULL` 或 `CHECK` 约束。
+
+* JSON 类型的列上不可以包含默认值。
+
+* JSON 类型的列不能作为分区键。
+
+* JSON 数据长度不能超过 `LONGTEXT` 的长度，每个 JSON 对象或数组的最大深度为 99。
+
+#### 示例
+
+**示例 1：基础 DDL 操作**
+
+```sql
+obclient> CREATE TABLE tbl1 (id INT PRIMARY KEY, docs JSON NOT NULL, docs1 JSON);
+Query OK, 0 rows affected
+
+obclient> ALTER TABLE tbl1 MODIFY docs JSON CHECK(docs <'{"a" : 100}');
+Query OK, 0 rows affected
+
+obclient> CREATE TABLE json_tab(
+      id         INT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+      json_info  JSON COMMENT 'JSON 数据',
+      json_id    INT GENERATED ALWAYS AS (json_info -> '$.id') COMMENT 'JSON 数据的虚拟字段',
+      json_name  VARCHAR(5) GENERATED ALWAYS AS (json_info -> '$.NAME'),
+      index      json_info_id_idx (json_id)
+    )COMMENT 'json 示例表';
+Query OK, 0 rows affected
+
+obclient> ALTER TABLE json_tab ADD COLUMN json_info1 JSON;
+Query OK, 0 rows affected
+
+obclient> ALTER TABLE json_tab ADD INDEX (json_name);
+Query OK, 0 rows affected
+
+obclient> ALTER TABLE json_tab drop COLUMN json_info1;
+Query OK, 0 rows affected
+```
+
+**示例 2： 使用生成列为指定 key 创建索引**
+
+```sql
+obclient> CREATE TABLE jn ( c JSON, g INT GENERATED ALWAYS AS (c->"$.id"));
+Query OK, 0 rows affected
+
+obclient> CREATE INDEX idx1 ON jn(g);
+Query OK, 0 rows affected
+Records: 0  Duplicates: 0  Warnings: 0
+
+obclient> INSERT INTO jn (c) VALUES
+      ('{"id": "1", "name": "Fred"}'), ('{"id": "2", "name": "Wilma"}'),
+      ('{"id": "3", "name": "Barney"}'), ('{"id": "4", "name": "Betty"}');
+Query OK, 4 rows affected
+Records: 4  Duplicates: 0  Warnings: 0
+
+obclient> SELECT c->>"$.name" AS name FROM jn WHERE g <= 2;
++-------+
+| name  |
++-------+
+| Fred  |
+| Wilma |
++-------+
+2 rows in set
+
+obclient> EXPLAIN SELECT c->>"$.name" AS name FROM jn WHERE g <= 2\G
+*************************** 1. row ***************************
+Query Plan: =========================================
+|ID|OPERATOR  |NAME      |EST. ROWS|COST|
+-----------------------------------------
+|0 |TABLE SCAN|jemp(idx1)|2        |92  |
+=========================================
+
+Outputs & filters:
+-------------------------------------
+  0 - output([JSON_UNQUOTE(JSON_EXTRACT(jemp.c, '$.name'))]), filter(nil),
+      access([jemp.c]), partitions(p0)
+
+1 row in set
+```
+
+### 空间数据类型
+
+OceanBase 数据库的地理信息系统（Geographic Information System，GIS）支持空间数据类型的构造、存储和分析。
+
+OceanBase 数据库支持的空间数据类型如下：
+
+* `GEOMETRY`
+* `POINT`
+* `LINESTRING`
+* `POLYGON`
+* `MULTIPOINT`
+* `MULTILINESTRING`
+* `MULTIPOLYGON`
+* `GEOMETRYCOLLECTION`
+
+#### 单值类型
+
+用于保存单个空间数据：
+
+* `GEOMETRY` 能够保存任何类型的几何值。
+
+* `POINT`、`LINESTRING` 和 `POLYGON` 是最基础的三种类型，只能保存特定几何类型的值。
+
+  * `POINT`：表示点，有一个坐标值。例如：`POINT(50 60)`，经度在前，维度在后，用空格分隔。
+  * `LINESTRING`：表示线，由一系列的点连接而成。例如：`LINESTRING(30 20,10 30,50 50)`，点与点之间用逗号分隔，一个点中的经纬度用空格分隔，与 `POINT` 格式一致。
+  * `POLYGON`：表示多边形，可以是一个实心平面形，即没有内部边界，也可以有空洞。例如：只有一个外边界的情况，`POLYGON((0 0,10 0,10 10,0 10))`。
+
+`GEOMETRY` 是所有空间集合类型的基类，其他类型如 `POINT`、`LINESTRING`、`POLYGON` 都是 `GEOMETRY` 的子类。
+
+#### 集合类型
+
+用于保存多个值：
+
+* `MULTIPOINT`、`MULTILINESTRING` 和 `MULTIPOLYGON` 是三种集合类型，用于保存空间数据集合，但只能表示各自指定基础类型的集合。
+
+  * `MULTIPOINT`：表示点的集合。例如：`MULTIPOINT(10 0),(5 10),(25 5),(20 5)` 或 `MULTIPOINT(10 0,5 10,25 5,20 5)`。
+  * `MULTILINESTRING`：表示线的集合。例如：`MULTILINESTRING((0 0,15 5,10 10),(30 20,10 30,40 40))`。
+  * `MULTIPOLYGON`：表示图形的集合。例如：`MULTIPOLYGON(((30 20, 45 40, 10 40,30 20)),((15 5,40 10,10 20,5 10,15 5)))` 和 `MULTIPOLYGON(((40 40,20 45,45 30,40 40)),((20 35,10 30,10 10,30 5,45 20,20 35),(30 20,20 15,20 25,30 20)))`。
+
+* `GEOMETRYCOLLECTION` 能保存任意类型的对象集合。例如：`GEOMETRYCOLLECTION(POINT(40 10),LINESTRING(10 10,20 20,10 40),POLYGON((40 40,20 45,45 30,40 40)))`。
+
+`MULTIPOINT`、`MULTILINESTRING`、`MULTIPOLYGON` 和 `GEOMETRYCOLLECTION` 这四种类型都是集合类，是多个 `POINT`、`LINESTRING` 或 `POLYGON` 组合而成。
+
+#### SRID 属性
+
+用来定义空间类型列上空间参考系统（SRS）的值，定义了 `SRID` 属性的列包含以下两种特性：
+
+* 写入该列的空间对象的 `SRID` 必须和列定义的 `SRID` 属性一致，否则写入操作失败。
+* 在该列定义的空间索引可以在空间查询的时候生效。
+
+#### 示例
+
+空间类型字段支持定义 `nullable` 属性以及空间坐标系 `SRID` 属性，示例如下：
+
+```shell
+obclient [test]> CREATE TABLE tbl1_g(g GEOMETRY NOT NULL SRID 0);
+Query OK, 0 rows affected
+```

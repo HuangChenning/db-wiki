@@ -1,0 +1,23 @@
+---
+title: ob_enable_index_direct_select
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002186380.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ob_enable_index_direct_select
+
+ob_enable_index_direct_select 用于设置是否允许用户直接查询索引表。
+
+|  **属性**  |                                                   **描述**                                                   |
+|----------|------------------------------------------------------------------------------------------------------------|
+| 参数类型     | bool                    |
+| 默认值      | 0                       |
+| 取值范围     | <li> 0：不允许   <li> 1：允许        |
+| 生效范围     | <li> GLOBAL   <li> SESSION    |
+| 是否参与序列化  | 是                       |
+| 是否影响计划生成 | 是                       |

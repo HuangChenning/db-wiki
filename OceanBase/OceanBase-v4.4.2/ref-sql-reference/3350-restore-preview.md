@@ -1,0 +1,80 @@
+---
+title: RESTORE PREVIEW
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286598.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# RESTORE PREVIEW
+
+## 描述
+
+该语句用于指定原始租户级归档和备份路径与期望恢复时间，从而预览恢复到期望时间所需要的数据备份集（`backup_set`）和日志归档（`archivelog_piece`）。
+
+## 权限要求
+
+执行该语句需要当前用户拥有 `ALTER SYSTEM` 权限。
+
+## 语法
+
+```sql
+ALTER SYSTEM RESTORE FROM 'uri' UNTIL { TIME='timestamp' | SCN=scn } PREVIEW;
+```
+
+## 参数解释
+
+|              **参数**       |                     **描述**                       |
+|-----------------------------|----------------------------------------------------|
+| uri                         | 指定原始数据备份路径 `backup_data_dest` 与日志归档路径 `log_archive_dest`。该值至少包含一条数据备份路径和一条日志归档路径，路径之间使用英文逗号（,）分隔。如果在备份过程中执行了归档日志备份（即配置了 `BACKUP_ARCHIVE_DEST`），则还需要在 `uri` 中补充归档备份目的端路径 `backup_archive_dest`，格式为 `backup_data_dest,log_archive_dest,backup_archive_dest`，多条路径必须按照该顺序排列。只要配置了 `BACKUP_ARCHIVE_DEST`，即可始终在 `uri` 中携带归档备份路径，系统会按需读取对应的 Piece。<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，从 V4.4.2 BP3 版本开始，支持在 <code>uri</code> 中指定归档备份目的端路径 <code>backup_archive_dest</code>。</p></main>|
+| TIME='timestamp' \| SCN=scn | 指定期望恢复的时间戳或 SCN。执行该语句时，必须显式指定时间。|
+
+## 示例
+
+* OSS
+
+  * 指定原始数据备份路径和日志归档路径，并且期望恢复到恢复到指定 scn `1712650554000909004`。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM RESTORE FROM 'oss://test_bucket/data?host=***&access_id=****&access_key=****, oss://test_bucket/archive?host=***&access_id=****&access_key=****' UNTIL SCN = 1712650554000909004 PREVIEW;
+    ```
+
+  * 指定原始数据备份路径和日志归档路径，并且期望恢复到指定时间戳 `2024-04-09 16:15:54`。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM RESTORE FROM 'oss://test_bucket/data?host=***&access_id=****&access_key=****, oss://test_bucket/archive?host=***&access_id=****&access_key=****' UNTIL TIME = '2024-04-09 16:15:54' PREVIEW;
+    ```
+
+  * 指定原始数据备份路径、日志归档路径和归档备份目的端路径，并且期望恢复到指定时间戳 `2024-04-09 16:15:54`。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM RESTORE FROM 'oss://test_bucket/data?host=***&access_id=****&access_key=****, oss://test_bucket/archive?host=***&access_id=****&access_key=****, oss://test_bucket/backup_archive?host=***&access_id=****&access_key=****' UNTIL TIME = '2024-04-09 16:15:54' PREVIEW;
+    ```
+
+* NFS
+
+  * 指定原始数据备份路径和日志归档路径，并且期望恢复到恢复到指定 scn `1712650554000909004`。
+
+    ```shell
+    ALTER SYSTEM RESTORE FROM 'file:///ob_backup/data, file:///ob_backup/archive' UNTIL SCN = 1712650554000909004 PREVIEW;
+    ```
+
+  * 指定原始数据备份路径和日志归档路径，并且期望恢复到指定时间戳 `2024-04-09 16:15:54`。
+
+    ```shell
+    ALTER SYSTEM RESTORE FROM 'file:///ob_backup/data, file:///ob_backup/archive' UNTIL TIME = '2024-04-09 16:15:54' PREVIEW;
+    ```
+
+  * 指定原始数据备份路径、日志归档路径和归档备份目的端路径，并且期望恢复到指定时间戳 `2024-04-09 16:15:54`。
+
+    ```shell
+    ALTER SYSTEM RESTORE FROM 'file:///ob_backup/data, file:///ob_backup/archive, file:///ob_backup/backup_archive' UNTIL TIME = '2024-04-09 16:15:54' PREVIEW;
+    ```
+
+## 相关文档
+
+* [SHOW RESTORE PREVIEW](../1400.show-restore-preview.md)
+* [执行指定路径的恢复](../../../../../600.manage/600.backup-and-recovery/600.restore-data/260.initiate-the-specified-path-restore.md)

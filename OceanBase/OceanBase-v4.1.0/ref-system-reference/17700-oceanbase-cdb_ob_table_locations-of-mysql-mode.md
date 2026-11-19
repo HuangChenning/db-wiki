@@ -1,0 +1,62 @@
+---
+title: oceanbase.CDB_OB_TABLE_LOCATIONS
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702069.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# oceanbase.CDB_OB_TABLE_LOCATIONS
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `CDB_OB_TABLE_LOCATIONS` 用于展示表或者分区所在的位置，包括：系统表、用户表、索引表等。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| TENANT_ID | bigint(20) | NO | 租户 ID |
+| DATABASE_NAME | varchar(128) | NO | Database 名 |
+| TABLE_NAME | varchar(256) | NO | 表名 |
+| TABLE_ID | bigint(20) | NO | 表 ID |
+| TABLE_TYPE | varchar(13) | NO | 表类型：<li>USER TABLE：用户表<li>SYSTEM TABLE：系统表，系统自建的表 INDEX 索引表<li>LOB AUX TABLE：LOB 辅助表，系统自建的表，用于辅助实现 LOB 列 |
+| PARTITION_NAME | varchar(64) | NO | 一级分区名，非分区表默认为 NULL |
+| SUBPARTITION_NAME | varchar(64) | NO | 二级分区名，不存在二级分区则为 NULL |
+| INDEX_NAME | varchar(256) | NO | 如果是索引表，展示索引表名，否则展示为 NULL |
+| DATA_TABLE_ID | bigint(20) | NO | 如果是索引表或者 LOB 辅助表，展示其所属的主表的 ID，否则展示为 NULL |
+| TABLET_ID | bigint(20) | NO | TABLET ID |
+| LS_ID | bigint(20) | NO | 对象所在的日志流 |
+| ZONE | varchar(128) | NO | 副本所在的 ZONE  |
+| SVR_IP | varchar(46) | NO | 副本位置的 IP 信息 |
+| SVR_PORT | bigint(20) | NO | 副本位置的 PORT 信息 |
+| ROLE | varchar(8) | NO | 副本角色 |
+| REPLICA_TYPE | varchar(18) | NO | 日志流类型，当前仅支持 `FULL`，即：全功能类型 |
+	
+## 查询示例
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OB_TABLE_LOCATIONS WHERE TENANT_ID = 1004;
+```
+
+ 查询结果如下：
+```shell
++-----------+---------------+------------+----------+------------+----------------+-------------------+------------+---------------+-----------+-------+-------+----------------+----------+--------+--------------+-----------------+-----------+-----------------+---------------+----------+
+| TENANT_ID | DATABASE_NAME | TABLE_NAME | TABLE_ID | TABLE_TYPE | PARTITION_NAME | SUBPARTITION_NAME | INDEX_NAME | DATA_TABLE_ID | TABLET_ID | LS_ID | ZONE  | SVR_IP         | SVR_PORT | ROLE   | REPLICA_TYPE | DUPLICATE_SCOPE | OBJECT_ID | TABLEGROUP_NAME | TABLEGROUP_ID | SHARDING |
++-----------+---------------+------------+----------+------------+----------------+-------------------+------------+---------------+-----------+-------+-------+----------------+----------+--------+--------------+-----------------+-----------+-----------------+---------------+----------+
+|      1004 | SYS           | T2_F_RL    |   500061 | USER TABLE | P0             | SP0               | NULL       |          NULL |    200043 |  1001 | zone1 | xx.xx.xx.xx    |     2882 | LEADER | FULL         | NONE            |    500064 | NULL            |          NULL | NULL     |
+|      1004 | SYS           | T2_F_RL    |   500061 | USER TABLE | P0             | SP1               | NULL       |          NULL |    200044 |  1002 | zone1 | xx.xx.xx.xx    |     2882 | LEADER | FULL         | NONE            |    500065 | NULL            |          NULL | NULL     |
+|      1004 | SYS           | T2_F_RL    |   500061 | USER TABLE | P1             | SP2               | NULL       |          NULL |    200045 |  1002 | zone1 | xx.xx.xx.xx    |     2882 | LEADER | FULL         | NONE            |    500066 | NULL            |          NULL | NULL     |
+|      1004 | SYS           | T2_F_RL    |   500061 | USER TABLE | P1             | SP3               | NULL       |          NULL |    200046 |  1001 | zone1 | xx.xx.xx.xx    |     2882 | LEADER | FULL         | NONE            |    500067 | NULL            |          NULL | NULL     |
+|      1004 | SYS           | T2_F_RL    |   500061 | USER TABLE | P1             | SP4               | NULL       |          NULL |    200047 |  1001 | zone1 | xx.xx.xx.xx    |     2882 | LEADER | FULL         | NONE            |    500068 | NULL            |          NULL | NULL     |
++-----------+---------------+------------+----------+------------+----------------+-------------------+------------+---------------+-----------+-------+-------+----------------+----------+--------+--------------+-----------------+-----------+-----------------+---------------+----------+
+5 rows in set
+```

@@ -1,0 +1,117 @@
+---
+title: "告警概述"
+book: "组件 & 工具"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480486.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-components-and-tools
+---
+
+# 告警概述
+
+obshell Dashboard 告警中心用于集中管理和监控 OceanBase 集群中的告警事件。您可通过该页面查看告警事件、设置告警屏蔽和告警规则，以便及时响应和处理异常情况，确保系统稳定运行。
+
+## 访问路径
+
+登录 obshell Dashboard 控制台后，输入 Alertmanager 地址、用户名、密码，单击 **开启** 即可进入 **告警中心** 页面，您可以使用已有的 Alertmanager 地址开启告警中心，若暂未部署，建议使用 obd 安装部署。在 **告警中心** 页面上方单击 **告警事件**、**告警屏蔽**、**告警规则** 即可进入对应页签。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>仅首次登录 <b>告警中心</b> 页面需输入 Alertmanager 地址、用户名、密码等信息。</p>
+</main>
+
+## 告警事件
+
+在 **告警事件** 页签中，支持根据  **对象类型**、 **告警对象**、 **告警等级**、 **关键词**、**开始时间**、**结束时间** 等条件进行精确查找。
+
+告警事件列表中可查看具体告警的信息，包括 **告警事件**、**告警对象**、**告警等级**、**告警状态**、**产生时间**、**结束时间**、**操作** 。支持根据 **告警等级**、**告警状态**、**产生时间**、**结束时间** 进行排序。
+
+更多介绍可参见 [查看告警事件](200.view-alarm-events.md)。
+
+![告警事件](img/6805cf3d7f20943b.png)
+
+## 告警屏蔽
+
+在 **告警屏蔽** 页签查询区域输入查询条件，可根据 **对象类型**、**屏蔽对象**、**关键词** 进行屏蔽条件精确查找，并可对指定屏蔽内容进行 **编辑** 和 **解除屏蔽** 操作。
+
+在屏蔽列表中，您可查看屏蔽条件的 **屏蔽应用/对象类型**、**屏蔽对象**、**屏蔽告警规则**、**屏蔽结束时间**、**创建人**、**状态**、**创建时间**、**备注**、**操作** 等信息，支持根据 **屏蔽结束时间**、**状态**、**创建时间** 进行排序，并可对指定屏蔽内容进行 **编辑** 和 **解除屏蔽** 操作。详情参见：[管理告警屏蔽](300.alert-shielding-management.md)。
+
+![告警屏蔽](img/ad912625077d3b25.png)
+
+## 告警规则
+
+在 **告警规则** 页签，可通过 **对象类型**、**告警等级**、**关键词** 进行精确查找。
+
+在规则列表中，可查看 **告警规则名**、**触发规则**、**持续时间**、**对象类型**、**告警等级**、**类型** 等信息。支持根据 **告警等级** 进行排序，支持通过 **类型** 筛选 **自定义** 或 **默认** 类型的告警规则。
+
+![告警规则](img/9cb9d275f1f3678b.png)
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>目前 obshell Dashboard 不提供修改告警规则配置功能，不支持自定义类型的告警规则。您可以通过修改 Prometheus 的配置文件进行修改。</p>
+</main>
+
+### 使用 Prometheus 配置文件自定义告警规则
+
+#### 操作步骤
+
+通过命令行方式使用 Prometheus 提供的默认配置文件自定义告警规则的操作步骤如下：
+
+1. 如果您使用的是 obd 部署方式，可以直接执行 `obd cluster edit-config 部署集群名` 命令查看 OceanBase 集群的部署配置文件，可以看到 Prometheus 的部署目录 `home_path`。
+
+   <main id="notice" type='explain'>
+     <h4>说明</h4>
+     <p>如果您使用的是 RPM 包部署方式，Prometheus 配置文件目录为默认的 <code>/usr/prometheus/prometheus.yaml</code>。</p>
+   </main>
+
+2. 进入 Prometheus 的部署目录 `home_path` 下，找到 Prometheus 的配置文件 `prometheus.yaml`。
+
+3. 查看 `prometheus.yaml` 中 `rule_files` 的目录，即为告警规则的配置文件目录。
+
+4. 根据您的实际需求，修改 `rule_files` 配置文件的告警项阈值及其他配置项。
+
+   ```shell
+   vim rule_files
+   ```
+
+5. 修改完成后，执行下述命令即可使配置生效。配置生效后终端无输出，配置未生效会输出报错。
+
+   ```shell
+   curl --user 用户名:密码 -X POST -L 'http://127.0.0.1:9090/-/reload'
+   ```
+
+   <main id="notice" type='explain'>
+     <h4>说明</h4>
+     <p>您需要将 <code>--user 用户名:密码</code> 替换为部署 Prometheus 使用的真实用户及密码，否则配置可能无法生效。</p>
+   </main>
+
+#### 配置文件说明
+
+Prometheus 默认的告警规则配置如下表所示，详细的告警规则介绍可参见 [Prometheus 配置文件说明](https://github.com/oceanbase/obdeploy/blob/master/plugins/prometheus/2.37.1/prometheus_rules.yaml)。
+
+|  告警规则名  |  触发规则 |  对象类型  |   告警等级    |
+|----------|-----------|----------|----------|
+|  ob_host_disk_percent_over_threshold  |  100 * (1 - node_filesystem_avail_bytes / node_filesystem_size_bytes) > 97  |  observer  |   warning    |
+|  ob_host_cpu_percent  |  100 * (1 - sum(rate(node_cpu_seconds_total{mode="idle"}[60s])) by (instance) / sum(rate(node_cpu_seconds_total[60s])) by (instance)) > 90  |  observer  |   warning    |
+|  ob_host_net_recv_percent_over_threshold  |  rate(node_network_receive_bytes_total[60s]) > 100000000  |  observer  |   warning    |
+|  ob_host_net_send_percent_over_threshold  |  rate(node_network_transmit_bytes_total[60s]) > 100000000  |  observer  |   warning    |
+|  ob_host_load1_per_cpu_over_threshold  |  node_load1 > 64  |  observer  |   warning    |
+|  ob_host_mem_percent_over_threshold  |  (1 - (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes) / node_memory_MemTotal_bytes) * 100 > 90  |  observer  |   warning    |
+|  ob_host_disk_readonly  |  node_filesystem_readonly > 0  |  observer  |   critical    |
+|  cluster_active_session  |  sum(ob_active_session_num) by (ob_cluster_name, obzone, svr_ip) > 10000  |  obcluster  |   warning    |
+|  inactive_server  |  max(ob_server_num{status="INACTIVE"}) by (ob_cluster_name) > 0  |  obcluster  |   critical    |
+|  index_fail  |  max(ob_index_error_num) by (ob_cluster_name) > 0  |  obcluster  |   warning    |
+|  tenant_active_session  |  sum(ob_active_session_num) by (ob_cluster_name, obzone, svr_ip, tenant_name) > 2000  |  obtenant  |   warning    |
+|  tenant_compaction_error  |  max(ob_compaction_is_error) by (ob_cluster_name, tenant_name) > 0  |  obtenant  |   warning    |
+|  tenant_cpu_usage  |  sum(rate(ob_sysstat{stat_id="140013"}[1m])) by (ob_cluster_name, obzone, svr_ip, tenant_name) / sum(ob_sysstat{stat_id="140005"}) by (ob_cluster_name, obzone, svr_ip, tenant_name) / 100 > 95  |  obtenant  |   warning    |
+|  tenant_log_disk_used_percent  |  100 * avg(ob_tenant_log_disk_used_bytes) by (ob_cluster_name, obzone, svr_ip, tenant_name) / avg(ob_tenant_log_disk_total_bytes) by (ob_cluster_name, obzone, svr_ip, tenant_name) > 95  |  obtenant  |   warning    |
+|  tenant_log_stream_downgrade  |  sum(log_stream_degraded_count) by (ob_cluster_name, tenant_name) > 0  |  obtenant  |   warning    |
+|  tenant_no_compaction  |  (max(ob_compaction_current_timestamp) by (ob_cluster_name, tenant_name) - max(ob_compaction_start_time) by (ob_cluster_name, tenant_name)) / 1000000 > 90000  |  obtenant  |   warning    |
+|  tenant_no_frozen  |  (max(ob_compaction_current_timestamp) by (ob_cluster_name, tenant_name) - max(ob_compaction_frozen_time) by (ob_cluster_name, tenant_name)) / 1000000 > 90000  |  obtenant  |   warning    |
+|  tenant500_mem_hold_percent  |  100 * sum(ob_tenant500_memory_hold_bytes) by (ob_cluster_name, obzone, svr_ip) / sum(ob_server_resource_memory_bytes) by (ob_cluster_name, obzone, svr_ip) > 95  |  obcluster  |   warning    |
+|  tenant_task_timeout  |  max(ob_tenant_task_max_duration_seconds) by (ob_cluster_name, tenant_name) > 10800  |  obtenant  |   warning    |
+|  tenant_memstore_percent  |  100 * sum(ob_sysstat{stat_id="130001"}) by (ob_cluster_name, obzone, svr_ip, tenant_name) / sum(ob_sysstat{stat_id="130004"}) by (ob_cluster_name, obzone, svr_ip, tenant_name) > 95  |  obtenant  |   warning    |
+|  tenant_active_memstore_percent  |  100 * sum(ob_sysstat{stat_id="130000"}) by (ob_cluster_name, obzone, svr_ip, tenant_name) / sum(ob_sysstat{stat_id="130002"}) by (ob_cluster_name, obzone, svr_ip, tenant_name) > 110  |  obtenant  |   warning    |
+|  tenant_thread_used_percent  |  100 * sum(ob_sysstat{stat_id="140006"}) by (ob_cluster_name, tenant_name) / sum(ob_sysstat{stat_id="140005"}) by (ob_cluster_name, tenant_name) > 80  |  obtenant  |   caution    |

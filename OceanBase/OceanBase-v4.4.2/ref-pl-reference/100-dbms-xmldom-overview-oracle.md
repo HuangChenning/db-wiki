@@ -1,0 +1,85 @@
+---
+title: "DBMS_XMLDOM 概述"
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354581.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DBMS_XMLDOM 概述
+
+`DBMS_XMLDOM` 系统包用于访问 `XMLType` 对象，并实现文档对象模型（DOM）——一种面向 HTML 与 XML 文档的应用程序编程接口（API）。DOM 定义了文档的逻辑结构，以及文档被访问和操作的方式。
+
+在 DOM 规范中，“文档”是在广义上使用的：XML 可表示存储于各类系统中的多种信息，这些信息传统上常被视为数据，但 XML 仍以文档形式呈现。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该系统包从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## DBMS_XMLDOM 权限说明
+
+`DBMS_XMLDOM` 系统包的 `EXECUTE` 权限被授予 `PUBLIC`。当前用户拥有该包中的子程序的使用权限。
+
+## DBMS_XMLDOM 使用说明
+
+在通过 [`DBMS_XMLPARSER`](../19750.dbms-xmlparser-oracle/100.dbms-xmlparser-overview-oracle.md) 取得 `DBMS_XMLDOM.DOMDOCUMENT` 句柄后，使用本包子程序遍历 DOM 树、读取元素与节点值。完整解析与释放流程请参见 [DBMS_XMLPARSER 使用说明](../19750.dbms-xmlparser-oracle/100.dbms-xmlparser-overview-oracle.md)。
+
+典型处理流程如下：
+
+1. 通过 [DBMS_XMLPARSER](../19750.dbms-xmlparser-oracle/100.dbms-xmlparser-overview-oracle.md) 解析 XML，或通过 `NEWDOMDOCUMENT` 创建空文档，取得 `DBMS_XMLDOM.DOMDOCUMENT` 句柄。
+2. 使用 `GETELEMENTSBYTAGNAME`、`ITEM`、`GETLENGTH`、`GETFIRSTCHILD` 等遍历节点；或通过 `CREATEELEMENT`、`CREATETEXTNODE`、`APPENDCHILD`、`SETATTRIBUTE` 等构造与修改 DOM 树。
+3. 使用 `GETNODEVALUE`、`GETDATA`、`GETNODENAME` 等读取节点信息；需要时通过 `GETXMLTYPE`、`WRITETOBUFFER`、`WRITETOCLOB` 输出。
+4. 调用 `FREEDOCUMENT` 释放文档资源。
+
+OceanBase 数据库当前版本所支持的 `DBMS_XMLDOM` 子程序详见下文 **DBMS_XMLDOM 子程序概览**。
+
+有关 `XMLType` 的创建与转换，请参见 [XMLType 概述](../29600.xmltype-oracle/100.xmltype-overview-oracle.md)。
+
+## DBMS_XMLDOM 子程序概览
+
+下表为 OceanBase 数据库当前版本所支持的 DBMS_XMLDOM 子程序和简要描述。
+
+| **子程序** | **描述** |
+| --- | --- |
+| [DOMDOCUMENT](200.domdocument-oracle.md) | 标识 XML 文档 |
+| [DOMNODE](300.domnode-oracle.md) | 标识 DOM 节点 |
+| [DOMNODELIST](400.domnodelist-oracle.md) | 标识节点列表 |
+| [DOMATTR](1100.domattr-oracle.md) | 标识 DOM 属性节点（V4.4.2 BP3 起支持） |
+| [DOMELEMENT](1200.domelement-oracle.md) | 标识 DOM 元素节点（V4.4.2 BP3 起支持） |
+| [DOMTEXT](1300.domtext-oracle.md) | 标识 DOM 文本节点（V4.4.2 BP3 起支持） |
+| [DOMCHARACTERDATA](1400.domcharacterdata-oracle.md) | 标识 DOM 字符数据节点（V4.4.2 BP3 起支持） |
+| [FREEDOCUMENT](500.freedocument-oracle.md) | 释放 DOM 文档 |
+| [GETCHILDNODES](600.getchildnodes-oracle.md) | 获取子节点列表 |
+| [GETELEMENTSBYTAGNAME](700.getelementbytagname-oracle.md) | 按标签名获取元素（`name='*'` 表示匹配任意元素） |
+| [GETLENGTH](800.getlength-xmldom-oracle.md) | 获取节点数量 |
+| [GETNODEVALUE](900.getnodevalue-oracle.md) | 获取节点值 |
+| [ITEM](1000.item-oracle.md) | 按索引获取节点 |
+| [NEWDOMDOCUMENT](1500.newdomdocument-oracle.md) | 创建新的空 DOM 文档（V4.4.2 BP3 起支持） |
+| [CREATEELEMENT](1600.createelement-oracle.md) | 创建元素节点（V4.4.2 BP3 起支持） |
+| [CREATETEXTNODE](1700.createtextnode-oracle.md) | 创建文本节点（V4.4.2 BP3 起支持） |
+| [MAKENODE](1800.makenode-oracle.md) | 将具体 DOM 对象转换为通用节点（V4.4.2 BP3 起支持） |
+| [MAKECHARACTERDATA](1900.makecharacterdata-oracle.md) | 将节点转换为字符数据句柄（V4.4.2 BP3 起支持） |
+| [APPENDCHILD](2000.appendchild-oracle.md) | 追加子节点（V4.4.2 BP3 起支持） |
+| [REMOVECHILD](2100.removechild-oracle.md) | 移除子节点（V4.4.2 BP3 起支持） |
+| [GETFIRSTCHILD](2200.getfirstchild-oracle.md) | 获取第一个子节点（V4.4.2 BP3 起支持） |
+| [GETDOCUMENTELEMENT](2300.getdocumentelement-oracle.md) | 获取文档根元素（V4.4.2 BP3 起支持） |
+| [GETNODENAME](2400.getnodename-oracle.md) | 获取节点名称（V4.4.2 BP3 起支持） |
+| [GETLOCALNAME](2500.getlocalname-oracle.md) | 获取节点本地名称（V4.4.2 BP3 起支持） |
+| [GETNODETYPE](2600.getnodetype-oracle.md) | 获取节点类型（V4.4.2 BP3 起支持） |
+| [GETDATA](2700.getdata-oracle.md) | 获取字符数据内容（V4.4.2 BP3 起支持） |
+| [ISNULL](2800.isnull-oracle.md) | 判断 DOM 句柄是否为空（V4.4.2 BP3 起支持） |
+| [SETATTRIBUTE](2900.setattribute-oracle.md) | 设置元素属性（V4.4.2 BP3 起支持） |
+| [SETCHARSET](3000.setcharset-oracle.md) | 设置文档字符集（V4.4.2 BP3 起支持） |
+| [SETVERSION](3100.setversion-oracle.md) | 设置文档 XML 版本（V4.4.2 BP3 起支持） |
+| [WRITETOBUFFER](3200.writetobuffer-oracle.md) | 将文档或节点写入 `VARCHAR2` 缓冲区（V4.4.2 BP3 起支持） |
+| [WRITETOCLOB](3300.writetoclob-oracle.md) | 将文档或节点写入 `CLOB`（V4.4.2 BP3 起支持） |
+| [GETXMLTYPE](3400.getxmltype-xmldom-oracle.md) | 将 DOM 文档转换为 `XMLTYPE`（V4.4.2 BP3 起支持） |

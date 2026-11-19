@@ -1,0 +1,38 @@
+---
+title: DROP INDEX
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702346.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# DROP INDEX
+
+## 描述
+
+该语句用来删除索引。当索引过多时，维护开销增大，因此，需要删除不必要的索引。
+
+## 语法
+
+```sql
+DROP INDEX index_name 
+   ON table_name;
+```
+
+## 参数解释
+
+|   **参数**   | **描述**  |
+|------------|---------|
+| index_name | 指定索引名称。 |
+| table_name | 指定表名。   |
+
+## 示例
+
+删除表 `tbl_test` 的索引 `idx_test` 。
+
+```sql
+obclient>DROP INDEX idx_test ON tbl_test;
+```

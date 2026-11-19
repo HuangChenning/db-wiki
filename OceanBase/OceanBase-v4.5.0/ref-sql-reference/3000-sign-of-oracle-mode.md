@@ -1,0 +1,50 @@
+---
+title: SIGN
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004481516.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SIGN
+
+## 描述
+
+该函数返回输入数值的符号。符号为 `1`、`-1` 和 `0`。
+
+## 语法
+
+```sql
+SIGN(numeric_expression)
+```
+
+## 参数解释
+
+`numeric_expression` 是数值数据类型（`NUMBER`、`FLOAT`、`BINARY_FLOAT` 和 `BINARY_DOUBLE`）或可以隐式转换为数值数据类型的参数。
+
+## 返回类型
+
+返回 `NUMBER` 数据类型。
+
+* 如果 `numeric_expression > 0`，则返回 `1`。
+
+* 如果 `numeric_expression < 0`，则返回 `-1`。
+
+* 如果 `numeric_expression = 0`，则返回 `0`。
+
+## 示例
+
+返回 `2`、`-2`、`0` 和 `3+3` 的符号。
+
+```sql
+obclient> SELECT SIGN(2),SIGN(-2),SIGN(0),SIGN(3+3) FROM DUAL;
++---------+----------+---------+-----------+
+| SIGN(2) | SIGN(-2) | SIGN(0) | SIGN(3+3) |
++---------+----------+---------+-----------+
+|       1 |       -1 |       0 |         1 |
++---------+----------+---------+-----------+
+1 row in set
+```

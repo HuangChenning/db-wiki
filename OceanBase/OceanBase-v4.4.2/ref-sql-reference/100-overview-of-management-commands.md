@@ -1,0 +1,16 @@
+---
+title: "管理命令概述"
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283790.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 管理命令概述
+
+本章节提供 OceanBase 数据库管理命令的使用参考信息，部分命令只有在 sys 租户下才允许执行。
+
+OceanBase 数据库管理命令主要涉及管理集群、管理租户、管理资源、管理数据存储和管理内存等。

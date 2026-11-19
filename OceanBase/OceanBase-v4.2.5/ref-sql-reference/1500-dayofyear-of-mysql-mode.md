@@ -1,0 +1,34 @@
+---
+title: DAYOFYEAR
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504735.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DAYOFYEAR
+
+## 声明
+
+```sql
+DAYOFYEAR(date)
+```
+
+## 说明
+
+返回日期或时间日期 `date` 在一年中的位置。
+
+## 示例
+
+```sql
+obclient> SELECT DAYOFYEAR('2021-07-15');
++-------------------------+
+| DAYOFYEAR('2021-07-15') |
++-------------------------+
+|                     196 |
++-------------------------+
+1 row in set
+```

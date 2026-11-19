@@ -1,0 +1,28 @@
+---
+title: "存储程序概述"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502981.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 存储程序概述
+
+OceanBase 数据库 MySQL 模式下的 PL 存储程序包括存储过程、存储函数、触发器和 EVENT（事件）。
+
+OceanBase 数据库 MySQL 模式下的 PL 存储对象包括如下对象类型：
+
+* 存储过程：该对象使用 `CREATE PROCEDURE` 创建并使用 `CALL` 语句调用。存储过程没有返回值，但可以有输出参数，还可以生成结果集返回给客户端程序。
+
+* 存储函数：该对象使用 `CREATE FUNCTION` 创建，用法与内置函数相似。用户可以在表达式中调用存储函数，并在表达式求值期间返回一个值。
+
+* 触发器：该对象使用 `CREATE TRIGGER` 创建并与表关联。表中的插入或更新等操作可以激活触发器。
+
+* 事件（EVENT）: 该对象使用 `CREATE EVENT` 创建事件。事件（Event）是一种预定义的 SQL 任务，可以在特定的时间点或按照指定的时间间隔自动执行。每个事件都由触发条件（即调度计划）、执行的 SQL 语句或存储过程组成。事件的定义存储在数据库中，与数据库一同维护，确保了即使服务器重启，事件也能按计划执行。
+
+其中，存储过程和函数属于存储例程，存储例程和触发器属于存储程序。
+
+每个存储程序都包含一个由多条 SQL 语句组成的主体，每条 SQL 语句可以由分号（;）分隔。存储过程的主体由 `BEGIN` 关键字开始，由 `END;` 关键字结束。

@@ -1,0 +1,37 @@
+---
+title: oceanbase.DBA_OB_MAJOR_COMPACTION
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700865.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# oceanbase.DBA_OB_MAJOR_COMPACTION
+
+oceanbase.DBA_OB_MAJOR_COMPACTION
+======================================================
+
+
+功能
+-------------------
+
+展示本租户的合并全局信息。
+
+字段说明
+----------------------
+
+|           字段名称           |     类型      | 是否可以为 NULL |                                                                                           描述                                                                                            |
+|--------------------------|-------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| FROZEN_SCN           | bigint(20) unsigned  | NO         | 最近一次合并的版本号                                                                                                                                                                                 |
+| FROZEN_TIME              | timestamp(6)  | NO         | 最近一次合并发起的时间（将 FROZEN_SCN 以可读的形式展示）                                                                                                                                                                                 |
+| GLOBAL_BROADCAST_SCN | bigint(20) unsigned  | NO         | 全局广播的合并版本                                                                                                                                                                               |
+| LAST_SCN             | bigint(20) unsigned  | NO         | 上一个已经完成合并的版本                                                                                                                                                                            |
+| LAST_FINISH_TIME         | timestamp(6)  | NO         | 上一次合并结束时间                                                                                                                                                                               |
+| START_TIME               | timestamp(6)  | NO         | 合并开始时间                                                                                                                                                                                  |
+| STATUS                   | varchar(10) | NO         | <li> `IDLE`：没有在合并中   <li> `COMPACTION`：正在合并中   <li> `CHECKSUM`：校验checksum    |
+| IS_ERROR                 | varchar(3)  | NO         | <li> `YES`：合并过程存在错误   <li> `NO`：合并过程没有报错                                                                   |
+| IS_SUSPENDED             | varchar(3)  | NO         | <li> `YES`：暂停合并状态   <li> `NO`：没有暂停合并                                                                       |
+| INFO                     | varchar(14) | NO         | 展示合并信息。例如：合并失败原因                                                                                                                                                                        |

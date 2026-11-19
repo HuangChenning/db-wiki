@@ -1,0 +1,38 @@
+---
+title: OB_INIT_OBJECTS
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480078.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# OB_INIT_OBJECTS
+
+用于在用户 `schema` 下创建数据统计表。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+PROCEDURE OB_INIT_OBJECTS(force_create IN boolean :=FALSE);
+```
+
+## 参数说明
+
+|       参数       |               解释                |
+|----------------|---------------------------------|
+| force_create IN boolean :=FALSE | <li>当为 <code>FALSE</code> 时，如果有和统计表重名的表就报错退出。<li>当为 <code>TRUE</code> 时，如果有和统计表重名的表就先 <code>DROP</code> 再创建，默认为 <code>FALSE</code>。|
+
+## 示例
+
+```shell
+obclient> call dbms_profiler.ob_init_objects();
+Query OK, 0 rows affected (0.06 sec)
+```

@@ -1,0 +1,73 @@
+---
+title: SET PASSWORD
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286426.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SET PASSWORD
+
+## 描述
+
+该语句用于修改 OceanBase 数据库当前登录用户或其他用户的密码。
+
+## 使用限制及注意事项
+
+* `SET PASSWORD`/`ALTER USER` 改密后，旧密码快速认证缓存失效，旧密码无法再登录。
+* 认证串格式校验：`IDENTIFIED AS`/`BY PASSWORD`，校验 `$S$` 格式，拒绝 `$A$`（`sha2`）等错误格式。
+
+## 语法
+
+```sql
+SET PASSWORD [FOR user] = password_option [RETAIN CURRENT PASSWORD];
+
+password_option: {
+PASSWORD('authstring')
+|'hashstring'
+}
+```
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>可选子句 <code>RETAIN CURRENT PASSWORD</code> 用于在设置新密码的同时保留旧密码，用于双密码场景，从 V4.4.2 BP1 版本开始支持。</p>
+</main>
+
+## 参数解释
+
+|  **参数**  |                                                                       **描述**                                                                        |
+|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| FOR user | 如果没有 `FOR user` 子句，表示修改当前用户的密码。任何成功登录的用户都可以修改当前用户的密码。 如果有 `FOR user` 子句，表示修改指定用户的密码。必须拥有全局（MySQL 库）的 `CREATE USER` 权限，才可以修改指定用户的密码。 |
+|password|默认 `password` 为明文传输, 会在内核做一次编码。|
+| RETAIN CURRENT PASSWORD | 可选，写在 `=` 右侧 `password_option` 之后：与本次设置的新密码同时生效，保留改密前的旧密码，进入双密码状态。 |
+
+## 示例
+
+* 修改当前用户的密码。
+
+  ```sql
+  obclient> SET PASSWORD = PASSWORD('**1***');
+  Query OK, 0 rows affected
+  ```
+
+* 修改 `sqluser01` 用户的密码。
+
+  ```sql
+  obclient> SET PASSWORD FOR sqluser01 = PASSWORD('**2***');
+  Query OK, 0 rows affected
+  ```
+* 修改 `sqluser01` 用户的密码并保留旧密码（双密码）。
+
+  ```sql
+  obclient> SET PASSWORD FOR sqluser01 = PASSWORD('**2***') RETAIN CURRENT PASSWORD;
+  Query OK, 0 rows affected
+  ```
+
+* 直接写入已序列化的认证串（`$S$...`）。
+
+    ```shell
+    SET PASSWORD FOR user001 = PASSWORD('$S$005$ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.');
+    ```

@@ -1,0 +1,34 @@
+---
+title: plsql_v2_compatibility
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700981.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# plsql_v2_compatibility
+
+`plsql_v2_compatibility` 用于指定 Oracle 8 的兼容功能。
+
+
+|        属性        |                                                      描述                                                       |
+|------------------|---------------------------------------------------------------------------------------------------------------|
+| 参数类型             | 布尔类型                       |
+| 默认值              | False                      |
+| 取值范围             | <li> True：兼容   <li> False：不兼容    |
+| 是否重启 OBServer 节点生效 | 否                          |
+
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该配置项仅适用于 Oracle 模式，当前暂不生效。</p>
+  </main>
+
+使用示例如下：
+
+```sql
+obclient> ALTER SESSION SET plsql_v2_compatibility=false;
+```

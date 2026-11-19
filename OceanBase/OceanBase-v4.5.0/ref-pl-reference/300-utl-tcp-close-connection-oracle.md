@@ -1,0 +1,38 @@
+---
+title: CLOSE_CONNECTION
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479915.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CLOSE_CONNECTION
+
+`CLOSE_CONNECTION` 用于关闭打开的 TCP/IP 连接。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 语法
+
+```sql
+UTL_TCP.CLOSE_CONNECTION (
+   c IN OUT NOCOPY connection);
+```
+
+## 参数解释
+
+| **参数** |         **解释**         |
+|--------|------------------------|
+|c|需要关闭的 TCP/IP 连接。|
+
+## 使用说明
+
+* 必须是已经通过 `open_connection` 打开过的连接。在关闭连接后 `remote_host`，`remote_port`，`local_host`，`local_port`，`charset`，`private_sd` 字段将会被重置。
+* 必须显示关闭打开的连接。`connection` 变量超出其生命周期时，不会自动关闭连接。
+* 直到 Session 关闭时，会自动关闭之前未关闭的连接。

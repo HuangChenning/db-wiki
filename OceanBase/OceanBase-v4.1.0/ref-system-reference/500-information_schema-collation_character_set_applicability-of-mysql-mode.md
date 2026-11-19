@@ -1,0 +1,28 @@
+---
+title: information_schema.COLLATION_CHARACTER_SET_APPLICABILITY
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699250.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# information_schema.COLLATION_CHARACTER_SET_APPLICABILITY
+
+information_schema.COLLATION_CHARACTER_SET_APPLICABILITY
+=============================================================================
+
+功能
+-----------
+
+记录 character 和 collation 之间的对应关系。
+
+字段说明
+-------------
+
+|      **字段名称**      |    **类型**    | **是否可以为 NULL** | **描述** |
+|--------------------|--------------|----------------|--------|
+| COLLATION_NAME     | varchar(128) | NO             | 比对方法名称 |
+| CHARACTER_SET_NAME | varchar(128) | NO             | 字符集名称  |

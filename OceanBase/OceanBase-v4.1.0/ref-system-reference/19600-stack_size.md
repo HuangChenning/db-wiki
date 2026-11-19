@@ -1,0 +1,29 @@
+---
+title: stack_size
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702098.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# stack_size
+
+stack_size
+===============================
+
+`stack_size` 用于设置程序函数调用栈的大小。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始默认值由 1M 调整为 512K。</p>
+</main>
+
+|      **属性**      |    **描述**     |
+|------------------|---------------|
+| 参数类型             | 容量单位          |
+| 默认值              | 512K            |
+| 取值范围             | \[512K, 20M\] |
+| 是否重启 OBServer 节点生效 | 是             |

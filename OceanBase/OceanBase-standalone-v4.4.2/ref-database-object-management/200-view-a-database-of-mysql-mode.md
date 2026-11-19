@@ -1,0 +1,45 @@
+---
+title: "查看数据库"
+book: "数据库对象管理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000006077712.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-database-object-management
+---
+
+# 查看数据库
+
+本节主要介绍 MySQL 模式中数据库的查看语句及操作方法。
+
+## 操作步骤
+
+1.  用户登录集群的 MySQL 租户。
+
+2.  使用 `SHOW DATABASES` 语句查看 MySQL 模式下租户的数据库信息。
+
+    **示例如下：**
+
+    ```
+    obclient> SHOW DATABASES;
+    ```
+
+    返回结果如下：
+
+    ```
+    +--------------------+
+    | Database           |
+    +--------------------+
+    | oceanbase          |
+    | information_schema |
+    | mysql              |
+    | test               |
+    +--------------------+
+    3 rows in set
+    ```
+
+    - `information_schema` 数据库是 MySQL 自带的，它提供了访问数据库元数据的方式。
+    - `oceanbase` 库，存储 OceanBase 数据库的相关系统表。
+    - `mysql` 库主要负责存储数据库的用户、权限设置、关键字等。
+    - `test` 库是用户自己创建的库。

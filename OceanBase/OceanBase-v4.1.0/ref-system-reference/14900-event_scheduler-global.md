@@ -1,0 +1,27 @@
+---
+title: event_scheduler
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002186404.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# event_scheduler
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该变量在 4.x 版本暂不生效。</p>
+</main>
+
+`event_scheduler` 用于确定事件调度程序是否在服务器上启用和运行。
+
+| **属性** | **描述** |
+| --- | --- |
+| 参数类型 | bool |
+| 默认值 | OFF |
+| 取值范围 | <ul><li> OFF：事件调度程序已停止。 </li><li> ON：事件调度程序已启动；事件调度程序线程运行并执行所有计划的事件。 </li></ul>|
+| 生效范围 |GLOBAL |
+|是否可修改|否|

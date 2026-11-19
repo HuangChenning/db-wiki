@@ -1,0 +1,89 @@
+---
+title: CREATE RESOURCE UNIT
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501957.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE RESOURCE UNIT
+
+## 描述
+
+OceanBase 数据库通过 Unit 来管理物理资源，`sys` 租户可以使用 `CREATE RESOURCE UNIT` 语句来创建 Unit 并指定 Unit 的资源规格。Unit 的资源规格定义了常见的物理资源，包括 CPU、内存、日志盘存储空间、IOPS 等。
+
+Unit 的资源规格定义的是单个 Zone 内单个 OBServer 节点可分配的资源总量。仅当租户在某个节点上有 Unit 时，租户才能使用该节点上的资源来存储数据。
+
+租户被分配的所有资源总量为：Unit 规格 \* Unit 数量。
+
+## 使用限制及注意事项
+
+Unit 的资源规格不能超过单节点的总可分配资源。
+
+## 权限要求
+
+仅 `sys` 租户的 `root` 用户（`root@sys`）可以创建 Unit，其他租户不支持创建 Unit。
+
+## 语法
+
+```sql
+CREATE RESOURCE UNIT [IF NOT EXISTS] unit_name
+MEMORY_SIZE [=] 'size_value',
+MAX_CPU [=] cpu_num,
+[MAX_IOPS [=] iops_num,]
+[MIN_CPU [=] cpu_num,]
+[MIN_IOPS [=] iops_num,]
+[IOPS_WEIGHT [=]iopsweight,]
+[LOG_DISK_SIZE [=] 'size_value'];
+```
+
+## 参数说明
+
+|     参数项       |          描述                                                                                                                    |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------|
+| IF NOT EXISTS   | 可选，如果待创建的 Unit 已存在，并且未指定 `IF NOT EXISTS`，则系统会报错。                                                            |
+| unit_name       | 指定 Unit 的名称。                                                                                                                |
+| MEMORY_SIZE     | 指定内存规格，其最小值由隐藏配置项 `__min_full_resource_pool_memory` 控制，默认为 5G，为了保证系统稳定性，最小的内存规格建议为 4G。  <main id="notice" type='notice'><h4>注意</h4><p>OceanBase 数据库从 V4.0.0.0 开始不再支持内存超卖。</p></main> |
+| MAX_CPU         | 指定 CPU 规格的上限，最小值为 1，表示 1 Core。                                                                                                      |
+| MIN_CPU         | 指定 CPU 规格的下限，最小值为 1，表示 1 Core，可选。</br>如果未指定，则默认其值等于 `MAX_CPU`。<main id="notice" type='notice'><h4>注意</h4><p>所有租户的 <code>MIN_CPU</code> 总和不能超过该节点的 CPU 总容量 <code>CPU_CAPACITY</code>。</p></main>  |
+| MAX_IOPS        | 指定 IOPS 的上限，最小值为 1024，指定的值要求满足 `MAX_IOPS >= MIN_IOPS`，可选。</br>如果不指定，则系统将根据以下规则自动计算 `MAX_IOPS` 的值：<ul><li> 如果已指定 <code>MIN_IOPS</code> 的值，则 <code>MAX_IOPS</code> 的值等于 <code>MIN_IOPS</code> 的值。</li> <li>如果 <code>MIN_IOPS</code> 也未指定，则 <code>MAX_IOPS</code> 和 <code>MIN_IOPS</code> 的值均为 <code>INT64_MAX</code>。</li></ul>                                                                |
+| MIN_IOPS        | 指定 IOPS 的下限，最小值为 1024，可选。 </br>如果不指定，则系统将根据以下规则自动计算 `MIN_IOPS` 的值：<ul><li> 如果已指定 <code>MAX_IOPS</code> 的值，则 <code>MIN_IOPS</code> 的值等于 <code>MAX_IOPS</code> 的值。</li> <li>如果 <code>MAX_IOPS</code> 也未指定，则 <code>MIN_IOPS</code> 和 <code>MAX_IOPS</code> 的值均为 <code>INT64_MAX</code>。</li></ul>                                                                                                 |
+| IOPS_WEIGHT     | 指定 IOPS 的权重值，可选。 </br>如果不指定，则系统将根据以下规则自动计算 `IOPS_WEIGHT` 的值：<ul><li>如果 <code>MAX_IOPS</code> 和 <code>MIN_IOPS</code> 的值均已指定，或者仅指定了其中一个值，则 <code>IOPS_WEIGHT</code> 的值均等于 <code>0</code>。</li> <li>如果 <code>MAX_IOPS</code> 和 <code>MIN_IOPS</code> 均未指定，则 <code>IOPS_WEIGHT = MIN_CPU</code>。</li></ul>                                                                                                            |
+| LOG_DISK_SIZE   | 指定租户日志盘空间的大小，可选。</br>如果不指定，则默认其值为内存规格的 3 倍大小，最小值为 2G。|
+
+## 示例
+
+创建名为 `unit1` 的 Unit，其资源规格如下：CPU 为 4 核；内存为 `5G`；日志盘容量为 `10G`；IOPS 的上限为 `1280`，下限为 `1024`，同时 IOPS 的权重为 `1`。
+
+```sql
+obclient [oceanbase]> CREATE RESOURCE UNIT unit1 MAX_CPU 4, MEMORY_SIZE '5G', MAX_IOPS 1280,LOG_DISK_SIZE '10G', MIN_IOPS=1024, IOPS_WEIGHT=1;
+```
+
+Unit 创建成功后，可以通过视图确认创建结果，语句如下：
+
+```sql
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OB_UNIT_CONFIGS WHERE NAME='unit1';
+```
+
+查询结果如下：
+
+```shell
++----------------+-------+----------------------------+----------------------------+---------+---------+-------------+---------------+----------+----------+-------------+
+| UNIT_CONFIG_ID | NAME  | CREATE_TIME                | MODIFY_TIME                | MAX_CPU | MIN_CPU | MEMORY_SIZE | LOG_DISK_SIZE | MAX_IOPS | MIN_IOPS | IOPS_WEIGHT |
++----------------+-------+----------------------------+----------------------------+---------+---------+-------------+---------------+----------+----------+-------------+
+|           1002 | unit1 | 2023-10-30 16:33:41.182430 | 2023-10-30 16:33:41.182430 |       4 |       4 |  5368709120 |   10737418240 |     1280 |     1024 |           1 |
++----------------+-------+----------------------------+----------------------------+---------+---------+-------------+---------------+----------+----------+-------------+
+```
+
+## 相关文档
+
+* [租户介绍](../../../../600.manage/200.tenant-management/100.tenant-introduction.md)
+
+* [创建租户](../../../../600.manage/200.tenant-management/600.common-tenant-operations/200.manage-create-tenant.md)
+
+* [查看资源规格](../../../../600.manage/200.tenant-management/600.common-tenant-operations/1600.resource-specification-management/100.view-resource-unit-configuration.md)
+
+* [DROP RESOURCE UNIT](1000.drop-resource-unit.md)

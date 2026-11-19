@@ -1,0 +1,379 @@
+---
+title: CREATE INDEX
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686100.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE INDEX
+
+## 描述
+
+该语句用来创建索引。索引是创建在表上的，对数据库表中一列或多列的值进行排序的一种结构。其作用主要在于提高查询的速度，降低数据库系统的性能开销。
+
+OceanBase 数据库当前版本支持的索引类型包含唯一索引和非唯一索引，创建索引时可以通过 `STORING(column_name,...)` 指定索引表上的冗余列。索引表的冗余列除了包含用户指定添加的列外，还会自动添加上主键表的主键列（如果无主键表则包含 Hidden PK），存储额外的列在索引中可以为数据库优化器提供更多的选择。
+
+## 使用限制及注意事项
+
+* 如果删除表中的所有索引列，则所创建的索引失效。
+* 全文索引仅支持应用于 `CHAR`、`VARCHAR` 和 `TEXT` 类型的列。
+* 搜索索引支持应用于 JSON、单级数组以及多种标量类型列，完整列表请参见下文 [搜索索引支持的数据类型](#搜索索引支持的数据类型)。
+* 当前版本只支持创建局部（`LOCAL`）全文或搜索索引。
+* 创建全文索引时不可以指定 `UNIQUE` 关键字。
+* 如果要创建涉及多列的全文索引，则必须确保这些列具有相同的字符集。
+* 只有在创建全文索引时，才可以使用 `WITH PARSER {SPACE | NGRAM | BENG | IK}` 指定分词器。
+
+## 权限要求
+
+执行 `CREATE INDEX` 语句创建索引需要当前用户至少拥有对应对象的 INDEX 权限。有关 OceanBase 数据库权限的详细介绍，请参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 语法
+
+### 通用索引语法
+
+```sql
+CREATE [hint_options] [index_type] INDEX [IF NOT EXISTS] index_name
+    [USING BTREE] ON table_name (sort_column_key [, sort_column_key... ])
+    [WITH PARSER tokenizer_option]
+    [PARSER_PROPERTIES[=](parser_properties_list)]
+    [FTS_INDEX_TYPE [=] {MATCH | PHRASE_MATCH}]
+    [index_option...] [partition_option] [index_column_group_option]
+
+index_type:
+    SPATIAL
+    | UNIQUE
+    | FULLTEXT
+    | SEARCH -- 具体语法请参见下文搜索索引（Search Index）语法
+
+sort_column_key:
+      column_name [(integer)] [ASC] [ID id]
+    | (index_expr) [ASC] [ID id]
+
+tokenizer_option:
+    SPACE
+    | NGRAM
+    | BENG
+    | IK
+    | NGRAM2
+
+parser_properties_list:
+    parser_properties, [parser_properties]
+
+parser_properties:
+    min_token_size = int_value
+    | max_token_size = int_value
+    | ngram_token_size = int_value
+    | ik_mode = 'char_value'
+    | min_ngram_size = int_value
+    | max_ngram_size = int_value
+
+index_option:
+      GLOBAL
+    | LOCAL
+    | BLOCK_SIZE integer
+    | COMMENT STRING_VALUE
+    | STORING (column_name [, column_name...])
+    | WITH_ROWID
+    | WITH PARSER STRING_VALUE
+    | index_using_algorithm
+    | visibility_option
+    | DATA_TABLE_ID data_table_id
+    | INDEX_TABLE_ID index_table_id
+    | VIRTUAL_COLUMN_ID virtual_column_id
+    | MAX_USED_PART_ID used_part_id
+    | STORAGE_CACHE_POLICY(storage_cache_policy_option)
+
+index_column_group_option：
+    WITH COLUMN GROUP([all columns, ]each column)
+
+storage_cache_policy_option:
+    GLOBAL = {"hot" | "auto" | "cold" | "none"}
+    | timeline_strategy_list
+
+timeline_strategy_list:
+    BOUNDARY_COLUMN = column_name
+    | BOUNDARY_COLUMN_UNIT = {"s" | "ms"}
+    | HOT_RETENTION = intnum retention_time_unit
+    | MIXED_RETENTION = intnum retention_time_unit
+    | GRANULARITY = {"partition" | "block"}
+
+retention_time_unit:
+    YEAR
+    | MONTH
+    | WEEK
+    | DAY
+    | HOUR
+    | MINUTE
+```
+
+### 搜索索引（Search Index）语法
+
+当 `index_type` 指定为 `SEARCH` 时，可使用以下语法创建搜索索引：
+
+```sql
+CREATE SEARCH INDEX index_name ON table_name (
+    search_index_column
+    [, search_index_column ...]
+) [LOCAL];
+
+search_index_column:
+    column_name [WITH (search_col_option_list)]
+
+search_col_option_list:
+    [INCLUDE_PATHS = ('path1'[, 'path2']...)]
+    [| EXCLUDE_PATHS = ('path1'[, 'path2']...)]
+    [| INCLUDE_TYPES = (type1[, type2]...)]
+```
+
+除 `CREATE INDEX` 外，也支持通过 `CREATE TABLE` 或 `ALTER TABLE` 语句创建搜索索引。
+
+上述两种方式中，`search_index_column` 与 `WITH` 配置语义与 `CREATE SEARCH INDEX` 一致。详细语法请参见 [CREATE TABLE](../../../../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2600.create-table-of-mysql-mode.md) 和 [ALTER TABLE](../../../../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/1600.alter-table-of-mysql-mode.md)。
+
+## 参数说明
+
+### 通用索引参数说明
+
+| 参数项   | 描述    |
+|--------|---------|
+| hint_options | 指定 Hint 选项，为可选项。目前仅支持使用 parallel，如 `/*+ parallel(10) */`。 |
+| index_type   | 可选项，指定索引的类型。类型信息介绍可参见下文 [index_type](#index_type)。|
+| IF NOT EXISTS | 用于指示如果索引已经存在，则不进行创建。创建索引时，如果索引存在且没有指定 `IF NOT EXISTS`，则会报错。 |
+| index_name  | 指定待创建的索引名称。 |
+| USING BTREE | 可选项，表示创建索引时使用 B-tree 索引结构。<main id="notice" type='explain'><h4>说明</h4><p>目前仅支持指定为 <code>USING BTREE</code>。</p></main> |
+| table_name | 指定要在其上创建索引的表，可以直接指定表的名字，也可使用 `schema_name.table_name` 格式指定表名和表所属的数据库名。 |
+| sort_column_key | 指定一个排序列的键，创建索引时可以指定多个排序列，多个排序列使用英文逗号（`,`）分开，详细介绍可参见下文 [sort_column_key](#sort_column_key)。 |
+| WITH PARSER tokenizer_option                 | 可选项，指定全文索引的分词器。详细介绍可参见下文 [tokenizer_option](#tokenizer_option)。|
+| PARSER_PROPERTIES\[=\](parser_properties_list) | 可选项，指定分词器的属性。详细介绍可参见下文 [parser_properties](#parser_properties)。|
+| FTS_INDEX_TYPE [=] {MATCH \| PHRASE_MATCH} | 可选项，用于设置全文索引的类型。`MATCH` 表示词项匹配索引，支持基于 bm25 算法的匹配和打分，存储内容包含词元（token）、文档ID、词频、文档长度等信息。`PHRASE_MATCH` 表示短语匹配索引，能更高效地支持短语查询，是 `MATCH` 的功能超集，同时还会存储词的位置列表。仅在与 `FULLTEXT` 索引一起使用时生效。 |
+| index_option | 指定索引选项，创建索引时可以指定多个索引选项，多个索引选项使用英文空格分开，详细介绍可参见下文 [index_option](#index_option)。|
+| partition_option | 指定创建索引分区的选项，支持指定哈希分区、键分区、范围分区、列表分区以及外部表分区。|
+| index_column_group_option | 指定索引选项。详细介绍可参见下文 [index_column_group_option](#index_column_group_option)。|
+|STORAGE_CACHE_POLICY|目前不需要关注。|
+| LOCAL | 可选项，表示创建局部索引。 |
+
+### 搜索索引参数说明
+
+| 参数项            |  描述    | 取值范围 |
+|------------------|---------|---------|
+| search_index_column | 搜索索引列定义，可指定一个或多个列；每列可通过 `WITH (...)` 指定列级路径与类型选项。    |  |
+| INCLUDE_PATHS / EXCLUDE_PATHS | 列级路径白名单/黑名单，二者二选一，用于控制该列参与索引构建的 JSON 路径。默认全路径参与索引构建。路径支持两种配置：<ul><li>简单的确定性路径。比如 <code>$.key</code>、<code>$.a</code>，这个时候只对 <code>$.key</code> 和 <code>$.a</code> 下的标量和数组数据生成索引，<code>$.a.b</code> 等则不生成索引。</li><li>前缀匹配路径。比如 <code>$.a.*</code>，这时对 <code>$.a</code> 下的 JSON 数据生成索引，比如 <code>$.a.b</code> 等都会有索引。<code>$.\*</code> 表示匹配所有路径。</li></ul>                |  |
+| INCLUDE_TYPES               | 限制参与索引构建的数据类型集合（类型值以实际版本支持为准）。例如 `INCLUDE_TYPES = (JSON_STRING)` 表示只构建 JSON_STRING 类型的路径索引。默认所有类型都参与索引构建。            | JSON_STRING, JSON_NUMBER |
+
+### 搜索索引支持的数据类型
+
+搜索索引可以建立在以下数据类型的列上：
+
+| 类别 | 支持的类型 |
+|------|------------|
+| 整数类型 | TINYINT、SMALLINT、MEDIUMINT、INT、BIGINT 及其 UNSIGNED 变体 |
+| 浮点/定点类型 | FLOAT、DOUBLE、DECIMAL、NUMBER |
+| 字符串类型 | VARCHAR、CHAR |
+| 文本类型 | TINYTEXT、TEXT、MEDIUMTEXT、LONGTEXT |
+| 二进制类型 | BINARY、VARBINARY |
+| 二进制大对象 | TINYBLOB、BLOB、MEDIUMBLOB、LONGBLOB |
+| 日期时间类型 | DATE、TIME、DATETIME、TIMESTAMP、YEAR |
+| JSON 类型 | JSON |
+| 数组类型 | ARRAY(element_type) — 仅支持单层数组（如 ARRAY(INT)、ARRAY(VARCHAR(256))） |
+
+不支持的类型：BIT、ENUM、SET 类型不支持创建搜索索引。
+
+### index_type
+
+* `SPATIAL`：该关键字用于指定创建空间索引。
+* `UNIQUE` 该关键字用于指定创建唯一索引。
+* `FULLTEXT`：该关键字用于指定创建全文索引。
+* `SEARCH`：该关键字用于指定创建搜索索引（Search Index）。
+
+有关创建不同种类索引的介绍，参见 [创建索引](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md)。
+
+### sort_column_key
+
+* `column_name [(integer)] [ASC] [ID id]`：表示指定一个列名作为排序键。
+
+  * `column_name`：表示要排序的列名。
+
+  * `integer`：可选项，表示排序键的长度限制。
+
+  * `ASC`：可选项，表示按升序排序，目前暂不支持降序（DESC）排列。
+
+  * `ID id`：可选项，表示排序键的 ID 号。
+
+  例如，在名为 `t3` 的表上创建一个名为 `index3` 的索引，并指定该索引在 `c1` 列上按升序进行排序。
+
+  ```sql
+  CREATE INDEX index3 ON t3 (c1 ASC);
+  ```
+
+* `(index_expr) [ASC] [ID id]`：表示指定一个索引表达式作为排序键。索引表达式可以使用表达式或函数来定义。它可以包含以下选项：
+
+  * `(index_expr)`：表示索引表达式，且允许是布尔表达式，例如 `c1=c1`。OceanBase 数据库当前版本禁止创建生成列上的函数索引。函数索引所支持的表达式参见 [函数索引支持的系统函数列表](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/500.function-index-list-of-supported-functions-of-mysql-mode.md)。
+
+  * `ASC`：可选项，表示按升序排序，目前暂不支持降序（DESC）排列。
+
+  * `ID id`：可选项，表示排序键的 ID 号。
+
+  例如，在名为 `t4` 的表上创建一个名为 `index4` 的索引，指定 `c1+c2` 作为索引表达式，并按升序进行排序。
+
+  ```sql
+  CREATE INDEX index4 ON t4 ((c1 + c2) ASC);
+  ```
+
+创建索引时可指定多个排序列，多个排序列使用英文逗号(`,`)分开。例如，在名为 `t5` 的表上创建一个名为 `index5` 的索引，并指定使用 `c1` 列和 `c2+c3` 表达式作为索引的排序键。
+
+```sql
+CREATE INDEX index5 ON t5 (c1, (c2+c3));
+```
+
+### tokenizer_option
+
+* `SPACE`：默认值，表示按空格进行分词。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | min_token_size   | [1, 16] |
+  | max_token_size   | [10, 84]|
+
+* `NGRAM`：表示基于 N-Gram（中文）的分词方式。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | ngram_token_size | [1, 10] |
+
+* `NGRAM2`：表示将文本拆成 `min_ngram_size`～`max_ngram_size` 范围的连续字符。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | min_ngram_size   | [1, 16] |
+  | max_ngram_size   | [1, 16] |
+
+* `BENG`：基于 Beng （基础英文）的分词方式。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | min_token_size   | [1, 16] |
+  | max_token_size   | [10, 84]|
+
+* `IK`：表示基于 IK（中文）的分词方式。当前仅支持 `utf-8` 字符集。可以指定以下属性：
+
+  |        属性      | 取值范围 |
+  |------------------|---------|
+  | ik_mode          | <ul><li>`smart`</li><li>`max_word`</li></ul>|
+
+可以使用 [TOKENIZE](../400.functions-of-mysql-mode/960.text-processing-functions-of-mysql-mode/200.tokenize-of-mysql-mode.md) 函数查看文本按照指定的分词器及 Json 形式参数的分词结果。
+
+### parser_properties
+
+* `min_token_size`：表示最小分词长度，默认值为 3，取值范围是 1 到 16。
+
+* `max_token_size`：表示最大分词长度，默认值为 84，取值范围是 10 到 84。
+
+* `ngram_token_size`：表示 `NGRAM` 的分词长度，只有 `NGRAM` 分词器有效，默认值为 2，取值范围是 1 到 10。
+
+* `ik_mode`: 表示 `IK` 分词器的分词模式。取值如下：
+
+  * `smart`：默认值，表示词典中的词汇会被用来提高分词的准确性，词典中的词汇边界会被优先考虑，从而可能减少不必要的扩展。
+  * `max_word`：表示在词典中定义的词汇会被识别出来，但不会影响分词的最大化扩展。即使词典中有定义，`max_word` 模式仍然会尝试将文本切分成更多的词汇。
+
+**示例如下：**
+
+1. 创建表 `tbl1`。
+
+   ```sql
+   CREATE TABLE tbl1 (col1 VARCHAR(200), col2 TEXT);
+   ```
+
+2. 为表 `tbl1` 的列 `col2` 创建一个全文索引，并指定使用 `IK` 分词器，同时通过 `PARSER_PROPERTIES` 设置分词器属性。
+
+   ```sql
+   CREATE FULLTEXT INDEX fidx_tbl1 ON tbl1(col2) WITH PARSER IK PARSER_PROPERTIES=(ik_mode='max_word');
+   ```
+
+### index_option
+
+* `GLOBAL`：表示创建全局索引。
+
+* `LOCAL`：表示创建局部索引。
+
+* `BLOCK_SIZE integer`：指定索引块的大小，即每个索引块中的字节数。
+
+* `COMMENT STRING_VALUE`：为索引添加注释。
+
+* `STORING (column_name [, column_name...])`：指定要存储在索引中的列，多个列使用英文逗号（`,`）分开。
+
+* `WITH_ROWID`：创建包含行标识符的索引。
+
+* `WITH PARSER STRING_VALUE`：指定索引所需的解析器。
+
+* `index_using_algorithm`：指定索引所使用的算法。可指定 USING BTREE 或 USING HASH。但不能用 USING HASH 创建多值索引。
+
+* `visibility_option`：指定索引的可见性。
+
+* `DATA_TABLE_ID data_table_id`：指定索引所属的数据表 ID。
+
+* `INDEX_TABLE_ID index_table_id`：指定索引表的 ID。
+
+* `VIRTUAL_COLUMN_ID virtual_column_id`：指定虚拟列的 ID。
+
+* `MAX_USED_PART_ID used_part_id`：指定索引的最大使用分区 ID。
+
+### index_column_group_option
+
+* `WITH COLUMN GROUP(all columns, each column)`：指定创建行存列存冗余的索引。
+* `WITH COLUMN GROUP(each column)`：指定创建列存索引。
+
+### storage_cache_policy
+
+目前不需要关注。
+## 示例
+
+### 示例一
+
+使用以下 SQL 语句为表创建列存索引。
+
+1. 使用下面 SQL 语句创建表 `test_tbl1`。
+
+   ```sql
+   CREATE TABLE test_tbl1 (col1 INT, col2 VARCHAR(50));
+   ```
+
+2. 在 `test_tbl1` 表上创建列存索引 `idx1_test_tbl1`，引用 `col1` 列。
+
+   ```sql
+   CREATE INDEX idx1_test_tbl1 ON test_tbl1 (col1) WITH COLUMN GROUP(each column);
+   ```
+
+### 示例二
+
+创建搜索索引（Search Index）的示例如下。
+
+1. 创建表 `tbl`。
+
+    ```sql
+    CREATE TABLE tbl (col1 JSON, col2 DECIMAL(10,2), col3 JSON, col4 JSON, col5 JSON, col6 varchar(512));
+    ```
+
+2. 创建搜索索引 `search_idx`。
+
+    ```sql
+    CREATE SEARCH INDEX search_idx ON tbl(
+      -- path 需更换为实际路径
+      col1 WITH (INCLUDE_PATHS = ('$.path3', '$.path4')),
+      col2 WITH (EXCLUDE_PATHS = ('$.path1', '$.path3')),
+      col3 WITH (INCLUDE_TYPES = (JSON_STRING)),
+      col4
+    );
+   ```
+
+## 相关文档
+
+* [索引简介](../../../../100.oceanbase-database-concepts/400.database-objects/200.database-objects-of-mysql-mode/300.index-of-mysql-mode/100.index-overview-of-mysql-mode.md)
+
+* [创建索引](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md)
+
+* [查看索引](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/300.view-indexes-of-mysql-mode.md)
+
+* [删除索引](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/400.delete-an-index-of-mysql-mode.md)

@@ -1,0 +1,52 @@
+---
+title: "GV$OB_VECTOR_MEMORY"
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478115.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$OB_VECTOR_MEMORY
+
+## 功能描述
+
+展示当前租户在所有 OBServer 节点上的向量索引数据内存使用的详细统计信息。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| ---- | ---- | ---- | ---- |
+| TENANT_ID         | bigint(20)          | NO   |  租户 ID：<ul><li>1：系统租户 ID  </li><li>其他值：用户租户或者 Meta 租户 ID </li></ul>   |
+| SVR_IP            | varchar(46)         | NO   |  节点地址   |
+| SVR_PORT          | bigint(20)          | NO   |  节点端口   |
+| VECTOR_MEM_HOLD   | bigint(20)          | NO   |  向量索引数据内存占用大小，单位为字节   |
+| VECTOR_MEM_LIMIT  | bigint(20)          | NO   |  向量索引数据内存配置上限，单位为字节   |
+| VECTOR_MEM_USED   | bigint(20)          | NO   |  向量索引数据实际使用内存，单位为字节   |
+
+## 查询示例
+
+查询当前租户在所有 OBServer 节点上的向量索引数据内存使用的详细统计信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.GV$OB_VECTOR_MEMORY  \G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+                svr_ip: 11.158.31.35
+              svr_port: 46002
+             tenant_id: 1004
+       vector_mem_hold: 82231296
+       vector_mem_used: 77876328
+      vector_mem_limit: 429496720
+1 row in set
+```
+
+## 相关文档
+
+[V$OB_VECTOR_MEMORY](35350.v-ob_vector_memory-of-mysql-mode.md)

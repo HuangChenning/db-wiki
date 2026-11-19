@@ -1,0 +1,59 @@
+---
+title: DBA_OB_BACKUP_DELETE_POLICY
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004477269.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_BACKUP_DELETE_POLICY
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示租户下为过期清理/自动清理设置的清理策略。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| POLICY_NAME | VARCHAR2(256) | NO | 清理策略名：<ul><li>`default`：表示自动清理租户当前 `DATA_BACKUP_DEST` 以及 `LOG_ARCHIVE_DEST` 参数中的备份。</li> <li>`log_only`：表示自动清理租户当前 `LOG_ARCHIVE_DEST` 参数中设置的归档路径中的日志。</li></ul> |
+| RECOVERY_WINDOW | VARCHAR2(64) | NO | 可恢复时间窗口，默认值：0 |
+
+## 查询示例
+
+用户租户查看本租户的清理策略。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_OB_BACKUP_DELETE_POLICY;
+```
+
+查询结果如下：
+
+```shell
++-------------+-----------------+
+| POLICY_NAME | RECOVERY_WINDOW |
++-------------+-----------------+
+| default     | 7d              |
++-------------+-----------------+
+1 row in set
+```
+
+## 相关视图或文档
+
+* 查看正在执行的备份清理的 Job 任务的执行进度：[DBA_OB_BACKUP_DELETE_JOBS](10800.dba_ob_backup_delete_jobs-of-oracle-mode.md)
+
+* 查看正在执行的备份清理的 Task 任务的执行进度：[DBA_OB_BACKUP_DELETE_TASKS](11100.dba_ob_backup_delete_tasks-of-oracle-mode.md)
+
+* 查看备份清理的 Job 任务历史信息：[DBA_OB_BACKUP_DELETE_JOB_HISTORY](10700.dba_ob_backup_delete_job_history-of-oracle-mode.md)
+
+* 查看备份清理的 Task 任务的历史信息：[DBA_OB_BACKUP_DELETE_TASK_HISTORY](11000.dba_ob_backup_delete_task_history-of-oracle-mode.md)
+
+* 设置清理策略的详细操作，参见 [自动清理过期备份](../../../../600.manage/600.backup-and-recovery/500.clear-backup-data/50.automatic-backup-cleanup/100.cleaning-up-backed-up-data-automatically.md)。

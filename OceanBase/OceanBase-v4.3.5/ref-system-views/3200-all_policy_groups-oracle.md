@@ -1,0 +1,57 @@
+---
+title: ALL_POLICY_GROUPS
+book: "系统视图"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002014221.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# ALL_POLICY_GROUPS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.1.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前用户可访问的所有视图的策略组信息，配合策略上下文实现对不同的用户生效不同的策略。
+
+## 字段说明
+
+| 字段 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| OBJECT_OWNER | VARCHAR2(128) | YES | 受策略控制的对象的拥有者 |
+| OBJECT_NAME | VARCHAR2(128) | YES | 受策略控制的对象的名字 |
+| POLICY_GROUP | VARCHAR2(128) | NO | 策略组名 |
+| COMMON | VARCHAR2(3) | NO | 仅用于兼容，目前值固定为 NO。 |
+| INHERITED | VARCHAR2(3) | NO | 仅用于兼容，目前值固定为 NO。 |
+
+## 查询示例
+
+查看当前用户可访问的所有视图的策略组信息。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.ALL_POLICY_GROUPS;
+```
+
+查询结果如下：
+
+```shell
++--------------+----------------+--------------+--------+-----------+
+| OBJECT_OWNER | OBJECT_NAME    | POLICY_GROUP | COMMON | INHERITED |
++--------------+----------------+--------------+--------+-----------+
+| SYS          | V_ORDERS_CTX   | GROUP_REGION | NO     | NO        |
+| SYS          | V_SALES_SECURE | GROUP_SALES  | NO     | NO        |
++--------------+----------------+--------------+--------+-----------+
+2 rows in set
+```
+
+## 相关视图或文档
+
+* 查看当前用户拥有的视图的策略组信息：[USER_POLICY_GROUPS](28600.user_policy_groups-oracle.md)
+
+* 查看当前租户内所有视图的策略组信息：[DBA_POLICY_GROUPS](17800.dba_policy_groups-oracle.md)

@@ -1,0 +1,34 @@
+---
+title: information_schema.PROCESSLIST
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699260.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# information_schema.PROCESSLIST
+
+information_schema.PROCESSLIST
+===================================================
+
+功能
+-----------
+
+提供运行中的线程信息。
+
+字段说明
+-------------
+
+| **字段名称** |       **类型**        | **是否可以为 NULL** |    **描述**    |
+|----------|---------------------|----------------|--------------|
+| ID       | bigint(20) unsigned | NO             | 连接标识符        |
+| USER     | varchar(32)         | NO             | 用户名          |
+| HOST     | varchar(128)        | NO             | 客户端主机名称      |
+| DB       | varchar(128)        | YES            | 数据库名称        |
+| COMMAND  | varchar(4096)       | NO             | 线程执行的命令类型    |
+| TIME     | bigint(20)          | NO             | 线程在当前状态的持续时间 |
+| STATE    | varchar(128)        | YES            | 表示线程正在做的任务标识 |
+| INFO     | varchar(262143)     | YES            | 当前线程正在执行的语句  |

@@ -1,0 +1,166 @@
+---
+title: SHOW
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687588.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SHOW
+
+## 描述
+
+该语句用于展示数据库对象的信息。
+
+## 语法
+
+```sql
+SHOW {
+  | TABLE STATUS
+  | [FULL] PROCESSLIST
+  | RECYCLEBIN
+  | VARIABLES [LIKE 'pattern']
+  | PARAMETERS
+  | CHARSET | CHARACTER SET
+  | COLLATION
+  | CREATE TABLEGROUP tablegroup_name
+  | CREATE TABLE table_name
+  | CREATE VIEW view_name
+  | GRANTS
+  | PRIVILEGES
+  | ERRORS
+  | TRACE [FORMAT='JSON']
+  | FILES IN LOCATION @location_name['/path'] [pattern_expr]
+  | SENSITIVE RULES [show_sensitive_rule_option]
+};
+
+pattern_expr:
+    PATTERN [=] 'regex_pattern'
+    | REGEXP_PATTERN [=] 'regex_pattern'
+    | GLOB_PATTERN [=] 'glob_pattern'
+```
+
+`show_sensitive_rule_option` 用于限定规则范围并按名称或列条件筛选，展开语法如下（`FROM` 与 `IN` 语义相同，可混用）：
+
+```sql
+show_sensitive_rule_option:
+    [ [ FROM | IN ] { table_name | schema_name.table_name | USER user_name }
+      [ [ FROM | IN ] schema_name ] ]
+  [ LIKE 'pattern' ]
+  [ WHERE condition ]
+```
+
+- 不书写任何选项时，展示当前租户下全部敏感数据保护规则。
+- `table_name` / `schema_name.table_name`：仅展示与指定表关联的规则；若表名与当前默认 schema 下的表同名，可用 `FROM table_name FROM schema_name` 或 `IN table_name IN schema_name` 等形式限定 schema（与内核 SQLQA 用例一致）。
+- `USER user_name`：展示指定用户（Oracle 模式下对应「用户」语义）关联的规则；**与 MySQL 模式下的 `FROM DATABASE` / `IN DATABASE` 相对应**，Oracle 模式使用 `FROM USER` / `IN USER`。
+- `LIKE 'pattern'`：按规则名模式过滤。
+- `WHERE condition`：按结果列过滤，例如 `rule_name`、`ENABLED`、`PROTECTION_POLICY` 等（具体可引用列以实际返回结果集为准）。
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>Oracle 模式下请使用 <code>FROM USER</code> / <code>IN USER</code> 指定用户维度；其角色与 MySQL 模式下的 <code>FROM DATABASE</code> / <code>IN DATABASE</code> 相对应，请勿与 MySQL 语法混用。</p>
+</main>
+
+<main id="notice" type='notice'>
+<h4>注意</h4>
+<p>Oracle 模式下不支持通过 <code>SHOW GRANTS</code> 查看与敏感数据保护规则相关的权限信息。</p>
+</main>
+
+## 参数解释
+
+|    参数 |    描述     |
+|-----------|------------|
+| TABLE STATUS                       | 展示当前用户中所有表的详细信息。  |
+| VARIABLES \[like 'variable_name'\] | 显示变量信息。如果不指定 `like 'variable_name'`，则显示所有系统变量信息。`variable_name` 为变量名称。 |
+| CHARSET \| CHARACTER SET           | 展示支持的字符集。 |
+| COLLATION                          | 展示支持的字符序。  |
+| PARAMETERS                         | 展示所有系统配置项。  |
+| TABLEGROUPS                        | 展示表组信息。   |
+| CREATE TABLEGROUP tablegroup_name  | 查看创建表组的语句。`tablegroup_name` 为表组名称。      |
+| CREATE TABLE table_name            | 查看创建表的语句。`table_name` 为表名。|
+| CREATE VIEW view_name              | 查看创建视图的语句。`view_name` 为视图名称。  |
+| ERRORS                             | 查看错误信息。 |
+| GRANTS                             | 查看当前用户的权限。 |
+| PRIVILEGES                         | 查看各项权限的描述。|
+| RECYCLEBIN                         | 查看回收站。 |
+| \[FULL\] PROCESSLIST                 | 查看当前租户进程列表。具体如下：<ul><li><code>SHOW PROCESSLIST</code> 显示简要的进程列表，具体如下：  <ul><li><code>ID</code>：进程的 ID，即当前会话的 Client Session ID，该 ID 是会话在客户端中的唯一标识。</li><li><code>USER</code>：连接的用户名。</li><li><code>HOST</code>：客户端 IP 和端口（通过 ODP 连接则为 ODP 的 IP 和端口）。</li><li><code>DB</code>：访问的 Database 名称。</li><li><code>COMMAND</code>：当前执行的命令类型，取值 <code>Query</code>、<code>Sleep</code> 等。</li><li><code>TIME</code>：当前命令执行时间，单位是秒。如果命令发生重试，会清零后重新计算。</li><li><code>STATE</code>：当前会话状态，取值 <code>SLEEP</code>、<code>ACTIVE</code> 等。</li><li><code>INFO</code>：展示当前正在执行的命令，长度限制为 100 个字符，超出部分截断。</li></ul>  </li><li><code>SHOW FULL PROCESSLIST</code>：显示完整的进程列表，包括每个进程的详细信息，具体如下：  <ul><li><code>ID</code>：进程的 ID，即当前会话的 Client Session ID，该 ID 是会话在客户端中的唯一标识。</li><li><code>USER</code>：连接的用户名。</li><li><code>TENANT</code>：连接的租户。</li><li><code>HOST</code>：客户端 IP 和端口（通过 ODP 连接则为 ODP 的 IP 和端口）。</li><li><code>DB</code>：访问的 Database 名称。</li><li><code>COMMAND</code>：当前执行的命令类型，取值 <code>Query</code>、<code>Sleep</code> 等。</li><li><code>TIME</code>：当前命令执行时间，单位是秒。如果命令发生重试，会清零后重新计算。</li><li><code>STATE</code>：当前会话状态，取值 <code>SLEEP</code>、<code>ACTIVE</code> 等。</li><li><code>INFO</code>：展示当前正在执行的命令。</li><li><code>IP</code>：服务器 IP 地址。</li><li><code>PORT</code>：SQL 端口号。</li></ul>  </li></ul>  <main id="notice" type='explain'><h4>说明</h4><p>通过 <code>SHOW PROCESSLIST</code> 语句查询当前数据库中会话的数量和会话的 ID 的详细信息，请参见 <a href="../../../../../1200.database-proxy/1500.view-tenant-sessions.md">查看租户会话</a>。</p></main>|
+| TRACE [FORMAT='JSON']              | 展示 SQL 语句的执行情况。可以选择以 JSON 的格式输出。|
+| SENSITIVE RULES \[show_sensitive_rule_option\] | 查看当前租户下的敏感数据保护规则。可选 `FROM`/`IN` 限定表或 `schema.table`、`USER user_name`，并可配合 `LIKE`、`WHERE` 筛选；详见上文「`show_sensitive_rule_option`」展开说明。|
+| FILES IN LOCATION @location_name['/path'] [pattern_expr] | 用于查看 Location 下存在的文件。<ul><li>`['/path']` 为可选项，表示子目录。</li><li>`pattern_expr` 为可选项，指定文件匹配模式，用于过滤 `LOCATION` 目录下的文件。如果不指定该参数，则默认可以访问 `LOCATION` 目录下的所有文件。详细信息参见下文 [pattern_expr](#pattern_expr)。</li></ul> <main id="notice" type='explain'><h4>说明</h4><p><ul><li>执行 <code>SHOW FILES IN LOCATION</code> 语句，需要当前用户拥有 Location 对象的 <code>READ</code> 权限。</li><li>对于 OceanBase 数据库 V4.4.x 版本，从 V4.4.1 版本开始支持该语法。</li></ul></p></main>|
+
+### pattern_expr
+
+* `PATTERN [=] 'regex_pattern'`：指定文件名或正则表达式，参数 `PATTERN` 和 `REGEXP_PATTERN` 等价。控制哪些文件被加载，示例如下：
+
+  * `PATTERN = 'extdata.csv'`：指定要加载的文件名为 `extdata.csv`。
+  * 如果有多个 CSV 文件，比如 `extdata_2024.csv`、`extdata_2025.csv`，可以写成 `PATTERN = 'extdata_\d{4}\.csv'`。
+
+* `REGEXP_PATTERN [=] 'regex_pattern'`：指定使用正则表达式匹配文件名。灵活匹配多种文件名，示例如下：
+
+  * `REGEXP_PATTERN = '.*[.]csv$'`：使用正则表达式来筛选 `LOCATION` 下所有以 `.csv` 结尾的文件。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>对于 V5.x 版本，从 V5.0.1 版本开始引入参数 <code>REGEXP_PATTERN</code>。</p>
+    </main>
+
+* `GLOB_PATTERN [=] 'glob_pattern'`：指定使用通配符匹配文件名。简单匹配常见文件类型，示例如下：
+
+  * `GLOB_PATTERN = '*.csv'`：匹配所有以 `.csv` 结尾的文件。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>对于 V5.x 版本，从 V5.0.1 版本开始引入参数 <code>GLOB_PATTERN</code>。</p>
+    </main>
+
+## 示例
+
+* 查看表 `tbl1` 的创建信息。
+
+  ```sql
+    obclient> CREATE TABLE employees (
+      emp_id INT PRIMARY KEY,
+      emp_name VARCHAR(50) NOT NULL,
+      hire_date DATE,
+      salary NUMBER(10,2),
+      department VARCHAR(30)
+    );
+    obclient> SHOW CREATE TABLE employees;
+  ```
+
+* 查看回收站是否开启。
+
+  ```sql
+  obclient> SHOW VARIABLES LIKE 'recyclebin';
+  ```
+
+* 查看回收站中的内容。
+
+  ```sql
+  obclient> SHOW RECYCLEBIN;
+  ```
+
+* 使用 `SHOW TRACE` 查看某一 SQL 的执行信息，并以 JSON 的格式输出。
+
+  ```shell
+  obclient> SET ob_enable_show_trace = 1;
+
+  obclient> CREATE TABLE space_travelers (
+      astronaut_id INT PRIMARY KEY,
+      mission_code VARCHAR(50) NOT NULL,
+      launch_date DATE,
+      flight_hours NUMBER(10,2),
+      space_station VARCHAR(30)
+  );
+
+  obclient> INSERT INTO space_travelers VALUES(1, 'APOLLO-11', TO_DATE('1969-07-16', 'YYYY-MM-DD'), 195.5, 'MOON');
+
+  obclient> INSERT INTO space_travelers VALUES(2, 'ISS-EXP-1', TO_DATE('2000-11-02', 'YYYY-MM-DD'), 4320.8, 'ISS');
+
+  obclient> SELECT/*+PARALLEL(2)*/ COUNT(*) FROM space_travelers;
+
+  obclient> SHOW TRACE FORMAT='JSON'\G
+  ```

@@ -1,0 +1,30 @@
+---
+title: DBA_SEQUENCES
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001701933.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# DBA_SEQUENCES
+
+## 功能
+
+展示当前租户下的所有序列。
+
+## 字段说明
+
+| 字段名称        | 类型          | 是否可以为 NULL | 描述              |
+|----------------|---------------|----------------|-------------------|
+| SEQUENCE_OWNER | VARCHAR2(128) | NO   | 序列所在的数据库的名称   |
+| SEQUENCE_NAME  | VARCHAR2(128) | NO   | 序列名称     |
+| MIN_VALUE      | NUMBER(28)    | NO   | 可取的最小值（含）     |
+| MAX_VALUE      | NUMBER(28)    | NO   | 可取的最大值（含最大值）    |
+| INCREMENT_BY   | NUMBER(28)    | NO   | 每次取值的步长，可为正整数或负整数，不可为 0      |
+| CYCLE_FLAG     | CHAR(1)       | NO   | 是否可以循环取值   |
+| ORDER_FLAG     | CHAR(1)       | NO   | 取值是否保证全局有序   |
+| CACHE_SIZE     | NUMBER(28)    | NO   | 每个节点缓存值的数量    |
+| LAST_NUMBER    | NUMBER(38)    | NO   | 记录下一个可分配给节点的值   |

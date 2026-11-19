@@ -1,0 +1,47 @@
+---
+title: XMLTYPE
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702534.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# XMLTYPE
+
+XMLTYPE 
+============================
+
+`XMLTYPE` 是一个 XMLType 构造函数。
+
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+语法 
+-----------------------
+
+```sql
+CONSTRUCTOR FUNCTION XMLType(
+   xmlData IN CLOB)
+RETURN SELF AS RESULT；
+
+CONSTRUCTOR FUNCTION XMLType(
+   xmlData IN VARCHAR2)
+RETURN SELF AS RESULT；
+```
+
+
+
+参数解释 
+-------------------------
+
+
+
+|   参数    |                   解释                   |
+|---------|----------------------------------------|
+| xmlData | 数据的格式包括 `CLOB` 和 `VARCHAR2` 或所对应的对象类型。 |

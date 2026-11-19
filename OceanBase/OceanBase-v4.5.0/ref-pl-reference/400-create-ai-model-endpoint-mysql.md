@@ -1,0 +1,160 @@
+---
+title: CREATE_AI_MODEL_ENDPOINT
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479800.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CREATE_AI_MODEL_ENDPOINT
+
+`CREATE_AI_MODEL_ENDPOINT` 过程用于创建 AI 模型对象的访问端点，需指定端点的地址、访问密钥、模型供应商等属性。
+
+## 语法
+
+```sql
+PROCEDURE create_ai_model_endpoint(
+    IN name VARCHAR(128), 
+    IN params JSON);
+```
+
+## 参数说明
+
+<table>
+  <thead>
+    <tr>
+      <th>参数</th>
+      <th>描述</th>
+      <th>类型</th>
+      <th>取值范围</th>
+      <th>是否可空</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td>AI 模型对象的访问端点的名称。</td>
+      <td>VARCHAR(128)</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td rowspan="5">params</td>
+      <td><code>ai_model_name</code>，表示由 <code>CREATE_AI_MODEL</code> 过程创建的 AI 模型对象的名称</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>url</code>，表示 AI 模型服务访问端点的完整 URL，即聊天、嵌入或重排序等功能的具体接口地址，而非基础 URL</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>access_key</code>，表示访问端点的访问密钥</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>request_model_name</code>，表示用户自定义的模型名称，例如 <code>big-m3-custom</code>，放在请求消息体里面</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>YES，可以为空或不指定</td>
+    </tr>
+    <tr>
+      <td><code>provider</code>，表示模型供应商</td>
+      <td>JSON STRING</td>
+      <td><ul><li><code>aliyun-openAI</code>：阿里云 OpenAI</li><li><code>aliyun-dashscope</code>：阿里云 DashScope</li><li><code>deepseek</code>：DeepSeek</li><li><code>siliconflow</code>：SiliconFlow</li><li><code>hunyuan-openAI</code>：混元 OpenAI</li><li><code>openAI</code>：OpenAI</li></ul></td>
+      <td>NO</td>
+    </tr>
+  </tbody>
+</table>
+
+url 参数取值范围：
+
+<table>
+  <thead>
+    <tr>
+      <th>厂商</th>
+      <th>类型</th>
+      <th>说明/示例</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">阿里云<br>（兼容 OpenAI 格式）</td>
+      <td>complete</td>
+      <td>https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions</td>
+    </tr>
+    <tr>
+      <td>embedding</td>
+      <td>https://dashscope.aliyuncs.com/compatible-mode/v1/embeddings</td>
+    </tr>
+    <tr>
+      <td rowspan="3">阿里云 DashScope<br>（非兼容 OpenAI 格式）</td>
+      <td>complete</td>
+      <td>https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation</td>
+    </tr>
+    <tr>
+      <td>embed</td>
+      <td>https://dashscope.aliyuncs.com/api/v1/services/embeddings/text-embedding/text-embedding</td>
+    </tr>
+    <tr>
+      <td>rerank</td>
+      <td>https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank</td>
+    </tr>
+    <tr>
+      <td>deepseek<br>（兼容 OpenAI 格式）</td>
+      <td>complete</td>
+      <td>https://api.deepseek.com/chat/completions</td>
+    </tr>
+    <tr>
+      <td rowspan="3">硅基流动<br>（兼容 OpenAI 格式）</td>
+      <td>complete</td>
+      <td>https://api.siliconflow.cn/v1/chat/completions</td>
+    </tr>
+    <tr>
+      <td>embedding</td>
+      <td>https://api.siliconflow.cn/v1/embeddings</td>
+    </tr>
+    <tr>
+      <td>rerank</td>
+      <td>https://api.siliconflow.cn/v1/rerank</td>
+    </tr>
+    <tr>
+      <td rowspan="2">腾讯混元大模型<br>（兼容 OpenAI 接口）</td>
+      <td>complete</td>
+      <td>https://api.hunyuan.cloud.tencent.com/v1/chat/completions</td>
+    </tr>
+    <tr>
+      <td>embedding</td>
+      <td>https://api.hunyuan.cloud.tencent.com/v1/embeddings</td>
+    </tr>
+  </tbody>
+</table>
+
+## 示例
+
+创建 AI 模型对象，类型为 `dense_embedding`，大模型为 `text-embedding-v2`。
+
+```sql
+CALL DBMS_AI_SERVICE.CREATE_AI_MODEL_ENDPOINT (
+  'my_model_endpoint1', '{
+    "ai_model_name": "my_model1",
+    "url": "https://api.deepseek.com/chat/completions",
+    "access_key": "sk-xxxxxxxxxxxx",
+    "request_model_name": "deepseek-chat",
+    "provider": "deepseek"
+  }');
+```
+
+## 相关文档
+
+* [DBMS_AI_SERVICE 子程序概览](100.dbms-ai-service-overview-mysql.md)
+* [ALTER_AI_MODEL_ENDPOINT](500.alter-ai-model-endpoint-mysql.md)
+* [DROP_AI_MODEL_ENDPOINT](600.drop-ai-model-endpoint-mysql.md)

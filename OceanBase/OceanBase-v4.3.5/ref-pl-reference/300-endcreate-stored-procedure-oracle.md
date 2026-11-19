@@ -1,0 +1,38 @@
+---
+title: "ENDCREATE 成员存储过程"
+book: "PL 参考"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002016398.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# ENDCREATE 成员存储过程
+
+`ENDCREATE` 成员存储过程用于结束 `ANYDATA` 的创建。
+
+使用此调用后将无法调用其他创建函数。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 语法 
+
+```sql
+MEMBER PROCEDURE EndCreate(
+self IN OUT NOCOPY AnyData);
+```
+
+
+
+## 参数解释 
+
+
+
+|  参数  |      解释       |
+|------|---------------|
+| self | 一个 `ANYDATA`。 |

@@ -1,0 +1,33 @@
+---
+title: "大对象和文本类型概述"
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700026.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# 大对象和文本类型概述
+
+OceanBase 数据库支持的大对象数据类型 `BLOB` 和文本类型 `TEXT`。
+
+OceanBase 数据库当前版本所支持的大对象和文本类型及其相关信息如下表所示。
+
+|      类型      | 长度 |   存储长度上限（字节）   |    字符集    |
+|--------------|----|----------------|-----------|
+| `TINYBLOB`   | 变长 | 255            | `BINARY`  |
+| `BLOB`       | 变长 | 65535    | `BINARY`  |
+| `MEDIUMBLOB` | 变长 | 16777215 | `BINARY`  |
+| `LONGBLOB`   | 变长 | 536870910 | `BINARY`  |
+| `TINYTEXT`   | 变长 | 255            | `UTF8MB4` |
+| `TEXT`       | 变长 | 65535    | `UTF8MB4` |
+| `MEDIUMTEXT` | 变长 | 16777215  | `UTF8MB4` |
+| `LONGTEXT`   | 变长 | 536870910  | `UTF8MB4` |
+
+在大多数情况下，可以将 `BLOB` 列视为一个 `VARBINARY` 列，可以将 `TEXT` 列视为 `VARCHAR` 列。`BLOB` 和 `TEXT` 在以下方面与 `VARBINARY` 和 `VARCHAR` 有所不同：
+
+* 必须指定 `BLOB` 和 `TEXT` 列上的索引前缀长度。对于 `CHAR` 和 `VARCHAR`，前缀长度是可选的。
+
+* `BLOB` 和 `TEXT` 列不能有 `DEFAULT` 值。

@@ -1,0 +1,59 @@
+---
+title: DBA_PART_KEY_COLUMNS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501008.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_PART_KEY_COLUMNS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户所有分区对象中一级分区键包含的列。
+
+## 字段说明
+
+|      **字段名称**      |     **类型**     | **是否可以为 NULL** |                                                              **描述**                                                              |
+|--------------------|----------------|----------------|----------------------------------------------------------------------------------------------------------------------------------|
+| OWNER              | VARCHAR2(128)  | NO             | 分区表或分区索引的拥有者                                  |
+| NAME               | VARCHAR2(128)  | NO             | 分区表或分区索引的名字                                   |
+| OBJECT_TYPE        | CHAR(5)        | NO             | 分区对象的类型：<ul><li>TABLE   </li><li> INDEX  </li></ul>  |
+| COLUMN_NAME        | VARCHAR2(4000) | NO             | 列的名字                                          |
+| COLUMN_POSITION    | NUMBER         | NO             | 列在分区键中的位置                                     |
+| COLLATED_COLUMN_ID | NUMBER         | NO             | 目前暂不支持该字段，当前该字段默认为 NULL                       |
+
+## 查询示例
+
+用户租户查询本租户的分区表 `TBL1_H` 的一级分区键包含的列。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_PART_KEY_COLUMNS WHERE NAME='TBL1_H';
+```
+
+查询结果如下：
+
+```shell
++-------+--------+-------------+-------------+-----------------+--------------------+
+| OWNER | NAME   | OBJECT_TYPE | COLUMN_NAME | COLUMN_POSITION | COLLATED_COLUMN_ID |
++-------+--------+-------------+-------------+-----------------+--------------------+
+| SYS   | TBL1_H | TABLE       | COL1        |               1 |               NULL |
++-------+--------+-------------+-------------+-----------------+--------------------+
+1 row in set
+```
+
+## 相关视图或文档
+
+* [CDB_PART_KEY_COLUMNS](../../300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/12100.o-cdb_part_key_columns-of-sys-tenant.md)
+
+* [ALL_PART_KEY_COLUMNS](2600.all_part_key_columns-of-oracle-mode.md)
+
+* [USER_PART_KEY_COLUMNS](26700.user_part_key_columns-of-oracle-mode.md)

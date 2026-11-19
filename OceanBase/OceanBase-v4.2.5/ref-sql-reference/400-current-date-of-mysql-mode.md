@@ -1,0 +1,43 @@
+---
+title: CURRENT_DATE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504745.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CURRENT_DATE
+
+## 声明
+
+```sql
+CURRENT_DATE()
+CURRENT_DATE
+```
+
+## 说明
+
+返回当前日期，不含时间部分。该函数是 [CURDATE](../100.date-and-time-functions-of-mysql-mode/300.curdate-of-mysql-mode.md) 的别名。
+
+## 示例
+
+```javascript
+obclient> SELECT CURRENT_DATE;
++--------------+
+| CURRENT_DATE |
++--------------+
+| 2021-08-23   |
++--------------+
+1 row in set
+
+obclient> SELECT CURRENT_DATE();
++----------------+
+| CURRENT_DATE() |
++----------------+
+| 2021-08-23     |
++----------------+
+1 row in set
+```

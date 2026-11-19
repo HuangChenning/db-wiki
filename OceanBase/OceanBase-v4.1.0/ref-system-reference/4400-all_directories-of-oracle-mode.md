@@ -1,0 +1,34 @@
+---
+title: ALL_DIRECTORIES
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699086.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ALL_DIRECTORIES
+
+## 功能
+
+展示当前用户可访问的所有目录。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 相关视图
+
+DBA_DIRECTORIES
+
+## 字段说明
+
+|    **字段名称**    |     **类型**     | **是否可以为 NULL** |   **描述**    |
+|----------------|----------------|----------------|-------------|
+| OWNER          | VARCHAR2(128)  | NO             | 目录所属的 Owner |
+| DIRECTORY_NAME | VARCHAR2(128)  | NO             | 目录名称        |
+| DIRECTORY_PATH | VARCHAR2(4000) | NO             | 目录路径        |
+| ORIGIN_CON_ID  | NUMBER(38)     | NO             | 租户 ID       |

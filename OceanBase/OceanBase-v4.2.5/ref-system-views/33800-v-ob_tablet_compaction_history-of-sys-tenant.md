@@ -1,0 +1,85 @@
+---
+title: "V$OB_TABLET_COMPACTION_HISTORY"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501446.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_TABLET_COMPACTION_HISTORY
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示所有租户在当前节点上 Tablet 级 Compaction 的历史信息。
+
+## 字段说明
+
+|                 字段名称                 |      类型      | **是否可以为 NULL** |                                            描述                                            |
+|--------------------------------------|--------------|----------------|--------|
+|SVR_IP    |varchar(46)    |NO   |服务器IP    |
+|SVR_PORT    |bigint(20)    |NO   |服务器端口号    |
+|TENANT_ID    |bigint(20)    |NO   |租户ID    |
+|LS_ID    |bigint(20)    |NO   |日志流ID    |
+|TABLET_ID    |bigint(20)    |NO   |数据分片ID    |
+|TYPE    |varchar(64)    |NO   | Compaction 的类型： <ul><li>`MDS_TABLE_MERGE`：将系统的元数据按照 SSTable 的格式持久化到磁盘里。</li> <li>`MAJOR_MERGE`：租户级合并</li> <li>`MEDIUM_MERGE`：分区级合并</li> <li>`MINI_MERGE`：Mini Compaction，将 MemTable 转变成 Mini SSTable。</li> <li>`MINOR_MERGE`：Minor Compaction，多个 Mini SSTable 合成一个新的 Mini SSTable 或者多个 Mini SSTable 与一个 Minor SSTable 合成一个新的 Minor SSTable。</li> <li>`META_MAJOR_MERGE`：一种特殊的 Compaction 类型，是将某个指定时间点之前的数据合成一个 Meta Major SSTable，其数据格式与 Major SSTable 一样，不包含多版本数据和未提交事务数据。</li></ul>    |
+|COMPACTION_SCN    |bigint(20) unsigned    |NO   |合并版本信息    |
+|START_TIME    |timestamp(6)    |NO   |开始时间    |
+|FINISH_TIME    |timestamp(6)    |NO   |结束时间    |
+|TASK_ID    |varchar(64)    |NO   |任务执行Trace    |
+|OCCUPY_SIZE    |bigint(20)    |NO   |数据量    |
+|MACRO_BLOCK_COUNT    |bigint(20)    |NO   |宏块数    |
+|MULTIPLEXED_MACRO_BLOCK_COUNT    |bigint(20)    |NO   |重用宏块数    |
+|NEW_MICRO_COUNT_IN_NEW_MACRO    |bigint(20)    |NO   |新生成宏块中的新微块数    |
+|MULTIPLEXED_MICRO_COUNT_IN_NEW_MACRO    |bigint(20)    |NO   |新生成宏块中的重用微块数    |
+|TOTAL_ROW_COUNT    |bigint(20)    |NO   |总行数    |
+|INCREMENTAL_ROW_COUNT    |bigint(20)    |NO   |新输出的行    |
+|COMPRESSION_RATIO    |double    |NO   |新数据的压缩率 = 新增宏块数据在压缩后/压缩前比率    |
+|NEW_FLUSH_DATA_RATE    |bigint(20)    |NO   |新数据的输出速度，单位KB/s    |
+|PROGRESSIVE_COMPACTION_ROUND    |bigint(20)    |NO   |渐近合并当前轮次（如果为全量合并，该列为-1）    |
+|PROGRESSIVE_COMPACTION_NUM    |bigint(20)    |NO   |渐近合并总轮次    |
+|PARALLEL_DEGREE    |bigint(20)    |NO   |并行度    |
+|PARALLEL_INFO    |varchar(512)    |NO   |并行任务信息，会展示并行任务扫描的数据量/运行时间/输出的数据量的统计信息（min/max/avg）    |
+|PARTICIPANT_TABLE    |varchar(512)    |NO   |参与本次compaction的table信息    |
+|MACRO_ID_LIST    |varchar(256)    |NO   |输出的宏块列表，宏块列表过长则不展示    |
+|COMMENTS    |varchar(256)    |NO   |记录曾经失败的compaction历史信息、本次compaction的耗时采集信息等    |
+
+## 查询示例
+
+系统租户查询租户 ID 为 1002 的租户在当前节点上 Tablet 级 Compaction 的历史信息，展示前 5 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.V$OB_TABLET_COMPACTION_HISTORY WHERE TENANT_ID=1002 LIMIT 5;
+```
+
+查询结果如下：
+
+```shell
++----------------+----------+-----------+-------+-----------+-------------+---------------------+----------------------------+----------------------------+-----------------------------------+-------------+-------------------+-------------------------------+------------------------------+--------------------------------------+-----------------+-----------------------+-------------------+---------------------+------------------------------+----------------------------+-----------------+---------------+----------------------------------------+---------------+----------------------------------------+
+| SVR_IP         | SVR_PORT | TENANT_ID | LS_ID | TABLET_ID | TYPE        | COMPACTION_SCN      | START_TIME                 | FINISH_TIME                | TASK_ID                           | OCCUPY_SIZE | MACRO_BLOCK_COUNT | MULTIPLEXED_MACRO_BLOCK_COUNT | NEW_MICRO_COUNT_IN_NEW_MACRO | MULTIPLEXED_MICRO_COUNT_IN_NEW_MACRO | TOTAL_ROW_COUNT | INCREMENTAL_ROW_COUNT | COMPRESSION_RATIO | NEW_FLUSH_DATA_RATE | PROGRESSIVE_COMPACTION_ROUND | PROGRESSIVE_COMPACTION_NUM | PARALLEL_DEGREE | PARALLEL_INFO | PARTICIPANT_TABLE                      | MACRO_ID_LIST | COMMENTS                               |
++----------------+----------+-----------+-------+-----------+-------------+---------------------+----------------------------+----------------------------+-----------------------------------+-------------+-------------------+-------------------------------+------------------------------+--------------------------------------+-----------------+-----------------------+-------------------+---------------------+------------------------------+----------------------------+-----------------+---------------+----------------------------------------+---------------+----------------------------------------+
+| 172.xx.xxx.xxx |     2882 |      1002 |     1 |     50192 | MAJOR_MERGE | 1735668000499972000 | 2025-01-01 02:01:30.261474 | 2025-01-01 02:01:30.262600 | YB42AC1E87E4-00062A8B74EABDA7-0-0 |           0 |                 0 |                             0 |                            0 |                                    0 |               0 |                     0 |                 1 |                   0 |                            1 |                          0 |               1 | -             | table_cnt=1,[MAJOR]snapshot_version=1; |               | extra_info="time_guard=total=6.91ms;"; |
+| 172.xx.xxx.xxx |     2882 |      1002 |     1 |     60379 | MAJOR_MERGE | 1735668000499972000 | 2025-01-01 02:01:30.261157 | 2025-01-01 02:01:30.261933 | YB42AC1E87E4-00062A8B74EABDA4-0-0 |           0 |                 0 |                             0 |                            0 |                                    0 |               0 |                     0 |                 1 |                   0 |                            1 |                          0 |               1 | -             | table_cnt=1,[MAJOR]snapshot_version=1; |               | extra_info="time_guard=total=7.62ms;"; |
+| 172.xx.xxx.xxx |     2882 |      1002 |     1 |     50380 | MAJOR_MERGE | 1735668000499972000 | 2025-01-01 02:01:30.261134 | 2025-01-01 02:01:30.261940 | YB42AC1E87E4-00062A8B74EABDA3-0-0 |           0 |                 0 |                             0 |                            0 |                                    0 |               0 |                     0 |                 1 |                   0 |                            1 |                          0 |               1 | -             | table_cnt=1,[MAJOR]snapshot_version=1; |               | extra_info="time_guard=total=7.81ms;"; |
+| 172.xx.xxx.xxx |     2882 |      1002 |     1 |     60259 | MAJOR_MERGE | 1735668000499972000 | 2025-01-01 02:01:30.261783 | 2025-01-01 02:01:30.262687 | YB42AC1E87E4-00062A8B74EABDA9-0-0 |           0 |                 0 |                             0 |                            0 |                                    0 |               0 |                     0 |                 1 |                   0 |                            1 |                          0 |               1 | -             | table_cnt=1,[MAJOR]snapshot_version=1; |               | extra_info="time_guard=total=7.63ms;"; |
+| 172.xx.xxx.xxx |     2882 |      1002 |     1 |       233 | MAJOR_MERGE | 1735668000499972000 | 2025-01-01 02:01:30.261812 | 2025-01-01 02:01:30.262700 | YB42AC1E87E4-00062A8B74EABDAA-0-0 |           0 |                 0 |                             0 |                            0 |                                    0 |               0 |                     0 |                 1 |                   0 |                            1 |                          0 |               1 | -             | table_cnt=1,[MAJOR]snapshot_version=1; |               | extra_info="time_guard=total=7.94ms;"; |
++----------------+----------+-----------+-------+-----------+-------------+---------------------+----------------------------+----------------------------+-----------------------------------+-------------+-------------------+-------------------------------+------------------------------+--------------------------------------+-----------------+-----------------------+-------------------+---------------------+------------------------------+----------------------------+-----------------+---------------+----------------------------------------+---------------+----------------------------------------+
+5 rows in set
+```
+
+## 相关视图或文档
+
+* 查看所有节点上 Tablet 级的合并的详细历史信息：[GV$OB_TABLET_COMPACTION_HISTORY](3400.gv-ob_tablet_compaction_history-of-sys-tenant.md)
+
+* 查看当前节点上 Tablet 级 Compaction 的进度信息：[V$OB_TABLET_COMPACTION_PROGRESS](33900.v-ob_tablet_compaction_progress-of-sys-tenant.md)
+
+* [查看转储信息](../../../200.system-management/500.manage-data-storage/100.dump-management/400.view-dump-information.md)
+
+* [查看合并信息](../../../200.system-management/500.manage-data-storage/200.merge-management/500.view-merge-process.md)

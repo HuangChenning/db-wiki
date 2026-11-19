@@ -1,0 +1,37 @@
+---
+title: enable_manual_merge
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002174555.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# enable_manual_merge
+
+enable_manual_merge
+========================================
+
+`enable_manual_merge` 用于设置是否开启手工合并。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始弃用。</p>
+</main>
+
+|      **属性**      |                                                 **描述**                                                 |
+|------------------|--------------------------------------------------------------------------------------------------------|
+| 参数类型             | 布尔类型                                                                                                   |
+| 默认值              | False                                                                                                  |
+| 取值范围             | </li><li> True   </li><li> False    |
+| 是否重启 OBServer 节点生效 | 否                                                                                                      |
+
+`enable_manual_merge` 为 True 时，`alter system major freeze` 并不会触发真正的合并，而需要手动对各个 Zone 进行逐个合并。
+例如通过以下命令对 zone1 和 zone2 进行逐个合并，此外，合并的顺序还可以按需调整。
+
+```sql
+alter system start merge zone='zone1'; 
+alter system start merge zone='zone2'; 
+```

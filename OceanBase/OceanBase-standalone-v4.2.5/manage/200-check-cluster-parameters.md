@@ -1,0 +1,133 @@
+---
+title: "检查集群配置项"
+book: "管理数据库"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000002701795.html"
+tags:
+  - oceanbase
+  - standalone
+  - manage
+---
+
+# 检查集群配置项
+
+本文主要介绍使用 SQL 语句查看集群配置项、修改集群配置项等操作。
+
+## 查看配置项
+
+### 集群参数检查项
+
+| 参数项 | 参数说明 | 参数建议值 |
+|----|----|----|
+| [memory_limit_percentage](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502268) | 系统总可用内存大小占总内存大小的百分比，取值范围 \[10, 90\]。 | 80 |
+| [clog_sync_time_warn_threshold](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502194) | 事务日志同步耗时告警阈值，同步耗时超过该值产生 WARN 日志。取值范围 \[1ms, 10000ms\]。 | 1s |
+| [large_query_threshold](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502309) | 查询执行时间的阈值。超过时间的请求可能被暂停，暂停后自动被判断为大查询，执行大查询调度策略。取值范围 \[1ms, +∞)。 | 5s |
+| [trace_log_slow_query_watermark](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502294) | 查询的执行时间阈值，如果查询的执行时间超过该阈值，则被认为是慢查询，慢查询的追踪日志会被打印到系统日志中。取值范围 \[1ms, +∞)。 | 1s |
+| [autoinc_cache_refresh_interval](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502287) | 自增列缓存的刷新间隔。取值范围 \[100ms, +∞)。 | 4200s |
+| [default_compress_func](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502191) | 表数据的默认压缩算法，也可以在建表的时候指定其他压缩算法。取值 (none、lz4-1.0、snappy-1.0、zstd-1.0、zstd-1.3.8)。 | zstd_1.0 |
+| [syslog_io_bandwidth_limit](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502143) | 系统日志所能占用的磁盘 IO 带宽上限，超过带宽上限容量的系统日志将被丢弃。 | 5 MB |
+| [memstore_limit_percentage](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502223) | 租户使用 MemStore 的内存占其总可用内存的百分比。取值范围 \[1, 99\]。 | 50 |
+| [system_memory](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502296) | 用于设置系统预留给租户 ID 为 `500` 的租户的内存容量。取值范围 \[0 MB, +∞)。 | 50 GB |
+| [resource_hard_limit](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502131) | 用于分配 Unit。在分配 CPU 和内存等资源时，资源总量是实际数量乘以该百分比的值。最终 Server 资源占比不能超过 resource-hard-limit。取值范围 \[100, 10000\]。 | 100 |
+| [syslog_level](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502173) | 系统日志级别。取值 (DEBUG、 TRACE、INFO、WARN、USER-ERR、ERROR)。 | INFO |
+| [data_disk_usage_limit_percentage](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502331) | 数据文件最大可以写入的百分比，超过这个阈值后，禁止数据迁入。取值范围 \[50, 100\]。 | 95 |
+| [enable_perf_event](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502249) | 是否开启性能事件的信息收集功能，取值 True 或 False。 | True |
+| [enable_sql_audit](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502288) | 是否开启 SQL 审计功能，取值 True 或 False。 | True |
+
+### 使用视图查看配置项的值
+
+您可以在系统租户下，通过视图 `GV$OB_PARAMETERS` 查看集群参数值。语句如下：
+
+``` sql
+SELECT SVR_IP,ZONE,NAME,VALUE FROM OCEANBASE.GV$OB_PARAMETERS WHERE NAME IN ("memory_limit_percentage", "server_permanent_offline_time", "clog_sync_time_warn_threshold", "large_query_threshold", "trace_log_slow_query_watermark", "autoinc_cache_refresh_interval", "default_compress_func", "syslog_io_bandwidth_limit", "memstore_limit_percentage", "system_memory", "resource_hard_limit", "syslog_level", "data_disk_usage_limit_percentage", "enable_perf_event", "enable_sql_audit");
+```
+
+更多 `GV$OB_PARAMETERS` 的信息，请参见 [GV\$OB_PARAMETERS](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501385)。
+
+**示例如下：**
+
+``` sql
+obclient [(none)]> SELECT SVR_IP,ZONE,NAME,VALUE FROM OCEANBASE.GV$OB_PARAMETERS WHERE NAME IN ("memory_limit_percentage", "server_permanent_offline_time", "clog_sync_time_warn_threshold", "large_query_threshold", "trace_log_slow_query_watermark", "autoinc_cache_refresh_interval", "default_compress_func", "syslog_io_bandwidth_limit", "memstore_limit_percentage", "system_memory", "resource_hard_limit", "syslog_level", "data_disk_usage_limit_percentage", "enable_perf_event", "enable_sql_audit");
+```
+
+返回结果如下：
+
+```
++-----------------+-------+----------------------------------+------------+
+| SVR_IP          | ZONE  | NAME                             | VALUE      |
++-----------------+-------+----------------------------------+------------+
+| xxx.xxx.xxx.xxx | zone1 | data_disk_usage_limit_percentage | 90         |
+| xxx.xxx.xxx.xxx | zone1 | clog_sync_time_warn_threshold    | 100ms      |
+| xxx.xxx.xxx.xxx | zone1 | resource_hard_limit              | 100        |
+| xxx.xxx.xxx.xxx | zone1 | server_permanent_offline_time    | 3600s      |
+| xxx.xxx.xxx.xxx | zone1 | memstore_limit_percentage        | 50         |
+| xxx.xxx.xxx.xxx | zone1 | large_query_threshold            | 5s         |
+| xxx.xxx.xxx.xxx | zone1 | autoinc_cache_refresh_interval   | 3600s      |
+| xxx.xxx.xxx.xxx | zone1 | memory_limit_percentage          | 80         |
+| xxx.xxx.xxx.xxx | zone1 | syslog_io_bandwidth_limit        | 30MB       |
+| xxx.xxx.xxx.xxx | zone1 | syslog_level                     | WDIAG      |
+| xxx.xxx.xxx.xxx | zone1 | default_compress_func            | zstd_1.3.8 |
+| xxx.xxx.xxx.xxx | zone1 | enable_perf_event                | True       |
+| xxx.xxx.xxx.xxx | zone1 | enable_sql_audit                 | True       |
+| xxx.xxx.xxx.xxx | zone1 | trace_log_slow_query_watermark   | 1s         |
+| xxx.xxx.xxx.xxx | zone1 | system_memory                    | 30G        |
++-----------------+-------+----------------------------------+------------+
+15 rows in set
+```
+
+### 使用 SHOW 语句查看配置项的值
+
+您可以在系统租户下，执行以下 SQL 语句查看集群参数值：
+
+``` sql
+SHOW PARAMETERS LIKE '$parameters_name';
+```
+
+其中 `$parameters_name` 是集群配置项的名称。
+
+**示例如下：**
+
+``` sql
+obclient [(none)]> SHOW PARAMETERS LIKE 'enable_sql_audit';
+```
+
+返回结果如下：
+
+```
++-------+----------+----------------+----------+------------------+-----------+-------+---------------------------------------------------------------------------------------------------------------+----------+---------+---------+-------------------+
+| zone  | svr_type | svr_ip         | svr_port | name             | data_type | value | info                                                                                                          | section  | scope   | source  | edit_level        |
++-------+----------+----------------+----------+------------------+-----------+-------+---------------------------------------------------------------------------------------------------------------+----------+---------+---------+-------------------+
+| zone1 | observer | xxx.xxx.xxx.xxx |     2882 | enable_sql_audit | NULL      | True  | specifies whether SQL audit is turned on. The default value is TRUE. Value: TRUE: turned on FALSE: turned off | OBSERVER | CLUSTER | DEFAULT | DYNAMIC_EFFECTIVE |
++-------+----------+----------------+----------+------------------+-----------+-------+---------------------------------------------------------------------------------------------------------------+----------+---------+---------+-------------------+
+1 row in set
+```
+
+## 修改集群参数
+
+您可以通过以下 SQL 语句修改集群参数值。
+
+集群参数即配置项，修改配置项的语法如下所示，同时修改多个系统配置项时，请用逗号（,）分隔。
+
+``` sql
+ALTER SYSTEM SET param_name = expr
+  [COMMENT 'text']
+  [PARAM_OPTS]
+  [TENANT = 'tenantname'];    
+```
+
+**参数修改语句说明如下：**
+
+- 集群级别的配置项（`Scope`) 不能通过普通租户设置，也不可以通过 `sys` 租户指定普通租户来设置。例如，`ALTER SYSTEM SET memory_limit='100G' TENANT='test_tenant'` 将导致报错，因为 `memory_limit` 是集群级别（`Scope`）的配置项。
+
+**示例如下：**
+
+修改 `server_permanent_offline_time` 的值为 7200s。
+
+```
+obclient [(none)]> ALTER SYSTEM SET server_permanent_offline_time = '7200s';
+```
+
+## 相关文档
+
+- 如果您正在使用 OceanBase 云平台（OceanBase Cloud Platform，OCP）管理 OceanBase 集群，那么您也可以通过 OCP 来进行参数的统一管理，包括查看参数、修改参数以及查看参数修改历史等操作，详细信息请参见 [查看参数列表](https://www.oceanbase.com/docs/enterprise-oceanbase-ocp-cn-1000000000125909)。
+- 更多集群配置项的信息，请参见 [配置项总览](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500146)。

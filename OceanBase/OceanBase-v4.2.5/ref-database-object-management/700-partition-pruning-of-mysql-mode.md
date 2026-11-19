@@ -1,0 +1,243 @@
+---
+title: "分区裁剪"
+book: "数据库对象管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501919.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 分区裁剪
+
+通过分区裁剪功能（Partition Pruning）可以避免访问无关分区，使 SQL 的执行效率得到大幅度提升。本文主要介绍了分区裁剪的原理和应用。
+
+当用户访问分区表时，往往只需要访问其中的部分分区，通过优化器避免访问无关分区的优化过程我们称之为分区裁剪（Partition Pruning）。分区裁剪是分区表提供的重要优化手段，通过分区裁剪，SQL 的执行效率可以得到大幅度提升。您可以利用分区裁剪的特性，在访问中加入定位分区的条件，避免访问无关数据，优化查询性能。
+
+分区裁剪本身是一个比较复杂的过程，优化器需要根据用户表的分区信息和 SQL 中指定的条件，抽取出相关的分区信息。由于 SQL 中的条件往往比较复杂，整个抽取逻辑的复杂性也随之增加，这一过程由 OceanBase 数据库中的 Query Range 子模块完成。
+
+当用户访问分区表时，由于 col1 为 1 的数据全部处于第 1 号分区（p1），所以我们只需要访问该分区，而无需访问第 0、2、3、4 号分区。如下所示：
+
+```shell
+obclient> CREATE TABLE tbl1(col1 INT, col2 INT) PARTITION BY HASH(col1) PARTITIONS 5;
+```
+
+```shell
+obclient> SELECT * FROM tbl1 WHERE col1 = 1;
+```
+
+通过 `EXPLAIN` 查看执行计划可以看到分区裁剪的结果：
+
+```shell
+obclient> EXPLAIN SELECT * FROM tbl1 WHERE col1 = 1;
+```
+
+返回结果如下：
+
+```shell
++------------------------------------------------------------------------------------+
+| Query Plan                                                                         |
++------------------------------------------------------------------------------------+
+| ===============================================                                    |
+| |ID|OPERATOR       |NAME|EST.ROWS|EST.TIME(us)|                                    |
+| -----------------------------------------------                                    |
+| |0 |TABLE FULL SCAN|tbl1|1       |4           |                                    |
+| ===============================================                                    |
+| Outputs & filters:                                                                 |
+| -------------------------------------                                              |
+|   0 - output([tbl1.col1], [tbl1.col2]), filter([tbl1.col1 = 1]), rowset=16         |
+|       access([tbl1.col1], [tbl1.col2]), partitions(p1)                             |
+|       is_index_back=false, is_global_index=false, filter_before_indexback[false],  |
+|       range_key([tbl1.__pk_increment]), range(MIN ; MAX)always true                |
++------------------------------------------------------------------------------------+
+11 rows in set
+```
+
+## 一级分区裁剪的基本原理
+
+### Hash/List 分区
+
+分区裁剪就是根据 `where` 子句里面的条件并且计算得到分区列的值，然后通过结果判断需要访问哪些分区。如果分区条件为表达式，且该表达式作为一个整体出现在等值条件里，也可以做分区裁剪。
+
+分区条件为表达式 `c1 + c2`，且该表达式作为一个整体出现在等值条件里的分区裁剪的示例如下：
+
+```shell
+obclient> CREATE TABLE t1_h (c1 INT, c2 INT) PARTITION BY HASH(c1 + c2) PARTITIONS 5;
+```
+
+```shell
+obclient> EXPLAIN SELECT * FROM t1_h WHERE c1 + c2 = 1;
+```
+
+返回结果如下：
+
+```shell
++------------------------------------------------------------------------------------+
+| Query Plan                                                                         |
++------------------------------------------------------------------------------------+
+| ===============================================                                    |
+| |ID|OPERATOR       |NAME|EST.ROWS|EST.TIME(us)|                                    |
+| -----------------------------------------------                                    |
+| |0 |TABLE FULL SCAN|t1_h|1       |4           |                                    |
+| ===============================================                                    |
+| Outputs & filters:                                                                 |
+| -------------------------------------                                              |
+|   0 - output([t1_h.c1], [t1_h.c2]), filter([t1_h.c1 + t1_h.c2 = 1]), rowset=16     |
+|       access([t1_h.c1], [t1_h.c2]), partitions(p1)                                 |
+|       is_index_back=false, is_global_index=false, filter_before_indexback[false],  |
+|       range_key([t1_h.__pk_increment]), range(MIN ; MAX)always true                |
++------------------------------------------------------------------------------------+
+11 rows in set
+```
+
+### Range 分区
+
+您可以通过 `where` 子句的分区键的范围跟表定义的分区范围的交集来确定需要访问的分区。
+
+对于 Range 分区：
+
+* 当分区条件为列时，无论查询条件为等值条件还是非等值条件，均支持分区裁剪。
+
+* 当分区条件为表达式，且查询条件为等值条件时，支持分区裁剪。
+
+例如，分区条件为表达式 `c1`，查询条件为非等值条件 `c1 < 150 and c1 > 100`，可以进行分区裁剪。示例如下：
+
+```shell
+obclient> CREATE TABLE t1_r (c1 INT, c2 INT) PARTITION BY RANGE(c1)
+    (PARTITION p0 VALUES LESS THAN(100),
+     PARTITION p1 VALUES LESS THAN(200)
+    );
+```
+
+```shell
+obclient> EXPLAIN SELECT * FROM t1_r WHERE c1 < 150 and c1 > 110;
+```
+
+返回结果如下：
+
+```shell
++------------------------------------------------------------------------------------------+
+| Query Plan                                                                               |
++------------------------------------------------------------------------------------------+
+| ===============================================                                          |
+| |ID|OPERATOR       |NAME|EST.ROWS|EST.TIME(us)|                                          |
+| -----------------------------------------------                                          |
+| |0 |TABLE FULL SCAN|t1_r|1       |4           |                                          |
+| ===============================================                                          |
+| Outputs & filters:                                                                       |
+| -------------------------------------                                                    |
+|   0 - output([t1_r.c1], [t1_r.c2]), filter([t1_r.c1 < 150], [t1_r.c1 > 110]), rowset=16  |
+|       access([t1_r.c1], [t1_r.c2]), partitions(p1)                                       |
+|       is_index_back=false, is_global_index=false, filter_before_indexback[false,false],  |
+|       range_key([t1_r.__pk_increment]), range(MIN ; MAX)always true                      |
++------------------------------------------------------------------------------------------+
+11 rows in set
+```
+
+此外，如果分区条件的表达式使用了 `YEAR()`、`TO_DAYS()` 或 `TO_SECONDS()` 等时间类型的函数，也支持根据查询条件所指定的范围进行分区裁剪。
+
+示例如下：
+
+```shell
+obclient> CREATE TABLE tbl_r (log_id BIGINT NOT NULL, log_value VARCHAR(50),log_date datetime NOT NULL)
+    PARTITION BY RANGE(to_days(log_date))
+        (PARTITION M202001 VALUES LESS THAN(to_days('2020/02/01'))
+        , PARTITION M202002 VALUES LESS THAN(to_days('2020/03/01'))
+        , PARTITION M202003 VALUES LESS THAN(to_days('2020/04/01'))
+        , PARTITION M202004 VALUES LESS THAN(to_days('2020/05/01'))
+        , PARTITION M202005 VALUES LESS THAN(to_days('2020/06/01'))
+        , PARTITION M202006 VALUES LESS THAN(to_days('2020/07/01'))
+        , PARTITION M202007 VALUES LESS THAN(to_days('2020/08/01'))
+        , PARTITION M202008 VALUES LESS THAN(to_days('2020/09/01'))
+        , PARTITION M202009 VALUES LESS THAN(to_days('2020/10/01'))
+        , PARTITION M202010 VALUES LESS THAN(to_days('2020/11/01'))
+        , PARTITION M202011 VALUES LESS THAN(to_days('2020/12/01'))
+        , PARTITION M202012 VALUES LESS THAN(to_days('2021/01/01'))
+        );
+```
+
+```shell
+obclient> EXPLAIN SELECT * FROM tbl_r WHERE log_date > '2020/07/15' and log_date <'2020/10/07';
+```
+
+返回结果如下：
+
+```shell
++-----------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                                                                |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------+
+| =============================================================                                                                                             |
+| |ID|OPERATOR                 |NAME    |EST.ROWS|EST.TIME(us)|                                                                                             |
+| -------------------------------------------------------------                                                                                             |
+| |0 |PX COORDINATOR           |        |1       |16          |                                                                                             |
+| |1 |└─EXCHANGE OUT DISTR     |:EX10000|1       |16          |                                                                                             |
+| |2 |  └─PX PARTITION ITERATOR|        |1       |16          |                                                                                             |
+| |3 |    └─TABLE FULL SCAN    |tbl_r   |1       |16          |                                                                                             |
+| =============================================================                                                                                             |
+| Outputs & filters:                                                                                                                                        |
+| -------------------------------------                                                                                                                     |
+|   0 - output([INTERNAL_FUNCTION(tbl_r.log_id, tbl_r.log_value, tbl_r.log_date)]), filter(nil), rowset=16                                                  |
+|   1 - output([INTERNAL_FUNCTION(tbl_r.log_id, tbl_r.log_value, tbl_r.log_date)]), filter(nil), rowset=16                                                  |
+|       dop=1                                                                                                                                               |
+|   2 - output([tbl_r.log_date], [tbl_r.log_id], [tbl_r.log_value]), filter(nil), rowset=16                                                                 |
+|       force partition granule                                                                                                                             |
+|   3 - output([tbl_r.log_date], [tbl_r.log_id], [tbl_r.log_value]), filter([tbl_r.log_date > cast('2020/07/15', MYSQL_DATETIME(-1, -1))], [tbl_r.log_date  |
+|       < cast('2020/10/07', MYSQL_DATETIME(-1, -1))]), rowset=16                                                                                           |
+|       access([tbl_r.log_date], [tbl_r.log_id], [tbl_r.log_value]), partitions(p[6-9])                                                                     |
+|       is_index_back=false, is_global_index=false, filter_before_indexback[false,false],                                                                   |
+|       range_key([tbl_r.__pk_increment]), range(MIN ; MAX)always true                                                                                      |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------+
+20 rows in set
+```
+
+## 二级分区裁剪的基本原理
+
+对于二级分区，先按照一级分区键确定一级分区需要访问的分区，再通过二级分区键确定二级分区需要访问的分区。最后做一个乘积确定二级分区需要访问的所有物理分区。
+
+以下示例中，经过计算得到一级分区裁剪结果是 p0，而二级分区裁剪的结果是 sp0，所以访问的物理分区为 p0sp0。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>在本示例中，所访问的物理分区标识符为 <code>p0sp0</code>，该标识符不是二级分区的分区名称。对于模板化二级分区表来说，二级分区的命名规则为 <code>($part_name)s($subpart_name)</code>，例如 <code>p0ssp0</code>。</p>
+</main>
+
+```shell
+obclient> CREATE TABLE tbl2_rr(col1 INT,col2 INT)
+    PARTITION BY RANGE(col1)
+    SUBPARTITION BY RANGE(col2)
+    SUBPARTITION TEMPLATE
+        (SUBPARTITION sp0 VALUES LESS THAN(1000),
+         SUBPARTITION sp1 VALUES LESS THAN(2000)
+        ) 
+       (PARTITION p0 VALUES LESS THAN(100),
+        PARTITION p1 VALUES LESS THAN(200)
+       );
+```
+
+```shell
+obclient> EXPLAIN SELECT * FROM tbl2_rr WHERE (col1 = 1 or col1 = 2) and (col2 > 101 and col2 < 150);
+```
+
+返回结果如下：
+
+```shell
++-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                                                          |
++-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| ==================================================                                                                                                  |
+| |ID|OPERATOR       |NAME   |EST.ROWS|EST.TIME(us)|                                                                                                  |
+| --------------------------------------------------                                                                                                  |
+| |0 |TABLE FULL SCAN|tbl2_rr|1       |4           |                                                                                                  |
+| ==================================================                                                                                                  |
+| Outputs & filters:                                                                                                                                  |
+| -------------------------------------                                                                                                               |
+|   0 - output([tbl2_rr.col1], [tbl2_rr.col2]), filter([tbl2_rr.col2 > 101], [tbl2_rr.col2 < 150], [tbl2_rr.col1 = 1 OR tbl2_rr.col1 = 2]), rowset=16 |
+|       access([tbl2_rr.col1], [tbl2_rr.col2]), partitions(p0sp0)                                                                                     |
+|       is_index_back=false, is_global_index=false, filter_before_indexback[false,false,false],                                                       |
+|       range_key([tbl2_rr.__pk_increment]), range(MIN ; MAX)always true                                                                              |
++-----------------------------------------------------------------------------------------------------------------------------------------------------+
+11 rows in set
+```
+
+某些场景下，分区裁剪可能会存在一定程度的放大，但优化器可以确保裁剪的结果是所需访问数据的超集，不会存在丢失数据的情况。

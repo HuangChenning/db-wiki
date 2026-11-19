@@ -1,0 +1,39 @@
+---
+title: DROP CATALOG
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479577.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP CATALOG
+
+## 描述
+
+该语句用于删除外部数据目录（External Catalog）。
+
+## 权限要求
+
+执行 `DROP CATALOG` 语句，需要当前用户拥有 `CREATE CATALOG` 权限。有关 OceanBase 数据库权限的详细介绍，参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 语法
+
+```sql
+DROP CATALOG [IF EXISTS] external_catalog_name;
+```
+
+## 参数说明
+
+|   **参数**   | **描述** |
+|--------------|----------|
+| IF EXISTS    | 可选项，如果指定 `IF EXISTS`，即使要删除的外部数据目录不存在，也不会报错；如果不指定，则会报错。|
+| external_catalog_name | 指定要删除的外部数据目录的名称。|
+
+## 示例
+
+```sql
+DROP CATALOG test_odps_catalog;
+```

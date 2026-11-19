@@ -1,0 +1,55 @@
+---
+title: oceanbase.DBA_WR_SYSSTAT
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501194.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_WR_SYSSTAT
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.2.1 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户的系统统计项的详细信息。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| CLUSTER_ID | bigint(20) | NO | 集群 ID |
+| TENANT_ID | bigint(20) | NO | 租户 ID |
+| SNAP_ID | bigint(20) | NO | 快照 ID |
+| SVR_IP | varchar(46) | NO | 节点 IP |
+| SVR_PORT | bigint(20) | NO | 节点 PORT |
+| STAT_ID | bigint(20) | NO | 统计项 ID |
+| VALUE | bigint(20) | YES | 统计项的值 |
+
+## 查询示例
+
+查询本租户的系统统计项的详细信息，展示第 1 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_WR_SYSSTAT LIMIT 1\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+CLUSTER_ID: 10001
+ TENANT_ID: 1
+   SNAP_ID: 1
+    SVR_IP: xx.xx.xx.xx
+  SVR_PORT: 2882
+   STAT_ID: 10000
+     VALUE: 156046
+1 row in set (0.007 sec)
+```

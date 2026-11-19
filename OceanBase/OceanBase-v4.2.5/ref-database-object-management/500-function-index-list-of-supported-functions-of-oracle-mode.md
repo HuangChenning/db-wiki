@@ -1,0 +1,69 @@
+---
+title: "函数索引支持的系统函数列表"
+book: "数据库对象管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501844.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 函数索引支持的系统函数列表
+
+本节主要列出了可以或满足条件可以用于函数索引的系统函数。
+
+## 对参数类型无要求的系统函数
+
+|---------------|----------------|----------------|---------------|
+| TRIM          |    ACOS        |   REMAINDER    |    FLOOR      |
+| ATAN          |    SUBSTRB     |   CEIL         |    ATAN2      |
+| WIDTH_BUCKET  |    RPAD        |   COS          |    TRANSLATE  |
+| NULLIF        |    TAN         |   TO_BINARY_FLOAT | PAD        |
+| SIN           |    TO_BINARY_DOUBLE  | POSITION |    IS_JSON    |
+| VSIZE         |    LTRIM       |   POWER        |    ORAHASH    |
+| RTRIM         |    LENGTHC     |   EMPTY_BLOB   |    LPAD       |
+| INSTRC        |    TO_BLOB     |   SQRT         |    ASCIISTR   |
+| NLSSORT       |    EXP         |   ORA_TRUNC    |    TREAT      |
+| LN            |    TO_NUMBER   |   SINH         |    LOG        |
+| HEXTORAW      |    COSH        |   ASIN         |    FROM_TZ    |
+| TANH          |    TO_CHAR     |   TO_NCHAR     | CHARSET       |
+|COLLATION      | COERCIBILITY   |   EXTRACT      |    -          |
+
+## 对参数类型有要求的系统函数
+
+以下系统函数在参数类型为 string 类型且格式缺省时，禁止用于函数索引或生成列。此外，在时间格式非缺省时，也对格式参数有要求，例如，对于 `TO_DATE(expr, fmt)`，要求 `fmt` 包含日期。
+
+|-----------------|----------------|-----------------|-----------------|
+| ADD_MONTHS         | LAST_DAY           | MONTHS_BETWEEN     | NEXT_DAY          |
+| SYS_EXTRACT_UTC    | TIMESTAMP_NVL      | TO_DATE            | TO_TIMESTAMP      |
+| TO_TIMESTAMP_TZ    | -                  | -                  | -                 |
+
+## JSON 相关函数
+
+以下函数，可以用于函数索引。
+
+|---------------|----------------|----------------|---------------|
+| ASCII            | CHR              | COALESCE         | EMPTY_CLOB       |
+| GREATEST         | INSTR            | INSTRB           | INITCAP          |
+| LEAST            | LENGTHB          | LOWER            | NANVL            |
+| NLS_LOWER        | NLS_UPPER        | NVL              | NVL2             |
+| NUMTODSINTERVAL  | NUMTOYMINTERVAL  | RAWTOHEX         | RAWTONHEX        |
+| ROUND            | SOUNDEX          | TO_CLOB          | TO_DSINTERVAL    |
+| TO_MULTI_BYTE    | TO_SINGLE_BYTE   | TO_YMINTERVAL    | TZ_OFFSET        |
+| UNISTR           | UPPER            |  -               |  -               |
+
+此外，以下函数当前仅限用于谓词中。
+
+|-----------------------|
+| JSON_EXISTS           |
+
+## CAST 表达式
+
+CAST 表达式较特殊，当其目标类型或源类型为时间类型时，禁止作为函数索引，具体场景如下表所示。
+
+| 源类型                                  | 目标类型                                                  | 说明            |
+|----------------------------------------|-----------------------------------------------------------|----------------|
+| TIMESTAMP/DATE                         | TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE | 禁止作为函数索引 |
+| string                                 | 时间类型                                                   | 禁止作为函数索引 |
+| 时间类型                                | string                                                    | 禁止作为函数索引 |

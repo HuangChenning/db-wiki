@@ -1,0 +1,59 @@
+---
+title: arbitration_timeout
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285802.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# arbitration_timeout
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.1.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`arbitration_timeout` 用于设置触发自动降级的超时时间。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户均可修改该配置项。
+
+## 属性说明
+
+|      **属性**    |   **描述**   |
+|------------------|--------------|
+| 参数类型             |  Time |
+| 默认值               | 5s |
+| 取值范围             | [1s, +∞) |
+| 是否可修改           | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 |否，设置后立即生效。     |
+
+<main id="notice" type='notice'>
+<h4>注意</h4>
+<p>该配置项的取值下限为 <code>1s</code>，但生产环境推荐取值不小于 <code>3s</code>；<code>[1s, 3s)</code> 区间内的取值仅建议用于非生产环境。</p>
+</main>
+
+## 配置示例
+
+设置触发自动降级的超时时间为 30s。
+
+```shell
+obclient> ALTER SYSTEM SET arbitration_timeout ='30s';
+```
+
+## 相关文档
+
+* [仲裁服务概述](../../../../600.manage/400.high-availability/400.arbitration-high-availability/100.arbitration-service-overview.md)
+* [修改日志流降级控制时间](../../../../600.manage/400.high-availability/400.arbitration-high-availability/400.modify-the-degradation-timeout.md)

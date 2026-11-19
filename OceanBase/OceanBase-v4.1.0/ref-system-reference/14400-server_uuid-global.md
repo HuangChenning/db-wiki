@@ -1,0 +1,29 @@
+---
+title: server_uuid
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002186394.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# server_uuid
+
+`server_uuid` 用于查看 OBServer 节点UUID。
+
+OBServer 节点启动时，会自动创建 UUID。例如：`182d0ebb-1209-11ed-b01e-a237b1d47168`。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该变量仅 MySQL 模式下支持。</p>
+</main>
+
+| **属性**  |      **描述**      |
+|---------|------------------|
+| 参数类型    | varchar             |
+| 默认值     | N/A                |
+| 取值范围    | N/A |
+| 生效范围    | Global           |
+| 是否可修改 | 否                |

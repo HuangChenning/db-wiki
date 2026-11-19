@@ -1,0 +1,66 @@
+---
+title: CREATE VIEW
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001701415.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# CREATE VIEW
+
+## 描述
+
+该语句用于创建视图，如果指定了 `OR REPLACE` 子句，该语句能够替换已有的视图。
+
+视图在数据库中实际上并不是以表的形式存在，视图是作为在 `CREATE VIEW` 语句中指定的 `SELECT` 语句的结果而派生出来的，每次使用时视图就会派生。
+
+如果 `FROM` 子句中引用了两个或多个表或视图，则称该视图为连接视图（Join View）。一个可更新的连接视图，也称为可修改的连接视图，涉及两个或多个基表或视图，并允许 DML 操作。可更新的视图不受限于 `WITH READ ONLY` 子句。
+
+要实现可更新，视图必须满足多个条件。例如，其中一条通用规则就是对于连接视图的 `INSERT`、`UPDATE` 或 `DELETE` 操作一次只能修改一个基表。
+
+## 语法
+
+```sql
+create_view_stmt:
+  CREATE [OR REPLACE] [[NO] FORCE] VIEW view_name [(column_name_list)] AS select_stmt [WHERE condition WITH CHECK OPTION];
+
+column_name_list:
+    column_name [, column_name ...]
+```
+
+## 参数解释
+
+|        参数        |                                                                                                                        描述                                                                                                                         |
+|------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| OR REPLACE       | 表示如果要创建的视图名称已存在，则使用新的定义重新创建视图。                                                                                                                                                                                                                    |
+| \[NO\] FORCE     | 如果在创建视图时，不考虑该视图是否存在基表或存在引用的对象类型，以及视图所在 Schema 的所有者是否具有权限，请指定 `FORCE`。 如果只在基表存在且视图所在 Schema 所有者具有权限时才创建视图，请指定 `NOFORCE`。 `NOFORCE` 是默认设置。                                                                          |
+| view_name        | 视图名。                                                                                                                                                                                                                                              |
+| select_stmt      | 是一种 `SELECT` 语句。它给出了视图的定义。该语句可以从基表或其他视图进行选择。                                                                                                                                                                                                      |
+| column_name_list | 视图必须具有唯一的列名，不得有重复，就像基表那样。默认情况下，由 `SELECT` 语句检索的列名将用作视图列名。 要想为视图列定义明确的名称，可使用可选的 `column_name_list` 子句，ID 之间使用逗号分隔。`column_name_list` 中的名称数目必须等于 `SELECT`语句检索的列数。 `SELECT` 语句检索的列可以是对表列的简单引用。也可以是使用函数、常量值、运算符等的表达式。 |
+| WHERE condition WITH CHECK OPTION | `WITH CHECK OPTION` 是一种用于创建视图的语法，它用于确保插入或更新的数据满足视图的定义条件。<main id="notice" type='notice'><h4>注意</h4><p> Oracle 模式下的 <code>WITH CHECK OPTION</code> 语法不支持指定为 <code>LOCAL</code> 或 <code>CASCADED</code>，默认为 <code>CASCADED</code>。</p></main>  |
+
+## 示例
+
+选择表 `tbl1` 中的 `col1`、`col2` 列来创建视图 `view1`。
+
+```sql
+obclient> CREATE OR REPLACE FORCE VIEW view1(vcol1, vcol2) AS SELECT col1, col2 FROM tbl1;
+Query OK, 0 rows affected
+```
+
+基于表 `tbl2` 的 `a`、`b` 列来创建视图 `view2`，`view2` 中包含满足 `tbl2.b > 1` 的全部数据。
+
+```sql
+obclient> create table tbl2 (a int, b int);
+Query OK, 0 rows affected
+
+obclient> insert into tbl2 (a,b) values (23,2),(76,9),(456,1);
+Query OK, 3 rows affected (0.046 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+obclient> create view view2 as select * from tbl2 where tbl2.b > 1 with check option;
+Query OK, 0 rows affected (0.064 sec)
+```

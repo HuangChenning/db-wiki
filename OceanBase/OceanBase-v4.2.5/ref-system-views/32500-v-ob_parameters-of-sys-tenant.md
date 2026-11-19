@@ -1,0 +1,72 @@
+---
+title: "V$OB_PARAMETERS"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501365.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_PARAMETERS
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `V$OB_PARAMETERS` 用于展示本 OBServer 节点上的配置项（包含名称以 "_" 开头的隐藏配置项）信息。
+
+## 字段说明
+
+|    字段名称    |       类型       | 是否可以为 NULL |                                描述                                 |
+|------------|----------------|------------|---------------------------------------------------------------------------------------------------|
+| SVR_IP     | varchar(46)    | NO         | 服务器 IP 地址                                                         |
+| SVR_PORT   | bigint(20)     | NO         | 服务器端口号                                                            |
+| ZONE       | varchar(128)   | NO         | ZONE 名称                                                             |
+| SCOPE      | varchar(64)    | NO         | <ul><li>`CLUSTER` 集群级配置项</li><li> `TENANT` 租户级配置项  </li></ul>  |
+| TENANT_ID  | bigint(20)     | YES        | 租户 ID：<ul><li> `NULL` 不属于任何租户</li><li>有效值：租户 ID</li></ul> |
+| NAME       | varchar(128)   | NO         | 配置项名称                                                             |
+| DATA_TYPE  | varchar(128)   | YES        | 配置项值类型                                                            |
+| VALUE      | varchar(65536) | NO         | 配置项值                                                              |
+| INFO       | varchar(4096)  | NO         | 配置项说明                                                             |
+| SECTION    | varchar(128)   | NO         | 配置项所属的模块                                                          |
+| EDIT_LEVEL | varchar(128)   | NO         | 配置项修改生效方式：<ul><li>`READONLY`：只读，不可修改 </li><li>`STATIC_EFFECTIVE`：修改后需要重启生效 </li><li> `DYNAMIC_EFFECTIVE`：修改后可动态生效 </li></ul> |
+| DEFAULT_VALUE | varchar(65536) | NO   | 配置项的默认值<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.2 版本开始引入。</p></main>      |
+| ISDEFAULT     | varchar(3)     | NO   | 当前值是否为默认值：<ul><li>NO：表示当前值不是默认值</li><li>YES：表示当前值为默认值</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.2 版本开始引入。</p></main>     |
+
+## 查询示例
+
+查询本 OBServer 节点上的配置项信息，展示第 1 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.V$OB_PARAMETERS limit 1\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+       SVR_IP: xx.xx.xx.xx
+     SVR_PORT: 2882
+         ZONE: zone1
+        SCOPE: CLUSTER
+    TENANT_ID: NULL
+         NAME: _ob_enable_pl_dynamic_stack_check
+    DATA_TYPE: BOOL
+        VALUE: True
+         INFO: Enable or disable dynamic stack check when executing PL.
+      SECTION: OBSERVER
+   EDIT_LEVEL: DYNAMIC_EFFECTIVE
+DEFAULT_VALUE: False
+    ISDEFAULT: NO
+1 row in set, 1 warning (0.003 sec)
+```
+
+## 相关视图或文档
+
+* [GV$OB_PARAMETERS](2100.gv-ob_parameters-of-sys-tenant.md)
+* [配置项概述](../../../../700.reference/800.configuration-items-and-system-variables/000.configuration-items-and-system-variables-overview.md)

@@ -1,0 +1,42 @@
+---
+title: LENGTH
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503708.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# LENGTH
+
+`LENGTH` 函数用于返回 `RAW r` 的字节长度。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 语法 
+
+```sql
+UTL_RAW.LENGTH (
+     r  IN RAW) 
+RETURN NUMBER;
+```
+
+## 参数解释 
+
+| **参数** |    **解释**     |
+|--------|---------------|
+| r      | 待测量字节长度的 `RAW`。 |
+
+
+
+## 返回值 
+
+
+| **返回值** |  **描述**   |
+|---------|-----------|
+| NUMBER  | `RAW` 的当前长度 |

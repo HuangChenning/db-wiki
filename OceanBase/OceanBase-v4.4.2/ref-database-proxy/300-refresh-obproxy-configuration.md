@@ -1,0 +1,36 @@
+---
+title: "刷新 OBProxy 配置"
+book: "数据库代理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283751.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-proxy
+---
+
+# 刷新 OBProxy 配置
+
+本文介绍如何刷新 OBProxy 配置。
+
+## 通过 SQL 语句刷新 OBProxy 配置
+
+您可以通过 `ALTER PROXYCONFIG` 语句刷新单个 OBProxy 的配置。
+
+1. 使用 `root@proxysys` 账号连接到 OBProxy。
+
+2. 执行以下命令，查看待刷新的配置项的值。
+
+   示例如下：
+
+   ```sql
+   obclient> SHOW PROXYCONFIG LIKE 'fetch_proxy_bin_random_time';
+   ```
+
+   您也可以通过 `SHOW PROXYCONFIG` 语句查看当前 OBProxy 的所有配置项。
+
+3. 执行以下命令，修改配置项的值。
+
+   ```sql
+   obclient> ALTER PROXYCONFIG SET fetch_proxy_bin_random_time='300s';
+   ```

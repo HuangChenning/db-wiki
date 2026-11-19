@@ -1,0 +1,27 @@
+---
+title: "删除索引"
+book: "管理员指南"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699631.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-administrator-guide
+---
+
+# 删除索引
+
+当索引过多时，维护开销会增大，您可以根据需要删除不必要的索引。
+
+删除索引的语法格式如下：
+
+```sql
+DROP INDEX index_name;
+```
+
+删除表的索引的示例如下：
+
+```sql
+obclient> DROP INDEX t3_ind2;
+Query OK, 0 rows affected (0.02 sec)
+```

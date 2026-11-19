@@ -1,0 +1,30 @@
+---
+title: ScnFlg
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702585.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# ScnFlg
+
+ScnFlg 
+===========================
+
+`ScnFlg` 常量及其描述。
+
+
+|    常量名称     |  常量类型   | 默认值 |      描述      |
+|-------------|---------|-----|--------------|
+| RegularCall | INTEGER | 1   | 用户自定义的算子常规调用 |
+| CleanupCall | INTEGER | 2   | 用户自定义的算子清理调用 |
+
+
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>

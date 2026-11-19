@@ -1,0 +1,26 @@
+---
+title: ob_esi_rpc_port
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002180035.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ob_esi_rpc_port
+
+`ob_esi_rpc_port` 用于设置 obesi 进程和 observer 进程之间的通信端口。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始弃用。</p>
+</main>
+
+| **属性**         | **描述** |
+|------------------|--------------------|
+| 参数类型 | 整型 |
+| 默认值 | 2501 |
+| 取值范围 | [1025, 65535] |
+| 是否重启 OBServer 节点生效 | 否 |
