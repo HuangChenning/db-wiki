@@ -1,0 +1,146 @@
+---
+title: "列 Skip Index 属性"
+book: "数据库对象管理"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005683118.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 列 Skip Index 属性
+
+Data Skipping 是一种在存储层执行计算来尝试跳过不必要的 IO 的优化方法，Skip Index 则是通过存储预聚合数据提供 Data Skipping 能力的稀疏索引结构，以此来提高查询效率。OceanBase 数据库 Skip Index 分为基线数据生成 Skip Index 和增量数据生成 Skip Index。
+
+## 基线数据生成 Skip Index
+
+Skip Index 通过对索引树存储的元数据进行扩展，新增列级别的元数据字段，来对索引节点对应 Range 内指定列数据的最大值/最小值/null count/sum 等进行聚合并存储，在执行下压的表达式计算时通过索引上的聚合数据对数据进行动态剪裁来降低扫描过程中的开销。预聚合的本质在于将查询执行阶段的计算提前至数据写入阶段，通过存储预计算的结果来帮助提高查询效率。同时这种方法需要 Compaction 任务进行额外的计算，预聚合的数据也会消耗存储空间。Skip Index 存储在基线数据上，预聚合对应的 Range 内数据发生更新会导致预聚合数据失效，因此频繁的随机更新会导致 Skip Index 失效，降低优化效果。Skip Index 是列的一种属性，可通过 `DESC table_name` 或 `SHOW CREATE TABLE table_name` 命令查看表的列属性。
+
+### Skip Index 的 DDL 行为
+
+* Skip Index 数据的维护会在合并时在基线数据上完成，所有聚合数据更新的 DDL 动作目前都要依赖渐进合并。即 Skip Index 是可以部分生效，例如在某一列上新建一个 Skip Index，每当完成一次合并，被新写入的数据上的 Skip Index 都是生效的。当完成一轮全量合并后，所有数据被重写，则 Skip Index 对这一列所有数据都会生效。
+
+* Skip Index 是一种可以通过 Online DDL 操作来应用的列属性。
+
+* 一列所能拥有的 Skip Index 属性受该列数据类型和特征的限制。有级联关系的列会继承相应的聚合属性，例如索引列。
+
+* 在为列添加 Skip Index 属性时，若发现单个表的 Skip Index 的大小可能会超出存储支持的最大限制，系统将报出错误。使用 Skip Index 是一种以空间换取时间的优化策略，因此在决定为特定列添加 Skip Index 属性时，需要确保此操作对查询性能有实际意义，以免浪费存储资源。
+
+### Skip Index 使用限制
+
+* JSON 和空间数据类型的列禁止创建 Skip Index。
+
+* 对于非数值类型的列禁止创建 `SUM` 类型的 Skip Index。数值类型包括：整数类型、定点类型和浮点类型（Bit-Value 类型不支持）。
+
+* 生成列禁止创建 Skip Index。
+
+### 标识 Skip Index 方法
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>行存表不会默认创建任何类型的 Skip Index，列存表会默认创建 <code>MIN_MAX</code> 类型的 Skip Index。
+  </li><li>对于系统默认创建的 Skip Index 属性，通过 <code>DESC table_name</code> 或 <code>SHOW CREATE TABLE table_name</code> 命令查看表的列属性时，Skip Index 属性不会展示出来。
+  </li><li>列存表会默认创建 <code>MIN_MAX</code> 类型的 Skip Index，而未默认创建 <code>SUM</code> 类型的 Skip Index，是因为 <code>SUM</code> 类型的 Skip Index 对旁路导入以及合并任务的性能会有一定影响，如果创建 <code>SUM</code> 类型的 Skip Index 对查询性能能带来优化，用户可以考虑显示创建 <code>SUM</code> 类型的 Skip Index 来加速查询，但是如果对查询性能没有优化，建议用户删除 <code>SUM</code> 类型的 Skip Index。</li></ul></p>
+</main>
+
+通过指定 `SKIP_INDEX(skip_index_option)` 标识列的 Skip Index 属性。`skip_index_option` 取值如下：
+
+* `MIN_MAX`：是 Skip Index 中最通用的聚合数据类型，它会在索引节点粒度下存储被索引列的最大值、最小值和 Null Count。这种类型的数据可以加速下推的 Filter 和 `MIN/MAX` 聚合的下推。
+
+* `SUM`：用于加速数值类型的 `SUM` 聚合的下推。
+
+* `MIN_MAX, SUM`：同时使用 `MIN_MAX` 和 `SUM` 聚合的 Skip Index 类型。
+
+有关 Skip Index 属性更改的信息请参见 [更改表](600.change-table-of-oracle-mode.md)。
+
+#### 示例
+
+创建表时标识列 Skip Index 属性。
+
+```sql
+CREATE TABLE test_skidx(
+  col1 NUMBER SKIP_INDEX(MIN_MAX, SUM), 
+  col2 FLOAT SKIP_INDEX(MIN_MAX), 
+  col3 VARCHAR2(1024) SKIP_INDEX(MIN_MAX),
+  col4 CHAR(10)
+  );
+```
+
+## 增量数据生成 Skip Index
+
+OceanBase 数据库支持在创建表的时候，指定增量 SSTable 按照基线的行为生成 Skip Index 聚合信息，提高 OceanBase 数据库对增量 SSTable 的查询性能。
+
+### Skip Index 聚合信息的生成策略
+
+1. 如果是 `partial_update` 更新模型表，就不生成 Skip Index 聚合信息，仅对 `delete_insert`、`append_only` 的表更新模型，才支持增量数据生成 Skip Index。
+2. 由于 Skip Index 的聚合信息的存储空间有限，当前固定为 1024 字节，所以可能无法为所有列生成 Skip Index 聚合信息。对于 `virtual` 生成列、`json`、`geo type`、`outrow lob` 类型的列不生成聚合信息。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>由于 <code>SUM</code> 类型的聚合信息不常用且占用空间较大，所以除了 Schema 上指定了 Skip Index 的列，系统自动生成的 Skip Index 仅生成 <code>MIN_MAX</code> 和 <code>NULL_COUNT</code>。</p>
+  </main>
+
+### 语法
+
+创建表时指定增量 SSTable 按照基线的行为生成 Skip Index 聚合信息的语法是在 `CREATE TABLE` 语句后增加表选项 `SKIP_INDEX_LEVEL`，SQL 语句如下：
+
+```sql
+CREATE TABLE table_name column_definition
+    SKIP_INDEX_LEVEL [=] {1 | 0};
+```
+
+其中，`SKIP_INDEX_LEVEL` 取值如下：
+
+* 0：表示表的列存基线都生成 Skip Index 聚合信息，行存基线根据 Schema 生成 Skip Index 聚合信息，增量 SSTable 不生成 Skip Index 聚合信息。
+* 1：表示在 0 的基础上，`DELETE_INSERT`/`APPEND_ONLY` 模式的表的增量 SSTable 会根据基线的行为决定是否生成 Skip Index 聚合信息：
+
+  * 列存：基线都生成 Skip Index，增量 SSTable 按照 Skip Index 聚合信息的生成策略生成 Skip Index。
+  * 行存：基线根据 schema 生成 Skip Index，增量 SSTable 也按照 Schema 生成 Skip Index。
+  * 行列混存：既有列存基线又有行存基线，增量 SSTable 根据列存基线行为，按照 Skip Index 聚合信息的生成策略生成 Skip Index。
+
+如果在创建表时没有指定 `SKIP_INDEX_LEVEL` 参数，系统会根据租户配置项 `default_skip_index_level` 设置的值确认 `SKIP_INDEX_LEVEL` 的默认值，详细信息参见 [default_skip_index_level](../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2110.default_skip_index_level.md)。
+
+可以通过 `ALTER TABLE` 语句修改 `SKIP_INDEX_LEVEL`，SQL 语句如下：
+
+```shell
+ALTER TABLE table_name SET SKIP_INDEX_LEVEL [=] {1 | 0};
+```
+
+修改 `SKIP_INDEX_LEVEL` 后，该表的增量 SSTable 的 Skip Index 聚合信息的生成/删除会在下次转储/minor merge 时生效。
+
+#### 示例
+
+* 创建表 `test_skidx_lev1`。该表的增量 SSTable 允许生成 Skip Index 聚合信息。
+
+    ```shell
+    obclient> CREATE TABLE test_skidx_lev1(col1 NUMBER)
+        SKIP_INDEX_LEVEL = 1;
+    ```
+
+* 创建表 `test_skidx_lev2`。该表的增量 SSTable 不允许生成 Skip Index 聚合信息。
+
+    ```shell
+    obclient> CREATE TABLE test_skidx_lev2(col1 NUMBER)
+        SKIP_INDEX_LEVEL = 0;
+    ```
+
+* 创建表 `test_skidx_lev3`，不指定 `SKIP_INDEX_LEVEL`。
+
+    ```shell
+    obclient> CREATE TABLE test_skidx_lev3(col1 NUMBER);
+    ```
+
+* 修改表 `test_skidx_lev2` 的 `SKIP_INDEX_LEVEL` 值为 1。
+
+    ```shell
+    obclient> ALTER TABLE test_skidx_lev2 SET SKIP_INDEX_LEVEL = 1;
+    ```
+
+## 相关文档
+
+* [CREATE TABLE](../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/2400.create-table-of-oracle-mode.md)
+
+* [ALTER TABLE](../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1000.alter-table-of-oracle-mode.md)
+
+* [更改表](600.change-table-of-oracle-mode.md)

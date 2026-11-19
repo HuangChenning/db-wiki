@@ -1,0 +1,31 @@
+---
+title: "分析系统或某个 SQL 的执行是否出现大量不合理远程执行请求"
+book: "性能调优"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687658.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 分析系统或某个 SQL 的执行是否出现大量不合理远程执行请求
+
+运行如下 SQL 语句能够分析出某段时间内不同类型的计划的执行次数：
+
+```javascript
+obclient> SELECT COUNT(*),plan_type FROM oceanbase.GV$OB_SQL_AUDIT WHERE tenant_id = 1001         
+   AND  IS_EXECUTOR_RPC = 0          
+   AND  request_time > (time_to_usec(now()) - 10000000)         
+   AND  request_time < time_to_usec(now()) 
+   GROUP BY plan_type;
++----------+-----------+
+| COUNT(*) | plan_type |
++----------+-----------+
+|     2054 |         1 |
+|      138 |         0 |
++----------+-----------+
+2 rows in set
+```
+
+一般情况下，如果出现远程执行请求比较多时，可能是由于出现切主或 Proxy 客户端路由不准确。

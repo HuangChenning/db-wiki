@@ -1,0 +1,48 @@
+---
+title: "恢复完成后升级租户"
+book: "管理数据库"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000000283019.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 恢复完成后升级租户
+
+将恢复出来的备租户转为主租户后，如果您是将低版本的备份数据恢复到高版本的集群中，则还需要对该租户进行升级。
+
+## 使用限制
+
+当前仅 OceanBase 数据库 V4.1.0.0 及以上版本支持在恢复完成后通过以下方式升级租户。
+
+## 前提条件
+
+恢复出来的备租户已转为主租户，将恢复出来的备租户转为主租户的详细操作，请参见 [备租户转为主租户](600.active-standby-tenant.md)。
+
+## 操作步骤
+
+1. 使用 `root` 用户登录到新恢复的租户所在集群的 `sys` 租户。
+
+2. 执行升级命令，升级租户。
+
+   语句如下：
+
+   ```sql
+   obclient [(none)]> ALTER SYSTEM RUN UPGRADE JOB "UPGRADE_ALL" TENANT = tenant_name;
+   ```
+
+   其中，`tenant_name` 为新恢复出来的租户名。支持同时升级多个恢复租户，多个租户名之间使用英文逗号（,）分隔。
+
+3. 升级后，根据当前集群的版本号，执行以下语句，确认租户是否升级成功。
+
+   示例如下：
+
+   ```sql
+   obclient [(none)]> SELECT distinct(value) FROM oceanbase.GV$OB_PARAMETERS WHERE tenant_id =1004;
+   ```
+
+   其中，`1004` 为待确认的租户的 `tenant_id`，`tenant_id` 可通过查询视图 `DBA_OB_TENANTS` 获取。
+
+   执行成功后，如果查询结果为一行，且 `value` 显示为当前集群的四位版本号（例如，4.1.0.0），则表示租户升级成功。

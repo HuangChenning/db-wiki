@@ -1,0 +1,49 @@
+---
+title: oceanbase.DBA_WR_STATNAME
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478172.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_WR_STATNAME
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.2.1 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户的系统统计项的名称。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| CLUSTER_ID | bigint(20) | NO | 集群 ID |
+| TENANT_ID | bigint(20) | NO | 租户 ID |
+| STAT_ID | bigint(20) | NO | 统计项 ID |
+| STAT_NAME | varchar(64) | NO | 统计项名字 |
+
+## 查询示例
+
+查看本租户的系统统计项的名称。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_WR_STATNAME limit 1;
+```
+
+返回结果如下：
+
+```shell
+    +------------+-----------+---------+---------------+
+    | CLUSTER_ID | TENANT_ID | STAT_ID | STAT_NAME     |
+    +------------+-----------+---------+---------------+
+    |       4000 |         1 |   10000 | rpc packet in |
+    +------------+-----------+---------+---------------+
+    1 row in set (0.004 sec)
+```

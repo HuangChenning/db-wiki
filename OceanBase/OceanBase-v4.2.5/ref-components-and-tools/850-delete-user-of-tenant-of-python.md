@@ -1,0 +1,44 @@
+---
+title: "删除用户"
+book: "组件 & 工具"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002775574.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-components-and-tools
+---
+
+# 删除用户
+
+本文介绍如何通过 obshell-sdk-python 删除租户中的用户。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul>
+  <li><p>建议先查看 <a href='../100.quickstart-of-python.md'>obshell-sdk-python 快速上手</a> 内容，了解如何使用 obshell-sdk-python。</p></li>
+  <li><p>自 obshell V4.2.6 起支持通过 obshell-sdk-python 删除租户中的用户。</p></li>
+  </ul>
+</main>
+
+## 注意事项
+
+* 请确保 obshell 正常运行。
+
+* 请确保请求的 client 对应的节点在已初始化的集群中。
+
+## 示例代码
+
+```python
+from obshell import ClientSet
+from obshell.auth import PasswordAuth
+
+# 创建 client 实例，节点地址为 '10.10.10.1'，端口为 2886。
+client = ClientSet("10.10.10.1", 2886, PasswordAuth("****"))
+# 以删除 test 租户下 user_1 用户为例，如需删除 sys 租户下用户，可省略配置 tenant_name 和 root_password
+client.v1.drop_user("user_1", tenant_name="test", root_password="*****")
+```
+
+## 相关文档
+
+删除用户的 API 接口说明可参见 [删除用户](../../../400.obshell-api-reference/500.tenant-management/850.delete-user-of-tenant.md)。

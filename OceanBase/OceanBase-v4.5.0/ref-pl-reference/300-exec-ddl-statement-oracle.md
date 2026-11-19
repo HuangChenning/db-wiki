@@ -1,0 +1,45 @@
+---
+title: EXEC_DDL_STATEMENT
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006694836.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# EXEC_DDL_STATEMENT
+
+`EXEC_DDL_STATEMENT` 过程用于执行指定的 DDL 语句。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_UTILITY.EXEC_DDL_STATEMENT (
+    parse_string IN VARCHAR2);
+```
+
+## 参数解释
+
+|    参数     |      解释      |
+|-----------|--------------|
+| parse_string | 要执行的 DDL 语句。 |
+
+## 使用说明
+
+`EXEC_DDL_STATEMENT` 过程提供了一种在 PL/SQL 中执行 DDL 语句的方式。与 `EXECUTE IMMEDIATE` 类似，但通过 `DBMS_UTILITY` 系统包进行调用。该过程不返回任何值，执行成功后完成 DDL 操作；执行失败时抛出异常。
+
+## 示例
+
+```sql
+BEGIN
+  DBMS_UTILITY.EXEC_DDL_STATEMENT('CREATE TABLE test_table (id NUMBER, name VARCHAR2(50))');
+END;
+/
+```

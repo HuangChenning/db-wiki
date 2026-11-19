@@ -1,0 +1,52 @@
+---
+title: COMMAND
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001809538.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# COMMAND
+
+`COMMAND` 用于执行通用的 SMTP 命令。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 语法
+
+```sql
+UTL_SMTP.COMMAND (
+   c     IN OUT NOCOPY    connection,
+   cmd   IN               VARCHAR2,
+   arg   IN               VARCHAR2 DEFAULT NULL)
+RETURN reply;
+
+UTL_SMTP.COMMAND (
+   c     IN OUT NOCOPY    connection,
+   cmd   IN               VARCHAR2,
+   arg   IN               VARCHAR2 DEFAULT NULL);
+```
+
+## 参数解释
+
+| **参数** |         **解释**         |
+|--------|------------------------|
+|c|SMTP 连接。|
+|cmd|发送给服务器的 `command` 命令。|
+|arg| 用于传递与 `cmd` 命令相关的额外信息或参数。|
+
+## 返回值
+
+| **返回值** |          **描述**          |
+|---------|--------------------------|
+|reply|command 的回复。如果有多个回复，则返回最后一个回复。|
+
+## 使用说明
+
+此函数只返回一个回复行（有多行回复只返回最后一行回复），如果需要返回多个回复行，请使用 `command_replies`。

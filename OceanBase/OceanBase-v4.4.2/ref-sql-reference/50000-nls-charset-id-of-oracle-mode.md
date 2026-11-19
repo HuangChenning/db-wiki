@@ -1,0 +1,53 @@
+---
+title: NLS_CHARSET_ID
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005812762.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# NLS_CHARSET_ID
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 OceanBase 数据库 V4.4.2 版本，该函数从 V4.4.2 BP1 版本开始引入。</p>
+</main>
+
+## 描述
+
+`NLS_CHARSET_ID` 函数用于返回与字符集名称对应的字符集 ID 号。
+
+## 语法
+
+```sql
+NLS_CHARSET_ID(string)
+```
+
+## 参数解释
+
+参数 `string` 是任何字符集的字符串。
+
+* 当传入 `CHAR_CS`：返回当前数据库默认字符集的 ID。
+* 当传入 `NCHAR_CS`：返回当前数据库国家字符集的 ID。
+* 若传入的名称无效，则返回 `NULL`。
+
+## 示例
+
+```shell
+obclient> SELECT NLS_CHARSET_ID('ja16euc')
+  FROM DUAL;
+```
+
+返回结果如下：
+
+```sql
++---------------------------+
+| NLS_CHARSET_ID('JA16EUC') |
++---------------------------+
+|                      803  |
++---------------------------+
+1 row in set (0.001 sec)
+```

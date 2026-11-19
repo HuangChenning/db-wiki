@@ -1,0 +1,60 @@
+---
+title: "布尔测试条件"
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006306454.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 布尔测试条件
+
+布尔测试条件（Boolean Test Condition）用于检测一个表达式的逻辑值是否为 TRUE、FALSE 或 UNKNOWN。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>布尔测试运算符的详细说明请参见 <a href="../200.operator-of-mysql-mode/500.comparison-operators-of-mysql-mode.md">比较运算符</a> 中的 IS TRUE / IS FALSE 相关章节。</p>
+</main>
+
+## 语法
+
+```sql
+expr IS [ NOT ] { TRUE | FALSE | UNKNOWN }
+```
+
+## 使用说明
+
+* `IS TRUE`：表达式为 TRUE 时返回 TRUE，否则返回 FALSE。
+* `IS FALSE`：表达式为 FALSE 时返回 TRUE，否则返回 FALSE。
+* `IS UNKNOWN`：表达式为 UNKNOWN 时返回 TRUE，否则返回 FALSE。
+* `IS NOT TRUE`、`IS NOT FALSE`、`IS NOT UNKNOWN` 分别为上述条件的取反。
+
+## 示例
+
+```sql
+obclient> SELECT 1 IS TRUE AS result;
++--------+
+| result |
++--------+
+|      1 |
++--------+
+1 row in set
+
+obclient> SELECT 0 IS FALSE AS result;
++--------+
+| result |
++--------+
+|      1 |
++--------+
+1 row in set
+
+obclient> SELECT NULL IS UNKNOWN AS result;
++--------+
+| result |
++--------+
+|      1 |
++--------+
+1 row in set
+```

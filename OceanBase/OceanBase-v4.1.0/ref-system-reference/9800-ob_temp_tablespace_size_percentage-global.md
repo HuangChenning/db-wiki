@@ -1,0 +1,26 @@
+---
+title: ob_temp_tablespace_size_percentage
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002186425.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ob_temp_tablespace_size_percentage
+
+ob_temp_tablespace_size_percentage 用于租户磁盘中临时表空间大小的百分比限制。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该变量已不再使用，临时空间由 data_disk_usage_limit_percentage 配置项控制。</p>
+  </main>
+
+| **属性** |                                                   **描述**                                                   |
+|--------|------------------------------------------------------------------------------------------------------------|
+| 参数类型   | int                     |
+| 默认值    | 0                       |
+| 取值范围   | \[0, 100\]              |
+| 生效范围   | <li> GLOBAL   <li> SESSION    |

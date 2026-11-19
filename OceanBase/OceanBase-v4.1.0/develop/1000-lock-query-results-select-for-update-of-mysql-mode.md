@@ -1,0 +1,123 @@
+---
+title: "锁定查询结果 SELECT FOR UPDATE"
+book: "应用开发"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700610.html"
+tags:
+  - oceanbase
+  - distributed
+  - develop
+---
+
+# 锁定查询结果 SELECT FOR UPDATE
+
+本文通过具体示例介绍如何使用 `SELECT FOR UPDATE` 锁定查询结果。
+
+## SELECT FOR UPDATE
+
+OceanBase 数据库支持多版本并发控制 MVCC。默认情况下，读事务不会阻塞写事务的执行，但可以通过 `SELECT ... FOR UPDATE` 的方式为读事务的对象加锁，从而达到阻塞写事务的目的。
+
+## 示例
+
+创建示例表并录入合适的数据。
+
+1. 执行下面 SQL 语句，创建 `fruit_order` 表。
+
+    ```sql
+    CREATE TABLE fruit_order(
+      order_id INT NOT NULL AUTO_INCREMENT COMMENT '订单ID',
+      user_id BIGINT NOT NULL COMMENT '客户ID',
+      user_name VARCHAR(16) NOT NULL DEFAULT '' COMMENT '客户名称',
+      fruit_price DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '订单金额',
+      order_year SMALLINT NOT NULL COMMENT '下单年份',
+      PRIMARY KEY (order_id)
+      ) COMMENT '订单表';
+    ```
+
+2. 执行下面 SQL 语句，在 `fruit_order` 表中插入数据。
+
+    ```sql
+    INSERT INTO fruit_order(order_id,user_id,user_name,fruit_price,order_year) VALUES
+      (1,1011,'张三',13.11,'2019'),
+      (4,1011,'张三',22.21,'2020'),
+      (6,1011,'张三',58.83,'2020'),
+      (2,1022,'李四',23.34,'2019'),
+      (3,1022,'李四',12.22,'2019'),
+      (7,1022,'李四',14.66,'2021'),
+      (8,1022,'李四',34.44,'2021'),
+      (5,1033,'王五',51.55,'2020'),
+      (9,1033,'王五',63.66,'2021');
+    ```
+
+### 使用 SELECT FOR UPDATE 锁定查询结果
+
+1. 在 **会话 1** 中执行下面语句，开启事务。
+
+    ```sql
+    BEGIN;
+    ```
+
+2. 在 **会话 1** 中执行如下语句，锁定订单 ID 为 7 的查询结果。
+
+    ```sql
+    SELECT user_name, fruit_price, order_year FROM fruit_order WHERE order_id = 7 FOR UPDATE;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +-----------+-------------+------------+
+    | user_name | fruit_price | order_year |
+    +-----------+-------------+------------+
+    | 李四      |       14.66 |       2021 |
+    +-----------+-------------+------------+
+    1 row in set
+    ```
+
+3. 在 **会话 2** 中执行如下语句，修改订单 ID 为 7 的行中 `fruit_price` 数据为 16.15，该 SQL 语句会等待，直到上面 **会话 1** 的事务回滚或者 `COMMIT` 才得到执行，否则将等待超时报错为止。
+  
+    ```sql
+    UPDATE fruit_order SET fruit_price = 16.15  WHERE order_id = 7;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
+    ```
+
+4. 在 **会话 1** 中执行如下语句，提交事务。
+
+    ```sql
+    COMMIT;
+    ```
+
+5. 在 **会话 2** 中再次执行如下语句，修改订单 ID 为 7 的行中 `fruit_price` 数据为 16.15。
+
+    ```sql
+    UPDATE fruit_order SET fruit_price = 16.15  WHERE order_id = 7;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    Query OK, 1 row affected
+    Rows matched: 1  Changed: 1  Warnings: 0
+    ```
+
+6. 在 **会话 1** 中执行如下语句，查询更新后的数据。
+
+    ```sql
+    SELECT * FROM fruit_order WHERE order_id = 7;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +----------+---------+-----------+-------------+------------+
+    | order_id | user_id | user_name | fruit_price | order_year |
+    +----------+---------+-----------+-------------+------------+
+    |        7 |    1022 | 李四      |       16.15 |       2021 |
+    +----------+---------+-----------+-------------+------------+
+    1 row in set
+    ```

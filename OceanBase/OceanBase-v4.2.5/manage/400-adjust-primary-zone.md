@@ -1,0 +1,357 @@
+---
+title: "通过调整 Primary Zone 实现租户扩缩容"
+book: "管理数据库"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500299.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 通过调整 Primary Zone 实现租户扩缩容
+
+租户扩容和缩容本质上是提高和降低租户的服务能力，包括计算能力和存储容量。可以通过纵向提高或降低单节点的服务能力达成，也可以通过横向提高或降低单节点的服务能力达成。本文介绍如何通过修改 Primary Zone，从而横向增加或减少计算节点，达到租户总服务能力的提升或降低，实现租户的扩容或缩容。
+
+## 前提条件
+
+调整 Primary Zone 前，需要设置租户内的负载均衡策略。租户内的负载均衡策略由租户级配置项 `enable_rebalance` 和 `enable_transfer` 共同控制。
+
+* 配置项 `enable_rebalance` 在系统租户下用于控制是否进行租户间的负载均衡，在用户租户下用于控制是否进行租户内均衡。对租户进行扩缩容操作时，需要开启租户内的均衡。有关租户间均衡策略与租户内均衡策略的详细介绍，参见 [数据负载均衡最佳实践](https://www.oceanbase.com/docs/common-best-practices-1000000001489656)。该配置项的默认值为 `true`，表示开启均衡，设置后不需要重启 OBServer 节点，立即生效。
+
+* 配置项 `enable_transfer` 用于控制是否开启租户下的 Transfer 功能，默认值为 `true`，设置后不需要重启 OBServer 节点，立即生效。配置项 `enable_transfer` 值的含义依赖配置项 `enable_rebalance` 的取值：
+  
+   * 当配置项 `enable_rebalance` 的值为 `false` 时，无论配置项 `enable_transfer` 的值为 `true` 还是 `false`，系统均不会进行自动负载均衡。
+
+   * 当配置项 `enable_rebalance` 的值为 `true` 且 `enable_transfer` 的值为 `true` 时，表示在进行租户扩缩容操作时，系统会自动调整分区分布，实现负载均衡。
+
+   * 当配置项 `enable_rebalance` 的值为 `true` 且 `enable_transfer` 的值为 `false` 时，表示在进行租户扩缩容操作时，系统不能发起 Transfer 操作，只能通过日志流迁移实现有限的均衡。
+
+具体设置方法如下：
+
+* 系统租户设置指定租户的负载均衡策略
+
+  * 系统租户开启指定租户的租户内负载均衡和租户下的 Transfer 功能
+
+    ```shell
+    obclient(root@sys)[(none)]> ALTER SYSTEM SET enable_rebalance = true TENANT = 'tenant_name';
+    ```
+
+    ```shell
+    obclient(root@sys)[(none)]> ALTER SYSTEM SET enable_transfer = true TENANT = 'tenant_name';
+    ```
+
+    以上语句表示仅指定租户下的配置项 `enable_rebalance` 和 `enable_transfer` 的值为 `true`。
+
+  * 系统租户开启所有用户租户（不含 `sys` 租户和 Meta 租户）的租户内负载均衡和租户下的 Transfer 功能
+
+    ```shell
+    obclient(root@sys)[(none)]> ALTER SYSTEM SET enable_rebalance = true TENANT = all_user;
+    ```
+
+    ```shell
+    obclient(root@sys)[(none)]> ALTER SYSTEM SET enable_transfer = true TENANT = all_user;
+    ```
+
+    或者
+
+    ```shell
+    obclient(root@sys)[(none)]> ALTER SYSTEM SET enable_rebalance = true TENANT = all;
+    ```
+
+    ```shell
+    obclient(root@sys)[(none)]> ALTER SYSTEM SET enable_transfer = true TENANT = all;
+    ```
+
+    以上语句表示所有用户租户下配置项 `enable_rebalance` 和 `enable_transfer` 的值为 `true`。
+
+    <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>OceanBase 数据库从 V4.2.1 版本开始，<code>TENANT = all_user</code> 与 <code>TENANT = all</code>语义相同，在需要生效范围为所有用户租户时，推荐使用 <code>TENANT = all_user</code>，后续 <code>TENANT = all</code> 将废弃不再使用。</p>
+    </main>
+
+* 用户租户设置本租户的负载均衡策略
+
+    :::tab
+    tab MySQL 模式
+
+    MySQL 租户开启本租户的租户内负载均衡和租户下的 Transfer 功能的语句如下：
+
+    ```shell
+    obclient(root@mysql001)[(none)]> ALTER SYSTEM SET enable_rebalance = true;
+    ```
+
+    ```shell
+    obclient(root@mysql001)[(none)]> ALTER SYSTEM SET enable_transfer = true;
+    ```
+
+    tab Oracle 模式
+
+    Oracle 租户开启本租户的租户内负载均衡和租户下的 Transfer 功能的语句如下：
+
+    ```shell
+    obclient(SYS@oralce001)[SYS]> ALTER SYSTEM SET enable_rebalance = 'true';
+    ```
+
+    ```shell
+    obclient(SYS@oracle001)[SYS]> ALTER SYSTEM SET enable_transfer = 'true';
+    ```
+
+    :::
+
+更多配置项 `enable_rebalance` 和 `enable_transfer` 的详细说明，请参见 [enable_rebalance](../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2900.enable_rebalance.md) 和 [enable_transfer](../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/3100.enable_transfer.md)。
+
+## 增加 Primary Zone
+
+1. 使用 `root` 用户登录到集群的 `sys` 租户。
+
+    ```shell
+    obclient -h172.30.xxx.xxx -P2883 -uroot@sys#obdemo -pxxxx -A
+    ```
+
+2. 进入 `oceanbase` 数据库。
+
+    ```shell
+    obclient(root@sys)[(none)]> use oceanbase;
+    ```
+
+3. 查询租户 `mysql001` 的基本信息，例如 `TENANT_ID`、`PRIMARY_ZONE` 等信息。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT TENANT_ID, TENANT_NAME, PRIMARY_ZONE FROM oceanbase.DBA_OB_TENANTS WHERE TENANT_NAME = 'mysql001';
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +-----------+-------------+--------------+
+   | TENANT_ID | TENANT_NAME | PRIMARY_ZONE |
+   +-----------+-------------+--------------+
+   |      1004 | mysql001    | zone1;zone2  |
+   +-----------+-------------+--------------+
+   1 row in set
+   ```
+
+   根据查询结果可知，租户 `mysql001` 的 `TENANT_ID` 为 1004，`PRIMARY_ZONE` 第一优先级为 `zone1`。
+
+4. 查询租户 `mysql001` 当前日志流 Leader 副本位置的分布信息。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT TENANT_ID, LS_ID, SVR_IP, SVR_PORT, ZONE, ROLE, REPLICA_TYPE FROM oceanbase.CDB_OB_LS_LOCATIONS WHERE TENANT_ID = 1004 AND LS_ID != 1 AND ROLE = 'LEADER';
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +-----------+-------+---------------+----------+--------+--------+--------------+
+   | TENANT_ID | LS_ID | SVR_IP        | SVR_PORT | ZONE   | ROLE   | REPLICA_TYPE |
+   +-----------+-------+---------------+----------+--------+--------+--------------+
+   |      1004 |  1001 | 172.xx.xxx.xx |    2882  |  zone1 | LEADER | FULL         |
+   |      1004 |  1012 | 172.xx.xxx.xx |    2882  |  zone1 | LEADER | FULL         |
+   +-----------+-------+---------------+----------+--------+--------+--------------+
+   2 rows in set
+   ```
+
+   根据查询结果可知，租户 `mysql001` 有 2 个 Leader 副本提供服务，且均匀分布在 zone1 的两台机器上。
+
+5. 修改租户 `mysql001` 的 `PRIMARY_ZONE` 属性，第一优先级 Zone 的个数从 1 调整为 2。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> ALTER TENANT mysql001 PRIMARY_ZONE='zone1,zone2';
+   ```
+
+6. 查看增加 Primary Zone 任务的执行状态。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT * FROM oceanbase.DBA_OB_TENANT_JOBS WHERE JOB_TYPE='ALTER_TENANT_PRIMARY_ZONE' AND TENANT_ID = 1004;
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +--------+---------------------------+------------+-------------+----------+----------------------------+----------------------------+-----------+--------------------------------------------------+----------------------------------------+----------------+-------------+
+   | JOB_ID | JOB_TYPE                  | JOB_STATUS | RESULT_CODE | PROGRESS | START_TIME                 | MODIFY_TIME                | TENANT_ID | SQL_TEXT                                         | EXTRA_INFO                             | RS_SVR_IP      | RS_SVR_PORT |
+   +--------+---------------------------+------------+-------------+----------+----------------------------+----------------------------+-----------+--------------------------------------------------+----------------------------------------+----------------+-------------+
+   |      4 | ALTER_TENANT_PRIMARY_ZONE | SUCCESS    |           0 |      100 | 2024-12-18 17:26:00.069089 | 2024-12-18 17:26:20.919021 |      1004 | ALTER TENANT mysql001 PRIMARY_ZONE='zone1,zone2' | FROM: 'zone1;zone2', TO: 'zone1,zone2' | 172.xx.xxx.xx  |       2882  |
+   +--------+---------------------------+------------+-------------+----------+----------------------------+----------------------------+-----------+--------------------------------------------------+----------------------------------------+----------------+-------------+
+   1 row in set
+   ```
+
+   查询结果中，根据以下字段，找到对应的任务记录：
+
+   * `START_TIME`：任务的发起时间。
+   * `SQL_TEXT`：任务对应的 SQL 语句。
+   * `EXTRA_INFO`：变更前后的 Primary Zone 信息。
+
+   当对应任务记录中 `JOB_STATUS` 的值为 `SUCCESS` 时，表示增加 Primary Zone 的任务执行成功。
+
+   有关视图 `DBA_OB_TENANT_JOBS` 的详细字段说明，请参见 [DBA_OB_TENANT_JOBS](../../../../700.reference/700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/22100.o-dba_ob_tenant_jobs-of-sys-tenant.md)。
+
+7. 查询租户 `mysql001` 的基本信息，确认 `PRIMARY_ZONE` 属性修改成功，第一优先级由 `zone1` 变更为 `zone1,zone2`。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT PRIMARY_ZONE FROM oceanbase.DBA_OB_TENANTS WHERE TENANT_ID = 1004;
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +--------------+
+   | PRIMARY_ZONE |
+   +--------------+
+   | zone1,zone2  |
+   +--------------+
+   1 row in set
+   ```
+
+8. 再次查询租户 `mysql001` 日志流 Leader 副本位置的分布信息。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT TENANT_ID, LS_ID, SVR_IP, SVR_PORT, ZONE, ROLE, REPLICA_TYPE FROM oceanbase.CDB_OB_LS_LOCATIONS WHERE TENANT_ID = 1004 AND LS_ID != 1 AND ROLE = 'LEADER';
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +-----------+-------+---------------+----------+-------+--------+--------------+
+   | TENANT_ID | LS_ID | SVR_IP        | SVR_PORT | ZONE  | ROLE   | REPLICA_TYPE |
+   +-----------+-------+---------------+----------+-------+--------+--------------+
+   |      1004 |  1001 | 172.xx.xxx.xx |    2882  | zone1 | LEADER | FULL         |
+   |      1004 |  1012 | 172.xx.xxx.xx |    2882  | zone1 | LEADER | FULL         |
+   |      1004 |  1013 | 172.xx.xxx.xx |    2882  | zone2 | LEADER | FULL         |
+   |      1004 |  1014 | 172.xx.xxx.xx |    2882  | zone2 | LEADER | FULL         |
+   +-----------+-------+---------------+----------+-------+--------+--------------+
+   4 rows in set
+   ```
+
+   根据查询结果可知，租户 `mysql001` 在 zone1、zone2 上分别各有 2 个 Leader 副本，共 4 个 Leader 副本提供服务。
+
+通过上述示例，变更前，租户 `mysql001` 的 `PRIMARY_ZONE` 第一优先级 Zone 的个数为 1，有 2 个 Leader 副本提供服务；变更后，租户 `mysql001` 的 `PRIMARY_ZONE` 第一优先级 Zone 的个数由 1 变更为 2，提供服务的 Leader 副本由 2 变更为 4，增加了计算节点，从而实现了租户的扩容。
+
+## 减少 Primary Zone
+
+1. 使用 `root` 用户登录到集群的 `sys` 租户。
+
+    ```shell
+    obclient -h172.30.xxx.xxx -P2883 -uroot@sys#obdemo -pxxxx -A
+    ```
+
+2. 进入 `oceanbase` 数据库。
+
+    ```shell
+    obclient(root@sys)[(none)]> use oceanbase;
+    ```
+
+3. 查询租户 `mysql001` 的基本信息，例如 `TENANT_ID`、`PRIMARY_ZONE` 等信息。
+
+   ```shell
+   obclient(root@sys)[oceanbase]>  SELECT TENANT_ID, TENANT_NAME, PRIMARY_ZONE FROM oceanbase.DBA_OB_TENANTS WHERE TENANT_NAME = 'mysql001';
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +-----------+-------------+--------------+
+   | TENANT_ID | TENANT_NAME | PRIMARY_ZONE |
+   +-----------+-------------+--------------+
+   |      1004 | mysql001    | zone1,zone2  |
+   +-----------+-------------+--------------+
+   1 row in set
+   ```
+
+   根据查询结果可知，租户 `mysql001` 的 `TENANT_ID` 为 1004，`PRIMARY_ZONE` 第一优先级为 `zone1` 和 `zone2`。
+
+4. 查询租户 `mysql001` 当前日志流 Leader 副本位置的分布信息。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT TENANT_ID, LS_ID, SVR_IP, SVR_PORT, ZONE, ROLE, REPLICA_TYPE FROM oceanbase.CDB_OB_LS_LOCATIONS WHERE TENANT_ID = 1004 AND LS_ID != 1 AND ROLE = 'LEADER';
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +-----------+-------+---------------+----------+-------+--------+--------------+
+   | TENANT_ID | LS_ID | SVR_IP        | SVR_PORT | ZONE  | ROLE   | REPLICA_TYPE |
+   +-----------+-------+---------------+----------+-------+--------+--------------+
+   |      1004 |  1001 | 172.xx.xxx.xx |    2882  | zone1 | LEADER | FULL         |
+   |      1004 |  1012 | 172.xx.xxx.xx |    2882  | zone1 | LEADER | FULL         |
+   |      1004 |  1013 | 172.xx.xxx.xx |    2882  | zone2 | LEADER | FULL         |
+   |      1004 |  1014 | 172.xx.xxx.xx |    2882  | zone2 | LEADER | FULL         |
+   +-----------+-------+---------------+----------+-------+--------+--------------+
+   4 rows in set
+   ```
+
+   根据查询结果可知，租户 `mysql001` 有 4 个 Leader 副本提供服务，且均匀分布在 zone1、zone2 各自的两台机器上。
+
+5. 修改租户 `mysql001` 的 `PRIMARY_ZONE` 属性，第一优先级 Zone 的个数从 2 调整为 1。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> ALTER TENANT mysql001 PRIMARY_ZONE='zone1;zone2';
+   ```
+
+6. 查看减少 Primary Zone 任务的执行状态。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT * FROM oceanbase.DBA_OB_TENANT_JOBS WHERE JOB_TYPE='ALTER_TENANT_PRIMARY_ZONE' AND TENANT_ID = 1004;
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +--------+---------------------------+------------+-------------+----------+----------------------------+----------------------------+-----------+--------------------------------------------------+----------------------------------------+----------------+-------------+
+   | JOB_ID | JOB_TYPE                  | JOB_STATUS | RESULT_CODE | PROGRESS | START_TIME                 | MODIFY_TIME                | TENANT_ID | SQL_TEXT                                         | EXTRA_INFO                             | RS_SVR_IP      | RS_SVR_PORT |
+   +--------+---------------------------+------------+-------------+----------+----------------------------+----------------------------+-----------+--------------------------------------------------+----------------------------------------+----------------+-------------+
+   |      4 | ALTER_TENANT_PRIMARY_ZONE | SUCCESS    |           0 |      100 | 2024-12-18 17:26:00.069089 | 2024-12-18 17:26:20.919021 |      1004 | ALTER TENANT mysql001 PRIMARY_ZONE='zone1,zone2' | FROM: 'zone1;zone2', TO: 'zone1,zone2' |  172.xx.xxx.xx |        2882 |
+   |      5 | ALTER_TENANT_PRIMARY_ZONE | SUCCESS    |           0 |      100 | 2024-12-18 17:41:44.412459 | 2024-12-18 17:41:54.965873 |      1004 | ALTER TENANT mysql001 PRIMARY_ZONE='zone1;zone2' | FROM: 'zone1,zone2', TO: 'zone1;zone2' |  172.xx.xxx.xx |        2882 |
+   +--------+---------------------------+------------+-------------+----------+----------------------------+----------------------------+-----------+--------------------------------------------------+----------------------------------------+----------------+-------------+
+   2 rows in set
+   ```
+
+   查询结果中，根据以下字段，找到对应的任务记录：
+
+   * `START_TIME`：任务的发起时间。
+   * `SQL_TEXT`：任务对应的 SQL 语句。
+   * `EXTRA_INFO`：变更前后的 Primary Zone 信息。
+
+   当对应任务记录中 `JOB_STATUS` 的值为 `SUCCESS` 时，表示减少 Primary Zone 的任务执行成功。
+
+   有关视图 `DBA_OB_TENANT_JOBS` 的详细字段说明，请参见 [DBA_OB_TENANT_JOBS](../../../../700.reference/700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/22100.o-dba_ob_tenant_jobs-of-sys-tenant.md)。
+
+7. 查询租户 `mysql001` 的基本信息，确认 `PRIMARY_ZONE` 属性修改成功，由 `zone1,zone2` 变更为 `zone1;zone2`。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT PRIMARY_ZONE FROM oceanbase.DBA_OB_TENANTS WHERE TENANT_ID = 1004;
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +--------------+
+   | PRIMARY_ZONE |
+   +--------------+
+   |  zone1;zone2 |
+   +--------------+
+   1 row in set
+   ```
+
+8. 再次查询租户 `mysql001` 日志流 Leader 副本位置的分布信息。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT TENANT_ID, LS_ID, SVR_IP, SVR_PORT, ZONE, ROLE, REPLICA_TYPE FROM oceanbase.CDB_OB_LS_LOCATIONS WHERE TENANT_ID = 1004 AND LS_ID != 1 AND ROLE = 'LEADER';
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +-----------+-------+---------------+----------+--------+--------+--------------+
+   | TENANT_ID | LS_ID | SVR_IP        | SVR_PORT | ZONE   | ROLE   | REPLICA_TYPE |
+   +-----------+-------+---------------+----------+--------+--------+--------------+
+   |      1004 |  1001 | 172.xx.xxx.xx |    2882  |  zone1 | LEADER | FULL         |
+   |      1004 |  1012 | 172.xx.xxx.xx |    2882  |  zone1 | LEADER | FULL         |
+   +-----------+-------+---------------+----------+--------+--------+--------------+
+   2 rows in set
+   ```
+
+   根据查询结果可知，租户 `mysql001` 在 zone1 上有 2 个 Leader 副本提供服务。
+
+通过上述示例，变更前，租户 `mysql001` 的 `PRIMARY_ZONE` 第一优先级 Zone 的个数为 2，有 4 个 Leader 副本提供服务；变更后，租户 `mysql001` 的 `PRIMARY_ZONE` 第一优先级 Zone 的个数由 2 变更为 1，提供服务的 Leader 副本由 4 变更为 2，减少了计算节点，从而实现了租户的缩容。

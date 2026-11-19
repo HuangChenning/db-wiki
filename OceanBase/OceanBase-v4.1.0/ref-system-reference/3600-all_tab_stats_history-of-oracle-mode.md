@@ -1,0 +1,37 @@
+---
+title: ALL_TAB_STATS_HISTORY
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700718.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ALL_TAB_STATS_HISTORY
+
+## 功能
+
+`ALL_TAB_STATS_HISTORY` 用于提供当前用户可访问的所有表的表统计修改历史记录。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 相关视图
+
+* DBA_TAB_STATS_HISTORY
+
+* USER_TAB_STATS_HISTORY
+
+## 字段说明
+
+|     **字段名称**      |           **类型**            | **是否可以为 NULL** |  **描述**   |
+|-------------------|-----------------------------|----------------|-----------|
+| OWNER             | VARCHAR2(128)               | NO             | 表的所有者     |
+| TABLE_NAME        | VARCHAR2(128)               | NO             | 表名        |
+| PARTITION_NAME    | VARCHAR2(128)               | YES            | 分区名称      |
+| SUBPARTITION_NAME | VARCHAR2(128)               | YES            | 子分区名称     |
+| STATS_UPDATE_TIME | TIMESTAMP(6) WITH TIME ZONE | YES            | 更新统计信息的时间 |

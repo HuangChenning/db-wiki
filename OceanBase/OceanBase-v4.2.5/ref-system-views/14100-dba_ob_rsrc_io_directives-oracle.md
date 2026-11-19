@@ -1,0 +1,51 @@
+---
+title: DBA_OB_RSRC_IO_DIRECTIVES
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500862.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_RSRC_IO_DIRECTIVES
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.1.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示 Resource Manager 中的 IO 资源配置情况。
+
+## 字段说明
+
+| **字段** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| PLAN | VARCHAR2(128) | NO | 指令所属资源计划名 |
+| GROUP_OR_SUBPLAN | VARCHAR2(128) | NO | 指令控制的资源组名 |
+| COMMENTS | VARCHAR2(2000) | YES | 资源计划备注 |
+| MIN_IOPS |  NUMBER(38) | NO | IOPS 预留语义，取值 `0-100` |
+| MAX_IOPS |  NUMBER(38) | NO | IOPS 上限语义，取值 `0-100` |
+| WEIGHT_IOPS |  NUMBER(38) | NO | IOPS 共用语义，取值 `0-100` |
+
+## 查询示例
+
+用户租户查询本租户 Resource Manager 中的 IO 资源配置情况。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_OB_RSRC_IO_DIRECTIVES;
+```
+
+查询结果如下：
+
+```shell
++--------+------------------+-----------+----------+----------+-------------+
+| PLAN   | GROUP_OR_SUBPLAN | COMMENTS  | MIN_IOPS | MAX_IOPS | WEIGHT_IOPS |
++--------+------------------+-----------+----------+----------+-------------+
+| PLAN_A | BIG_GROUP        | TP 优先   |       20 |      100 |          20 |
++--------+------------------+-----------+----------+----------+-------------+
+1 row in set
+```

@@ -1,0 +1,30 @@
+---
+title: "DBMS_APPLICATION_INFO 概述"
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006286143.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DBMS_APPLICATION_INFO 概述
+
+`DBMS_APPLICATION_INFO` 系统包用于将应用程序名称注册在数据库中以进行审计或性能跟踪。
+
+## DBMS_APPLICATION_INFO 权限说明
+
+使用 `DBMS_APPLICATION_INFO` 系统包无需特殊权限。当应用程序向数据库注册时，它的名称和操作记录在 `GV$OB_PROCESSLIST` 视图中。
+
+## DBMS_APPLICATION_INFO 子程序概览
+
+下表列出了 OceanBase 数据库当前版本所支持的 `DBMS_APPLICATION_INFO` 子程序和简要描述。
+
+| 子程序 | 描述 |
+|---------------|---------------|
+| [READ_CLIENT_INFO](200.read-client-info-mysql.md) | 读取当前会话的 client_info 字段的值。 |
+| [READ_MODULE](300.read-module-mysql.md) | 读取当前会话的模块和操作字段的值。 |
+| [SET_ACTION](400.set-action-mysql.md) | 设置当前模块中当前操作的名称。 |
+| [SET_CLIENT_INFO](500.set-client-info-mysql.md) | 设置客户端应用程序的附加信息。 |
+| [SET_MODULE](600.set-module-mysql.md) | 将当前正在运行的模块的名称设置为新模块。 |

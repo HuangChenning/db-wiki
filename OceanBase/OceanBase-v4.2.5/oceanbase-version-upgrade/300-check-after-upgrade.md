@@ -1,0 +1,50 @@
+---
+title: "升级后检查"
+book: "OceanBase 升级"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502709.html"
+tags:
+  - oceanbase
+  - distributed
+  - oceanbase-version-upgrade
+---
+
+# 升级后检查
+
+本文将介绍 OceanBase 集群升级完成后的状态检查。
+
+## 操作步骤
+
+1. 登录 OceanBase 数据库。
+
+   **示例如下：**
+
+   使用 `root` 用户连接 `sys` 租户。
+
+   ```shell
+   obclient -h10.10.10.1 -P2881 -uroot@sys -p******
+   ```
+
+2. 使用视图查看集群升级相关事件信息。
+
+   **示例如下：**
+
+   ```sql
+   SELECT * FROM oceanbase.DBA_OB_CLUSTER_EVENT_HISTORY WHERE MODULE='UPGRADE';
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +----------------------------+---------+-------------+-----------------+---------+---------------+-------------------------------------------------------------------------------------------+---------------------+---------+----------------------+---------+-----------+--------+-------+--------+------------+
+   | TIMESTAMP                  | MODULE  | EVENT       | NAME1           | VALUE1  | NAME2         | VALUE2                                                                                    | NAME3               | VALUE3  | NAME4                | VALUE4  | NAME5     | VALUE5 | NAME6 | VALUE6 | EXTRA_INFO |
+   +----------------------------+---------+-------------+-----------------+---------+---------------+-------------------------------------------------------------------------------------------+---------------------+---------+----------------------+---------+-----------+--------+-------+--------+------------+
+   | 2023-12-15 16:10:33.035367 | UPGRADE | UPGRADE_ALL | cluster_version | 4.2.1.0 | build_version | 4.2.2.0_100000012023120716-c33e61340b84acea88d8cfe868d2a75f7f3b042d(Dec  7 2023 16:30:05) | target_data_version | 4.2.2.0 | current_data_version | 4.2.1.0 | tenant_id | 1      |       |        |            |
+   +----------------------------+---------+-------------+-----------------+---------+---------------+-------------------------------------------------------------------------------------------+---------------------+---------+----------------------+---------+-----------+--------+-------+--------+------------+
+   1 row in set
+   ```
+
+## 相关文档
+
+* 有关连接 OceanBase 数据库的详细信息，请参见 [连接方式概述](../../300.develop/100.application-development-of-mysql-mode/100.connect-to-oceanbase-database-of-mysql-mode/100.connection-methods-overview-of-mysql-mode.md)。
+* 有关展示集群级别重要事件的视图信息，请参见 [oceanbase.DBA_OB_CLUSTER_EVENT_HISTORY](../../700.reference/700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/17200.o-dba_ob_cluster_event_history-of-sys-tenant.md)。

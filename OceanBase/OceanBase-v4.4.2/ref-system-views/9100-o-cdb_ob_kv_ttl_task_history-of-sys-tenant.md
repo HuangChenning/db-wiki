@@ -1,0 +1,85 @@
+---
+title: oceanbase.CDB_OB_KV_TTL_TASK_HISTORY
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284600.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_KV_TTL_TASK_HISTORY
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V3.1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示系统租户下查看到所有租户的历史 TTL 任务。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| TENANT_ID | bigint(20)  | NO | 租户 ID |
+| TABLE_NAME | varchar(256) | NO | 表名 |
+| TABLE_ID | bigint(20) | NO | 表 ID |
+| TABLET_ID | bigint(20) | NO | Tablet ID |
+| TASK_ID | bigint(20) | NO | 任务 ID，从 1 开始 |
+| START_TIME | timestamp(6) | NO | 任务开始时间 |
+| END_TIME | timestamp(6) | NO | 任务结束时间 |
+| TRIGGER_TYPE | varchar(8) | NO | 任务触发类型，包括 PERIODIC 和 USER 两种 |
+| STATUS | varchar(13) | NO | 任务状态，见任务状态说明 |
+| TTL_DEL_CNT | bigint(20) | NO | 基于 `time_to_live` 删除的记录数量 |
+| MAX_VERSION_DEL_CNT | bigint(20) | NO | 基于 `MAX_VERSION` 删除的记录数量 |
+| SCAN_CNT | bigint(20) | NO | 任务扫描的记录数量 |
+| RET_CODE | varchar(512) | NO | 任务返回码 |
+| SCAN_INDEX | varchar(128) | NO | 任务扫描使用的索引，默认为 PRIMARY KEY |
+
+## 查询示例
+
+查看系统租户下查看到所有租户的历史 TTL 任务。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OB_KV_TTL_TASK_HISTORY LIMIT 10\G;
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+          TENANT_ID: 1004
+         TABLE_NAME: ttl_table_1
+           TABLE_ID: 500017
+          TABLET_ID: 200019
+            TASK_ID: 1
+         START_TIME: 2026-04-23 17:44:04.445966
+           END_TIME: 2026-04-23 17:44:04.451643
+       TRIGGER_TYPE: USER
+             STATUS: FINISHED
+        TTL_DEL_CNT: 4
+MAX_VERSION_DEL_CNT: 0
+           SCAN_CNT: 4
+           RET_CODE: OB_SUCCESS
+          TASK_TYPE: NORMAL
+         SCAN_INDEX: PRIMARY KEY
+*************************** 2. row ***************************
+          TENANT_ID: 1004
+         TABLE_NAME: ttl_table_1
+           TABLE_ID: 500017
+          TABLET_ID: 200018
+            TASK_ID: 1
+         START_TIME: 2026-04-23 17:44:09.269205
+           END_TIME: 2026-04-23 17:44:09.274552
+       TRIGGER_TYPE: USER
+             STATUS: FINISHED
+        TTL_DEL_CNT: 2
+MAX_VERSION_DEL_CNT: 0
+           SCAN_CNT: 2
+           RET_CODE: OB_SUCCESS
+          TASK_TYPE: NORMAL
+         SCAN_INDEX: PRIMARY KEY
+```

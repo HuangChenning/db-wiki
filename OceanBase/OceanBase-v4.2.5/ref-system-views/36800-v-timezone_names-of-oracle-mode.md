@@ -1,0 +1,34 @@
+---
+title: "V$TIMEZONE_NAMES"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500740.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$TIMEZONE_NAMES
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+显示有效的时区名称。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该视图仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 字段说明
+
+| **字段名称** |    **类型**     | **是否可以为 NULL** |     **描述**     |
+|----------|---------------|----------------|----------------|
+| TZNAME   | varchar(64)   | NO             | 时区区域           |
+| TZABBREV | varchar(8)    | NO             | 相对时间缩写（例如，PDT） |
+| CON_ID   | decimal(38,0) | NO             | 租户 ID          |

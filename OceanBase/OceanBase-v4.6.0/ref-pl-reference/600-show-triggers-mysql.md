@@ -1,0 +1,93 @@
+---
+title: SHOW TRIGGERS
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684863.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# SHOW TRIGGERS
+
+`SHOW TRIGGERS` 语句显示为数据库中的表定义的触发器。
+
+## 语法
+
+```sql
+SHOW TRIGGERS
+[{FROM | IN} database_name]
+[LIKE 'pattern' | WHERE expr]
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| FROM | IN database_name | 可选，指定要查看触发器的数据库名称。如果未指定，则显示默认数据库中的触发器。 |
+| LIKE 'pattern' | 可选，指定要匹配的表名称模式（不是触发器名称）。可以使用 `%` 和 `_` 通配符。显示匹配表的触发器。 |
+| WHERE expr | 可选，使用 WHERE 子句指定条件来选择行。 |
+
+`SHOW TRIGGERS` 语句仅返回具有 `TRIGGER` 权限的数据库和表的结果。
+
+`SHOW TRIGGERS` 语句的输出如下信息：
+
+* `Trigger`：触发器名称。
+* `Event`：触发事件。这是触发器激活所关联表上的操作类型。该值可以为 `INSERT`（插入了一行）、`DELETE`（删除了一行）或 `UPDATE`（修改了一行）。
+* `Table`：定义触发器的表。
+* `Statement`：触发器激活时执行的语句。
+* `Timing`：触发器是在触发事件之前还是之后被激活。该值可以为 `BEFORE` 或者 `AFTER`。
+* `Created`：创建触发器的日期和时间。值的类型为 `TIMESTAMP(2)`（以百分之一秒为小数部分）。
+* `sql_mode`：创建触发器时生效的 SQL 模式。
+* `Definer`：创建触发器的用户账号，格式为 `'user_name'@'host_name'`。
+* `character_set_client`：创建触发器时 `character_set_client` 系统变量在当前会话的值。
+* `collation_connection`：创建触发器时 `collation_connection` 系统变量在当前会话的值。
+* `Database Collation`：与触发器关联的数据库的排序规则。
+
+触发器信息也可从 `INFORMATION_SCHEMA TRIGGERS` 表中获得，详细信息请参见 [INFORMATION_SCHEMA TRIGGERS](../800.information-schema-dictionary-view-mysql/300.information-schema-triggers-mysql.md)。
+
+## 示例
+
+查看当前数据库中所有表的触发器。
+
+```sql
+obclient> SHOW TRIGGERS;
+```
+
+查看指定数据库中的触发器：
+
+```sql
+obclient> SHOW TRIGGERS FROM test_db;
+```
+
+查看匹配特定表名称模式的触发器：
+
+```sql
+obclient> SHOW TRIGGERS LIKE 'test%'\G
+```
+
+查询结果如下：
+
+```sql
+*************************** 1. row ***************************
+             Trigger: test_trg
+               Event: UPDATE
+               Table: test
+           Statement: TRIGGER test_trg BEFORE UPDATE ON test FOR EACH ROW
+    BEGIN
+        IF NEW.user_num < 1 THEN
+            SET NEW.user_num = 1;
+        ELSEIF NEW.user_num > 45 THEN
+            SET NEW.user_num = 45;
+        END IF;
+    END
+              Timing: BEFORE
+             Created: 2025-12-23 16:12:32.41
+            sql_mode: STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_AUTO_CREATE_USER
+             Definer: root@%
+character_set_client: utf8mb4
+collation_connection: utf8mb4_general_ci
+  Database Collation: utf8mb4_general_ci
+1 row in set (0.026 sec)
+```

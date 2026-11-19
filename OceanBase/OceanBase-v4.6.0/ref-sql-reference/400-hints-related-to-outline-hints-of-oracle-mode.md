@@ -1,0 +1,183 @@
+---
+title: "其他 Hint"
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005688339.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 其他 Hint
+
+| Hint 名称                               | 解释                            |
+|---------------------------------------|----------------------------------|
+| `BEGIN_OUTLINE_DATA`                  |  outline data 起始标志。            |
+| `END_OUTLINE_DATA`                    |  outline data 结束标志。           |
+| `QB_NAME`                             | 为查询块指定一个名称，以便在其他 Hint 中引用。|
+| `OPTIMIZER_FEATURES_ENABLE`           | 查询计划生成优化器版本。             |
+| `CACHE`                               | 用于手动启用指定 Table 及其索引的 Cache，该 Table 查询过程中始终启用 Cache。|
+| `NOCACHE`                             | 用于手动禁用指定 Table 及其索引的 Cache，该 Table 查询过程中始终禁用 Cache。|
+
+## OUTLINE DATA 结构
+
+**OUTLINE DATA** 用于标识查询优化过程中的提示信息。有效的 OUTLINE DATA 结构示例如下：
+
+```sql
+SELECT /*+PARALLEL(2)*/ 1
+FROM (SELECT c2 FROM t1 WHERE c1 = 1) v, t2
+WHERE t2.c2 = v.c2;
+
+/*+
+  BEGIN_OUTLINE_DATA
+  // 优化提示
+  LEADING(@"SEL$6D1A4751" ("TEST.T1"@"SEL$2" "TEST.T2"@"SEL$1"))
+  USE_HASH(@"SEL$6D1A4751" "TEST.T2"@"SEL$1")
+  PQ_DISTRIBUTE(@"SEL$6D1A4751" "TEST.T2"@"SEL$1" NONE BROADCAST)
+  PX_JOIN_FILTER(@"SEL$6D1A4751" "TEST.T2"@"SEL$1")
+  FULL(@"SEL$6D1A4751" "TEST.T1"@"SEL$2")
+  FULL(@"SEL$6D1A4751" "TEST.T2"@"SEL$1")
+  // 转换提示
+  MERGE(@"SEL$2" > "SEL$1")
+  // 全局提示
+  OPTIMIZER_FEATURES_ENABLE('4.0.0.0')
+  PARALLEL(2)
+  END_OUTLINE_DATA
+*/
+```
+
+在 `BEGIN_OUTLINE_DATA` 与 `END_OUTLINE_DATA` 之间的提示信息中，若包含 `OPTIMIZER_FEATURES_ENABLE` 提示并指定了有效的优化器版本，这些提示将被识别为 OUTLINE DATA。
+
+## `OPTIMIZER_FEATURES_ENABLE` Hint
+
+`OPTIMIZER_FEATURES_ENABLE` Hint 用于指当前查询使用的优化器版本。
+
+### 语法
+
+```sql
+/*+ OPTIMIZER_FEATURES_ENABLE ( version_number ) */
+```
+
+#### 参数解释
+
+- `version_number`：为优化器版本。
+
+### 示例
+
+```sql
+-- 使用 OPTIMIZER_FEATURES_ENABLE Hint 来指定优化器在生成执行计划时使用 4.0.0.0 版本的特性
+SELECT /*+ OPTIMIZER_FEATURES_ENABLE('4.0.0.0') */ employee_id, last_name
+FROM employees
+WHERE last_name = 'Smith';
+```
+
+## `QB_NAME` Hint
+
+`QB_NAME` Hint 允许为查询块指定一个名称，该名称随后可在其他 Hint 中引用该查询块。这使得在需要对查询的特定部分进行更精细的控制时变得非常有用。
+
+更多信息，参见[使用 Query Block Name 和 QB_NAME Hint 控制查询优化](../150.query-block-name-qb-hint-of-oracle-mode.md)
+
+### 语法
+
+```sql
+/*+ QB_NAME(queryblock) */
+```
+
+#### 参数解释
+
+- `qb_name` 忽略大小写，不能包含特殊字符，长度上限为 20。
+
+#### 使用说明与注意事项
+
+`QB_NAME` 在以下场景中无效：
+
+- 同一层查询中指定多个合法的 `qb_name`。
+- 不同层查询中指定相同的 `qb_name`。
+
+### 示例
+
+```sql
+-- 使用 QB_NAME Hint 为查询块命名为 'qb'，并使用 FULL Hint 强制对 employees 表进行全表扫描
+SELECT /*+ QB_NAME(qb) FULL(@qb e) */ employee_id, last_name
+FROM employees e
+WHERE last_name = 'Smith';
+```
+
+### CACHE Hint
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该 Hint 从 V4.6.0 版本开始引入。</p>
+</main>
+
+`CACHE` Hint 用于手动启用指定 Table 及其索引的 Cache，该 Table 查询过程中始终启用 Cache。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>当没有 Hint 时，按自适应策略控制 Cache 的开启与关闭。</p>
+</main>
+
+**语法如下：**
+
+```sql
+/*+ CACHE ([@qb_name] table_name) */
+```
+
+参数解释：
+
+* `@qb_name`：可选项，表示该 Hint 作用的查询块（query block） 名称。如果省略，则默认对当前查询的主查询块生效。
+* `table_name`：表示表名。
+
+**示例如下：**
+
+* 手动启用 `tbl1` 的 Cache。
+
+    ```shell
+    obclient> SELECT /*+ CACHE(tbl1) */ * FROM tbl1;
+    ```
+
+* 手动启用 `tbl1` 的 Cache，`tbl2` 为自动启用的默认状态。
+
+    ```shell
+    obclient> SELECT /*+ CACHE(tbl1) */ * FROM tbl1, tbl2
+        WHERE tbl1.col1 = tbl2.col1;
+    ```
+
+### NOCACHE Hint
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该 Hint 从 V4.6.0 版本开始引入。</p>
+</main>
+
+`NOCACHE` Hint 用于手动禁用指定 Table 及其索引的 Cache，该 Table 查询过程中始终禁用 Cache。
+
+**语法如下：**
+
+```sql
+/*+ CACHE ([@qb_name] table_name) */
+```
+
+参数解释：
+
+* `@qb_name`：可选项，表示该 Hint 作用的查询块（query block） 名称。如果省略，则默认对当前查询的主查询块生效。
+* `table_name`：表示表名。
+
+**示例如下：**
+
+手动禁用 `tbl1` 的 Cache。
+
+```shell
+obclient> SELECT /*+ NOCACHE(tbl1) */ * FROM tbl1;
+```
+
+当同时有多个 `CACHE`/`NOCACHE` Hint 时，会合并所有 Hint。当 `CACHE` 和 `NOCACHE` 冲突时，即它们指定的是同一个 Table，以 `CACHE` 为准，也就是会视为启用这个 Table 的 Cache。
+
+**示例如下：**
+
+`CACHE` 生效，手动启用 `tbl1` 的 Cache。
+
+```shell
+obclient> SELECT /*+ CACHE(tbl1) NOCACHE(tbl1) */ * FROM tbl1;
+```

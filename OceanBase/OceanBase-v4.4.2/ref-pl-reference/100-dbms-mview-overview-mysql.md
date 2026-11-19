@@ -1,0 +1,30 @@
+---
+title: "DBMS_MVIEW 概述"
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286700.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DBMS_MVIEW 概述
+
+`DBMS_MVIEW` 系统包用于刷新物化视图和清除物化视图日志。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+## DBMS_MVIEW 子程序概览
+
+下表列出了 OceanBase 数据库当前版本所支持的 `DBMS_MVIEW` 子程序和简要描述。
+
+| 子程序     | 描述                                      |
+| --------- | ----------------------------------------- |
+| [PURGE_LOG](200.purge-log-mysql.md)	| 用于可以清除物化视图日志，清除物化视图日志会删除所有与该表相关的日志记录。  |
+| [REFRESH](300.refresh-mysql.md)	    | 刷新指定的一个物化视图。                   |
+| [KILL_REFRESH](400.kill_refresh-mysql.md)| 用于主动终止一个由新调度框架管理的、仍处于执行中的物化视图刷新批次。|
+| [REFRESH_REPORT](500.refresh_report-mysql.md)| 用于生成单次物化视图刷新任务的分层诊断报告。|

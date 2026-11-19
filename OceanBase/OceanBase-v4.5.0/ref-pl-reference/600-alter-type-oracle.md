@@ -1,0 +1,83 @@
+---
+title: ALTER TYPE
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478488.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# ALTER TYPE
+
+`ALTER TYPE` 语句用于添加或删除成员属性或方法。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该语句从 V4.4.1 版本开始引入。</p>
+</main>
+
+使用 `ALTER TYPE` 语句可以更改对象类型的现有属性，也可以修改类型的标量属性。您还可以使用此语句重新编译类型的规范或主体，或者通过添加新的对象成员子程序规范来更改对象类型的规范。
+
+`ALTER TYPE` 语句对使用 `CREATE TYPE` 语句和 `CREATE TYPE BODY` 语句创建的类型可以执行以下操作：
+
+* 演变类型。也就是添加或删除成员属性或方法。
+
+* 通过添加对象成员子程序规范来更改类型的规范。
+
+* 重新编译规范或类型的主体。
+
+* 将类型的版本重置为 1，不再考虑将其演变。
+
+## 前提条件
+
+如果该类型在 `SYS` Schema 中，则必须以 `SYSDBA` 身份连接。否则，该类型必须在当前用户的 Schema 中，或者用户必须具有 `CREATE TYPE` or `CREATE ANY TYPE` 的系统权限。
+
+## 语法
+
+  ```sql
+  alter_type ::=
+  ALTER TYPE [ schema. ] type_name {alter_type_clause | type_compile_clause};
+
+  alter_type_clause ::=
+  { alter_attribute_definition} [ dependent_handling_clause ];
+
+  alter_attribute_definition ::=
+  { { ADD | MODIFY } ATTRIBUTE
+  { attribute [ datatype ]
+  | ( attribute datatype [, attribute datatype ]... )
+  }
+  | DROP ATTRIBUTE
+  { attribute
+  | ( attribute [, attribute ]... )
+  }
+  }
+
+  dependent_handling_clause ::=
+  {CASCADE}
+
+  type_compile_clause ::=
+  COMPILE [ DEBUG ] [ SPECIFICATION | BODY ] [ REUSE SETTINGS ]
+  ```
+
+## 参数解释
+
+* `alter_attribute_definition`: 用于添加、删除或修改 UDT 的属性。在同一条 ALTER TYPE 语句中可以添加、删除或修改多个属性，但每个属性只能引用一次。
+  * `ADD ATTRIBUTE`：用于添加属性，属性名称不可以与已有属性或方法冲突，属性将被添加到本地定义属性列表的末尾。
+  * `DROP ATTRIBUTE`：删除属性，不需要指定删除属性的数据类型，不能删除所有属性。
+  * `MODIFY ATTRIBUTE`：修改标量属性的数据类型 length、precision 或 scale。目前支持修改的属性类型有 `varchar`、`varchar2`、`raw`、`number` 类。只允许增加属性数据类型的 length、precision 或 scale。增加 scale 时需要同步增大 precision 保证数据范围兼容。
+* `dependent_handing_clause`：处理依赖对象（如依赖于该类型的表、类型等）的子句。如果 ALTER 的 type 被其他 type 依赖，需要显式指定 CASCADE 子句，否则将会报错。
+  
+## 示例
+
+执行如下命令为 `person_type` 类型添加一个名为 `email`、数据类型为 `varchar(100)` 的新属性。
+
+```shell
+obclient> ALTER TYPE person_type ADD ATTRIBUTE email varchar(100);
+```

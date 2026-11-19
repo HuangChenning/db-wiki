@@ -1,0 +1,29 @@
+---
+title: lease_time
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700939.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# lease_time
+
+lease_time 
+===============================
+
+lease_time 用于设置心跳租约时长。
+
+
+|      **属性**      |    **描述**    |
+|------------------|--------------|
+| 参数类型             | 时间类型         |
+| 默认值              | 10s          |
+| 取值范围             | \[1s, 5min\] |
+| 是否重启 OBServer 节点生效 | 否            |
+
+
+
+Root Service 在心跳租约时长内未收到 OBServer 节点的心跳信息，则认为 OBServer 节点为脱机状态。 一般不建议修改该配置项。

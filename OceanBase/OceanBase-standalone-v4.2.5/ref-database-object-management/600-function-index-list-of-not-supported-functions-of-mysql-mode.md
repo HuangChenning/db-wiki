@@ -1,0 +1,58 @@
+---
+title: "函数索引不支持的系统函数列表"
+book: "数据库对象管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000003150319.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-database-object-management
+---
+
+# 函数索引不支持的系统函数列表
+
+在 OceanBase 数据库的 MySQL 模式中，对函数索引的表达式进行了限制。本节主要列出了禁止用于函数索引的系统函数。
+
+## 非确定性系统函数
+
+以下非确定性系统函数的表达式禁止用于函数索引。
+
+|           |         |                |            |
+|-----------|---------|----------------|------------|
+| BENCHMARK | Charset | Collation      | NAME_CONST |
+| NOW       | RAND    | UNIX_TIMESTAMP | \-         |
+
+## GIS 系统函数
+
+以下 GIS 系统函数为 OceanBase 数据库独有的系统函数，当前禁止用于函数索引。
+
+|                |                 |                  |                |
+|----------------|-----------------|------------------|----------------|
+| PRIV_ST_ASEWKB | PRIV_ST_ASEWKT  | PRIV_ST_BESTSRID | PRIV_ST_BUFFER |
+| PRIV_ST_POINT  | PRIV_ST_SETSRID | ST_COVERS        | ST_DWITHIN     |
+
+## 非用户性的系统函数
+
+非用户性的系统函数默认全部禁止用于函数索引。
+
+## 其他系统函数
+
+以下函数的表达式禁止用于函数索引。
+
+|  |  |  |  |
+|----|----|----|----|
+| AES_DECRYPT | AES_ENCRYPT | BENCHMARK | CONNECTION_ID |
+| CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | CURRENT_USER |
+| CURRENT_USER_PRIV | DATABASE | DEFAULT | DES_DECRYPT |
+| DES_ENCRYPT | DES_HEX_STR | DUMP | ENCRYPT |
+| FOUND_ROWS | FROM_UNIXTIME | HOST_IP | ICU_VERSION |
+| IS_SERVING_TENANT | LAST_EXECUTION_ID | LAST_INSERT_ID | LAST_TRACE_ID |
+| LNNVL | LOCALTIMESTAMP | MYSQL_PORT | NAME_CONST |
+| OB_VERSION | RAND | RANDOM_BYTES | REGEXP_INSTR |
+| REGEXP_LIKE | REGEXP_REPLACE | REGEXP_SUBSTR | RPC_PORT |
+| ROW_COUNT | SLEEP | STATEMENT_DIGEST | STATEMENT_DIGEST_TEXT |
+| ST_GEOMFROMTEXT | ST_GEOMFROMWKB | ST_GEOMETRYFROMTEXT | ST_GEOMETRYFROMWKB |
+| ST_SRID | SYS_PRIVILEGE_CHECK | SYSDATE | TIME_TO_USEC |
+| UNIX_TIMESTAMP | USEC_TO_TIME | UTC_DATE | UTC_TIME |
+| UTC_TIMESTAMP | USER | UUID | UUID_SHORT |
+| VALIDATE_PASSWORD_STRENGTH | VALUES | VERSION | WEIGHT_STRING |

@@ -1,0 +1,70 @@
+---
+title: REFRESH_POLICY / REFRESH_GROUPED_POLICY
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006316339.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# REFRESH_POLICY / REFRESH_GROUPED_POLICY
+
+`REFRESH_POLICY` 过程用于刷新指定策略。`REFRESH_GROUPED_POLICY` 过程用于刷新分组策略。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+### REFRESH_POLICY
+
+```sql
+DBMS_RLS.REFRESH_POLICY(
+    object_schema IN VARCHAR2 := NULL,
+    object_name   IN VARCHAR2 := NULL,
+    policy_name   IN VARCHAR2 := NULL);
+```
+
+### REFRESH_GROUPED_POLICY
+
+```sql
+DBMS_RLS.REFRESH_GROUPED_POLICY(
+    object_schema IN VARCHAR2 := NULL,
+    object_name   IN VARCHAR2 := NULL,
+    group_name    IN VARCHAR2 := NULL,
+    policy_name   IN VARCHAR2 := NULL);
+```
+
+## 参数说明
+
+| 参数 | 说明 |
+|------|------|
+| object_schema | 表或视图所属的模式名称。默认为 `NULL`。 |
+| object_name   | 表或视图的名称。默认为 `NULL`。 |
+| policy_name   | 策略名称。默认为 `NULL`。 |
+| group_name    | 策略组名称。默认为 `NULL`。 |
+
+## 示例
+
+```sql
+-- 刷新策略
+BEGIN
+  DBMS_RLS.REFRESH_POLICY(
+    object_schema => 'hr',
+    object_name   => 'employees',
+    policy_name   => 'emp_policy');
+END;
+/
+
+-- 刷新分组策略
+BEGIN
+  DBMS_RLS.REFRESH_GROUPED_POLICY(
+    object_schema => 'hr',
+    object_name   => 'employees');
+END;
+/
+```

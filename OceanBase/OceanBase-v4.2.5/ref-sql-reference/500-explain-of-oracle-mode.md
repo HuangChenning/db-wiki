@@ -1,0 +1,338 @@
+---
+title: EXPLAIN
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504057.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# EXPLAIN
+
+## 描述
+
+该语句用于解释 SQL 语句的执行计划，可以是 `SELECT`、`DELETE`、`INSERT`、`REPLACE` 或 `UPDATE` 语句。
+
+`EXPLAIN` 与 `DESCRIBE`、`DESC` 互为同义词。
+
+## 语法
+
+```sql
+/*获取表或列的信息*/
+{EXPLAIN | DESCRIBE | DESC} table_name [column_name];
+
+/*获取 SQL 计划信息*/
+{EXPLAIN [INTO table_name ] [SET statement_id = string]  
+ | DESCRIBE
+ | DESC} [explain_type] [PRETTY | PRETTY_COLOR] dml_statement;
+
+explain_type：
+    BASIC
+  | OUTLINE
+  | EXTENDED
+  | EXTENDED_NOADDR
+  | PARTITIONS
+  | FORMAT = {TRADITIONAL| JSON}
+
+dml_statement:
+    SELECT statement
+  | DELETE statement
+  | INSERT statement
+  | UPDATE statement
+  | MERGE statement
+```
+
+## 参数解释
+
+|         参数          |                描述                                       |
+|---------------------|------------------------------------------------------------|
+ table_name          | 指定表名。  |
+| column_name         | 指定表的列名。|
+| INTO table_name | 表示将 `EXPLAIN` 的计划信息保存到指定表内。如果没有指定 `INTO table_name`，默认查询到 `PLAN_TABLE` 表内。|
+| SET statement_id | 表示当前查询使用字符串标记，以方便后续查询该 SQL 的计划信息。如果没有指定 `SET statement_id`，默认使用空字符串作为信息标记。 |
+| PRETTY \| PRETTY_COLOR | 将计划树中的父节点和子节点使用树线或彩色树线连接起来，使得执行计划展示更方便阅读。|
+| explain_type        | 指定解释类型。   |
+| BASIC               | 指定输出计划的基础信息，例如算子 ID、算子名称、所引用的表名。  |
+| OUTLINE             | 指定输出的计划信息包含 Outline 信息。   |
+| EXTENDED            | `EXPLAIN` 产生附加信息，包括每个算子的输入列和输出列、访问表的分区信息、当前使用的filter信息。如果当前算子使用了索引，显示所使用的索引列及抽取的 Query Range。       |
+| EXTENDED_NOADDR     | 以简约的方式展示附加信息。   |
+| PARTITIONS          | 显示分区相关信息。    |
+| TRADITIONAL \| JSON | 指定 `EXPALIN` 的输出格式。 <ul><li> `TRADITIONAL`：表格输出格式。   </li><li> `JSON`：使用 `KEY:VALUE` 输出格式，`JSON` 显示为`JSON` 字符串，包括 `EXTENDED` 和 `PARTITIONS` 信息。</li></ul>     |
+| dml_statement       | DML 语句。       |
+
+## 示例
+
+* 解释查询计划，并把计划信息保存在指定表 `test` 内。
+
+  ```shell
+  /* 创建表 test */
+  obclient> CREATE TABLE test (statement_id VARCHAR(30), plan_id INT, gmt_create TIMESTAMP,
+     remarks VARCHAR(4000), operator VARCHAR(255), options VARCHAR(255), object_node VARCHAR(40),
+     object_owner VARCHAR(128), object_name VARCHAR(128), object_alias VARCHAR(261), object_instance INT,
+     object_type VARCHAR(30),optimizer VARCHAR(4000), search_columns INT, id INT, parent_id INT, depth INT,
+     position INT,is_last_child INT, cost INT, cardinality INT, bytes INT, rowset INT, other_tag VARCHAR(4000),
+     partition_start VARCHAR(4000), partition_stop VARCHAR(4000), partition_id INT, other VARCHAR(4000),
+     distribution VARCHAR(64), cpu_cost INT, io_cost INT, temp_space INT, access_predicates VARCHAR(4000),
+     filter_predicates VARCHAR(4000),startup_predicates VARCHAR(4000), projection VARCHAR(4000),
+     special_predicates VARCHAR(4000), time INT, qblock_name VARCHAR(128), other_xml VARCHAR(4000));
+  Query OK, 0 rows affected
+
+  obclient> CREATE TABLE t1(c1 INT);
+  Query OK, 0 rows affected
+
+  /* 如果时间格式报错，可以通过如下命令重新设置 TIMESTAMP 格式*/
+  obclient> ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SS.FF';
+  Query OK, 0 rows affected
+
+  /* 解释查询计划，并把计划信息保存在指定表 test 内 */
+  obclient> EXPLAIN INTO test SELECT COUNT(*) FROM t1;
+  +--------------------------------------------------------------------------+
+  | Query Plan                                                               |
+  +--------------------------------------------------------------------------+
+  | =================================================                        |
+  | |ID|OPERATOR         |NAME|EST.ROWS|EST.TIME(us)|                        |
+  | -------------------------------------------------                        |
+  | |0 |SCALAR GROUP BY  |    |1       |2           |                        |
+  | |1 |└─TABLE FULL SCAN|T1  |1       |2           |                        |
+  | =================================================                        |
+  | Outputs & filters:                                                       |
+  | -------------------------------------                                    |
+  |   0 - output([T_FUN_COUNT_SUM(T_FUN_COUNT(*))]), filter(nil), rowset=256 |
+  |       group(nil), agg_func([T_FUN_COUNT_SUM(T_FUN_COUNT(*))])            |
+  |   1 - output([T_FUN_COUNT(*)]), filter(nil), rowset=256                  |
+  |       access(nil), partitions(p0)                                        |
+  |       is_index_back=false, is_global_index=false,                        |
+  |       range_key([T1.__pk_increment]), range(MIN ; MAX)always true        |
+  +--------------------------------------------------------------------------+
+  14 rows in set
+
+  obclient> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY(table_name=>'test'));
+  +--------------------------------------------------------------------------+
+  | COLUMN_VALUE                                                             |
+  +--------------------------------------------------------------------------+
+  | =================================================                        |
+  | |ID|OPERATOR         |NAME|EST.ROWS|EST.TIME(us)|                        |
+  | -------------------------------------------------                        |
+  | |0 |SCALAR GROUP BY  |    |1       |2           |                        |
+  | |1 |└─TABLE FULL SCAN|T1  |1       |2           |                        |
+  | =================================================                        |
+  | Outputs & filters:                                                       |
+  | -------------------------------------                                    |
+  |   0 - output([T_FUN_COUNT_SUM(T_FUN_COUNT(*))]), filter(nil), rowset=256 |
+  |       group(nil), agg_func([T_FUN_COUNT_SUM(T_FUN_COUNT(*))])            |
+  |   1 - output([T_FUN_COUNT(*)]), filter(nil), rowset=256                  |
+  |       access(nil), partitions(p0)                                        |
+  |       is_index_back=false, is_global_index=false,                        |
+  |       range_key([T1.__pk_increment]), range(MIN ; MAX)always true        |
+  +--------------------------------------------------------------------------+
+  14 rows in set
+  ```
+
+* 解释查询计划，并为查询设置标识信息。
+
+  ```shell
+  obclient> EXPLAIN INTO test SET statement_id='test2' SELECT COUNT(*) FROM t1;
+  +--------------------------------------------------------------------------+
+  | Query Plan                                                               |
+  +--------------------------------------------------------------------------+
+  | =================================================                        |
+  | |ID|OPERATOR         |NAME|EST.ROWS|EST.TIME(us)|                        |
+  | -------------------------------------------------                        |
+  | |0 |SCALAR GROUP BY  |    |1       |2           |                        |
+  | |1 |└─TABLE FULL SCAN|T1  |1       |2           |                        |
+  | =================================================                        |
+  | Outputs & filters:                                                       |
+  | -------------------------------------                                    |
+  |   0 - output([T_FUN_COUNT_SUM(T_FUN_COUNT(*))]), filter(nil), rowset=256 |
+  |       group(nil), agg_func([T_FUN_COUNT_SUM(T_FUN_COUNT(*))])            |
+  |   1 - output([T_FUN_COUNT(*)]), filter(nil), rowset=256                  |
+  |       access(nil), partitions(p0)                                        |
+  |       is_index_back=false, is_global_index=false,                        |
+  |       range_key([T1.__pk_increment]), range(MIN ; MAX)always true        |
+  +--------------------------------------------------------------------------+
+  14 rows in set
+
+  obclient> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY(table_name=>'test',statement_id=>'test2'));
+  +--------------------------------------------------------------------------+
+  | COLUMN_VALUE                                                             |
+  +--------------------------------------------------------------------------+
+  | =================================================                        |
+  | |ID|OPERATOR         |NAME|EST.ROWS|EST.TIME(us)|                        |
+  | -------------------------------------------------                        |
+  | |0 |SCALAR GROUP BY  |    |1       |2           |                        |
+  | |1 |└─TABLE FULL SCAN|T1  |1       |2           |                        |
+  | =================================================                        |
+  | Outputs & filters:                                                       |
+  | -------------------------------------                                    |
+  |   0 - output([T_FUN_COUNT_SUM(T_FUN_COUNT(*))]), filter(nil), rowset=256 |
+  |       group(nil), agg_func([T_FUN_COUNT_SUM(T_FUN_COUNT(*))])            |
+  |   1 - output([T_FUN_COUNT(*)]), filter(nil), rowset=256                  |
+  |       access(nil), partitions(p0)                                        |
+  |       is_index_back=false, is_global_index=false,                        |
+  |       range_key([T1.__pk_increment]), range(MIN ; MAX)always true        |
+  +--------------------------------------------------------------------------+
+  14 rows in set
+  ```
+
+* 获取表 `tbl1` 的信息。
+
+  ```sql
+  obclient> CREATE TABLE tbl1(col1 INT,col2 INT);
+  Query OK, 0 rows affected
+
+  obclient> CREATE TABLE tbl2(col1 INT,col2 INT);
+  Query OK, 0 rows affected
+  ```
+
+  ```sql
+  obclient> EXPLAIN tbl1;
+  +-------+------------+------+-----+---------+-------+
+  | FIELD | TYPE       | NULL | KEY | DEFAULT | EXTRA |
+  +-------+------------+------+-----+---------+-------+
+  | COL1  | NUMBER(38) | YES  | NULL | NULL    | NULL  |
+  | COL2  | NUMBER(38) | YES  | NULL | NULL    | NULL  |
+  +-------+------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+* 获取表 `tbl2` 的列 `col2` 的信息。
+
+  ```sql
+  obclient> EXPLAIN tbl2 col2;
+  +-------+------------+------+-----+---------+-------+
+  | FIELD | TYPE       | NULL | KEY | DEFAULT | EXTRA |
+  +-------+------------+------+-----+---------+-------+
+  | COL2  | NUMBER(38) | YES  | NULL | NULL    | NULL  |
+  +-------+------------+------+-----+---------+-------+
+  1 row in set
+  ```
+
+* 省略 `explain_type`，返回 `SELECT` 语句的执行计划信息。
+
+  ```sql
+  obclient> EXPLAIN SELECT * FROM tbl1,tbl2 WHERE tbl1.col2=tbl2.col2 AND tbl2.col1 > 4\G
+  *************************** 1. row ***************************
+  Query Plan:
+  =======================================
+  |ID|OPERATOR   |NAME|EST. ROWS|COST   |
+  ---------------------------------------
+  |0 |HASH JOIN  |    |9801000  |2442404|
+  |1 | TABLE SCAN|TBL2|10000    |40790  |
+  |2 | TABLE SCAN|TBL1|100000   |38681  |
+  =======================================
+
+  Outputs & filters:
+  -------------------------------------
+    0 - output([TBL1.COL1], [TBL1.COL2], [TBL2.COL1], [TBL2.COL2]), filter(nil),
+        equal_conds([TBL1.COL2 = TBL2.COL2]), other_conds(nil)
+    1 - output([TBL2.COL2], [TBL2.COL1]), filter([TBL2.COL1 > 4]),
+        access([TBL2.COL2], [TBL2.COL1]), partitions(p0)
+    2 - output([TBL1.COL2], [TBL1.COL1]), filter(nil),
+        access([TBL1.COL2], [TBL1.COL1]), partitions(p0)
+
+  1 row in set
+  ```
+
+* 通过 `EXTENDED_NOADDR` 关键字输出附加信息。
+
+  ```sql
+  obclient> EXPLAIN EXTENDED_NOADDR SELECT * FROM tbl1,tbl2 WHERE tbl1.col2=tbl2.col2 AND tbl2.col1 > 4\G
+  *************************** 1. row ***************************
+  Query Plan:
+  =======================================
+  |ID|OPERATOR   |NAME|EST. ROWS|COST   |
+  ---------------------------------------
+  |0 |HASH JOIN  |    |9801000  |2442404|
+  |1 | TABLE SCAN|TBL2|10000    |40790  |
+  |2 | TABLE SCAN|TBL1|100000   |38681  |
+  =======================================
+
+  Outputs & filters:
+  -------------------------------------
+    0 - output([TBL1.COL1], [TBL1.COL2], [TBL2.COL1], [TBL2.COL2]), filter(nil),
+        equal_conds([TBL1.COL2 = TBL2.COL2]), other_conds(nil)
+    1 - output([TBL2.COL2], [TBL2.COL1]), filter([TBL2.COL1 > 4]),
+        access([TBL2.COL2], [TBL2.COL1]), partitions(p0),
+        is_index_back=false, filter_before_indexback[false],
+        range_key([TBL2.__pk_increment]), range(MIN ; MAX)always true
+    2 - output([TBL1.COL2], [TBL1.COL1]), filter(nil),
+        access([TBL1.COL2], [TBL1.COL1]), partitions(p0),
+        is_index_back=false,
+        range_key([TBL1.__pk_increment]), range(MIN ; MAX)always true
+
+  1 row in set
+  ```
+
+* 展示 `TRADITIONAL` 格式的 `INSERT` 语句执行计划。
+
+  ```sql
+  obclient> EXPLAIN FORMAT=TRADITIONAL INSERT INTO TBL1 VALUES(1,1)\G
+  *************************** 1. row ***************************
+  Query Plan:
+  ====================================
+  |ID|OPERATOR   |NAME|EST. ROWS|COST|
+  ------------------------------------
+  |0 |INSERT     |    |1        |1   |
+  |1 | EXPRESSION|    |1        |1   |
+  ====================================
+
+  Outputs & filters:
+  -------------------------------------
+    0 - output([column_conv(BIGINT UNSIGNED,PS:(-1,-1),NOT NULL,nextval(1))], [column_conv(NUMBER,PS:(38,0),NULL,__values.COL1)], [column_conv(NUMBER,PS:(38,0),NULL,__values.COL2)]), filter(nil),
+        columns([{TBL1: ({TBL1: (TBL1.__pk_increment, TBL1.COL1, TBL1.COL2)})}]), partitions(p0)
+    1 - output([__values.COL1], [__values.COL2]), filter(nil)
+        values({1, 1})
+
+  1 row in set
+  ```
+
+* 展示 `JSON` 格式的 `SELECT` 语句执行计划。
+
+  ```sql
+  obclient> EXPLAIN FORMAT=JSON SELECT * FROM tbl1,tbl2 WHERE tbl1.col2=tbl2.col2 AND tbl2.col1 > 4\G
+  *************************** 1. row ***************************
+  Query Plan: {
+    "ID":2,
+    "OPERATOR":"JOIN",
+    "NAME":"JOIN",
+    "EST.ROWS":9800999,
+    "COST":2442403,
+    "output": [
+      "TBL1.COL1",
+      "TBL1.COL2",
+      "TBL2.COL1",
+      "TBL2.COL2"
+    ],
+    "CHILD_1": {
+      "ID":0,
+      "OPERATOR":"TABLE SCAN",
+      "NAME":"TABLE SCAN",
+      "EST.ROWS":10000,
+      "COST":40789,
+      "output": [
+        "TBL2.COL2",
+        "TBL2.COL1"
+      ]
+    },
+    "CHILD_2": {
+      "ID":1,
+      "OPERATOR":"TABLE SCAN",
+      "NAME":"TABLE SCAN",
+      "EST.ROWS":100000,
+      "COST":38680,
+      "output": [
+        "TBL1.COL2",
+        "TBL1.COL1"
+      ]
+    }
+  }
+  1 row in set
+  ```
+
+## 相关文档
+
+* [SQL 执行计划简介](../../../../../1000.performance-tuning-guide/500.sql-optimization/200.sql-execution-plan/100.introduction-to-sql-execution-plans.md)
+* [SQL 执行计划](../../../../../100.oceanbase-database-concepts/700.user-interface-and-query-language/100.SQL/400.sql-execution-plan.md)
+* [执行计划](../../../../../../600.manage/700.monitor/200.monitor-items-introduction/300.sql-monitor/300.execution-plan.md)

@@ -1,0 +1,84 @@
+---
+title: REBUILD_INDEX
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479887.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# REBUILD_INDEX
+
+`REBUILD_INDEX` 过程用于全量刷新（即重建）向量索引。
+
+## 语法
+
+```sql
+PROCEDURE REBUILD_INDEX(
+    IN     IDX_NAME                VARCHAR(65535),                   
+    IN     TABLE_NAME              VARCHAR(65535),                   
+    IN     IDX_VECTOR_COL          VARCHAR(65535) DEFAULT NULL,      
+    IN     DELTA_RATE_THRESHOLD    FLOAT DEFAULT 0.2,                
+    IN     IDX_ORGANIZATION        VARCHAR(65535) DEFAULT NULL,      
+    IN     IDX_DISTANCE_METRICS    VARCHAR(65535) DEFAULT 'EUCLIDEAN',
+    IN     IDX_PARAMETERS          LONGTEXT DEFAULT NULL,            
+    IN     IDX_PARALLEL_CREATION   INT DEFAULT 1);                    
+```
+
+## 参数说明
+
+| 参数 | 描述 | 是否必选 |
+| --- | --- | --- |
+| idx_name | 索引名。| 必选 |
+| table_name | 表名。| 必选 |
+| idx_vector_col | 向量列名。| 必选 |
+| delta_rate_threshold | 增量数据的比例。默认值为 `0.2`，取值范围为 `[0, 1]`。| 非必选 |
+| idx_organization | 索引类型。默认 `NULL`，不支持自定义参数。非必选 |
+| idx_distance_metrics | 距离类型。默认 `NULL`，不支持自定义参数。| 非必选 |
+| idx_parameters | 索引参数。即建表时所用的向量索引参数字符串，如 `distance=l2, type=hnsw, lib=vsag`。更多参数请参见[向量索引性能优化](../../../../../640.ob-vector-search/200.ob-vector-index/600.vector-index-monitor-and-maintain.md)。| 非必选 |
+| idx_parallel_creation | 并行构建索引的并行度。| 非必选 |
+
+注意事项如下：
+
+* 重建索引时必须指定表名，索引名，索引列。
+* 如果不指定 `delta_rate_threshold`，可能不会真实触发索引重建，如果要强行重建，需指定 `delta_rate_threshold=0`。
+* 支持通过设置并行度来加速重建索引。
+
+## 示例
+
+创建测试表。
+
+```sql
+CREATE TABLE vector_index_test(c1 INT, c2 VECTOR(3), PRIMARY KEY(c1), VECTOR INDEX idx1(c2) WITH (distance=l2, type=hnsw, lib=vsag));
+```
+
+写入测试数据。
+
+```sql
+INSERT INTO vector_index_test VALUES(1, '[0.203846,0.205289,0.880265]');
+INSERT INTO vector_index_test VALUES(2, '[0.484526,0.669954,0.986755]');
+INSERT INTO vector_index_test VALUES(3, '[0.327936,0.048756,0.084670]');
+INSERT INTO vector_index_test VALUES(4, '[0.148869,0.878546,0.028024]');
+INSERT INTO vector_index_test VALUES(5, '[0.334970,0.857377,0.886132]');
+INSERT INTO vector_index_test VALUES(6, '[0.117582,0.302352,0.471198]');
+INSERT INTO vector_index_test VALUES(7, '[0.551185,0.231134,0.075354]');
+INSERT INTO vector_index_test VALUES(8, '[0.185221,0.315131,0.558301]');
+INSERT INTO vector_index_test VALUES(9, '[0.928764,0.254038,0.272721]');
+```
+
+触发更新。
+
+```sql
+-- 触发全量更新。
+-- 设置并行度为 8。
+CALL DBMS_VECTOR.REBUILD_INDEX('idx1','vector_index_test','c2','','','','',8);
+
+-- 不设置并行度。
+CALL DBMS_VECTOR.REBUILD_INDEX('idx1','vector_index_test','c2');
+```
+
+## 相关文档
+
+* [DBMS_VECTOR 子程序概览](100.dbms-vector-overview-mysql.md)

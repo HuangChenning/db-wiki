@@ -1,0 +1,23 @@
+---
+title: ob_route_policy
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002186417.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ob_route_policy
+
+ob_route_policy 用于设置 OBServer 节点内部选择数据副本的路由策略。
+
+|  **属性**  |                                          **描述**                                          |
+|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 参数类型     | enum  |
+| 默认值      | 1     |
+| 取值范围     | <ul><li> 1（`READONLY_ZONE_FIRST`）：只读副本所在的 Zone 优先 </li>  <li> 2（`ONLY_READONLY_ZONE`）：仅发送到只读副本所在的 Zone  </li>  <li> 3（`UNMERGE_ZONE_FIRST`）：不在合并状态的副本所在的 Zone 优先  </li> <li> 4（`UNMERGE_FOLLOWER_FIRST`）：不在合并状态的 Follower 副本优先</li></ul>    |
+| 生效范围     | <li> GLOBAL   <li> SESSION                                                                     |
+| 是否参与序列化  | 是     |
+| 是否影响计划生成 | 是     |

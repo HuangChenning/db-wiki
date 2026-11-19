@@ -1,0 +1,187 @@
+---
+title: "备份目录结构"
+book: "系统概念"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699401.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-oceanbase-database-concepts
+---
+
+# 备份目录结构
+
+## 日志归档的目录结构
+
+日志归档可以由用户指定切分目录的时间间隔，默认按照一天来切分目录：即每一天的日志数据目录对应一个 backup_piece。
+
+日志归档的目录结构如下：
+
+```javasript
+log_archive_dest
+    ├── check_file
+    │   └── 1002_connect_file_20230111T193049.obbak // 连通性检查文件
+    ├── format.obbak                                // 备份路径的格式化信息
+    ├── rounds                                      // Rounds 占位符目录
+    │   └── round_d1002r1_start.obarc               // Round 开始占位符
+    ├── pieces                                      // Piece 占位符目录
+    │   ├── piece_d1002r1p1_start_20230111T193049.obarc // Piece 开始占位符，piece_DSETID_ROUNDID_PIECEID_DATE_start
+    │   └── piece_d1002r1p1_end_20230111T193249.obarc   // Piece 结束占位符，piece_DSETID_ROUNDID_PIECEID_DATE_end
+    └── piece_d1002r1p1                             // Piece 目录，目录命名格式为 piece_DSETID_ROUNDID_PIECEID       
+        ├── piece_d1002r1p1_20230111T193049_20230111T193249.obarc // 记录了 Piece 的连续区间
+        ├── checkpoint   
+        │   └── checkpoint_info.0.obarc             // 记录 Piece 的归档进度，正在归档的 Piece 才会记录
+        ├── single_piece_info.obarc                 // 记录该 Piece 的元信息
+        ├── tenant_archive_piece_infos.obarc        // 记录该 Piece 之前的所有 frozen Piece 的元信息        
+        ├── file_info.obarc                         // 所有日志流文件列表
+        ├── logstream_1                             // 1 号日志流
+        │   ├── file_info.obarc                    // 日志流1的文件列表
+        │   ├── log
+        │   │   └── 1.obarc                         // 1 号日志流下的归档文件  
+        │   └── schema_meta                         // 记录数据字典的元信息，只会在 1 号日志流生成此文件
+        │       └── 1677588501408765915.obarc                           
+        └── logstream_1001                          // 1001 号日志流
+            ├── file_info.obarc                      // 1001 号日志流的文件列表
+            └── log
+                └── 1.obarc                          // 1001 号日志流的归档文件      
+```
+
+日志归档目录中，顶层目录包含以下三种数据：
+
+* `format.obbak`：用于记录归档路径的元信息，包括使用路径的租户等信息。
+
+* `check_file`：用于用户日志归档目录的连通性检查。
+
+* `rounds`：日志归档的 Round 汇总列表，记录了所有 Round 的列表。
+
+* `pieces`：日志归档的 Piece 汇总列表，记录了所有的 Piece 的列表。
+
+* `piece_d1002r1p1`：日志归档的 Piece 目录，目录命名格式为 `piece_DSETID_ROUNDID_PIECEID`。其中，`DSETID` 指的是 `log_archive_dest` 对应的 id；`ROUNDID` 指的是日志归档 Round 的 id，是一个单调递增的整数；`PIECEID` 指的是日志归档 Piece 的 id，也是一个单调递增的整数。
+
+  一个日志归档的 Piece 目录下，又包含以下数据：
+
+  * `piece_d1002r1p1_20230111T193049_20230111T193249.obarc`：该文件展示了当前 Piece 的 id、开始和结束的时间，并且仅用来展示信息。
+
+  * `checkpoint`：该目录是 Active 的 Piece 记录归档位点的目录，ObArchiveScheduler 模块会定期更新该目录的位点信息。
+
+  * `single_piece_info.obarc`：该文件记录了当前 Piece 的元信息。
+
+  * `tenant_archive_piece_infos.obarc`：该文件记录了当前租户内所有 Frozen  Pieces 的元信息。
+
+  * `file_info.obarc`：该文件记录了 Piece 内的日志流列表。
+
+  * `logstream_1`：该目录记录了 1 号日志流的日志文件，1 号日志流是 OceanBase 数据库租户的系统日志流。
+  
+  * `logstream_1001`：该目录记录了 1001 号日志流的日志文件，大于 1000 的日志流是 OceanBase 数据库租户的用户日志流。
+
+  同时，每个日志流备份下还有 3 种数据：
+
+  * `file_info.obarc`：该文件记录了日志流内的文件列表。
+
+  * `log`：该目录中保存了当前日志流的所有归档文件，文件名和源集群内部的日志文件一致。
+  
+  * `schema_meta`：该目录记录了数据字典的元信息，仅系统日志流才有，用户日志流下无该目录。
+
+## 数据备份的目录结构
+
+单次的数据备份对应一个 backup_set。每次用户运行 `ALTER SYSTEM BACKUP DATABASE` 都会生成一个新的 backup_set 的目录，该目录包含了本次备份的所有数据。
+
+数据备份的目录结构如下：
+
+```javasript
+├── backup_set_1_full                                        // 全量备份集
+│   ├── backup_set_1_full_20230111T193330_20230111T193420.obbak //占位符，展示全量备份的开始和结束时间
+│   ├── infos
+│   │   ├── data_info_turn_1                                 // turn 1 下的租户级备份文件
+│   │   │   ├── tablet_log_stream_info.obbak                 // tablet 与 日志流映射文件
+│   │   │   ├── tenant_major_data_macro_range_index.0.obbak  // major 宏块索引
+│   │   │   ├── tenant_major_data_meta_index.0.obbak         // major meta 索引
+│   │   │   ├── tenant_major_data_sec_meta_index.0.obbak     // major 逻辑id与物理id映射
+│   │   │   ├── tenant_minor_data_macro_range_index.0.obbak  // minor 宏块索引
+│   │   │   ├── tenant_minor_data_meta_index.0.obbak         // minor meta 索引
+│   │   │   └── tenant_minor_data_sec_meta_index.0.obbak     // minor 逻辑 id 与物理 id 的映射文件
+│   │   ├── diagnose_info.obbak                              // 备份集诊断信息文件
+│   │   ├── locality_info.obbak                              // 当前备份集的所属租户的 locality 信息
+│   │   └── meta_info                                        // 租户级别的日志流元信息文件，包含所有日志流的元信息
+│   │       ├── ls_attr_info.1.obbak                         // 备份时的日志流列表快照
+│   │       └── ls_meta_infos.obbak                          // 所有日志流的meta集合
+│   ├── logstream_1                                          // 日志流1
+│   │   ├── major_data_turn_1_retry_0                        // turn 1,retry 0下的基线数据
+│   │   │   ├── macro_block_data.0.obbak                     // 一个数据文件，512MB~4GB
+│   │   │   ├── macro_range_index.obbak                      // macro索引
+│   │   │   ├── meta_index.obbak                             // meta索引
+│   │   │   └── sec_meta_index.obbak                         // 逻辑 id 与物理 id 映射文件
+│   │   ├── meta_info_turn_1_retry_0                         // turn 1,retry 0 下的日志流元信息文件
+│   │   │   ├── ls_meta_info.obbak                           // 日志流元信息
+│   │   │   └── tablet_info.obbak                            // 日志流 tablet 列表
+│   │   ├── minor_data_turn_1_retry_0                        // turn 1,retry 0 下的转储数据
+│   │   │   ├── macro_block_data.0.obbak
+│   │   │   ├── macro_range_index.obbak
+│   │   │   ├── meta_index.obbak
+│   │   │   └── sec_meta_index.obbak
+│   │   └── sys_data_turn_1_retry_0                          //turn 1, retry 0 下的系统 tablet 数据
+│   │       ├── macro_block_data.0.obbak
+│   │       ├── macro_range_index.obbak
+│   │       ├── meta_index.obbak
+│   │       └── sec_meta_index.obbak
+│   ├── logstream_1001                                       // 1001 号日志流
+│   │   ├── major_data_turn_1_retry_0
+│   │   │   ├── macro_block_data.0.obbak
+│   │   │   ├── macro_range_index.obbak
+│   │   │   ├── meta_index.obbak
+│   │   │   └── sec_meta_index.obbak
+│   │   ├── meta_info_turn_1_retry_0
+│   │   │   ├── ls_meta_info.obbak
+│   │   │   └── tablet_info.obbak
+│   │   ├── minor_data_turn_1_retry_0
+│   │   │   ├── macro_block_data.0.obbak
+│   │   │   ├── macro_range_index.obbak
+│   │   │   ├── meta_index.obbak
+│   │   │   └── sec_meta_index.obbak
+│   │   └── sys_data_turn_1_retry_0
+│   │       ├── macro_block_data.0.obbak
+│   │       ├── macro_range_index.obbak
+│   │       ├── meta_index.obbak
+│   │       └── sec_meta_index.obbak
+│   ├── single_backup_set_info.obbak                        // 当前备份集的元信息
+│   └── tenant_backup_set_infos.obbak                       // 当前租户的全量备份集信息
+├── backup_sets                                             // backup set 占位符，用于 list
+│   ├── backup_set_1_full_end_success_20230111T193420.obbak // 全量备份结束占位符
+│   └── backup_set_1_full_start.obbak                       // 全量备份起始占位符
+│   ├── backup_set_2_inc_start.obbak                        // 增量备份起始占位符
+│   └── backup_set_2_inc_end_success_20230111T194420.obbak  // 增量备份结束占位符
+├── check_file
+│   └── 1002_connect_file_20230111T193020.obbak             // 连通性检查文件
+└── format.obbak                                            // 备份路径的格式化信息
+```
+
+数据备份目录中，顶层目录包含以下三种数据：
+
+* `format.obbak`：用于记录备份路径的元信息。
+
+* `check_file`：用于用户数据备份目录的连通性检查。
+
+* `backup_sets`：数据备份列表的汇总目录，记录了所有的数据备份集列表。
+
+* `backup_set_1_full`：该目录表示的是一个数据备份集，目录名结尾为 `full` 表示全量备份，为 `inc` 表示增量备份。每一次数据备份都会生成一个对应的备份集，数据备份结束后，该备份集就不会再修改了。
+
+  在一个数据备份集下，主要包含以下数据：
+
+  * `backup_set_1_full_20230111T193330_20230111T193420.obbak`：该文件展示了该备份集的 ID、开始和结束的时间。此文件仅用来展示信息。
+
+  * `infos`：该目录记录了数据备份集的元信息。
+
+  * `logstream_1`：该目录记录了 1 号日志流的所有数据，1 号日志流是 OceanBase 数据库租户的系统日志流。
+
+  * `logstream_1001`：该目录记录了 1001 号日志流的所有数据，大于 1000 的日志流是 OceanBase 数据库租户的用户日志流。
+
+  * `single_backup_set_info.obbak`：该文件记录了该备份集的元信息，包括备份的位点、依赖的日志等信息。
+
+  * `tenant_backup_set_infos.obbak`：该文件记录了当前租户已有的所有备份集的元信息。
+
+  同时，每个日志流数据下有 4 种目录，含 `retry` 的目录表示日志流级别的重试；含 `turn` 的目录表示租户级别的重试：
+
+  * `meta_info_xx`：该目录记录的是 LS 元信息和 tablet 元信息。
+  * `sys_data_xx`：该目录记录的是 LS 内部系统 tablet 的数据。
+  * `minor_data_xx`：该目录记录的是普通 tablet 的转储数据。
+  * `major_data_xx`：该目录记录的是普通 tablet 的基线数据。

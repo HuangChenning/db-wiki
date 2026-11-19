@@ -1,0 +1,22 @@
+---
+title: ob_event_history_recycle_interval
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699336.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ob_event_history_recycle_interval
+
+ob_event_history_recycle_interval 用于控制历史事件的回收间隔。
+
+
+|        属性        |      描述      |
+|------------------|--------------|
+| 参数类型             | 时间类型         |
+| 默认值              | 7d，表示 7 天    |
+| 取值范围             | \[1d, 180d\] |
+| 是否重启 OBServer 节点生效 | 否            |

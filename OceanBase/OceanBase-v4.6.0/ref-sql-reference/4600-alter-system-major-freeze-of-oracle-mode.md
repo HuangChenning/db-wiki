@@ -1,0 +1,143 @@
+---
+title: "MAJOR 和 MINOR"
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687543.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# MAJOR 和 MINOR
+
+## 描述
+
+该语句用于用户租户发起自身的存储层合并或转储。手动合并支持租户级别、表级别和分区级别。转储支持租户级别和分区级别。
+
+## 语法
+
+```shell
+ALTER SYSTEM merge_action;
+
+merge_action:
+      MAJOR FREEZE [TABLE_ID = table_id | TABLET_ID = tablet_id]
+    | MINOR FREEZE [TABLET_ID = tablet_id]
+    | {SUSPEND | RESUME} MERGE
+    | CLEAR MERGE ERROR
+```
+
+## 参数解释
+
+|          **参数**           |      **描述**      |
+|---------------------------|------------------|
+| MAJOR FREEZE              | 发起合并。<main id="notice" type='explain'><h4>说明</h4><p>用户租户只能发起自身的合并。</p></main>        |
+| MINOR FREEZE              | 发起转储。<main id="notice" type='explain'><h4>说明</h4><p>用户租户只能发起自身的转储。</p></main>    |
+| {SUSPEND \| RESUME} MERGE | 暂停或恢复合并。<main id="notice" type='explain'><h4>说明</h4><p>用户租户只能暂停或恢复自身的合并。</p></main>        |
+| CLEAR MERGE ERROR         | 清理合并出错的标记。<main id="notice" type='explain'><h4>说明</h4><p>用户租户只能清理自身合并的出错标记。</p></main>      |
+| TABLE_ID                  | 指定表合并。                 |
+| TABLET_ID                 | 指定分区转储或合并。          |
+
+## 示例
+
+### 存储层合并相关的示例
+
+* 用户租户发起自身的合并。
+
+  ```shell
+  obclient> ALTER SYSTEM MAJOR FREEZE;
+  Query OK, 0 rows affected
+  ```
+
+* 用户租户发起自身的表级合并。
+
+  1. 查询待合并的表 TBL1 的 `table_id`。
+
+     ```shell
+     obclient(SYS@oracle001)[SYS]> SELECT DATABASE_NAME, TABLE_ID, TABLE_NAME FROM SYS.DBA_OB_TABLE_LOCATIONS WHERE TABLE_NAME = 'TBl1';
+     ```
+
+     查询结果如下：
+
+     ```shell
+     +---------------+----------+------------+
+     | DATABASE_NAME | TABLE_ID | TABLE_NAME |
+     +---------------+----------+------------+
+     | SYS           |   500002 | TBL1       |
+     +---------------+----------+------------+
+     1 row in set
+     ```
+
+  2. 执行以下命令，发起表级合并。
+
+     ```shell
+     obclient(SYS@oracle001)[SYS]> ALTER SYSTEM MAJOR FREEZE TABLE_ID = 500002;
+     ``` 
+
+* 用户租户发起分区级别的合并。
+
+  1. 查询待合并的表分区对应的 `tablet_id`。
+
+     ```shell
+     obclient(SYS@oracle001)[SYS]> SELECT DATABASE_NAME, TABLE_ID, TABLE_NAME, TABLET_ID, PARTITION_NAME, SUBPARTITION_NAME FROM SYS.DBA_OB_TABLE_LOCATIONS WHERE TABLE_NAME = 'TBL1';
+     ```
+
+     查询结果如下：
+
+     ```shell
+     +---------------+----------+------------+-----------+----------------+-------------------+
+     | DATABASE_NAME | TABLE_ID | TABLE_NAME | TABLET_ID | PARTITION_NAME | SUBPARTITION_NAME |
+     +---------------+----------+------------+-----------+----------------+-------------------+
+     | SYS           |   500012 | TBL1       |    200007 | P01            | NULL              |
+     | SYS           |   500012 | TBL1       |    200008 | P02            | NULL              |
+     | SYS           |   500012 | TBL1       |    200009 | P03            | NULL              |
+     +---------------+----------+------------+-----------+----------------+-------------------+
+     3 rows in set
+     ```
+
+  2. 执行以下命令，发起分区级合并。
+
+     ```shell
+     obclient(SYS@oracle001)[SYS]> ALTER SYSTEM MAJOR FREEZE TABLET_ID = 200007;
+     ```
+
+### 暂停或恢复合并的示例
+
+* 暂停用户租户自身的合并。
+
+  ```shell
+  obclient> ALTER SYSTEM SUSPEND MERGE;
+  Query OK, 0 rows affected
+  ```
+
+* 恢复用户租户自身的合并。
+
+  ```shell
+  obclient> ALTER SYSTEM RESUME MERGE;
+  Query OK, 0 rows affected
+  ```
+
+### 清理合并出错标记的示例
+
+* 清理用户租户自身合并的出错标记。
+
+  ```shell
+  obclient> ALTER SYSTEM CLEAR MERGE ERROR;
+  Query OK, 0 rows affected
+  ```
+
+### 存储层转储的示例
+
+* 用户租户发起自身的转储。
+
+  ```shell
+  obclient> ALTER SYSTEM MINOR FREEZE;
+  Query OK, 0 rows affected
+  ```
+
+* 用户租户发起分区级别的转储。
+
+  ```shell
+  obclient> ALTER SYSTEM MINOR FREEZE TABLET_ID = 5;
+  Query OK, 0 rows affected
+  ```

@@ -1,0 +1,149 @@
+---
+title: "创建空间索引"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504585.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 创建空间索引
+
+OceanBase 数据库支持创建常规索引的语法创建空间索引，但使用 `SPATIAL` 关键字。空间索引中的列必须声明为 `NOT NULL`。支持在存储（STORED）生成列上创建空间索引，不支持在虚拟（VIRTUAL）生成列上创建。
+
+## 注意事项
+
+* 创建空间索引的列定义中必须包含 `NOT NULL` 约束。
+* 创建了空间索引的列需要已经定义 SRID，否则在该列上建的空间索引在查询时无法生效。
+* 如果是在 STORED 生成列上创建空间索引，则创建列时 DDL 必须显式指定 `STORED` 关键字。如果在创建生成列的时候没有指定 `VIRTUAL` 或者 `STORED` 关键字，那么默认创建 VIRTUAL 生成列。
+* 在创建了索引之后，比较的时候使用列定义中的 SRID 所对应的坐标系。空间索引存储了几何对象的 MBR（Minimum Bounding Rectangle）构建，MBR 的比较方式也依赖于 SRID。
+
+## 准备工作
+
+使用 GIS 功能前，需在业务租户配置 GIS meta 数据。在连接到服务器后，执行如下命令将  `default_srs_data_mysql.sql` 文件导入到数据库中：
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>仅支持在 SYS 租户下执行该导入命令，该命令执行时会将数据写入到主租户，并且会同步到备租户中。</p>
+</main>
+
+```shell
+-- module 表示待导入的模块。
+-- tenant 表示待导入的租户。
+-- infile 表示待导入 sql 文件的相对路径。
+ALTER SYSTEM LOAD MODULE DATA module=gis tenant=mysql infile = 'etc/default_srs_data_mysql.sql';
+```
+
+语句语法具体说明请参见 [LOAD MODULE DATA](../../../../100.system-tenants/200.alter-system/4700.load-module-data.md)。
+
+返回以下结果代表导入数据文件成功：
+
+```shell
+Query OK, 0 rows affected
+```
+
+## 示例
+
+### 创建空间索引
+
+以下示例展示如何在常规列上创建空间索引：
+
+* 使用 `CREATE TABLE`:
+
+```sql
+CREATE TABLE geom (g GEOMETRY NOT NULL SRID 4326, SPATIAL INDEX(g));
+```
+
+* 使用 `ALTER TABLE`：
+
+```sql
+CREATE TABLE geom (g GEOMETRY NOT NULL SRID 4326);
+ALTER TABLE geom ADD SPATIAL INDEX(g);
+```
+
+* 使用 `CREATE INDEX`：
+
+```sql
+CREATE TABLE geom (g GEOMETRY NOT NULL SRID 4326);
+CREATE SPATIAL INDEX g ON geom (g);
+```
+
+以下示例展示如何删除空间索引：
+
+* 使用 `ALTER TABLE`：
+
+```sql
+ALTER TABLE geom DROP INDEX g;
+```
+
+* 使用 `DROP INDEX`：
+
+```sql
+DROP INDEX g ON geom;
+```
+
+### 在生成列上创建空间索引
+
+生成列是数据库表中的一种特殊列，详细信息请参见[生成列操作](../../../700.ddl-function-of-mysql-mode/500.generated-column-operations-of-mysql-mode.md)。
+
+以下示例展示如何在 STORED 生成列上创建空间索引：
+
+* 在 linestring 类型的生成列上创建空间索引，其他 `POINT/POLYGON/ | MULTIPOINT/MULTILINESTRING/ | MULTIPOLYGON` 类型均支持：
+
+```sql
+CREATE TABLE `receivable_items` (
+  `from_unit` int NOT NULL,
+  `to_unit` int NOT NULL,
+  `unit_range` linestring GENERATED ALWAYS AS (linestring(point(-(1),`from_unit`), point(1,`to_unit`))) STORED NOT NULL srid 0,
+  SPATIAL KEY `idx_unit_range` (`unit_range`)
+);
+```
+
+* 在 geometry 类型的生成列上创建空间索引：
+
+```sql
+CREATE TABLE `receivable_items` (
+  `id` int(32) NOT NULL auto_increment,
+  `geo_text` varchar(1024) NOT NULL,
+  `unit_range` geometry GENERATED ALWAYS AS (st_geomfromtext(geo_text, 4326, 'axis-order=long-lat')) STORED NOT NULL srid 4326
+);
+```
+
+* 不支持在 VIRTUAL 生成列上创建空间索引，创建语句会报错：
+
+```shell
+CREATE TABLE `receivable_items` (
+`id` int(32) NOT NULL auto_increment,
+`geo_text` varchar(1024) NOT NULL,
+`unit_range` geometry GENERATED ALWAYS AS (st_geomfromtext(geo_text, 4326, 'axis-order=long-lat')) NOT NULL srid 4326,
+SPATIAL KEY `idx_unit_range` (`unit_range`)
+);
+ERROR 3106 (HY000): 'unit_range' is not supported for generated columns.
+```
+
+* 支持后建索引：
+
+```sql
+CREATE TABLE `receivable_items` (
+  `id` int(32) NOT NULL auto_increment,
+  `geo_text` varchar(1024) NOT NULL,
+  `unit_range` geometry GENERATED ALWAYS AS (st_geomfromtext(geo_text, 4326, 'axis-order=long-lat')) STORED NOT NULL srid 4326
+);
+
+INSERT INTO receivable_items(geo_text) VALUES('point(120.34904267189361 30.320965261625222)');
+INSERT INTO receivable_items(geo_text) VALUES('point(120.34904267189360 30.320965261625222)');
+CREATE SPATIAL INDEX IF NOT EXISTS `idx_unit_range` ON `receivable_items` (`unit_range`);
+```
+
+* 支持分区表场景：
+
+```sql
+CREATE TABLE `receivable_items` (
+  `id` int(32) NOT NULL auto_increment primary key,
+  `geo_text` varchar(1024) NOT NULL,
+  `unit_range` geometry GENERATED ALWAYS AS (st_geomfromtext(geo_text, 4326, 'axis-order=long-lat')) STORED NOT NULL srid 4326,
+  SPATIAL KEY `idx_unit_range` (`unit_range`)
+) PARTITION BY hash(id) PARTITIONS 3;
+```

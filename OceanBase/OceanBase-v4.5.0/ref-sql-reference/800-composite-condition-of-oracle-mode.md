@@ -1,0 +1,22 @@
+---
+title: "复合条件"
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479751.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 复合条件
+
+复合条件（Compound Conditions）是多个其他条件的组合。
+
+复合条件的语法如下：
+
+```sql
+{ (condition) | NOT condition | condition { AND | OR } condition }
+```
+
+关于条件 `NOT`、`AND` 和 `OR` 条件的详细信息，请参见 [逻辑条件](../700.condition-of-oracle-mode/500.logical-conditions-of-oracle-mode.md)。

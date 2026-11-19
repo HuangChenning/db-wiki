@@ -1,0 +1,53 @@
+---
+title: balancer_tolerance_percentage
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479197.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# balancer_tolerance_percentage
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`balancer_tolerance_percentage` 用于控制分区均衡策略中，对租户内日志流间磁盘不均衡的容忍度。当任意两个日志流的磁盘占用相对差异超过此百分比时，触发基于磁盘的分区均衡。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|      **属性**    |  **描述** |
+|------------------|-----------|
+| 参数类型            | Int        |
+| 默认值              | 10        |
+| 取值范围            | [1, 100) |
+| 是否可修改          | 是，支持通过 `ALTER SYSTEM SET` 语句修改。    |
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。    |
+
+## 配置示例
+
+设置租户内日志流间磁盘不均衡程度的宽容度为 10。
+
+```shell
+obclient> ALTER SYSTEM SET balancer_tolerance_percentage=10;
+```
+
+## 相关文档
+
+[租户内均衡](../../../100.oceanbase-database-concepts/500.distributed-database-objects/300.data-partitions-and-replicas/500.data-balancing/100.intra-tenant-balancing.md)

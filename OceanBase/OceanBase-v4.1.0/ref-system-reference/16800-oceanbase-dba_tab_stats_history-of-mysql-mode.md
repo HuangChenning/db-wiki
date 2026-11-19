@@ -1,0 +1,24 @@
+---
+title: oceanbase.DBA_TAB_STATS_HISTORY
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702060.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# oceanbase.DBA_TAB_STATS_HISTORY
+
+## 功能
+展示数据库中所有表的表统计历史记录。
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| OWNER | varchar(128) | NO | 对象的所有者 |
+| TABLE_NAME | varchar(128) | NO | 表名 |
+| PARTITION_NAME | varchar(128) | NO | 分区表名称 |
+| SUBPARTITION_NAME | varchar(128) | NO | 子分区表的名称 |
+| STATS_UPDATE_TIME | datetime(6) | NO | 更新统计数据的时间 |

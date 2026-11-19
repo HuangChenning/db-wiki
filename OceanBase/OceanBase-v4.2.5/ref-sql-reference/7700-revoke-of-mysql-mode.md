@@ -1,0 +1,166 @@
+---
+title: REVOKE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503275.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# REVOKE
+
+## 描述
+
+该语句用于撤销之前分配给用户或角色的权限，或者撤销用户或角色中的角色。
+
+## 使用限制及注意事项
+
+* 撤销 `ALL PRIVILEGES` 和 `GRANT OPTION` 权限时，当前用户必须拥有全局 `GRANT OPTION` 权限，或者对权限表的 `UPDATE` 及 `DELETE` 权限。
+* 撤销对象权限操作不会级联。例如，用户 `user1` 给 `user2` 授予了某些权限，撤回 `user1` 的权限不会同时也撤回 `user2` 的相应权限。
+* 执行 `REVOKE` 语句会对当前登录的用户立即生效。
+* 系统变量 `mandatory_roles` 中的角色不能撤销。
+
+## 权限要求
+
+### 撤销用户或角色中对象权限的权限要求
+
+用户必须拥有被撤销的权限（例如，`user1` 要撤销 `user2` 对表 `t1` 的 `SELECT` 权限，则 `user1` 必须拥有表 `t1` 的 `SELECT` 的权限），并且拥有 `GRANT OPTION` 权限。
+
+### 撤销用户或角色中角色权限要求
+
+撤销角色时，当前用户必须拥有被撤销的角色，并且拥有 `ADMIN OPTION` 权限，才能撤销成功。
+
+## 语法
+
+### 撤销用户或角色的对象权限
+
+```sql
+REVOKE priv_type[(column_name_list)] [, priv_type[(column_name_list)] ...]
+     ON database.table_name
+     FROM 'user_or_role';
+
+priv_type:
+      ALTER
+    | CREATE
+    | CREATE USER
+    | CREATE VIEW
+    | DELETE
+    | DROP
+    | GRANT OPTION
+    | INDEX
+    | INSERT
+    | PROCESS
+    | SELECT
+    | SHOW DATABASES
+    | SHOW VIEW
+    | SUPER
+    | UPDATE
+    | USAGE
+
+column_name_list:
+    column_name [, column_name ...]
+
+user_or_role:
+    user_name | role_name
+```
+
+### 撤销用户或角色中的角色
+
+```sql
+REVOKE [IF EXISTS] role_name [, role_name ...]
+    FROM user_or_role [, user_or_role ...]
+    [IGNORE UNKNOWN USER];
+
+user_or_role:
+    user_name | role_name
+```
+
+## 参数解释
+
+|       **参数**        |                                          **描述**                                           |
+|---------------------|-------------------------------------------------------------------------------------------|
+| priv_type           | 指定撤销的权限类型。具体的权限类型及其说明请参见下方权限类型说明表。 同时对某个用户撤销多个权限时，权限类型用","隔开。注意：PROXY 参数当前版本仅记录该关键字语法，功能不生效。             |
+| column_name_list    | 可选项，撤销表中的列级权限的列表。如果不指定，则撤销整个表或对象的权限。|
+| database.table_name | 指定数据库中的表。 用"\*"代替 `database` 或 `table_name`，表示撤销全局权限，即撤销对数据库中所有表的操作权限。 |
+| user_name           | 指定撤销权限的用户。同时撤销多个用户的授权时，用户名用","隔开。                                                         |
+| IF EXISTS \| IGNORE UNKNOWN USER | 可选项，当指定的角色或被授权者不存在时，如果使用了 `IF EXISTS` 和 `IGNORE UNKNOWN USER` 选项，系统将发出警告而非错误消息。|
+| role_name           | 指定角色的名称。|
+| proxy  | 当前版本仅记录该关键字语法，功能不生效。|
+
+可以撤销的权限类型如下表所示。
+
+|      **权限**       |                                 **说明**                                 |
+|-------------------|------------------------------------------------------------------------|
+| ALL PRIVILEGES    | 除 `GRANT OPTION` 以外所有权限。                                               |
+| ALTER             | `ALTER TABLE` 的权限。                                                     |
+| CREATE            | `CREATE TABLE` 的权限。                                                    |
+| CREATE USER       | `CREATE USER`、`DROPUSER`、`RENAME USER` 和 `REVOKE ALL  PRIVILEGES` 的权限。 |
+| CREATE TABLEGROUP | 全局 `CREATE TABLEGROUP` 的权限。                                            |
+| DELETE            | `DELETE` 的权限。                                                          |
+| DROP              | `DROP` 的权限。                                                            |
+| GRANT OPTION      | `GRANT OPTION` 的权限。                                                    |
+| INSERT            | `INSERT` 的权限。                                                          |
+| SELECT            | `SELECT` 的权限。                                                          |
+| UPDATE            | `UPDATE` 的权限。                                                          |
+| SUPER             | `SET GLOBAL` 修改全局系统参数的权限。                                              |
+| SHOW DATABASES    | 全局 `SHOW DATABASES` 的权限。                                               |
+| INDEX             | `CREATE INDEX` 与 `DROP INDEX` 的权限。                                     |
+| CREATE VIEW       | `CREATE VIEW` 与 `DROP VIEW` 的权限。                                       |
+| SHOW VIEW         | `SHOW CREATE VIEW` 权限。                                                 |
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>目前没有 Change Effective Tenant 的权限控制，因此 sys 租户下的用户都可以撤销权限。</p>
+  </main>
+
+## 示例
+
+### 示例一：撤销对象权限
+
+通过撤销 `u1` 用户的 `SELECT` 权限，查看 `ALL PRIVILEGES` 授予了哪些权限。
+
+```sql
+obclient> GRANT ALL PRIVILEGES ON *.* TO u1;
+Query OK, 0 rows affected
+
+obclient> SHOW GRANTS FOR u1;
++-------------------------------------+
+| Grants for u1@%                     |
++-------------------------------------+
+| GRANT ALL PRIVILEGES ON *.* TO 'u1' |
++-------------------------------------+
+1 row in set
+
+obclient> REVOKE SELECT ON *.* FROM u1;
+Query OK, 0 rows affected
+
+obclient> SHOW GRANTS FOR u1;
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Grants for u1@%
+                        |
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| GRANT ALTER, CREATE, CREATE USER, DELETE, DROP, INSERT, UPDATE, INDEX, CREATE VIEW, SHOW VIEW, SHOW DB, SUPER, PROCESS, FILE, ALTER TENANT, ALTER SYSTEM, CREATE RESOURCE POOL, CREATE RESOURCE UNIT ON *.* TO 'u1' |
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set
+```
+
+### 示例二：撤销用户或角色中的角色
+
+* 撤销角色 `role002` 中的角色 `role001`。
+
+  ```sql
+  obclient [test]> REVOKE role001 FROM role002;
+  ```
+
+* 撤销用户 `user001` 中的角色 `role001`。
+
+  ```sql
+  obclient [test]> REVOKE role001 FROM user001;
+  ```
+
+## 相关文档
+
+* [撤销角色中的权限](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/340.role-management-of-mysql-mode.md/700.revoke-privileges-from-a-role-of-mysql-mode.md)
+* [撤销用户或角色中的角色](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/340.role-management-of-mysql-mode.md/800.revoke-a-role-from-a-user-or-role-of-mysql-mode.md)

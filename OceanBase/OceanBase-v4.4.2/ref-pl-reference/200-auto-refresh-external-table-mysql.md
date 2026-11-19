@@ -1,0 +1,35 @@
+---
+title: AUTO_REFRESH_EXTERNAL_TABLE
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286697.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# AUTO_REFRESH_EXTERNAL_TABLE
+
+`auto_refresh_external_table` 用于定时刷新外表 META。
+
+## 语法
+
+```sql
+DBMS_EXTERNAL_TABLE.auto_refresh_external_table(interval int)
+```
+
+## 参数说明
+
+| **参数**           | **说明**                                            |
+|------------------|-----------------------------------------------------|
+| interval int | 用于指定刷新任务的时间间隔，取值范围为[-1，∞]，单位为秒。<ul><li>当取值为 -1，代表定时刷新任务关闭。</li><li>当取值为 0，代表立即刷新一次外表的 META。</li><li>当取值 >0，代表每间隔多少秒刷新一次外表的 META。</li></ul>|
+
+## 示例
+
+执行如下命令关闭定时刷新任务。
+
+```shell
+obclient> CALL DBMS_EXTERNAL_TABLE.auto_refresh_external_table(-1);
+Query OK, 0 rows affected (0.104 sec)
+```

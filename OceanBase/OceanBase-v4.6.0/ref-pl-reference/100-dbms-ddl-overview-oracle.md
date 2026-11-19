@@ -1,0 +1,23 @@
+---
+title: "DBMS_DDL 概述"
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686504.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DBMS_DDL 概述
+
+`DBMS_DDL` 用于将 PL 对象定义字符串加密。
+
+## DBMS_DDL 子程序概览
+
+下表列出了 OceanBase 数据库当前版本所支持的 `DBMS_DDL` 子程序和简要描述。
+
+| 子程序                   | 描述                  |
+| ----------------------- | --------------------- |
+|[WRAP](200.dbms-ddl-wrap-oracle.md)|用于将 PL 对象定义字符串加密成 `CREATE WRAPPED` 语句字符串。|
+|[CREATE_WRAPPED](300.dbms-ddl-create-wrapped-oracle.md)|将 PL 对象定义字符串加密成 `CREATE WRAPPED` 语句字符串之后，会立即执行这个语句创建 `WRAPPED`对象。|

@@ -1,0 +1,26 @@
+---
+title: connection_control_max_connection_delay
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700953.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# connection_control_max_connection_delay
+
+`connection_control_max_connection_delay` 指定了超过错误登录次数阈值之后，错误登录锁定的最大时长。
+
+|        属性        |         描述          |
+|------------------|---------------------|
+| 参数类型             | 整型                  |
+| 默认值              | 2147483647，单位为毫秒    |
+| 取值范围             | \[1000，2147483647\] |
+| 是否重启 OBServer 节点生效 | 否                   |
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该配置项当前仅在 MySQL 模式下生效。</p>
+  </main>

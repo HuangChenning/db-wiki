@@ -1,0 +1,780 @@
+---
+title: "执行计划管理"
+book: "性能调优"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502822.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 执行计划管理
+
+SQL Plan Management（SPM）是一种防止计划回退的机制，能够确保新生成的计划在经过验证后才被使用，以保证计划性能不断优化和更新。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>目前 OceanBase 数据库社区版暂不支持 SPM 功能。</p>
+</main>
+
+OceanBase 数据库支持在线 SPM 演进机制，即当发现新生成的计划不在基线中时，就会立即自动启动一个演进任务进行计划演进，这样就可以在用户无需手动干预的情况下自动完成计划演进。
+
+OceanBase 数据库的 SPM 使用 `DBA_SQL_PLAN_BASELINES` 和 `DBA_SQL_MANAGEMENT_CONFIG` 视图，以及 `DBMS_SPM` 系统包来管理执行计划。
+
+## SPM 的执行机制
+
+SPM 基于 SQL Plan Baseline 实现，SQL Plan Baseline 是执行计划的一个基线，用于持久化存储已经验证过的执行计划信息（Outline Data 等信息），每个执行计划可对应一个 Plan Baseline，通过该 Plan Baseline 可复现一个执行计划。
+
+OceanBase 数据库计划的演进总是由计划生成触发的，SPM 的执行机制的可以概括为：
+
+1. SQL 第一次生成的计划会被默认作为基线并被 `ACCEPT`。
+2. 当新的计划存在于计划基线中，并且基线是 `FIXED` 或者不存在其它  `FIXED` 计划基线时，直接使用当前计划。
+3. 当存在可复现的 `FIXED` 基线时，总是优先使用 `FIXED` 基线计划，不做计划演进。
+4. 当不存在可复现的 `FIXED`基线，但存在可复现的 `ACCEPTED` 基线计划，则新计划与基线计划进行演进。
+5. 如果没有基线计划可以复现，则直接使用新生成的计划。
+
+## SPM 的使用限制
+
+OceanBase 数据库的 SPM 具有如下使用限制：
+
+* 处于备份恢复的恢复状态的租户和主备集群的备机无法执行计划演进。
+* 系统租户下的 SQL 和 Inner SQL 不能做计划演进。
+* SQL 语句包含 `INSERT INTO VALUES` 时不做计划演进。
+* 由于演进的结果是暂存在 OBServer 节点的 Local Cache 中，会定期同步到 Inner Table 中，所以任何 OBServer 节点的演进结果对于其它的 OBServer 节点来讲是无法立即感知的。
+
+## SPM 相关视图
+
+### DBA_SQL_PLAN_BASELINES
+
+`DBA_SQL_PLAN_BASELINES` 视图记录了 SPM 中 SQL 的计划基线。该视图各字段的含义如下表所示。
+
+| **字段名称** | **数据类型** | **是否为 NULL** | **说明** |
+| --- | --- | --- | --- |
+| SIGNATURE | VARCHAR2(128) | NOT NULL | 由归一化的 SQL 产生的 SQL 唯一标识符（这个字段的类型与 Oracle 不兼容）。 |
+| SQL_HANDLE | VARCHAR2(128) | NOT NULL | 唯一的文本形式的 SQL 表示。 |
+| SQL_TEXT | CLOB | NOT NULL | 未归一化的 SQL 文本。 |
+| PLAN_NAME | VARCHAR2(128) | NOT NULL | 唯一的文本形式的计划标识符。 |
+| CREATOR | VARCHAR2(128) |  | 创建这条计划基线的用户名称。 |
+| ORIGIN | VARCHAR2(14) |  | 计划基线的创建方式，如下：<ul><li> `MANUAL-LOAD`</li> <li> `AUTO-CAPTURE` </li>|
+| PARSING_SCHEMA_NAME | VARCHAR2(128) |  | 恒为 NULL。 |
+| DESCRIPTION | VARCHAR2(500) |  | 计划基线的说明。 |
+| VERSION | VARCHAR2(64) |  | 计划基线创建时的数据库版本。 |
+| CREATED | TIMESTAMP(6) | NOT NULL | 计划基线的创建时间。 |
+| LAST_MODIFIED | TIMESTAMP(6) |  | 计划基线上次的修改时间。 |
+| LAST_EXECUTED | TIMESTAMP(6) |  | 计划基线上次的执行时间。 |
+| LAST_VERIFIED | TIMESTAMP(6) |  | 计划基线上次的验证时间。 |
+| ENABLED | VARCHAR2(3) |  | 计划基线是启用的（'YES'）还是禁用的（'NO'）。 |
+| ACCEPTED | VARCHAR2(3) |  | 计划基线是被采纳的（'YES'）还是未被采纳的（'NO'）。 |
+| FIXED | VARCHAR2(3) |  | 计划基线是固定的（'YES'）还是非固定的（'NO'）。 |
+| REPRODUCED | VARCHAR2(3) |  | 计划基线是可复现的（'YES'）还是不可复现的（'NO'）。 |
+| AUTOPURGE | VARCHAR2(3) |  | 计划基线是自动清理的（'YES'）还是非自动清理的（'NO'）。 |
+| ADAPTIVE | VARCHAR2(3) |  | 由 SPM 自动捕获的计划基线是否已经是适应的。 |
+| OPTIMIZER_COST | NUMBER |  | 计划基线创建时优化器估计的计划代价。 |
+| MODULE | VARCHAR2(64) |  | 恒为 NULL。 |
+| ACTION | VARCHAR2(64) |  | 恒为 NULL。 |
+| EXECUTIONS | NUMBER |  | 计划基线创建时计划的执行次数。 |
+| ELAPSED_TIME | NUMBER |  | 计划基线创建时计划的总耗时。 |
+| CPU_TIME | NUMBER |  | 计划基线创建时计划的总 CPU 时间。 |
+| BUFFER_GETS | NUMBER |  | 恒为 NULL。 |
+| DISK_READS | NUMBER |  | 恒为 NULL。 |
+| DIRECT_WRITES | NUMBER |  | 恒为 NULL。 |
+| ROWS_PROCESSED | NUMBER |  | 恒为 NULL。 |
+| FETCHES | NUMBER |  | 恒为 NULL。 |
+| END_OF_FETCH_COUNT | NUMBER |  | 恒为 NULL。 |
+
+### DBA_SQL_MANAGEMENT_CONFIG
+
+`DBA_SQL_MANAGEMENT_CONFIG` 视图记录了 SPM 中的配置参数。该视图各字段的含义如下表所示。
+
+| **字段名称** | **数据类型** | **是否为NULL** | **说明** |
+| --- | --- | --- | --- |
+| PARAMETER_NAME | VARCHAR2(128) | NOT NULL | 配置参数的名字。如下：<ul><li>`SPACE_BUDGET_PERCENT`</li><li>`PLAN_RETENTION_WEEKS`</ul></li> |
+| PARAMETER_VALUE | NUMBER | NOT NULL | 配置参数的值。 |
+| LAST_MODIFIED | TIMESTAMP(6) |   | 参数值上次更新的时间。 |
+| MODIFIED_BY | VARCHAR2(128) |   | 参数值上次由谁更新的。 |
+
+## DBMS_SPM 系统包
+
+`DBMS_SPM` 系统包用于管理 SQL 计划，支持加载、更改以及删除 Plan Baseline 信息。
+
+下表列出了 OceanBase 数据库当前版本所支持的 DBMS_SPM 子程序和简要描述。
+
+| **子程序** | **描述** |
+| --- | --- |
+| ACCEPT_SQL_PLAN_BASELINE | 根据演进计划的结果接受一个计划作为基线。 |
+| ALTER_SQL_PLAN_BASELINE | 修改基线中一个或一组计划的属性。返回值表示被修改的基线数量。 |
+| CANCEL_EVOLVE_TASK | 取消一个正在演进的任务。 |
+| CONFIGURE | 设置 SPM 的一些参数。 |
+| DROP_EVOLVE_TASK | 丢弃一个演进任务。 |
+| DROP_SQL_PLAN_BASELINE | 丢弃一个或多个计划基线。 |
+| LOAD_PLANS_FROM_CURSOR_CACHE | 从 Cursor Cache 中读取一条或多条 SQL 计划作为计划基线。 |
+| BATCH_LOAD_PLANS_FROM_CURSOR_CACHE | 用于将 Plan Cache 中存在的 SQL 计划批量添加到 SPM baseline 中。|
+| BATCH_DROP_SQL_PLAN_BASELINE| 用于删除当前租户的所有计划基线。|
+| HANDLE_SPM_STATS_JOB_PROC | 用于每日清理过期的 SPM 统计信息。|
+| CREATE_STGTAB_BASELINE | 创建一个保存基线计划的缓存表。|
+| PACK_STGTAB_BASELINE | 将基线计划导出到缓存表中。|
+| UNPACK_STGTAB_BASELINE | 将缓存表中的基线计划导入到内部表中。|
+| PACK_CSV_BASELINE | 将基线计划导出到 CSV 文件中。|
+| UNPACK_CSV_BASELINE | 将 CSV 文件中的基线导入到内部表中。|
+
+### ACCEPT_SQL_PLAN_BASELINE
+
+`ACCEPT_SQL_PLAN_BASELINE` 过程用于根据演进计划的结果接受一个计划作为基线。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+DBMS_SPM.ACCEPT_SQL_PLAN_BASELINE  (
+    sql_handle        IN VARCHAR,
+    plan_name         IN VARCHAR := NULL);
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+DBMS_SPM.ACCEPT_SQL_PLAN_BASELINE  (
+     database_name     VARCHAR(65535),
+     sql_handle        VARCHAR(65535),
+     plan_name         VARCHAR(65535) DEFAULT NULL);
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| database_name | 数据库名称，仅 MySQL 模式下需要指定该参数。 |
+| sql_handle | SQL 的标识符，也就是 `SQL_ID`。 |
+| plan_name | 计划的名称，也就是 Plan Hash Value。如果值为 `NULL`，表示接受一个 SQL 所有正在演进的计划。 |
+
+#### 示例
+
+```sql
+DECLARE
+  v_accept_plans NUMBER;
+BEGIN
+  v_accept_plans := DBMS_SPM.ACCEPT_SQL_PLAN_BASELINE(
+     sql_handle => '529F6E6454EF579C7CC265D1F6131D70',
+     plan_name => '3388268709115914355'
+     );
+END;
+/
+```
+
+### ALTER_SQL_PLAN_BASELINE
+
+`ALTER_SQL_PLAN_BASELINE`  函数用于修改基线中一个或一组计划的属性。返回值表示被修改的基线数量。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+DBMS_SPM.ALTER_SQL_PLAN_BASELINE (
+  sql_handle        IN VARCHAR,
+  plan_name         IN VARCHAR := NULL,
+  attribute_name    IN VARCHAR,
+  attribute_value   IN VARCHAR
+)
+RETURN PLS_INTEGER;
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+DBMS_SPM.ALTER_SQL_PLAN_BASELINE (
+  database_name     VARCHAR(65535),
+  sql_handle        VARCHAR(65535),
+  plan_name         VARCHAR(65535) DEFAULT NULL,
+  attribute_name    VARCHAR(65535),
+  attribute_value   VARCHAR(65535)
+)
+RETURN DECIMAL;
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| database_name | 数据库名称，仅 MySQL 模式下需要指定该参数。 |
+| sql_handle | SQL 的标识符，也就是 `SQL_ID`。 |
+| plan_name | 计划的名称，也就是 Plan Hash Value。如果值为 `NULL`，表示接受一个 SQL 所有正在演进的计划。 |
+| attribute_name | 计划的属性名称。请参见 **属性说明**。 |
+| attribute_value | 计划的属性值。请参见 **属性说明**。 |
+
+#### 属性说明
+
+| **属性名称** | **可取的属性值** | **描述** |
+| --- | --- | --- |
+| enabled | 'YES' 或  'NO' | 'YES' 表示计划基线是有效的。最终计划基线是否会被使用取决于是否被接受。 |
+| fixed | 'YES' 或 'NO' | 'YES' 表示优先使用当前计划基线，并且**不进行自动演进**。 |
+| autopurge | 'YES' 或 'NO' | 'YES' 表示计划基线一段时候没有使用后会被自动淘汰；'NO' 表示计划基线永不淘汰。 |
+| plan_name | 字符串，最多 30 个字符。 | 计划的名称。 |
+| description | 字符串，最多 500 个字节。 | 计划的描述。 |
+
+#### 示例
+
+将某个 Plan Baseline 固化后该 SQL 仅使用该计划。
+
+```sql
+DECLARE
+  v_alter_plans NUMBER;
+BEGIN
+  v_alter_plans := DBMS_SPM.ALTER_SQL_PLAN_BASELINE(
+     sql_handle => '529F6E6454EF579C7CC265D1F6131D70',
+     plan_name => '3388268709115914355',
+     attribute_name => 'fixed',
+     attribute_value => 'YES' );
+END;
+/
+```
+
+### CANCEL_EVOLVE_TASK
+
+`CANCEL_EVOLVE_TASK` 过程用于取消一个正在演进的任务。
+
+#### 语法
+
+Oracle 模式下的语法：
+
+```sql
+DBMS_SPM.CANCEL_EVOLVE_TASK (
+ task_name INVARCHAR2);
+```
+
+MySQL 模式下的语法：
+
+```sql
+DBMS_SPM.CANCEL_EVOLVE_TASK  (
+  database_name     VARCHAR(65535),
+  task_name         VARCHAR(65535));
+```
+
+#### 参数说明
+
+| **参数名称** | **描述** |
+| --- | --- |
+| database_name | 数据库名称，仅 MySQL 模式下需要指定该参数。 |
+| task_name | 任务名称，即当前 OceanBase 数据库中使用 `SQL_ID` 所表示的演进任务名称。 |
+
+#### 示例
+
+```sql
+BEGIN
+  DBMS_SPM.CANCEL_EVOLVE_TASK ('SYS_AUTO_SPM_EVOLVE_TASK');
+END;
+```
+
+### CONFIGURE
+
+`CONFIGURE` 过程用于设置 SPM 的一些参数。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+DBMS_SPM.CONFIGURE (
+    parameter_name    IN VARCHAR2,
+    parameter_value   IN NUMBER
+  );
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+DBMS_SPM.CONFIGURE (
+    database_name     VARCHAR(65535),
+    parameter_name    VARCHAR(65535),
+    parameter_value   DECIMAL
+  );
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| database_name | 数据库名称，仅 MySQL 模式下需要指定该参数。 |
+| parameter_name | 要设置的参数名称。请参见 **SPM 参数说明**。 |
+| parameter_value | 要设置的参数值。请参见 **SPM 参数说明**。 |
+
+#### SPM 参数说明
+
+| SPM 参数名称 | **描述** | **可取的参数值** | **默认值** |
+| --- | --- | --- | --- |
+| space_budget_percent | 用于设置 SPM 的 SYSAUX 空间最大百分比。 | 1，2，...，50 | 10 |
+| plan_retention_weeks | 设置计划几周后未被使用会被自动淘汰掉。 | 5，6，...，523 | 53 |
+
+#### 示例
+
+设置计划 20 周后未被使用会被自动淘汰掉。
+
+```sql
+BEGIN
+  DBMS_SPM.CONFIGURE ('plan_retention_weeks', 20);
+END;
+```
+
+### DROP_EVOLVE_TASK
+
+`DROP_EVOLVE_TASK` 过程用于丢弃一个演进任务。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+DBMS_SPM.DROP_EVOLVE_TASK  (
+  task_name        IN  VARCHAR2);
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+DBMS_SPM.DROP_EVOLVE_TASK  (
+  database_name     VARCHAR(65535),
+  task_name         VARCHAR(65535));
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| database_name | 数据库名称，仅 MySQL 模式下需要指定该参数。 |
+| task_name | 任务名称，即当前 OceanBase 数据库中使用 `SQL_ID` 所表示的演进任务名称。 |
+
+#### 示例
+
+```sql
+BEGIN
+  DBMS_SPM.DROP_EVOLVE_TASK ('SYS_AUTO_SPM_EVOLVE_TASK');
+END;
+```
+
+### DROP_SQL_PLAN_BASELINE
+
+`DROP_SQL_PLAN_BASELINE` 函数用于用于丢弃一个或多个计划基线。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+DBMS_SPM.DROP_SQL_PLAN_BASELINE (
+  sql_handle     IN VARCHAR2,
+  plan_name      IN VARCHAR2 := NULL
+)
+RETURN PLS_INTEGER;
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+DBMS_SPM.DROP_SQL_PLAN_BASELINE (
+  database_name     VARCHAR(65535),
+  sql_handle        VARCHAR(65535),
+  plan_name         VARCHAR(65535) DEFAULT NULL
+)
+RETURN DECIMAL;
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| database_name | 数据库名称，仅 MySQL 模式下需要指定该参数。 |
+| sql_handle  | SQL 的标识符，也就是 `SQL_ID`。执行计划用于标识 SQL 语句的句柄（Handle）。当查询某条 SQL 语句的特定执行计划时，在存在多条相似 SQL 时，可通过 sql_handle 精准指定目标语句。|
+| plan_name   | 执行计划的名称，也就是 Plan Hash Value。如果值为 `NULL`，表示接受一个 SQL 所有正在演进的计划。|
+
+#### 示例
+
+```sql
+DECLARE
+  v_drop_plans number;
+BEGIN
+  v_drop_plans := DBMS_SPM.DROP_SQL_PLAN_BASELINE(
+     sql_handle => '529F6E6454EF579C7CC265D1F6131D70',
+     plan_name => '3388268709115914355' );
+END;
+/
+```
+
+### LOAD_PLANS_FROM_CURSOR_CACHE
+
+`LOAD_PLANS_FROM_CURSOR_CACHE` 函数用于用于从 Plan Cache 中读取一条或多条 SQL 的计划作为计划基线。
+
+Oracle 模式下的语法如下：
+
+```sql
+DBMS_SPM.LOAD_PLANS_FROM_CURSOR_CACHE (
+  sql_id              IN VARCHAR,
+  plan_hash_value     IN NUMBER   := NULL,
+  fixed               IN VARCHAR  := 'NO',
+  enabled             IN VARCHAR  := 'YES'
+)
+RETURN PLS_INTEGER;
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+DBMS_SPM.LOAD_PLANS_FROM_CURSOR_CACHE (
+  database_name     VARCHAR(65535),
+  sql_id            VARCHAR(65535),
+  plan_hash_value   DECIMAL DEFAULT NULL,
+  is_fixed          VARCHAR(65535) DEFAULT 'NO',
+  enabled           VARCHAR(65535) DEFAULT 'YES'
+)
+RETURN DECIMAL;
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| database_name | 数据库名称，仅 MySQL 模式下需要指定该参数。 |
+| sql_id | 要加载的 `SQL_ID`。 |
+| plan_hash_value | 要加载的计划的 Plan Hash Value。如果值为 `NULL`，加载 Plan Cache 中指定 SQL 的所有计划作为计划基线。 |
+| is_fixed | 加载的计划基线的 `is_fixed` 属性。 |
+| enabled | 加载的计划基线的 `enabled` 属性。 |
+
+#### 示例
+
+```sql
+DECLARE
+  v_load_plans number;
+BEGIN
+  v_load_plans := DBMS_SPM.LOAD_PLANS_FROM_CURSOR_CACHE(
+     sql_id => '529F6E6454EF579C7CC265D1F6131D70',
+     plan_hash_value => 13388268709115914355);
+END;
+/
+```
+
+### BATCH_LOAD_PLANS_FROM_CURSOR_CACHE
+
+`BATCH_LOAD_PLANS_FROM_CURSOR_CACHE` 用于将 Plan Cache 中存在的 SQL 计划批量添加到 SPM baseline 中。
+
+Oracle 模式下的语法如下：
+
+```sql
+PROCEDURE BATCH_LOAD_PLANS_FROM_CURSOR_CACHE (
+    fixed                   IN VARCHAR  := 'NO',
+  );
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+PROCEDURE BATCH_LOAD_PLANS_FROM_CURSOR_CACHE (
+    is_fixed                VARCHAR(8) DEFAULT 'NO',
+  );
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| is_fixed | 设置加载 baseline 的 `is_fixed` 属性，默认值为 `NO`，设置基线为可演进的基线。|
+
+#### 示例
+
+```sql
+call DBMS_SPM.BATCH_LOAD_PLANS_FROM_CURSOR_CACHE('no');
+```
+
+### BATCH_DROP_SQL_PLAN_BASELINE
+
+`BATCH_DROP_SQL_PLAN_BASELINE` 用于删除当前租户的所有计划基线。
+
+Oracle 模式下的语法如下：
+
+```sql
+PROCEDURE BATCH_DROP_SQL_PLAN_BASELINE (
+  degree         IN NUMBER   := NULL
+);
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+PROCEDURE BATCH_DROP_SQL_PLAN_BASELINE(
+  degree            DECIMAL(20,0)  DEFAULT NULL
+);
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+|degree|指定批量删除过程中，删除操作是否开启并行。|
+
+#### 示例
+
+```sql
+call BATCH_DROP_SQL_PLAN_BASELINE();
+```
+
+### HANDLE_SPM_STATS_JOB_PROC
+
+`HANDLE_SPM_STATS_JOB_PROC` 过程用于每日清理过期的 SPM 统计信息。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+PROCEDURE HANDLE_SPM_STATS_JOB_PROC;
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+PROCEDURE HANDLE_SPM_STATS_JOB_PROC();
+```
+
+#### 说明
+
+该存储过程用于每日清理过期的 SPM 统计信息。内部表中的数据保留 15 天，采用分批删除的方式，每批删除 2000 条。
+
+### CREATE_STGTAB_BASELINE
+
+`CREATE_STGTAB_BASELINE` 过程用于创建一个保存基线计划的缓存表。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+PROCEDURE CREATE_STGTAB_BASELINE (
+  table_name        IN VARCHAR2,
+  table_owner       IN VARCHAR2 := NULL,
+  tablespace_name   IN VARCHAR2 := NULL
+);
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+PROCEDURE CREATE_STGTAB_BASELINE (
+  table_name        VARCHAR(65535),
+  table_owner       VARCHAR(65535) DEFAULT NULL,
+  tablespace_name   VARCHAR(65535) DEFAULT NULL
+);
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| table_name | 指定缓存表的表名。 |
+| table_owner | 指定缓存表所属的用户，不指定或指定 NULL 时表示当前用户。 |
+| tablespace_name | 指定缓存表所属的 tablespace，仅用于兼容没有实际作用。 |
+
+### PACK_STGTAB_BASELINE
+
+`PACK_STGTAB_BASELINE` 过程用于将基线计划导出到缓存表中。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+PROCEDURE PACK_STGTAB_BASELINE (
+  table_name       IN VARCHAR2,
+  table_owner      IN VARCHAR2 := NULL,
+  baseline_owner   IN VARCHAR2 := NULL,
+  sql_id           IN VARCHAR2 := NULL,
+  plan_hash        IN NUMBER   := NULL,
+  sql_text         IN CLOB     := NULL,
+  origin           IN VARCHAR2 := NULL,
+  enabled          IN VARCHAR2 := NULL,
+  accepted         IN VARCHAR2 := NULL,
+  fixed            IN VARCHAR2 := NULL
+);
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+PROCEDURE PACK_STGTAB_BASELINE (
+  table_name        VARCHAR(65535),
+  table_owner       VARCHAR(65535) DEFAULT NULL,
+  baseline_owner    VARCHAR(65535) DEFAULT NULL,
+  sql_id            VARCHAR(65535) DEFAULT NULL,
+  plan_hash         INT UNSIGNED   DEFAULT NULL,
+  sql_text          LONGTEXT       DEFAULT NULL,
+  origin            VARCHAR(65535) DEFAULT NULL,
+  enabled           VARCHAR(65535) DEFAULT NULL,
+  accepted          VARCHAR(65535) DEFAULT NULL,
+  fixed             VARCHAR(65535) DEFAULT NULL
+);
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| table_name | 指定缓存表的表名。 |
+| table_owner | 指定缓存表所属的用户。不指定或指定 NULL 时表示当前用户。 |
+| baseline_owner | 指定导出哪个用户下的基线，如不指定或指定 NULL 时表示当前用户。 |
+| sql_id | 指定导出特定 sql id 的基线。不指定或指定 NULL 时表示导出所有 sql id 的基线。 |
+| plan_hash | 指定导出特定 plan hash 的基线。不指定或指定 NULL 时表示导出所有 plan hash 的基线。 |
+| sql_text | 指定导出特定 sql 文本的基线，可以使用 % 进行模糊匹配。不指定或指定 NULL 时表示导出所有 sql 文本的基线。 |
+| origin | 指定导出特定 origin 的基线，仅支持指定 `AUTO-CAPTURE`、`MANUAL-LOAD`。不指定或指定 NULL 时表示导出所有 origin 的基线。 |
+| enabled | 指定导出 enabled 为特定状态的基线，仅支持指定 `YES`、`NO`。不指定或指定 NULL 时表示导出所有 enabled 状态的基线。 |
+| accepted | 指定导出 accepted 为特定状态的基线，仅支持指定 `YES`、`NO`。不指定或指定 NULL 时表示导出所有 accepted 状态的基线。 |
+| fixed | 指定导出 fixed 为特定状态的基线，仅支持指定 `YES`、`NO`。不指定或指定 NULL 时表示导出所有 fixed 状态的基线。 |
+
+### UNPACK_STGTAB_BASELINE
+
+`UNPACK_STGTAB_BASELINE` 过程用于将缓存表中的基线计划导入到内部表中。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+PROCEDURE UNPACK_STGTAB_BASELINE (
+  table_name       IN VARCHAR2,
+  table_owner      IN VARCHAR2 := NULL,
+  baseline_owner   IN VARCHAR2 := NULL,
+  sql_id           IN VARCHAR2 := NULL,
+  plan_hash        IN NUMBER   := NULL,
+  sql_text         IN CLOB     := NULL,
+  origin           IN VARCHAR2 := NULL,
+  enabled          IN VARCHAR2 := NULL,
+  accepted         IN VARCHAR2 := NULL,
+  fixed            IN VARCHAR2 := NULL
+);
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+PROCEDURE UNPACK_STGTAB_BASELINE (
+  table_name        VARCHAR(65535),
+  table_owner       VARCHAR(65535) DEFAULT NULL,
+  baseline_owner    VARCHAR(65535) DEFAULT NULL,
+  sql_id            VARCHAR(65535) DEFAULT NULL,
+  plan_hash         INT UNSIGNED   DEFAULT NULL,
+  sql_text          LONGTEXT       DEFAULT NULL,
+  origin            VARCHAR(65535) DEFAULT NULL,
+  enabled           VARCHAR(65535) DEFAULT NULL,
+  accepted          VARCHAR(65535) DEFAULT NULL,
+  fixed             VARCHAR(65535) DEFAULT NULL
+);
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| table_name | 指定缓存表的表名。 |
+| table_owner | 指定缓存表所属的用户。不指定或指定 NULL 时表示当前用户。 |
+| baseline_owner | 指定导入基线到哪个用户下，如不指定或指定 NULL 时表示当前用户。 |
+| sql_id | 指定导入特定 sql id 的基线。不指定或指定 NULL 时表示导入所有 sql id 的基线。 |
+| plan_hash | 指定导入特定 plan hash 的基线。不指定或指定 NULL 时表示导入所有 plan hash 的基线。 |
+| sql_text | 指定导入特定 sql 文本的基线，可以使用 % 进行模糊匹配。不指定或指定 NULL 时表示导入所有 sql 文本的基线。 |
+| origin | 指定导入特定 origin 的基线，仅支持指定 `AUTO-CAPTURE`、`MANUAL-LOAD`。不指定或指定 NULL 时表示导入所有 origin 的基线。 |
+| enabled | 指定导入 enabled 为特定状态的基线，仅支持指定 `YES`、`NO`。不指定或指定 NULL 时表示导入所有 enabled 状态的基线。 |
+| accepted | 指定导入 accepted 为特定状态的基线，仅支持指定 `YES`、`NO`。不指定或指定 NULL 时表示导入所有 accepted 状态的基线。 |
+| fixed | 指定导入 fixed 为特定状态的基线，仅支持指定 `YES`、`NO`。不指定或指定 NULL 时表示导入所有 fixed 状态的基线。 |
+
+### PACK_CSV_BASELINE
+
+`PACK_CSV_BASELINE` 过程用于将基线计划导出到 CSV 文件中。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+PROCEDURE PACK_CSV_BASELINE (
+  detail_file_path  IN VARCHAR2,
+  overall_file_path IN VARCHAR2,
+  baseline_owner    IN VARCHAR2 := NULL
+);
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+PROCEDURE PACK_CSV_BASELINE (
+  detail_file_path  VARCHAR(65535),
+  overall_file_path VARCHAR(65535),
+  baseline_owner    VARCHAR(65535) DEFAULT NULL
+);
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| detail_file_path | 指定将 `__all_plan_baseline_item` 中的内容导出到哪个文件下，使用绝对路径。导出 CSV 文件不能覆写已有的文件，此处需要指定一个还不存在的文件。 |
+| overall_file_path | 指定将 `__all_plan_baseline` 中的内容导出到哪个文件下，使用绝对路径。导出 CSV 文件不能覆写已有的文件，此处需要指定一个还不存在的文件。 |
+| baseline_owner | 指定导出哪个用户下的基线，如不指定或指定 NULL 时表示当前用户。 |
+
+#### 示例
+
+将当前用户下的所有基线计划导出到 CSV 文件。
+
+```sql
+BEGIN
+  DBMS_SPM.PACK_CSV_BASELINE (
+    detail_file_path => '/tmp/spm_baseline_detail.csv',
+    overall_file_path => '/tmp/spm_baseline_overall.csv'
+  );
+END;
+/
+```
+
+### UNPACK_CSV_BASELINE
+
+`UNPACK_CSV_BASELINE` 过程用于将 CSV 文件中的基线导入到内部表中。
+
+#### 语法
+
+Oracle 模式下的语法如下：
+
+```sql
+PROCEDURE UNPACK_CSV_BASELINE (
+  detail_file_path  IN VARCHAR2,
+  overall_file_path IN VARCHAR2,
+  baseline_owner    IN VARCHAR2 := NULL
+);
+```
+
+MySQL 模式下的语法如下：
+
+```sql
+PROCEDURE UNPACK_CSV_BASELINE (
+  detail_file_path  VARCHAR(65535),
+  overall_file_path VARCHAR(65535),
+  baseline_owner    VARCHAR(65535) DEFAULT NULL
+);
+```
+
+#### 参数说明
+
+| **参数名称** | **说明** |
+| --- | --- |
+| detail_file_path | 指定从哪个文件中导入 `__all_plan_baseline_item` 的数据，使用绝对路径。 |
+| overall_file_path | 指定从哪个文件中导入 `__all_plan_baseline` 的数据，使用绝对路径。 |
+| baseline_owner | 指定导入基线到哪个用户下，如不指定或指定 NULL 时表示当前用户。 |
+
+#### 示例
+
+从 CSV 文件导入基线计划。
+
+```sql
+BEGIN
+  DBMS_SPM.UNPACK_CSV_BASELINE (
+    detail_file_path => '/tmp/spm_baseline_detail.csv',
+    overall_file_path => '/tmp/spm_baseline_overall.csv'
+  );
+END;
+/
+```

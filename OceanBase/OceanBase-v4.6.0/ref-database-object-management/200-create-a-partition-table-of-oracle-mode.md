@@ -1,0 +1,813 @@
+---
+title: "创建分区表"
+book: "数据库对象管理"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005683130.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 创建分区表
+
+您可以根据业务需求，创建相应类型的一级分区表或二级分区表。
+
+OceanBase 数据库中有两种表，分区表和非分区表。分区表是将一个表分解成多个更小的、更容易管理的部分。
+
+## 分区表类型
+
+### 一级分区表
+
+OceanBase 数据库 Oracle 模式一级分区表的具体支持情况如下：
+
+* Range 类型一级分区表。
+
+  * Interval 类型一级分区表。
+
+* List 类型一级分区表。
+
+* Hash 类型一级分区表。
+
+### 二级分区表
+
+OceanBase 数据库 Oracle 模式的二级分区表为任意两种分区类型的组合，具体支持情况如下：
+
+|    二级分区类型     | 创建模板化二级分区表 | 创建非模板化二级分区表 |
+|---------------|------------|-------------|
+| Range + Range | 支持         | 支持          |
+| Range + List  | 支持         | 支持          |
+| Range + Hash  | 支持         | 支持          |
+| List + Range  | 支持         | 支持          |
+| List + List   | 支持         | 支持          |
+| List + Hash   | 支持         | 支持          |
+| Hash + Range  | 支持         | 支持          |
+| Hash + List   | 支持         | 支持          |
+| Hash + Hash   | 支持         | 支持          |
+
+## 创建 Range 类型的一级分区表
+
+### 语法
+
+```sql
+CREATE TABLE table_name (column_name column_type[, column_name column_type])
+  PARTITION BY RANGE (column_name[, column_name])
+    (PARTITION partition_name VALUES LESS THAN(expr)
+     [, PARTITION partition_name VALUES LESS THAN (expr )...]
+     [, PARTITION partition_name VALUES LESS THAN (MAXVALUE)]
+     );
+```
+
+在创建 Range 分区时，需要遵循以下规则：
+
+* 每个分区都有一个 `VALUES LESS THAN` 子句，它为分区指定一个非包含的上限值。分区键的任何值等于或大于这个值时将被映射到下一个分区中。
+
+* Range 分区的分区键不能是表达式。
+
+* 除第一个分区外，所有分区都隐含一个下限值，即上一个分区的上限值。
+
+* 仅允许最后一个分区的上限定义为 `MAXVALUE`，这个值没有具体的数值，并且比其他所有分区的上限都要大，也包含空值。如果最后一个 Range 分区指定了 `MAXVALUE`，则不能新增分区。
+
+### 参数解释
+
+|       参数       |    描述     |
+|----------------|-----------|
+| table_name     | 指定表名。     |
+| column_name    | 指定列名称。    |
+| column_type    | 指定列的数据类型。 |
+| partition_name | 指定一级分区名称。 |
+
+### 示例
+
+创建一个 Range 分区表 `tbl1_log_r`。
+
+```sql
+obclient> CREATE TABLE tbl1_log_r(log_id INT,log_date DATE NOT NULL DEFAULT SYSDATE)
+       PARTITION BY RANGE(log_date) 
+        (PARTITION M202001 VALUES LESS THAN(TO_DATE('2020/02/01','YYYY/MM/DD'))
+         , PARTITION M202002 VALUES LESS THAN(TO_DATE('2020/03/01','YYYY/MM/DD'))
+         , PARTITION M202003 VALUES LESS THAN(TO_DATE('2020/04/01','YYYY/MM/DD'))
+         , PARTITION M202004 VALUES LESS THAN(TO_DATE('2020/05/01','YYYY/MM/DD'))
+         , PARTITION M202005 VALUES LESS THAN(TO_DATE('2020/06/01','YYYY/MM/DD'))
+         , PARTITION M202006 VALUES LESS THAN(TO_DATE('2020/07/01','YYYY/MM/DD'))
+         , PARTITION M202007 VALUES LESS THAN(TO_DATE('2020/08/01','YYYY/MM/DD'))
+         , PARTITION M202008 VALUES LESS THAN(TO_DATE('2020/09/01','YYYY/MM/DD'))
+         , PARTITION M202009 VALUES LESS THAN(TO_DATE('2020/10/01','YYYY/MM/DD'))
+         , PARTITION M202010 VALUES LESS THAN(TO_DATE('2020/11/01','YYYY/MM/DD'))
+         , PARTITION M202011 VALUES LESS THAN(TO_DATE('2020/12/01','YYYY/MM/DD'))
+         , PARTITION M202012 VALUES LESS THAN(TO_DATE('2021/01/01','YYYY/MM/DD'))
+         , PARTITION MMAX VALUES LESS THAN (MAXVALUE)
+         );
+Query OK, 0 rows affected
+```
+
+## 创建 List 类型的一级分区表
+
+### 语法
+
+```sql
+CREATE TABLE table_name (column_name column_type[,column_name column_type])
+  PARTITION BY LIST (column_name[, column_name])
+    (PARTITION partition_name VALUES ( v01 [, v0N])
+     [,PARTITION partition_name VALUES ( vN1 [, vNN])]
+     [,PARTITION partition_name VALUES (DEFAULT)]
+    );
+```
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<ul>
+<li>List 分区的分区键不能是表达式。</li>
+<li>如果最后一个 List 分区指定了 <code>DEFAULT</code>，则不能新增分区。</li>
+</ul>
+</main>
+
+### 参数解释
+
+|       参数       |                        描述                        |
+|----------------|--------------------------------------------------|
+| table_name     | 指定表名。                                            |
+| column_name    | 指定列名称。                                           |
+| column_type    | 指定列的数据类型。                                        |
+| partition_name | 指定分区名称。                                          |
+| DEFAULT        | 仅允许最后一个分区指定这个值，这个值没有具体的数值，并且比其他所有分区的上限都要大，也包含空值。 |
+
+### 示例
+
+创建一个 List 分区表 `tbl1_log_l`。
+
+```sql
+obclient> CREATE TABLE tbl1_log_l(log_id INT,log_value VARCHAR2(20))
+       PARTITION BY LIST(log_value) 
+        (PARTITION P01 VALUES ('A'),
+         PARTITION P02 VALUES ( 'B' ),
+         PARTITION P03 VALUES ( 'C' )
+        );
+Query OK, 0 rows affected
+```
+
+## 创建 Hash 类型的一级分区表
+
+### 语法
+
+```sql
+CREATE TABLE table_name (column_name column_type[,column_name column_type])
+PARTITION BY HASH(column_name[, column_name]) PARTITIONS partition_count;
+```
+
+### 参数解释
+
+|       参数        |       描述       |
+|-----------------|----------------|
+| table_name      | 指定表名。          |
+| column_name     | 指定列名。          |
+| column_type     | 指定列的数据类型。      |
+| partition_count | 指定一级分区个数。      |
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>对于 Hash 分区，创建时如果没有指定分区的名字，分区的命名由系统根据命名规则完成。对于一级分区表，则每个分区分别命名为 p0、p1、...、pn。</p>
+</main>
+
+### 示例
+
+创建一个 Hash 分区表 tbl1_h。
+
+```sql
+obclient> CREATE TABLE tbl1_h(col1 INT,col2 VARCHAR(50))
+       PARTITION BY HASH(col1) PARTITIONS 60;
+Query OK, 0 rows affected
+```
+
+## 创建模板化二级分区表
+
+Oracle 模式下，创建模板化二级分区表的 SQL 语法如下：
+
+```sql
+CREATE TABLE [IF NOT EXISTS] table_name(column_option_list) partition_option_list;
+
+column_option_list:
+  column_name column_type [, column_name column_type]
+
+partition_option_list:
+  PARTITION BY 
+    RANGE(column_name){subpartition_option} (range_partition_list)
+   | LIST(expression){subpartition_option} (list_partition_list)
+   | HASH(expression){subpartition_option} { (hash_partition_list)
+                                             | PARTITIONS partition_count }
+
+subpartition_option:
+  SUBPARTITION BY 
+    RANGE(column_name) SUBPARTITION TEMPLATE(range_subpartition_list)
+   | LIST(expression) SUBPARTITION TEMPLATE(list_subpartition_list)
+   | HASH(expression) { SUBPARTITION TEMPLATE (hash_subpartition_list)
+                       | SUBPARTITIONS subpartition_count }
+
+range_partition_list:
+  range_partition [, range_partition ...]
+
+range_partition:
+  PARTITION partition_name VALUES LESS THAN {(expression_list) | MAXVALUE}
+
+range_subpartition_list:
+  range_subpartition [, range_subpartition ...]
+
+range_subpartition:
+  SUBPARTITION subpartition_name VALUES LESS THAN {(expression_list) | MAXVALUE}
+
+list_partition_list:
+  list_partition [, list_partition ...]
+
+list_partition:
+  PARTITION partition_name VALUES {(expression_list) | DEFAULT}
+
+list_subpartition_list:
+  list_subpartition [, list_subpartition ...]
+
+list_subpartition:
+  SUBPARTITION subpartition_name VALUES {(expression_list) | DEFAULT}
+
+hash_partition_list:
+    hash_partition [, hash_partition ...]
+
+hash_partition:
+    PARTITION partition_name
+
+hash_subpartition_list:
+    hash_subpartition [, hash_subpartition ...]
+
+hash_subpartition:
+    SUBPARTITION subpartition_name
+
+expression_list:
+  expression [, expression ...]
+
+column_name_list:
+  column_name [, column_name ...]
+
+partition_count | subpartition_count:
+  INT_VALUE
+```
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<ul>
+<li>模板化二级分区表的每个一级分区下的二级分区都按照模板中的二级分区定义，即每个一级分区下的二级分区的定义均相同。</li>
+<li>对于模板化二级分区表来说，二级分区的命名规则为 <code>($part_name)s($subpart_name)</code>。</li>
+</ul>
+</main>
+
+例如：对于下⾯的 `t_range_range` 表，`p0`下的 3 个二级分区的分区名分别为 `p0smp1`、`p0smp2`、`p0smp3`。
+
+  ```sql
+  obclient> CREATE TABLE t_range_range(col1 INT,col2 INT)
+         PARTITION BY RANGE(col1)
+         SUBPARTITION BY RANGE(col2)
+         SUBPARTITION TEMPLATE
+         (SUBPARTITION mp1 VALUES LESS THAN(100),
+          SUBPARTITION mp2 VALUES LESS THAN(200),
+          SUBPARTITION mp3 VALUES LESS THAN(300)
+          )
+         (PARTITION p0 VALUES LESS THAN(2020),
+          PARTITION p1 VALUES LESS THAN(2021),
+          PARTITION p2 VALUES LESS THAN(2022)
+          );
+  Query OK, 0 rows affected
+
+  obclient> SELECT table_name,partition_name,subpartition_name FROM USER_TAB_SUBPARTITIONS;
+  +---------------+----------------+-------------------+
+  | TABLE_NAME    | PARTITION_NAME | SUBPARTITION_NAME |
+  +---------------+----------------+-------------------+
+  | T_RANGE_RANGE | P0             | P0SMP1            |
+  | T_RANGE_RANGE | P0             | P0SMP2            |
+  | T_RANGE_RANGE | P0             | P0SMP3            |
+  | T_RANGE_RANGE | P1             | P1SMP1            |
+  | T_RANGE_RANGE | P1             | P1SMP2            |
+  | T_RANGE_RANGE | P1             | P1SMP3            |
+  | T_RANGE_RANGE | P2             | P2SMP1            |
+  | T_RANGE_RANGE | P2             | P2SMP2            |
+  | T_RANGE_RANGE | P2             | P2SMP3            |
+  +---------------+----------------+-------------------+
+  9 rows in set
+  ```
+
+部分参数说明如下表所示。
+
+|        参数         |                                                    说明                                                    |
+|-------------------|----------------------------------------------------------------------------------------------------------|
+| table_name        | 指定表名。                                                                                                    |
+| column_name       | 指定列名。                                                                                                    |
+| column_type       | 指定列数据类型。                                                                                                 |
+| partition_name    | 指定一级分区的名称。                                                                                               |
+| subpartition_name | 指定二级分区的名称。                                                                                               |
+| INT_VALUE         | 指定 Hash 类型的二级分区的个数。                                                                                      |
+
+### 创建 Range + Range 分区的模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_m_rr(col1 INT,col2 INT)
+       PARTITION BY RANGE(col1)
+       SUBPARTITION BY RANGE(col2)
+       SUBPARTITION TEMPLATE
+         (SUBPARTITION mp0 VALUES LESS THAN(2020),
+          SUBPARTITION mp1 VALUES LESS THAN(2021),
+          SUBPARTITION mp2 VALUES LESS THAN(2022)
+          )
+         (PARTITION p0 VALUES LESS THAN(100),
+          PARTITION p1 VALUES LESS THAN(200)
+          );
+Query OK, 0 rows affected
+```
+
+### 创建 Range + List 分区的模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_m_rl(col1 INT,col2 VARCHAR2(50))
+       PARTITION BY RANGE(col1)
+       SUBPARTITION BY LIST(col2)
+       SUBPARTITION TEMPLATE
+         (SUBPARTITION mp0 VALUES('01'),
+          SUBPARTITION mp1 VALUES('02'),
+          SUBPARTITION mp2 VALUES('03')
+          )
+         (PARTITION p0 VALUES LESS THAN(100),
+          PARTITION p1 VALUES LESS THAN(200)
+          );
+Query OK, 0 rows affected
+```
+
+### 创建 Range + Hash 分区的模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_m_rh(col1 INT,col2 VARCHAR2(50))
+       PARTITION BY RANGE(col1)
+       SUBPARTITION BY HASH(col2) SUBPARTITIONS 5
+        (PARTITION p0 VALUES LESS THAN(100),
+         PARTITION p1 VALUES LESS THAN(200)
+         );
+Query OK, 0 rows affected
+```
+
+### 创建 List + Range 分区的模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_m_lr(col1 INT,col2 varchar2(50))
+       PARTITION BY LIST(col2)
+       SUBPARTITION BY RANGE(col1)
+       SUBPARTITION TEMPLATE
+        (SUBPARTITION mp0 VALUES LESS THAN(100),
+         SUBPARTITION mp1 VALUES LESS THAN(200),
+         SUBPARTITION mp2 VALUES LESS THAN(300)
+         )
+        (PARTITION p0 VALUES('01'),
+         PARTITION p1 VALUES('02')
+         );
+Query OK, 0 rows affected
+```
+
+### 创建 List + List 分区的模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_m_ll(col1 INT,col2 varchar2(50))
+       PARTITION BY LIST(col1)
+       SUBPARTITION BY LIST(col2)
+       SUBPARTITION TEMPLATE
+       (SUBPARTITION mp0 VALUES('A'),
+        SUBPARTITION mp1 VALUES('B'),
+        SUBPARTITION mp2 VALUES('C')
+        )
+       (PARTITION p0 VALUES('01'),
+        PARTITION p1 VALUES('02')
+        );
+Query OK, 0 rows affected
+```
+
+### 创建 List + Hash 分区的模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_m_lh(col1 INT,col2 VARCHAR2(50))
+       PARTITION BY LIST(col1)
+       SUBPARTITION BY HASH(col2) SUBPARTITIONS 5
+        (PARTITION p0 VALUES('01'),
+         PARTITION p1 VALUES('02')
+         );
+Query OK, 0 rows affected
+```
+
+### 创建 Hash + Range 分区的模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE tbl2_m_hr(col1 INT,col2 INT,col3 INT) 
+       PARTITION BY HASH(col1)
+       SUBPARTITION BY RANGE(col2)
+       SUBPARTITION TEMPLATE
+        (SUBPARTITION sp0 VALUES LESS THAN(100),
+         SUBPARTITION sp1 VALUES LESS THAN(200),
+         SUBPARTITION sp2 VALUES LESS THAN(300)
+        )
+        PARTITIONS 5;
+Query OK, 0 rows affected
+```
+
+### 创建 Hash + List 分区的模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE tbl2_m_hl(col1 INT,col2 INT,col3 INT) 
+       PARTITION BY HASH(col1)
+       SUBPARTITION BY LIST(col2)
+       SUBPARTITION TEMPLATE
+        (SUBPARTITION sp0 VALUES(100),
+         SUBPARTITION sp1 VALUES(200),
+         SUBPARTITION sp2 VALUES(300)
+         )
+        PARTITIONS 5;
+Query OK, 0 rows affected
+```
+
+### 创建 Hash +Hash 分区的模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE tbl2_m_hh(col1 INT,col2 INT,col3 INT) 
+       PARTITION BY HASH(col1)
+       SUBPARTITION BY HASH(col2)
+        SUBPARTITIONS 3
+        PARTITIONS 5;
+Query OK, 0 rows affected
+```
+
+## 创建非模板化二级分区表
+
+Oracle 模式下，创建非模板化二级分区表的 SQL 语法如下：
+
+```sql
+CREATE TABLE [IF NOT EXISTS] table_name(column_option_list) partition_option_list;
+
+column_option_list:
+  column_name column_type [, column_name column_type]
+
+partition_option_list:
+  PARTITION BY 
+    RANGE(column_name){subpartition_option}
+      { range_partition_option (subpartition_option_list)
+        [, range_partition_option (subpartition_option_list) ...]
+       }
+   | LIST(expression){subpartition_option}
+       { list_partition_option (subpartition_option_list)
+        [, list_partition_option (subpartition_option_list) ...]
+        }
+   | HASH(expression) {subpartition_option}
+      { hash_partition_option (subpartition_option_list)
+       [, hash_partition_option (subpartition_option_list) ...]
+       }
+
+subpartition_option:
+  SUBPARTITION BY { RANGE(column_name) | LIST(expression) | HASH(expression) }
+
+subpartition_option_list:
+  range_partition_option_list | list_partition_option_list | hash_partition_option_list
+
+range_partition_option_list:
+  range_partition_option [, range_partition_option ...]
+
+list_partition_option_list:
+  list_partition_option [, list_partition_option ...]
+
+hash_partition_option_list:
+  hash_partition_option [, hash_partition_option ...]
+
+range_partition_option:
+  SUBPARTITION subpartition_name VALUES LESS THAN range_partition_expr
+  [,SUBPARTITION subpartition_name VALUES LESS THAN range_partition_expr ...]
+
+list_partition_option:
+  SUBPARTITION subpartition_name VALUES list_partition_expr
+  [, SUBPARTITION subpartition_name VALUES list_partition_expr ...]
+
+hash_partition_option_list:
+  SUBPARTITION subpartition_name
+  [, SUBPARTITION subpartition_name ...]
+```
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>非模板化二级分区表的每个一级分区下的二级分区均可以自由定义，即每个一级分区下的二级分区的定义可以相同也可以不同。</p>
+</main>
+
+部分参数说明如下表所示。
+
+|        参数         |                                                    说明                                                    |
+|-------------------|----------------------------------------------------------------------------------------------------------|
+| table_name        | 指定表名。                                                                                                    |
+| column_name       | 指定列名。                                                                                                    |
+| column_type       | 指定列数据类型。                                                                                                 |
+| partition_name    | 指定一级分区的名称。                                                                                               |
+| subpartition_name | 指定二级分区的名称。                                                                                               |
+
+### 创建 Range + Range 分区的非模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_f_rr(col1 INT,col2 INT)
+       PARTITION BY RANGE(col1)
+       SUBPARTITION BY RANGE(col2)
+        (PARTITION p0 VALUES LESS THAN(100)
+          (SUBPARTITION sp0 VALUES LESS THAN(2020),
+           SUBPARTITION sp1 VALUES LESS THAN(2021)
+          ),
+         PARTITION p1 VALUES LESS THAN(200)
+          (SUBPARTITION sp2 VALUES LESS THAN(2020),
+           SUBPARTITION sp3 VALUES LESS THAN(2021),
+           SUBPARTITION sp4 VALUES LESS THAN(2022)
+           )
+         );
+Query OK, 0 rows affected
+```
+
+### 创建 Range + List 分区的非模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_f_rl(col1 INT,col2 VARCHAR2(50))
+       PARTITION BY RANGE(col1)
+       SUBPARTITION BY LIST(col2)
+       (PARTITION p0 VALUES LESS THAN(100)
+         (SUBPARTITION sp0 VALUES('01'),
+          SUBPARTITION sp1 VALUES('02')
+          ),
+        PARTITION p1 VALUES LESS THAN(200)
+         (SUBPARTITION sp2 VALUES('01'),
+          SUBPARTITION sp3 VALUES('02'),
+          SUBPARTITION sp4 VALUES('03')
+         )
+        );
+Query OK, 0 rows affected
+```
+
+### 创建 Range + Hash 分区的非模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_f_rh(col1 INT,col2 VARCHAR2(50))
+       PARTITION BY RANGE(col1)
+       SUBPARTITION BY HASH(col2)
+       (PARTITION p0 VALUES LESS THAN(100)
+         (SUBPARTITION sp0,
+          SUBPARTITION sp1
+          ),
+        PARTITION p1 VALUES LESS THAN(200)
+         (SUBPARTITION sp2,
+          SUBPARTITION sp3,
+          SUBPARTITION sp4
+          )
+        );
+Query OK, 0 rows affected
+```
+
+### 创建 List + Range 分区的非模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_f_lr(col1 INT,col2 VARCHAR2(50))
+       PARTITION BY LIST(col2)
+       SUBPARTITION BY RANGE(col1)
+       (PARTITION p0 VALUES('01')
+         (SUBPARTITION sp0 VALUES LESS THAN(100),
+          SUBPARTITION sp1 VALUES LESS THAN(200)
+          ),
+        PARTITION p1 VALUES('02')
+         (SUBPARTITION sp2 VALUES LESS THAN(100),
+          SUBPARTITION sp3 VALUES LESS THAN(200),
+          SUBPARTITION sp4 VALUES LESS THAN(300)
+          )
+        );
+Query OK, 0 rows affected
+```
+
+### 创建 List + List 分区的非模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_f_ll(col1 INT,col2 varchar2(50))
+       PARTITION BY LIST(col1)
+       SUBPARTITION BY LIST(col2)
+       (PARTITION p0 VALUES ('01', '02')
+         (SUBPARTITION sp0 VALUES ('A'),
+          SUBPARTITION sp1 VALUES ('B'),
+          SUBPARTITION sp2 VALUES ('C')
+          )
+,
+        PARTITION p1 VALUES ('03', '04')
+         (SUBPARTITION sp3 VALUES ('A'),
+          SUBPARTITION sp4 VALUES ('B'),
+          SUBPARTITION sp5 VALUES ('C')
+          )
+        );
+Query OK, 0 rows affected
+```
+
+### 创建 List +Hash 分区的非模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_f_lh(col1 INT,col2 VARCHAR2(50))
+       PARTITION BY LIST(col1)
+       SUBPARTITION BY HASH(col2)
+       (PARTITION p0 VALUES('01')
+         (SUBPARTITION sp0,
+          SUBPARTITION sp1
+          ), 
+        PARTITION p1 VALUES('02')
+         (SUBPARTITION sp2,
+          SUBPARTITION sp3,
+          SUBPARTITION sp4
+          )
+        );
+Query OK, 0 rows affected
+```
+
+### 创建 Hash + Range 分区的非模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE tbl2_f_hr(col1 INT,col2 INT,col3 INT)
+       PARTITION BY HASH(col1)
+       SUBPARTITION BY RANGE(col2)
+        (PARTITION p0
+         (SUBPARTITION sp0 VALUES LESS THAN(100),
+          SUBPARTITION sp1 VALUES LESS THAN(200)),
+        PARTITION p1
+         (SUBPARTITION sp2 VALUES LESS THAN(100),
+          SUBPARTITION sp3 VALUES LESS THAN(200)
+         )
+        );
+Query OK, 0 rows affected
+```
+
+### 创建 Hash + List 分区的非模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_f_hl(col1 INT,col2 INT,col3 INT)
+       PARTITION BY HASH(col1)
+       SUBPARTITION BY LIST(col2)
+        (PARTITION p0
+          (SUBPARTITION sp0 VALUES(1,3),
+           SUBPARTITION sp1 VALUES(4,7)
+          ),
+         PARTITION p1
+          (SUBPARTITION sp2 VALUES(1,3),
+           SUBPARTITION sp3 VALUES(4,7)
+           )
+        );
+Query OK, 0 rows affected
+```
+
+### 创建 Hash + Hash 分区的非模板化二级分区表
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t2_f_hh(col1 INT,col2 INT,col3 INT)
+       PARTITION BY HASH(col1)
+       SUBPARTITION BY HASH(col2)
+        (PARTITION p0
+          (SUBPARTITION sp0,
+           SUBPARTITION sp1
+           ),
+         PARTITION p1
+          (SUBPARTITION sp2,
+           SUBPARTITION sp3
+           )
+        );
+Query OK, 0 rows affected
+```
+
+## 创建 Interval 类型的分区表
+
+### 使用限制
+
+* 只支持 Interval 分区是一级分区。即可以将一级分区表或者二级分区表的一级分区指定为 Interval 分区，二级分区表的二级分区不支持指定为 Interval 分区。
+* 建表定义的时候，至少包含一个 Range 分区。
+* 为表指定 Interval 属性时，不能同时指定 `DYNAMIC_PARTITION_POLICY` 属性（动态分区管理属性）。
+* 分区键只能为单列，列类型仅支持 `NUMBER`、`DATE`、`FLOAT`、`TIMESTAMP`。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p><code>NUMBER</code> 类型不支持指定精度。</p>
+    </main>
+
+* 步长表达式类型需要与分区键列类型匹配：
+
+  * 当分区键为数字类型时，步长应为数字类型。
+  * 当分区键为日期类型时，步长应为 `NUMTOYMINTERVAL` 或 `NUMTODSINTERVAL` 表达式。
+
+* 步长表达式必须为常量，且必须为正数。
+* 初始 Range 分区中，分区上界不能为 `MAX_VALUE`。
+* 初始 Range 分区名不能以 `SYS_P` 作为开头，即用户创建表时的分区名，分区名不能是包含 `SYS_P` 前缀的字符串。
+* 有多个初始 Range 分区时，分区上界必须按升序排列。
+* 不支持分区键是自增列。
+
+### 语法
+
+可以通过 `CREATE TABLE` 语句创建 Interval 类型分区表，语法格式如下：
+
+```sql
+CREATE TABLE table_name table_definition partition_option;
+
+partition_option:
+    PARTITION BY RANGE (column_name)
+        INTERVAL (expr)
+        [subpartition_option]
+        (range_partition_definition)
+
+range_partition_definition:
+    PARTITION partition_name VALUES LESS THAN (expr)
+
+subpartition_option:
+    SUBPARTITION BY RANGE (column_name_list) SUBPARTITION TEMPLATE (range_subpartition_list)
+    | SUBPARTITION BY LIST (column_name_list) SUBPARTITION TEMPLATE (list_subpartition_list)
+    | SUBPARTITION BY HASH (column_name_list) hash_subpartition_define
+```
+
+### 参数解释
+
+|             参数               | 参数说明 |
+|-------------------------------|----------|
+| table_name                    | 表示要创建的表名称。|
+| table_definition              | 表示表的列定义。|
+| column_name                   | 表示 Interval 分区键的列名。分区键支持的列类型包括 NUMBER、FLOAT、DATE 和 TIMESTAMP。|
+| INTERVAL (expr)               | 表示 Interval 分区的步长表达式。<ul><li>当分区键为数字类型时，步长应为数字类型。</li><li>当分区键为日期类型时，步长应为 `NUMTOYMINTERVAL` 或 `NUMTODSINTERVAL` 表达式。</li></ul>|
+| range_partition_definition    | 表示初始 Range 分区的定义。|
+| column_name_list              | 表示二级分区键列表。|
+| range_subpartition_definition | 表示 Range 模板二级分区定义。|
+| list_subpartition_definition  | 表示 List 模板二级分区定义。|
+| hash_subpartition_defition    | 表示 Hash 模板二级分区定义。|
+
+### 示例
+
+* 创建一级 Interval 分区表，分区键列类型为 `INT`，分区步长为 10。
+
+    ```shell
+    obclient> CREATE TABLE test_tbl1 (col1 INT, col2 INT)
+        PARTITION BY RANGE (col1) INTERVAL (10)
+        (
+          PARTITION p0 VALUES LESS THAN (0)
+        );
+    ```
+
+* 创建一级 Interval 分区表，列类型为 `DATE`，分区步长为一个月。
+
+    ```shell
+    obclient> CREATE TABLE test_tbl2 (col1 DATE, col2 INT)
+        PARTITION BY RANGE (col1) INTERVAL (NUMTOYMINTERVAL(1, 'month'))
+        (
+          PARTITION p0 VALUES LESS THAN (TO_DATE('2025-01-01', 'yyyy-mm-dd'))
+        );
+    ```
+
+* 创建模板二级 Interval 分区表，其中一级分区为 Interval 分区，分区步长为 10，二级分区为 Range 分区。
+
+    ```shell
+    obclient> CREATE TABLE test_tbl3 (col1 INT, col2 INT)
+        PARTITION BY RANGE (col1) INTERVAL (10)
+        SUBPARTITION BY RANGE (col2)
+            SUBPARTITION TEMPLATE
+            (
+              SUBPARTITION mp0 VALUES LESS THAN (100),
+              SUBPARTITION mp1 VALUES LESS THAN (200)
+            )
+        (
+          PARTITION p0 VALUES LESS THAN (0)
+        );
+    ```
+
+## 相关文档
+
+* [修改分区规则](300.modify-partition-rules-of-oracle-mode.md)
+* [CREATE TABLE](../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/2400.create-table-of-oracle-mode.md)

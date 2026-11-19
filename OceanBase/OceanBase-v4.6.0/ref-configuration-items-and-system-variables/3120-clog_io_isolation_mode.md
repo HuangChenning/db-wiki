@@ -1,0 +1,50 @@
+---
+title: clog_io_isolation_mode
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685560.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# clog_io_isolation_mode
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<ul><li>对于 V4.4.x 版本，该配置项从 V4.4.0 版本开始引入。</li>
+<li>对于 V4.3.5 版本，该配置项从 V4.3.5 BP2 版本开始引入。</li></ul>
+</main>
+
+## 功能描述
+
+`clog_io_isolation_mode` 用于根据 clog 盘和 data 盘是否独立，来决定 clog 盘的 I/O 请求是否受资源隔离的管控。用户可以根据系统实际部署情况，灵活调整该配置项的值，以平衡性能与资源的利用率。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|  **属性**  | **描述**|
+|------------|---------|
+| 参数类型    | Int    |
+| 默认值      | 1      |
+| 取值范围    | <ul><li>`1`：非隔离模式。明确禁用 I/O 隔离机制，适用于 clog 磁盘与 data 磁盘完全独立的场景。该模式下，clog 盘的 I/O 请求不会受到任何资源隔离约束。 </li> <li>`2`：全隔离模式。强制启用 I/O 隔离机制，适用于 clog 磁盘与 data 磁盘共用同一磁盘的场景。该模式下，clog 盘的 I/O 请求将受到资源隔离控制，以避免对 data 盘的正常 I/O 操作造成干扰。 </li></ul> |
+| 是否可修改  | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。     |
+
+## 配置示例
+
+配置 clog 盘的 I/O 隔离机制为非隔离模式。
+
+```shell
+obclient> ALTER SYSTEM SET clog_io_isolation_mode=1;
+```

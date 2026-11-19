@@ -1,0 +1,93 @@
+---
+title: "MAJOR 和 MINOR"
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479552.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# MAJOR 和 MINOR
+
+## 描述
+
+该语句用于用户租户发起自身的存储层合并或转储。手动合并与转储支持租户级别和分区级别。
+
+## 语法
+
+```sql
+ALTER SYSTEM merge_action;
+
+merge_action:
+      MAJOR FREEZE [TABLET_ID = tablet_id]
+    | MINOR FREEZE [TABLET_ID = tablet_id]
+    | {SUSPEND | RESUME} MERGE
+    | CLEAR MERGE ERROR
+```
+
+## 参数解释
+
+|          **参数**           |      **描述**      |
+|---------------------------|------------------|
+| MAJOR FREEZE              | 发起合并。<main id="notice" type='explain'><h4>说明</h4><p>用户租户只能发起自身的合并。</p></main>      |
+| MINOR FREEZE              | 发起转储。<main id="notice" type='explain'><h4>说明</h4><p>用户租户只能发起自身的转储。</p></main>   |
+| {SUSPEND \| RESUME} MERGE | 暂停或恢复合并。<main id="notice" type='explain'><h4>说明</h4><p>用户租户只能暂停或恢复自身的合并。</p></main>     |
+| CLEAR MERGE ERROR         | 清理合并出错的标记。<main id="notice" type='explain'><h4>说明</h4><p>用户租户只能清理自身合并的出错标记。</p></main>    |
+| TABLET_ID                 | 指定分区合并或转储。          |
+
+## 示例
+
+### 存储层合并相关的示例
+
+* 用户租户发起自身的合并。
+
+  ```sql
+  obclient> ALTER SYSTEM MAJOR FREEZE;
+  Query OK, 0 rows affected
+  ```
+
+* 用户租户发起分区级别的合并。
+
+  ```shell
+  obclient> ALTER SYSTEM MAJOR FREEZE TABLET_ID = 5;
+  Query OK, 0 rows affected
+  ```
+
+* 暂停用户租户自身的合并。
+
+  ```sql
+  obclient> ALTER SYSTEM SUSPEND MERGE;
+  Query OK, 0 rows affected
+  ```
+
+* 恢复用户租户自身的合并。
+
+  ```sql
+  obclient> ALTER SYSTEM RESUME MERGE;
+  Query OK, 0 rows affected
+  ```
+
+* 清理用户租户自身合并的出错标记。
+
+  ```sql
+  obclient> ALTER SYSTEM CLEAR MERGE ERROR;
+  Query OK, 0 rows affected
+  ```
+
+### 存储层转储的示例
+
+* 用户租户发起自身的转储。
+
+  ```sql
+  obclient> ALTER SYSTEM MINOR FREEZE;
+  Query OK, 0 rows affected
+  ```
+
+* 用户租户发起分区级别的转储。
+
+  ```shell
+  obclient> ALTER SYSTEM MINOR FREEZE TABLET_ID = 5;
+  Query OK, 0 rows affected
+  ```

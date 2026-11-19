@@ -1,0 +1,64 @@
+---
+title: EXECUTE
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686110.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# EXECUTE
+
+## 描述
+
+该语句用于执行准备的语句。
+
+## 语法
+
+```sql
+EXECUTE stmt_name
+[USING @var_name [, @var_name] ...]
+```
+
+## 参数解释
+
+|    参数     |           描述            |
+|-----------|-------------------------|
+| stmt_name | 准备语句的名称。                |
+| @var_name | 按顺序填入 `stmt_name` 中的变量。 |
+
+## 示例
+
+执行准备的语句。
+
+```sql
+obclient> PREPARE stmt1 FROM 'SELECT SQRT(POW(?,2) + POW(?,2)) AS hypotenuse';
+
+obclient> SET @a = 3;
+
+obclient> SET @b = 4;
+
+obclient> EXECUTE stmt1 USING @a, @b;
+```
+
+预期返回结果：
+
+```sql
++------------+
+| hypotenuse |
++------------+
+|          5 |
++------------+
+1 row in set (0.004 sec)
+```
+  
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>目前，OceanBase 数据库不支持交互客户端显式结果。</p>
+</main>
+
+## 相关文档
+
+* [PREPARE](7100.prepare-of-mysql-mode.md)

@@ -1,0 +1,72 @@
+---
+title: "PL 保留和非保留关键字"
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682781.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# PL 保留和非保留关键字
+
+PL 保留关键字是在 PL 中具有特殊含义的标识符，不可用于存储过程名、函数名、类型名、变量名等。PL 非保留关键字可以作为标识符而不需要加引号。它们不区分大小写。
+
+## PL 保留关键字
+
+| 首字母 |                      保留关键字                              |
+|-----|----------------------------------------------------------------|
+| B   | BEFORE，BIGINT，BLOB，BY                                          |
+| C   | CASE，CHAR，CHARACTER，CHARSET，COLLATE，COMMIT，CONDITION，CONTINUE，CURRENT_USER，CURSOR |
+| D   | DEC，DECIMAL，DECLARE，DEFAULT，DELETE，DETERMINISTIC，DOUBLE        |
+| E   | EACH，ELSE，ELSEIF，EXISTS，EXIT                                   |
+| F   | FETCH，FLOAT，FLOAT4，FLOAT8，FOR，FROM                             |
+| I   | IF，IN，INOUT，INSERT，INT，INT1，INT2，INT3，INT4，INT8，INTEGER，IS，ITERATE |
+| L   | LEAVE，LIMIT，LONG，LONGBLOB，LONGTEXT，LOOP                        |
+| M   | MEDIUMBLOB，MEDIUMINT，MEDIUMTEXT，MIDDLEINT，MODIFIES             |
+| N   | NOT，NUMERIC                                                    |
+| O   | ON，OR，OUT                                                      |
+| P   | PRECISION                                                      |
+| R   | READS，REAL，REPEAT，REPLACE，RESIGNAL，RETURN，ROLLBACK             |
+| S   | SIGNAL，SMALLINT，SQL，SQLEXCEPTION，SQLSTATE，SQLWARNING           |
+| T   | THEN，TINYBLOB，TINYINT，TINYTEXT                                 |
+| U   | UNSIGNED，UNTIL，UPDATE，USING                                    |
+| V   | VARBINARY，VARCHAR，VARCHARACTER，VARYING                         |
+| W   | WHEN，WHILE                                                     |
+| Z   | ZEROFILL                                                       |
+
+## PL 非保留关键字
+
+| 首字母 |                      非保留关键字                              |
+|-----|----------------------------------------------------------------|
+| A   | AFTER，AT，AUTHID                                                |
+| B   | BEGIN，BINARY_INTEGER，BIT，BODY，BOOL，BOOLEAN                     |
+| C   | C，CANCEL，CATALOG_NAME，CLASS_ORIGIN，CLOSE，COLUMN_NAME，COMMENT，COMPILE，COMPLETION，CONSTRAINT_CATALOG，CONSTRAINT_NAME，CONSTRAINT_ORIGIN，CONSTRAINT_SCHEMA，CONTAINS，CURSOR_NAME |
+| D   | DATA，DATE，DATETIME，DAY，DEFINER，DISABLE                         |
+| E   | ENABLE，END，ENDS，ENUM，EVENT，EVERY，EXTEND                        |
+| F   | FIXED，FOLLOWS，FOUND                                            |
+| G   | GEOMCOLLECTION，GEOMETRY，GEOMETRYCOLLECTION                     |
+| H   | HANDLER，HOUR                                                   |
+| I   | INTERFACE，INTERVAL，INVOKER                                     |
+| J   | JOB                                                            |
+| L   | LANGUAGE，LINESTRING                                            |
+| M   | MESSAGE_TEXT，MINUTE，MONTH，MULTILINESTRING，MULTIPOINT，MULTIPOLYGON，MYSQL_ERRNO |
+| N   | NATIONAL，NCHAR，NEXT，NO，NVARCHAR                                |
+| O   | OF，OPEN                                                        |
+| P   | PACKAGE，POINT，POLYGON，PRAGMA，PRECEDES，PRESERVE，PROPERTIES      |
+| R   | RECORD，RECOVER，RETURNS，REUSE，ROARINGBITMAP，ROLE，ROW，ROWTYPE    |
+| S   | SCHEDULE，SCHEMA_NAME，SECOND，SECURITY，SERIAL，SETTINGS，SIGNED，STARTS，SUBCLASS_ORIGIN，SUBMIT |
+| T   | TABLE_NAME，TEXT，TIME，TIMESTAMP，TO，TYPE                         |
+| U   | USER                                                           |
+| V   | VALUE                                                          |
+| X   | XA                                                             |
+| Y   | YEAR                                                           |
+
+## 查询关键字
+
+您也可以通过查询 `V$OB_KEYWORDS` 视图获取当前租户的 PL 关键字列表。有关该视图的详细说明，参见 [V$OB_KEYWORDS](../../700.system-views/400.system-view-of-mysql-mode/300.performance-view-of-mysql-mode/31470.v-ob-keywords-of-mysql-mode.md)。
+
+```sql
+obclient> SELECT KEYWORD, RESERVED FROM oceanbase.V$OB_KEYWORDS WHERE TYPE = 'PL' ORDER BY KEYWORD;
+```

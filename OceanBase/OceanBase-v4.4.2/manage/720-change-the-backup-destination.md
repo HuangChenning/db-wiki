@@ -1,0 +1,50 @@
+---
+title: "更改备份目的端"
+book: "管理数据库"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005282808.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 更改备份目的端
+
+开启数据备份后，您可以根据业务需要更改备份目的端。
+
+## 注意事项
+
+由于自动清理仅支持清理 `DATA_BACKUP_DEST` 和 `LOG_ARCHIVE_DEST` 中当前指定的路径下的备份和归档数据，更改备份目的端后，原备份路径下的数据只能通过手动方式进行清理。手动清理备份的详细操作，参见 [手动清理指定的备份或归档数据](../500.clear-backup-data/100.manual-backup-cleanup/200.cleaning-up-specified-backup-data.md) 和 [手动清空备份路径或归档路径](../500.clear-backup-data/100.manual-backup-cleanup/300.clear-the-backup_dest_or_archivelog_dest.md)。
+
+## 操作步骤
+
+1. 租户管理员登录集群的 `sys` 租户或用户租户。
+
+2. 确认是否有正在进行的备份任务，详细操作请参见 [查看数据备份进度](500.view-data-backup-progress.md)。
+
+   如果查询结果不为空，则表示有正在进行的数据备份，需要停止正在进行的备份任务。停止备份任务的详细操作，请参见 [停止备份](400.stop-data-backup.md)。
+
+3. 重新配置备份目的端。
+
+   重新配置备份目的端时，如果待更换的目录是该租户之前使用过的备份目录，则要求该目录下的 `format` 文件必须存在。否则，要求待更换的目录为空。
+   
+   有关配置备份目的端的详细操作，请参见 [备份前准备](100.preparation-before-data-backup.md)。
+   
+4. 完成后，查询视图 `CDB_OB_BACKUP_PARAMETER`（`sys` 租户）或者 `DBA_OB_BACKUP_PARAMETER`（用户租户），确认新的备份目的端是否配置成功，详细操作请参见 [查看数据备份相关参数](700.parameters-of-data-backup.md)。
+
+## 后续操作
+
+备份目的端变更成功后，需要重新发起全量数据备份，发起全量数据备份的详细操作，请参见 [发起全量数据备份](200.initiate-full-data-backup.md)。
+
+## 相关文档
+
+* [查看数据备份进度](500.view-data-backup-progress.md)
+
+* [停止备份](400.stop-data-backup.md)
+
+* [备份前准备](100.preparation-before-data-backup.md)
+
+* [发起全量数据备份](200.initiate-full-data-backup.md)
+
+* [发起增量数据备份](300.initiate-incremental-data-backup.md)

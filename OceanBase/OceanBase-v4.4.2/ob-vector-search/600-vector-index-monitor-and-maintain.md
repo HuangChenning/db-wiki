@@ -1,0 +1,132 @@
+---
+title: "索引监控与维护"
+book: OceanBase AI
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005282517.html"
+tags:
+  - oceanbase
+  - distributed
+  - ob-vector-search
+---
+
+# 索引监控与维护
+
+本文档介绍了如何监控和维护 OceanBase 向量索引。
+
+## 监控
+
+通过系统视图可以查看向量索引的基本信息和实时状态。
+
+* 可以通过 [[G]V$OB_HNSW_INDEX_INFO](../../700.reference/700.system-views/400.system-view-of-mysql-mode/300.performance-view-of-mysql-mode/950.gv-ob_hnsw_index_info-of-mysql-mode.md) 视图查看 HNSW 系列索引的基本信息和实时状态。
+* 可以通过 [[G]V$OB_IVF_INDEX_INFO](../../700.reference/700.system-views/400.system-view-of-mysql-mode/300.performance-view-of-mysql-mode/960.gv-ob_ivf_index_info-of-mysql-mode.md) 视图查看 IVF 系列索引的基本信息和实时状态。
+
+## 维护
+
+增量数据过多的情况下，搜索性能会下降。为减小增量数据表的数据量，OceanBase 数据库引入了 `DBMS_VECTOR` 对向量索引进行维护。
+
+### 全量刷新（重建）
+
+#### 手动全表重建
+
+如果建立索引后更新或删除数据较多，建议使用 `REBUILD_INDEX` 过程进行全量刷新。说明和示例请参见 [REBUILD_INDEX](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/17850.dbms-vector-mysql/300.rebuild-index-mysql.md)。
+
+默认情况下，全量刷新每 24 小时检查一次；若新增数据超过原有数据的 20%，则自动执行全量刷新。全量刷新会在后台异步执行，首先创建新的索引，然后替换旧索引。在重建过程中，旧索引保持可用状态，但整体过程相对较慢。
+
+我们还提供了 `vector_index_memory_saving_mode` 配置项来控制索引重建的内存占用。开启此模式可以降低分区表向量索引重建（rebuild）过程中的内存消耗。通常，向量索引重建需要消耗相当于索引两倍的内存。开启省内存模式后，系统会在分区表单个分区构建完成后，通过暂时删除该分区的内存索引来释放内存，从而有效降低重建操作所需的总内存。语法和示例请参见[vector_index_memory_saving_mode](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/8240.vector_index_memory_saving_mode.md)。
+
+注意事项如下：
+
+* 执行 [离线 DDL](../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/700.ddl-function-of-mysql-mode/150.online-and-offline-ddl-list-of-mysql-mode.md) 操作（例如 `ALTER TABLE` 修改表结构或主键）时，将导致索引表的重建。由于重建索引无法指定并行度，系统会默认使用单线程，因此在数据量较大时，重建过程会比较缓慢，从而影响整个 离线 DDL 的执行效率。
+* 重建索引时如果需要修改索引参数，必须在参数列表中同时指定 `type` 和 `distance`，且 `type` 和 `distance` 必须和原索引类型一致，例如原来索引类型是 `hnsw`，距离算法是 `l2`，则重建时必须同时指定 `type=hnsw` 和 `distance=l2`。
+* 重建索引时支持：
+    * 修改 `m`，`ef_search`，`ef_construction` 值。
+    * IVF/IVF_PQ 在 V4.4.2 BP1 版本中修改 `nlist`、`sample_per_nlist`、`distance`、`nbits`、`m` 值，其中 `m` 和 `nbits`  是 IVF_PQ 索引的独有参数。
+    * 在线重建 `ef_search` 参数。
+    * `hnsw` <-> `hnsw_sq` 的索引类型重建。
+    * `ivf_flat` <-> `ivf_flat`，`ivf_pq` <-> `ivf_pq` 的索引类型重建。
+    * 支持重建时设置并行度。示例见 [REBUILD_INDEX](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/17850.dbms-vector-mysql/300.rebuild-index-mysql.md)。
+
+* 重建索引时不支持：
+    * 修改 `type` 和 `distance` 类型。
+    * `hnsw` <-> `ivf` 的索引重建。
+    * `hnsw` <-> `hnsw_bq` 的索引重建。
+    * `ivf_flat`，`ivf_pq` 之间的交叉重建。
+
+* IVF/IVF_PQ 重建索引建议（**仅适用于 V4.4.2 BP1 版本**）：
+    * 在执行 `REBUILD INDEX` 前，建议将 `ob_trx_timeout` 参数值设置为大于索引重建（rebuild）所需的时间，以避免出现超时问题。
+
+#### 配置重建参数
+
+如果遇到合并窗口过多或者业务高峰期，可能会因为资源调度冲突导致重建失败，这时可以通过 `DBMS_VECTOR.SET_ATTRIBUTE` PL 系统包为索引配置重建的触发周期，避开合并窗口或业务高峰。
+
+通过 `SET_ATTRIBUTE` 可为单个向量索引设置自动重建的并行度、触发阈值与触发周期：
+
+```sql
+-- 设置 rebuild 并行度
+CALL DBMS_VECTOR.SET_ATTRIBUTE('idx1', 't1', 'parallel', '20');
+
+-- 设置 rebuild 触发阈值（增量数据达到基线 50% 时触发）
+CALL DBMS_VECTOR.SET_ATTRIBUTE('idx1', 't1', 'rebuild_trigger_percentage', '0.5');
+
+-- 设置 rebuild 触发周期：每 600 秒检查一次
+CALL DBMS_VECTOR.SET_ATTRIBUTE('idx1', 't1', 'rebuild_repeat_interval', 'FREQ=SECONDLY; INTERVAL=600');
+
+-- 设置 rebuild 触发周期：每天 19:45:00 检查
+CALL DBMS_VECTOR.SET_ATTRIBUTE('idx1', 't1', 'rebuild_repeat_interval', 'FREQ=DAILY; byhour=19;byminute=45;bysecond=0');
+```
+
+使用时的注意事项如下：
+
+* 不同索引的 `rebuild_repeat_interval` 应错开，避免同一时段集中重建。
+
+参数说明、约束和示例请参见 [SET_ATTRIBUTE](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/17850.dbms-vector-mysql/800.set-attribute-mysql.md)。
+
+#### 自动分区重建（推荐）
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p><li>此功能从 V4.4.1 版本开始支持，如果你的向量数据库从旧版本升级到 V4.4.1，那么你需要在升级后先手动全表重建所有向量索引，否则升级后可能无法自动执行分区重建任务。</li><li>此功能仅支持 HNSW/HNSW_SQ/HNSW_BQ 索引。</li></p>
+</main>
+
+当前版本会触发自动分区重建任务的场景有两种：
+
+* 执行向量索引搜索语句时。
+* 定时检查，可手动配置执行周期。
+
+1. 配置执行周期
+
+    在 `oceanbase` 数据库下，通过配置项 [vector_index_optimize_duty_time](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/8250.vector_index_optimize_duty_time.md) 配置执行周期。示例如下：
+
+    ```sql
+    ALTER SYSTEM SET vector_index_optimize_duty_time='[23:00:00, 24:00:00]';
+    ```
+    如上配置完成后，分区重建任务只会在 23:00:00~24:00:00 时间段执行，其他时间段里不会发起。详细参数说明参见相应配置项文档。
+
+2. 查看任务进展/历史任务
+
+    可通过 [CDB/DBA_OB_VECTOR_INDEX_TASKS](../../700.reference/700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/12950.o-dba_ob_vector_index_tasks-of-mysql-mode.md) 或 [CDB/DBA_OB_VECTOR_INDEX_TASK_HISTORY](../../700.reference/700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/12960.o-dba_ob_vector_index_task_history-of-mysql-mode.md) 视图查看任务进展和历史任务。
+
+    通过 `status` 字段判断任务当前状态：
+
+    * 0（PREPARE），表示任务等待执行。
+    * 1（RUNNING），表示任务正在执行中。
+    * 2（PENDING），表示任务暂停执行。
+    * 3（FINISHED），表示任务已完成。
+
+    执行结束的任务，即状态 `status=FINISHED` 的任务，无论是否执行成功都会被转存到历史表。详细使用示例请参见相应视图文档。
+
+3. 取消任务
+
+    如需取消任务，可通过 `DBA_OB_VECTOR_INDEX_TASKS` 或 `CDB_OB_VECTOR_INDEX_TASKS` 视图获取 trace_id 后，执行以下命令：
+
+    ```sql
+    ALTER SYSTEM CANCEL TASK <trace_id>;
+    ```
+    示例如下：
+    ```sql
+    ALTER SYSTEM CANCEL TASK "Y61480BA2D976-00063084E80435E2-0-1";
+    ```
+
+## 相关文档
+
+* [向量索引性能优化](700.vector-index-performance-tuning.md)

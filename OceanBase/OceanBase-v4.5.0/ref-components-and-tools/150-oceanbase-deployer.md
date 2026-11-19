@@ -1,0 +1,18 @@
+---
+title: obd
+book: "组件 & 工具"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004476239.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-components-and-tools
+---
+
+# obd
+
+obd（OceanBase Deployer，即 OceanBase 安装部署工具）是 OceanBase 集群的安装部署工具，通过命令行部署或白屏界面部署的方式，将复杂配置流程标准化，降低集群部署难度。详细操作请参见 [使用命令行部署 OceanBase 数据库生产环境](../../../400.deploy/500.deploy-oceanbase-database-community-edition/200.local-deployment/500.deploy-OceanBase-database-of-multi-node-cluster.md) 和 [通过 obd 白屏部署 OceanBase 集群](../../../400.deploy/500.deploy-oceanbase-database-community-edition/200.local-deployment/400.deploy-by-ui/100.deploy-by-obd.md)。
+
+其中，命令行支持编辑配置文件，可以更加灵活的进行配置调整，适用于需要深度了解 OceanBase 的用户，有一定的使用门槛；白屏界面配置简单，通过页面的引导配置即可完成集群部署，适用于需要快速体验，构建标准环境的用户。
+
+在集群部署之外，obd 还提供了包管理器、压测软件、集群管理等常用的运维能力，更好的支持用户体验使用 OceanBase 分布式数据库。

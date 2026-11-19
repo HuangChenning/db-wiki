@@ -1,0 +1,20 @@
+---
+title: "分析慢 SQL 查询"
+book: "性能调优"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004481037.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 分析慢 SQL 查询
+
+如果已知某条 SQL 查询一直比较慢，可以使用如下方式进行分析：
+
+* 使用 SQL Audit 查看统计数据并分析该 SQL 的执行计划。详细步骤请参考示例
+
+  [分析 RT 突然抖动的 SQL](../400.sql-performance-analysis-example/200.sql-statement-that-analyzes-sudden-jitter-of-rt.md)。
+  
+* 分析执行计划是否正确。详细步骤请参考示例 [查看执行计划形状并做分析](../400.sql-performance-analysis-example/300.view-and-analyze-the-execution-plan.md)。

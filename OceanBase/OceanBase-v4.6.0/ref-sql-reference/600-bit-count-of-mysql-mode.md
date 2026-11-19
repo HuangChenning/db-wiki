@@ -1,0 +1,34 @@
+---
+title: BIT_COUNT
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687894.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# BIT_COUNT
+
+## 声明
+
+```sql
+BIT_COUNT(N)
+```
+
+## 说明
+
+返回 `N` 转换为二进制后 `1` 的数量。如果 `N` 为 `NULL`，则返回 `NULL`。
+
+## 示例
+
+```sql
+obclient> SELECT BIT_COUNT(42), BIT_COUNT(b'1010');
++---------------+--------------------+
+| BIT_COUNT(42) | BIT_COUNT(b'1010') |
++---------------+--------------------+
+|             3 |                  2 |
++---------------+--------------------+
+1 row in set
+```

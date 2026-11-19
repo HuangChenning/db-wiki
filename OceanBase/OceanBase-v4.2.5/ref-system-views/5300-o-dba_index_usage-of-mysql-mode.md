@@ -1,0 +1,51 @@
+---
+title: oceanbase.DBA_INDEX_USAGE
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501685.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_INDEX_USAGE
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>对于 V4.3.x 版本，该视图从 V4.3.0 版本开始引入。</li> <li>对于 V4.2.x 版本，该视图从 V4.2.3 版本开始引入。</li></ul></p>
+</main>
+
+## 功能描述
+
+视图 `DBA_INDEX_USAGE` 用于展示索引使用数据信息。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| OBJECT_ID | bigint(20) | NO | 索引表 ID |
+| NAME | varchar(128) | NO | 索引表名 |
+| OWNER | varchar(128) | NO | 数据库名 |
+| TOTAL_ACCESS_COUNT | bigint(20) | NO | 总共访问次数 |
+| TOTAL_EXEC_COUNT | bigint(20) | NO | 总共执行次数 |
+| TOTAL_ROWS_RETURNED | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_0_ACCESS_COUNT | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_1_ACCESS_COUNT | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_2_10_ACCESS_COUNT | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_2_10_ROWS_RETURNED | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_11_100_ACCESS_COUNT | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_11_100_ROWS_RETURNED | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_101_1000_ACCESS_COUNT | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_101_1000_ROWS_RETURNED | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_1000_PLUS_ACCESS_COUNT | bigint(20) | NO | 目前暂不支持该字段 |
+| BUCKET_1000_PLUS_ROWS_RETURNED | bigint(20) | NO | 目前暂不支持该字段 |
+| LAST_USED | varchar(128) | NO | 索引表最后一次被使用的时间 |
+
+## 查询示例
+
+查询索引使用数据信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_INDEX_USAGE;
+```

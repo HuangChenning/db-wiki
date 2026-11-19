@@ -1,0 +1,49 @@
+---
+title: "删除序列"
+book: "数据库对象管理"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000003577972.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-database-object-management
+---
+
+# 删除序列
+
+可以使用 `DROP SEQUENCE` 语句来删除序列。
+
+删除序列的 SQL 语法如下：
+
+``` sql
+DROP SEQUENCE [IF EXISTS] [database_name.]sequence_name;
+```
+
+语句使用说明：
+
+- 执行该语句的用户需要具备 `DROP` 权限。
+
+- 如果指定 `IF EXISTS`，即使待删除的序列不存在，也不会报错；如果不指定，则系统会报错。
+
+- `database_name.` 用于指定序列所在的数据库。如果不指定 `database_name.`，则默认为当前登录数据库的序列。
+
+删除序列 `S1`的示例如下：
+
+``` sql
+obclient> DROP SEQUENCE S1;
+Query OK, 0 rows affected
+```
+
+更多 `DROP SEQUENCE` 语句的信息，请参见 [DROP SEQUENCE](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002017073)。
+
+## 相关文档
+
+更多序列相关的操作，参见以下文档：
+
+- [创建序列](100-create-a-sequence-of-mysql-mode.md)
+
+- [查看序列](200-view-a-sequence-of-mysql-mode.md)
+
+- [引用序列](300-use-a-sequence-of-mysql-mode.md)
+
+- [修改序列](400-modify-a-sequence-of-mysql-mode.md)

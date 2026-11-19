@@ -1,0 +1,780 @@
+---
+title: ALTER TABLE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503286.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER TABLE
+
+## 描述
+
+该语句用来修改已存在的表的结构，例如修改表及表属性、新增列、修改列及属性、删除列等。
+
+## 语法
+
+```sql
+ALTER TABLE table_name [alter_option [, alter_option] ...]
+    [partition_options]
+
+alter_option: {
+      table_options
+      ADD [COLUMN] col_name column_definition  
+          [FIRST | BEFORE | AFTER column_name]
+    | ADD [COLUMN] (col_name column_definition, ...)
+    | ADD {INDEX | KEY} [index_name]
+          [index_type] (key_part,...) [index_option [ index_option ...]
+    | ADD [CONSTRAINT [constraint_name]] UNIQUE [INDEX | KEY]
+          [index_name] index_desc
+    | ADD [CONSTRAINT [constraint_name]] FOREIGN KEY
+          [index_name] index_desc
+          REFERENCES reference_definition
+          [match_action][reference_option [,reference_option ...]]
+    | ADD PRIMARY KEY (column_name)
+    | ADD CONSTRAINT [constraint_name] CHECK (expression)[[NOT] ENFORCED]
+    | ADD PARTITION (range_partition [, range_partition ...])
+    | ALTER [COLUMN] column_name {
+          SET DEFAULT const_value
+        | DROP DEFAULT
+      }
+    | ALTER {CHECK | CONSTRAINT} symbol [NOT] ENFORCED
+    | ALTER INDEX index_name
+          [VISIBLE | INVISIBLE]
+    | CHANGE [COLUMN] column_name column_definition
+    | DROP [COLUMN] column_name [, DROP COLUMN column_name ...]
+    | DROP [COLUMN] column_name
+    | DROP {PARTITION | SUBPARTITION} partition_name [, partition_name ...]
+    | DROP TABLEGROUP
+    | DROP FOREIGN KEY fk_name
+    | DROP PRIMARY KEY [, ADD PRIMARY KEY (column)]
+    | DROP INDEX index_name
+    | DROP CHECK constraint_name
+    | MODIFY [COLUMN] column_definition
+    | RENAME COLUMN old_col_name TO new_col_name
+    | RENAME [TO] table_name
+    | RENAME {INDEX | KEY} old_index_name TO new_index_name
+    | [SET] table_option [ table_option ...]
+    | TRUNCATE {PARTITION | SUBPARTITION} partition_name [, partition_name ...]
+    | MODIFY PARTITION partition_name ADD SUBPARTITION (add_subpartition_option)
+    | FORCE
+
+column_definition:
+    column_name data_type
+    [DEFAULT const_value] [AUTO_INCREMENT]
+    [NULL | NOT NULL] [[PRIMARY] KEY] [UNIQUE [KEY]] comment [ON UPDATE CURRENT_TIMESTAMP]
+    [[FIRST | BEFORE | AFTER column_name]]
+
+index_desc:
+   (column_desc [, column_desc ...]) [index_type] [index_option [ index_option ...]]
+
+column_desc:
+     column_name [(length)] [ASC | DESC]
+
+match_action:
+   MATCH {SIMPLE | FULL | PARTIAL}
+
+reference_option:
+   ON {DELETE | UPDATE} {RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT}
+
+key_part:
+    {index_col_name [(length)] | (expr)} [ASC | DESC]
+
+index_type:
+    USING BTREE
+
+index_option:
+     [GLOBAL | LOCAL]
+    | block_size
+    | compression
+    | STORING(column_name [, column_name ...])
+    | comment
+    | KEY_BLOCK_SIZE [=] INT_VALUE
+
+table_option:
+      TABLEGROUP = tablegroup_name
+    | block_size
+    |lob_inrow_threshold [=] num
+    | compression
+    | AUTO_INCREMENT [=] INT_VALUE
+    | comment
+    | parallel_clause
+    | READ {ONLY \| WRITE}
+    | KEY_BLOCK_SIZE [=] INT_VALUE
+    | TABLE_MODE [=] 'table_mode_value'
+    | auto_increment_cache_size [=] INT_VALUE
+    | DUPLICATE_SCOPE= 'none | cluster'
+
+parallel_clause:
+    {NOPARALLEL | PARALLEL integer}
+
+table_mode_value:
+    NORMAL
+    | QUEUING
+    | MODERATE
+    | SUPER
+    | EXTREME
+
+partition_options:
+    partition_option [partition_option] ...
+
+partition_option:
+      PARTITION BY HASH(expression)
+      [subpartition_option] PARTITIONS partition_count
+    | PARTITION BY KEY([column_name [, column_name ...]])
+      [subpartition_option] PARTITIONS partition_count
+    | PARTITION BY RANGE {(expression) | COLUMNS (column_name [, column_name ...])}
+      [subpartition_option] (range_partition [, range_partition ...])
+
+subpartition_option:
+      SUBPARTITION BY HASH(expression)
+      SUBPARTITIONS subpartition_count
+    | SUBPARTITION BY KEY(column_name [, column_name ...])
+      SUBPARTITIONS subpartition_count
+    | SUBPARTITION BY RANGE {(expression) | COLUMNS (column_name [, column_name ...])}
+      (range_subpartition [, range_subpartition ...])
+
+range_partition:
+    PARTITION partition_name
+    VALUES LESS THAN {(expression [, expression ...]) | MAXVALUE}
+
+range_subpartition:
+    SUBPARTITION subpartition_name
+    VALUES LESS THAN {(expression [, expression ...]) | MAXVALUE}
+
+partition_count | subpartition_count:
+    INT_VALUE
+
+add_subpartition_option:
+    {SUBPARTITION subpartition_name VALUES LESS THAN range_partition_expr
+        [, SUBPARTITION subpartition_name VALUES LESS THAN range_partition_expr] ...}
+    | {SUBPARTITION subpartition_name VALUES IN list_partition_expr
+        [, SUBPARTITION subpartition_name VALUES IN list_partition_expr] ...}
+```
+
+## 参数说明
+
+| **类别**        |           **参数**             |        **描述**                               |
+|----------------|--------------------------------|----------------------------------------------|
+|alter_option | ADD \[COLUMN\]                              | 增加列，支持增加生成列。     |
+| | \[FIRST  \| BEFORE \| AFTER column_name\]                  | 将新增的列作为表的第一列或在 `column_name` 列之前/之后。 目前，OceanBase 数据库仅支持在 `ADD COLUMN` 语法中设置列的位置。     |
+||ADD {INDEX \| KEY}|向表中添加索引。|
+||ADD [CONSTRAINT UNIQUE [INDEX \| KEY]|添加唯一性约束。|
+| | ADD FOREIGN KEY                                            | 增加外键。 如果不指定外键名，则会使用表名 + `OBFK` + 创建时间命名。（例如，在 2021 年 8 月 1 日 00:00:00 为 `t1` 表创建的外键名称为 `t1_OBFK_1627747200000000`）。外键允许跨表交叉引用相关数据，当 `UPDATE` 或 `DELETE` 操作影响与子表相匹配行的父表中键值时，其结果取决于 `ON UPDATE` 和 `ON DELETE` 子句的引用操作：<ul><li>`CASCADE`：表示从父表中删除或更新行，并自动删除或更新子表中匹配的行。</li><li>`SET NULL`：表示从父表中删除或更新行，并将子表中的外键列设置为 `NULL`。</li><li>`RESTRICT`：表示拒绝对父表的删除或更新操作。</li><li>`NO ACTION`：指定延迟检查。</li></ul>此外还支持 `SET DEFAULT` 操作。 <main id="notice" type='notice'><h4>注意</h4><p>添加外键约束时，需要确保当前用户对父表具备 <code>REFERENCES</code> 权限。</p></main>|
+| | ADD PRIMARY KEY                                            | 增加主键。 可以指定一个或多个列作为主键。如果是多个列，它们将组成复合主键。               |
+| | ADD \[PARTITION\]                                          | 为分区表增加分区。  |
+| | ALTER INDEX                                                | 修改索引是否可见，当索引状态为 `INVISIBLE` 时，SQL 优化器将不会选择该索引。    |
+| | key_part        | 创建（函数）索引。 |
+| | index_col_name  | 指定索引的列名，每个列名后都支持 `ASC`（升序）；当前版本仅支持降序（`DESC`）排序索引语法，功能不生效。默认为升序。 建立索引的排序方式为：首先以 `index_col_name` 中第一个列的值排序；该列值相同的记录，按下一列名的值排序；以此类推。 |
+| | CHECK                                                      | 更改 `CHECK` 约束。 支持如下操作： <ul><li> 添加新的 `CHECK`  约束。</li>   <li> 删除当前名称为 `constraint_name` 的 `CHECK` 约束。</li>  </ul>  |
+| | expr            | 表示合法的函数索引表达式，且允许是布尔表达式，例如 `c1=c1`。<br>**注意** OceanBase 数据库当前版本禁止创建生成列上的函数索引。             |
+| | \[NOT\] ENFORCED                                           | 是否强制执行名为 `constraint_name` 的 `CHECK` 约束。 <ul><li> 如果省略或指定为 `ENFORCED`，则创建并强制执行约束，为默认状态。</li>   <li> 如果指定为 `NOT ENFORCED`，则创建约束但不强制执行。</li> </ul>   |
+| | ALTER \[COLUMN\] {SET DEFAULT const_value \| DROP DEFAULT} | 修改列的默认值。  |
+| | CHANGE \[COLUMN\]                                          | 修改列名和列定义，仅支持增加特定字符数据类型（`VARCHAR`、`VARBINARY`、`CHAR` 等）的长度。    |
+| | DROP \[COLUMN\]                                            | 删除列，不允许删除主键列。   |
+| | DROP {PARTITION \| SUBPARTITION}                           | 删除分区： <ul><li> `PARTITION`：针对 Range、List 类型的一级分区，删除指定分区（如果指定分区下存在二级分区，会同时删除该分区下所有二级分区），包括分区定义和其中的数据，同时对分区上存在的索引进行维护。</li>   <li> `SUBPARTITION`：针对 `*-RANGE`、`*-LIST` 类型的二级分区，删除指定二级分区，包括分区定义和其中的数据。同时对分区上存在的索引进行维护。</li></ul>    多个分区名称之间用逗号分隔。<br> **注意**  删除分区时，请尽量避免该分区上存在活动的事务或查询，否则可能会导致 SQL 语句报错，或者一些异常情况。   |
+| | DROP \[TABLEGROUP\]                                        | 删除表组。  |
+| | DROP \[FOREIGN KEY\]                                       | 删除外键。  |
+| | DROP \[PRIMARY KEY\]                                       | 删除主键。<main id="notice" type='explain'><h4>说明</h4><p>对于 MySQL 模式，以下情况不允许删除主键：<ul><li>该表是包含外键信息的父表。</li> <li>该表是子表，但主键列包含外键引用列。</li> </ul> </p>|
+| | DROP INDEX index_name | 删除索引。<main id="notice" type='notice'><h4>注意</h4><p><ul><li>由于已有实现中同时添加和删除索引的功能是非原子的，可能导致系统在一段时间内无索引可用的状态（例如，为了将索引 <code>idx1_tbl1(col1, col2)</code> 修改为 <code>idx1_tbl2(col1, col2, col3)</code>，在执行<code>ALTER TABLE tbl1 DROP INDEX idx1_tbl1, ADD INDEX idx1_tbl2(col1, col2, col3);</code> 时，会先删除原有索引 <code>idx1_tbl1</code>，然后再创建索引 <code>idx1_tbl2</code>，在这过程中会出现一段时间内 <code>idx1_tbl1</code> 不存在，<code>idx1_tbl2</code> 也未被创建好），因此对于 OceanBase 数据库 V4.2.5 版本，从 V4.2.5 BP1 版本开始，该操作已禁用。</li><li>可以通过使用命令 <code>ALTER SYSTEM SET _enable_drop_and_add_index = true;</code> 来打开配置项，从而允许在一条 SQL 语句中同时执行添加和删除索引操作，此操作需谨慎使用。</li></ul></p></main>|
+| | MODIFY \[COLUMN\]                                          | 修改列属性。 |
+| | RENAME COLUMN old_col_name TO new_col_name| 修改列名称。仅修改列名，不改变列定义。   <main id="notice" type='notice'><h4>注意</h4> <p><ul><li>如果目标名称在表中已经存在，则执行会报错。</li><li>如果重命名的列出现了循环，可以正常执行，例如 <code>ALTER TABLE t1 RENAME COLUMN a to b, RENAME COLUMN b to a;</code>。</li><li>如果重命名的列上建有索引，或者有外键约束，<code>RENAME COLUMN</code> 可以正常执行，并且索引定义和外键约束会自动级联修改。</li><li>同一条 <code>ALTER TABLE</code> 语句中不支持同时包含 <code>RENAME COLUMN</code> 和 <code>ADD PARTITION</code>／<code>ALTER COLUMN</code> 的场景。</li></ul></p></main>|
+| | RENAME \[TO\] table_name                                   | 表重命名。 <main id="notice" type='notice'><h4>注意</h4><p>在 <code>RENAME TABLE</code> 操作过程中，由于加入了表锁定和读写防御措施，这将增加操作的耗时。为了避免对其他用户执行 DDL 操作造成影响，建议不要批量进行 <code>RENAME TABLE</code> 操作。</p></main>|
+| | RENAME {INDEX \| KEY}                                      | 重命名索引或键。   |
+| | \[SET\] table_option                                       | 设置表级属性，可选以下参数： <ul><li> `REPLICA_NUM`：设置表的副本数（暂不支持）。</li>   <li> `tablegroup_name`：设置表所属的表组。</li>   <li> `BLOCK_SIZE`：设置表的微块大小，默认为 `16384`，即 16 KB，取值范围为 \[1024,1048576\]。</li>  <li> `lob_inrow_threshold`：用于配置 `INROW` 阈值，当 LOB 数据大小超过该阈值时，会转为 `OUTROW` 存储在 LOB Meta 表中，默认为 4KB。</li>   <li> `COMPRESSION`：设置表的压缩方式，默认为 `None`，表示不压缩。</li>   <li> `AUTO_INCREMENT`：设置表中自增列的下一个取值，可以增大或者减小。<main id="notice" type='notice'><h4>注意</h4><p>当减小一个表的自增字段的值时，需注意以下情况：</br>如果表中已存在数据并且自增列中的最大值不小于新指定的 <code>AUTO_INCREMENT</code> 值时，新的 <code>AUTO_INCREMENT</code> 值将自动调整为表中自增列现有最大值的下一个取值。例如，自增列当前的最大值为 5，当前 <code>AUTO_INCREMENT</code> 的值是 8，而 <code>AUTO_INCREMENT</code> 设置为介于 0 到 6 之间的任何值，语句执行成功后，实际的 <code>AUTO_INCREMENT</code> 值都会被调整为 6。</p></main></li>   <li> `comment`：设置表的注释信息。</li>   <li> `PROGRESSIVE_MERGE_NUM`：设置渐进合并步数，取值范围为 \[0,100\]。</li>   <li> `parallel_clause`：指定表级别的并行度。</li> <li> `NOPARALLEL`：并行度为 `1`，默认配置。</li>   <li> `PARALLEL integer`：指定并行度，`integer` 取值大于等于 `1`。</li> </ul>     |
+| | READ {ONLY \| WRITE} | 指定表的读写权限。具体如下：<ul><li>`READ ONLY`：表示表只能被读取，不能被修改或删除。<main id="notice" type='notice'><h4>注意</h4><p>表级别的 <code>READ ONLY</code> 参数对具有 <code>SUPER</code> 权限的用户不生效，只对普通用户生效。</p></main></li><li>`READ WRITE`：默认值，表示表可以被读取、修改和删除。</li></ul>|
+| | TRUNCATE {PARTITION \| SUBPARTITION}                       | 删除分区数据： <ul><li> `PARTITION`：针对 Range、List 类型的一级分区，清除指定分区中的全部数据（如果指定分区下存在二级分区，会同时清除该分区下所有二级分区中的数据），同时对分区上存在的索引进行维护。</li>   <li> `SUBPARTITION`：针对 `*-RANGE`、`*-LIST` 类型的二级分区，清除指定二级分区中的全部数据。同时对分区上存在的索引进行维护。</li> </ul>   多个分区名称之间用逗号分隔。<br> **注意**  删除分区数据时，请尽量避免该分区上存在活动的事务或查询，否则可能会导致 SQL 语句报错，或者一些异常情况。 |
+| | DUPLICATE_SCOPE | 用于更改复制表属性。<ul><li>`none`：表示将当前表转换为普通表。</li><li>`cluster`：表示将当前表转换为复制表。</li></ul> 更多有关更改复制表属性的信息，请参见 [更改复制表属性](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/650.change-duplicate-scope-of-mysql-mode.md)。|
+|index_option | KEY_BLOCK_SIZE [=] INT_VALUE | 可选项，用于指定索引键块的大小（以字节计），用来控制表或者索引的压缩程度。当前版本仅支持该关键字语法，功能不生效。|
+|table_option | TABLE_MODE | 可选项，用于指定合并触发阈值与合并策略，即控制数据转储后的合并行为。取值的详细介绍可参见下文 [table_mode_value](#table_mode_value)。|
+| | auto_increment_cache_size | 用于设置缓存的自增值个数。该参数默认值为 0，表示该项未进行配置，系统将采用租户级别的配置项（[auto_increment_cache_size](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/300.auto_increment_cache_size-global.md)）作为自增列的缓存大小设置。|
+|partition_option | PARTITION BY {HASH(key) ...} PARTITIONS partition_count | 定义分区键、方法和数目。分区操作包括重分区、添加分区、删除分区和清空分区。更多信息，参考[分区操作](../700.ddl-function-of-mysql-mode/800.partitioning-operations-of-mysql-mode.md)。 |
+|subpartition_option|SUBPARTITION BY {HASH(expression) ...}|对于每个分区，定义子分区方案。|
+|range_partition|PARTITION partition_name VALUES LESS THAN {value}| 指定 Range/Range Columns 分区的一级或二级分区定义。|
+| add_subpartition_option | MODIFY PARTITION partition_name ADD SUBPARTITION (add_subpartition_option) | 表示新增二级分区。<main id="notice" type='notice'><h4>注意</h4><p><ul><li>不支持二级分区类型是 Hash 或 Key 类型的场景新增二级分区。</li><li>对于 OceanBase 数据库 V4.2.5 版本，从 V4.2.5 BP4 版本开始支持新增二级分区。</li></ul></p></main>|
+| add_subpartition_option | add_subpartition_option | 表示新增的二级分区定义。|
+| add_subpartition_option | range_partition_expr    | 表示 Range/Range Columns 分区表达式。|
+| add_subpartition_option | list_partition_expr     | 表示 List/List Columns 分区表达式。|
+|| FORCE |清除废弃列。<main id="notice" type='explain'><h4>说明</h4><p><ul><li>对于 OceanBase 数据库 V4.2.5 版本，从 V4.2.5 BP5 版本开始支持清除废弃列。</li><li>当某些列被删除，即使这些列不再被使用，它们仍然占据物理存储空间。如果要移除这些废弃列并回收相关空间，需要清除废弃列。</li></ul></p></main>|
+
+### table_mode_value
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>在以下列出的 <code>TABLE_MODE</code> 模式中，除了 <code>NORMAL</code> 模式之外，所有模式都代表 <code>QUEUING</code> 表。这种 <code>QUEUING</code> 表是最基本的表类型，并且随后列出的几种模式（除了 NORMAL 模式）代表了使用更加积极的合并策略。</p>
+</main>
+
+* `NORMAL`：默认值，表示正常。在该模式下，数据转储后触发合并的概率极低。
+* `QUEUING`：在该模式下，数据转储后触发合并的概率低。
+* `MODERATE`：表示适度。在该模式下，数据转储后触发合并的概率为中等。
+* `SUPER`：表示超级。在该模式下，数据转储后触发合并的概率高。
+* `EXTREME`：表示极端。在该模式下，转储后触发合并的概率较高。
+
+更多有关合并的信息，请参见 [自适应合并](../../../../200.system-management/500.manage-data-storage/200.merge-management/320.adaptive-compavtion.md)。
+
+## 示例
+
+### 增加和删除列的操作
+
+创建示例表 `tbl1`，并执行 `DESCRIBE` 命令查看表信息。
+
+```sql
+obclient> CREATE TABLE tbl1 (c1 INT(11) PRIMARY KEY,c2 VARCHAR(50));
+Query OK, 0 rows affected
+
+obclient> DESCRIBE tbl1;
++-------+------------+----------+--------+---------+-------+
+| Field | Type       | Null     | Key    | Default | Extra |
++-------+------------+----------+--------+---------+-------+
+| c1    | int(11)    | NO       | PRI    | NULL    |       |    
+| c2    | varchar(50)| YES      |        | NULL    |       |   
++-------+------------+----------+--------+---------+-------+
+```
+
+* 增加 `c3` 列，并执行 `DESCRIBE` 命令查看表信息。
+
+  ```sql
+  obclient> ALTER TABLE tbl1 ADD c3 INT;
+  Query OK, 1 row affected
+
+  obclient> DESCRIBE tbl1;
+  +-------+------------+----------+--------+---------+-------+
+  | Field | Type       | Null     | Key    | Default | Extra |
+  +-------+------------+----------+--------+---------+-------+
+  | c1    | int(11)    | NO       | PRI    | NULL    |       |    
+  | c2    | varchar(50)| YES      |        | NULL    |       |  
+  | c3    | int(11)    | YES      |        | NULL    |       |  
+  +-------+------------+----------+--------+---------+-------+
+  3 row affected
+  ```
+
+* 删除 `c3` 列，并执行 `DESCRIBE` 命令查看表信息。
+
+  ```sql
+  obclient> ALTER TABLE tbl1 DROP c3;
+  Query OK, 1 row affected
+
+  obclient> DESCRIBE tbl1;
+  +-------+------------+----------+--------+---------+-------+
+  | Field | Type       | Null     | Key    | Default | Extra |
+  +-------+------------+----------+--------+---------+-------+
+  | c1    | int(11)    | NO       | PRI    | NULL    |       |    
+  | c2    | varchar(50)| YES      |        | NULL    |       |  
+  +-------+------------+----------+--------+---------+-------+
+  2 row affected
+  ```
+
+* 将表 `tbl1` 的字段 `c2` 改名为 `c3`，并执行 `DESCRIBE` 命令查看表信息。
+
+  ```sql
+  obclient> ALTER TABLE tbl1 CHANGE COLUMN c2 c3 VARCHAR(50);
+  Query OK, 1 row affected
+
+  obclient> DESCRIBE tbl1;
+  +-------+------------+----------+--------+---------+-------+
+  | Field | Type       | Null     | Key    | Default | Extra |
+  +-------+------------+----------+--------+---------+-------+
+  | c1    | int(11)    | NO       | PRI    | NULL    |       |    
+  | c3    | varchar(50)| YES      |        | NULL    |       |  
+  +-------+------------+----------+--------+---------+-------+
+  2 rows affected
+  ```
+
+* 为表 `tbl1` 添加 `c4` 列，并将该列设置为表的第一列，并执行 `DESCRIBE` 命令查看表信息。
+
+  ```sql
+  obclient> ALTER TABLE tbl1 ADD COLUMN c4 INTEGER FIRST;
+  Query OK, 1 row affected
+
+  obclient> DESCRIBE tbl1;
+  +-------+------------+----------+--------+---------+-------+
+  | Field | Type       | Null     | Key    | Default | Extra |
+  +-------+------------+----------+--------+---------+-------+
+  | c4    | int(11)    | YES      |        | NULL    |       |  
+  | c1    | int(11)    | NO       | PRI    | NULL    |       |    
+  | c3    | varchar(50)| YES      |        | NULL    |       |  
+  +-------+------------+----------+--------+---------+-------+
+  3 row affected
+  ```
+
+* 在 `c1` 列后添加 `c2` 列，并执行 `DESCRIBE` 命令查看表信息。
+
+  ```sql
+  obclient> ALTER TABLE tbl1 ADD COLUMN c2 INTEGER AFTER c1;
+  Query OK, 1 row affected
+
+  obclient> DESCRIBE tbl1;
+  +-------+------------+----------+--------+---------+-------+
+  | Field | Type       | Null     | Key    | Default | Extra |
+  +-------+------------+----------+--------+---------+-------+
+  | c4    | int(11)    | YES      |        | NULL    |       |  
+  | c1    | int(11)    | NO       | PRI    | NULL    |       |
+  | c2    | int(11)    | YES      |        | NULL    |       |    
+  | c3    | varchar(50)| YES      |        | NULL    |       |  
+  +-------+------------+----------+--------+---------+-------+
+  4 row affected
+  ```
+
+* 在 `c4` 列前添加 `c5` 列，并执行 `DESCRIBE` 命令查看表信息。
+
+  ```sql
+  obclient> ALTER TABLE tbl1 ADD COLUMN c5 INT BEFORE c4;
+  Query OK, 1 row affected
+
+  obclient> DESCRIBE tbl1;
+  +-------+------------+----------+--------+---------+-------+
+  | Field | Type       | Null     | Key    | Default | Extra |
+  +-------+------------+----------+--------+---------+-------+
+  | c5    | int(11)    | YES      |        | NULL    |       |  
+  | c4    | int(11)    | YES      |        | NULL    |       |  
+  | c1    | int(11)    | NO       | PRI    | NULL    |       |
+  | c2    | int(11)    | YES      |        | NULL    |       |    
+  | c3    | varchar(50)| YES      |        | NULL    |       |  
+  +-------+------------+----------+--------+---------+-------+
+  5 row affected
+  ```
+
+* 为表 `tbl2` 添加外键约束 `fk1`。当 `UPDATE` 操作影响与子表相匹配行的父表中键值时，执行 `SET NULL` 操作。
+
+  ```sql
+  obclient> CREATE TABLE tbl2(c1 INT PRIMARY KEY,c2 INT);
+  Query OK, 0 row affected
+  obclient> CREATE TABLE tbl3(c1 INT PRIMARY KEY,c2 INT);
+  Query OK, 0 row affected
+  obclient> ALTER TABLE tbl2 ADD CONSTRAINT fk1 FOREIGN KEY (c2) REFERENCES tbl3(c1) ON UPDATE SET NULL;
+  Query OK, 0 row affected
+  ```
+
+* 删除 `tbl3` 表的外键约束 `fk1`。
+
+  ```sql
+  obclient> ALTER TABLE tbl2 DROP FOREIGN KEY fk1;
+  Query OK, 0 row affected
+  ```
+
+* 删除 `tbl2` 表的主键。
+
+  ```sql
+  obclient> ALTER TABLE tbl2 DROP PRIMARY KEY;
+  Query OK, 0 row affected
+  ```
+
+### 索引操作
+
+* 将 `tbl2` 表的索引 `ind1` 重命名为 `ind2`。
+
+  ```sql
+  obclient> CREATE TABLE tbl2(c1 INT(11) PRIMARY KEY,c2 INT(50));
+  Query OK, 0 row affected
+
+  obclient> CREATE INDEX ind1 ON tbl2 (c2 ASC);
+  Query OK, 0 row affected
+  obclient> ALTER TABLE tbl2 RENAME INDEX ind1 TO ind2;
+  Query OK, 0 row affected
+  ```
+
+* 在 `tbl2` 表上创建索引 `ind3`，引用 `c1`、`c2` 列。
+
+  ```sql
+  obclient> ALTER TABLE tbl2 ADD INDEX ind3 (c1,c2);
+  Query OK, 0 row affected
+  ```
+
+  可以通过 `SHOW INDEX` 语句查看创建的索引。
+
+  ```sql
+  obclient> SHOW INDEX FROM tbl2;
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+
+  | Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment   | Index_comment | Visible |
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+
+  | tbl2  |          0 | PRIMARY  |            1 | c1          | A         |        NULL | NULL     | NULL   |      | BTREE      | available |               | YES     |
+  | tbl2  |          1 | ind2     |            1 | c2          | A         |        NULL | NULL     | NULL   |  YES | BTREE      | available |               | YES     |
+  | tbl2  |          1 | ind3     |            1 | c1          | A         |        NULL | NULL     | NULL   |      | BTREE      | available |               | YES     |
+  | tbl2  |          1 | ind3     |            2 | c2          | A         |        NULL | NULL     | NULL   |  YES | BTREE      | available |               | YES     |
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+
+  4 rows in set
+  ```
+
+* 删除 `tbl2` 表上的索引 `ind2`。
+
+  ```sql
+  obclient> ALTER TABLE tbl2 DROP INDEX ind2;
+  Query OK, 0 row affected
+  ```
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>在实际运维场景中，您可以通过以上方式实现索引的原子性变更。</p>
+  </main>
+
+* 在 `t1_func` 上添加 3 个函数索引，其中一个名字是 `i2`，另外两个由系统自动生成的名称，格式为 `functional_index` 前缀加编号。
+
+  ```shell
+  obclient> ALTER TABLE t1_func ADD INDEX ((CONCAT(c1,'a')));
+  Query OK, 0 rows affected
+  obclient> ALTER TABLE t1_func ADD INDEX ((c1+1));
+  Query OK, 0 rows affected
+  obclient> ALTER TABLE t1_func ADD INDEX i2 ((CONCAT(c1,'a')));
+  Query OK, 0 rows affected
+  obclient> SHOW CREATE TABLE t1_func;
+  +---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Table   | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+  +---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | t1_func | CREATE TABLE `t1_func` (
+  `c1` int(11) DEFAULT NULL,
+  `c2` int(11) DEFAULT NULL,
+  KEY `i1` (((`c1` + `c2`) < 1)) BLOCK_SIZE 16384 LOCAL,
+  KEY `functional_index` (concat(`c1`,'a')) BLOCK_SIZE 16384 LOCAL,
+  KEY `functional_index_2` ((`c1` + 1)) BLOCK_SIZE 16384 LOCAL,
+  KEY `i2` (concat(`c1`,'a')) BLOCK_SIZE 16384 LOCAL
+  ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+  +---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1 row in set
+  ```
+
+* 修改索引不可见。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>当索引设置为不可见后，可以在表结构中进行看到 <code>/*!80000 INVISIBLE */</code> 标记。</p>
+  </main>
+
+  1. 创建表 `tbl4`。
+
+      ```sql
+      CREATE TABLE tbl4 (col1 INT PRIMARY KEY, col2 INT, col3 INT);
+      ```
+
+  2. 创建索引 `idx1_tbl4`。
+
+      ```sql
+      CREATE INDEX idx1_tbl4 ON tbl4(col2);
+      ```
+
+  3. 修改索引 `idx1_tbl4` 不可见。
+
+      ```sql
+      ALTER TABLE tbl4 ALTER INDEX idx1_tbl4 INVISIBLE;
+      ```
+
+  4. 再次查看表 `tbl4` 结构。
+
+      ```sql
+      SHOW CREATE TABLE tbl4;
+      ```
+
+      返回结果如下：
+
+      ```shell
+      +-------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+      | Table | Create Table                                                                                                                                                                                                                                                                                                                                                                               |
+      +-------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+      | tbl4  | CREATE TABLE `tbl4` (
+        `col1` int(11) NOT NULL,
+        `col2` int(11) DEFAULT NULL,
+        `col3` int(11) DEFAULT NULL,
+        PRIMARY KEY (`col1`),
+        KEY `idx1_tbl4` (`col2`) BLOCK_SIZE 16384 LOCAL /*!80000 INVISIBLE */
+      ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+      +-------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+      1 row in set
+      ```
+
+### 分区操作
+
+* 清除分区表 `t_log_part_by_range` 的分区 `M202001` 和 `M202002` 中的全部数据。
+
+  ```sql
+  obclient> CREATE TABLE t_log_part_by_range (
+      log_id      bigint NOT NULL
+      , log_value varchar(50)
+      , log_date  timestamp NOT NULL  
+  ) PARTITION BY RANGE(UNIX_TIMESTAMP(log_date))
+  (
+      PARTITION M202001 VALUES LESS THAN(UNIX_TIMESTAMP('2020/02/01'))
+      , PARTITION M202002 VALUES LESS THAN(UNIX_TIMESTAMP('2020/03/01'))
+      , PARTITION M202003 VALUES LESS THAN(UNIX_TIMESTAMP('2020/04/01'))
+      , PARTITION M202004 VALUES LESS THAN(UNIX_TIMESTAMP('2020/05/01'))
+      , PARTITION M202005 VALUES LESS THAN(UNIX_TIMESTAMP('2020/06/01'))
+  );
+  Query OK, 0 rows affected
+
+  obclient> ALTER TABLE t_log_part_by_range TRUNCATE PARTITION M202001, M202002;
+  Query OK, 0 rows affected
+  ```
+
+* 为分区表 `t_log_part_by_range` 添加分区 `M202006`。
+
+  ```sql
+  obclient> CREATE TABLE t_log_part_by_range (
+      log_id      bigint NOT NULL
+      , log_value varchar(50)
+      , log_date  timestamp NOT NULL  
+  ) PARTITION BY RANGE(UNIX_TIMESTAMP(log_date))
+  (
+      PARTITION M202001 VALUES LESS THAN(UNIX_TIMESTAMP('2020/02/01'))
+      , PARTITION M202002 VALUES LESS THAN(UNIX_TIMESTAMP('2020/03/01'))
+      , PARTITION M202003 VALUES LESS THAN(UNIX_TIMESTAMP('2020/04/01'))
+      , PARTITION M202004 VALUES LESS THAN(UNIX_TIMESTAMP('2020/05/01'))
+      , PARTITION M202005 VALUES LESS THAN(UNIX_TIMESTAMP('2020/06/01'))
+  );
+  Query OK, 0 rows affected
+
+  obclient> ALTER TABLE t_log_part_by_range ADD PARTITION
+           (PARTITION M202006 VALUES LESS THAN(UNIX_TIMESTAMP('2020/07/01'))
+           );
+  ```
+
+### 修改并行度
+
+* 修改表 `tbl3` 的并行度为 `2`。
+
+  ```sql
+  obclient> ALTER TABLE tbl3 PARALLEL 2;
+  ```
+
+### 列类型相关操作
+
+* 修改表 `tbl4` 的普通列 `col1` 为自增列。
+
+  ```sql
+  obclient> CREATE TABLE tbl4 (col1 BIGINT(10) NOT NULL,col2 INT);
+  Query OK, 0 rows affected
+
+  obclient> ALTER TABLE tbl4 MODIFY col1 BIGINT(10) AUTO_INCREMENT;
+  Query OK, 0 rows affected
+  ```
+
+* 为表 `tbl4` 增加主键 `col1`，之后更改主键为 `col2`。
+
+  ```sql
+  obclient> ALTER TABLE tbl4 ADD PRIMARY KEY (col1);
+  Query OK, 0 rows affected
+
+  obclient> ALTER TABLE tbl4 DROP PRIMARY KEY,ADD PRIMARY KEY (`col2`);
+  Query OK, 0 rows affected
+  ```
+
+* 添加 `CHECK` 约束。
+
+  ```sql
+  obclient> CREATE TABLE tbl7(col1 VARCHAR(10),col2 VARCHAR(10));
+  Query OK, 0 rows affected
+
+  obclient> ALTER TABLE tbl7 ADD CONSTRAINT my_check CHECK (col1> col2) ;
+  Query OK, 0 rows affected
+  ```
+
+* 删除表 `tbl7` 的 `CHECK` 约束。
+
+  ```sql
+  obclient> ALTER TABLE tbl7 DROP CHECK my_check;
+  Query OK, 0 rows affected
+  ```
+
+* 修改列类型为 `NOT NULL`。
+
+  ```sql
+  obclient> CREATE TABLE dept(  
+      deptno           NUMBER(2,0),  
+      dname            VARCHAR(14),  
+      location         VARCHAR(13),   
+      CONSTRAINT pk_dept PRIMARY KEY(deptno)  
+  );
+  Query OK, 0 rows affected
+
+  obclient> CREATE TABLE emp(  
+      empno         NUMBER(4,0) NOT NULL,  
+      empname       VARCHAR(10) NOT NULL,  
+      job           VARCHAR(9) NOT NULL,  
+      mgr           NUMBER(4,0) NOT NULL,  
+      hiredate      DATE NOT NULL,  
+      sal           NUMBER(7,2) DEFAULT NULL,
+      comm          NUMBER(7,2) DEFAULT NULL,        
+      deptno        NUMBER(2,0) DEFAULT NULL,   
+      CONSTRAINT PK_emp PRIMARY KEY (empno),
+      CONSTRAINT FK_deptno  FOREIGN KEY (deptno)  REFERENCES dept (deptno)  
+  );
+  Query OK, 0 rows affected
+
+  obclient> ALTER TABLE emp MODIFY deptno NUMBER(2,0) DEFAULT '12' NOT NULL;
+  Query OK, 0 rows affected
+  ```
+
+
+### 重命名列操作
+
+* `RENAME COLUMN` 不改变列定义，仅修改列名。如果目标名称在表中已经存在，那么 `RENAME COLUMN` 执行会报错，但是重命名为原名称则不会报错。
+
+  ```shell
+  obclient> CREATE TABLE tbl8 (a INT, b INT);
+  Query OK, 0 rows affected
+
+  obclient> ALTER TABLE tbl8 RENAME COLUMN a TO b;
+  ERROR 1060 (42S21): Duplicate column name 'b'
+
+  obclient> ALTER TABLE tbl8 RENAME COLUMN a TO a;
+  Query OK, 0 rows affected
+  ```
+
+* 如果重命名的列上建有索引，`RENAME COLUMN` 可以正常执行，索引定义会自动级联修改。
+
+  ```shell
+  obclient> CREATE TABLE tbl9 (a INT, b INT, index idx_a(a));
+  Query OK, 0 rows affected
+
+  obclient> SHOW INDEX FROM tbl9;
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+------------+
+  | Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment   | Index_comment | Visible | Expression |
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+------------+
+  | tbl9  |          1 | idx_a    |            1 | a           | A         |        NULL | NULL     | NULL   | YES  | BTREE      | available |               | YES     | NULL       |
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+------------+
+  1 row in set
+
+  obclient> ALTER TABLE tbl9 RENAME COLUMN a TO c;
+  Query OK, 0 rows affected
+
+  obclient> SHOW INDEX FROM tbl9;
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+------------+
+  | Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment   | Index_comment | Visible | Expression |
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+------------+
+  | tbl9  |          1 | idx_a    |            1 | c           | A         |        NULL | NULL     | NULL   | YES  | BTREE      | available |               | YES     | NULL       |
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+------------+
+  1 row in set
+  ```
+
+* 如果重命名列被前缀索引引用，`RENAME COLUMN` 可以正常执行，前缀索引支持级联修改。
+
+  ```shell
+  DROP TABLE tbl9;
+  obclient> CREATE TABLE tbl9 (c1 INT PRIMARY KEY, c2 BLOB, c3 INT, INDEX i1 (c2(10)));
+  Query OK, 0 rows affected
+
+  obclient> ALTER TABLE tbl9 RENAME COLUMN c2 TO c2_, RENAME COLUMN c1 TO c2_1;
+  DESC tbl9;
+  Query OK, 0 rows affected
+
+  obclient> SHOW INDEX FROM tbl9;
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+------------+
+  | Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment   | Index_comment | Visible | Expression |
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+------------+
+  | tbl9  |          0 | PRIMARY  |            1 | c2_1        | A         |        NULL | NULL     | NULL   |      | BTREE      | available |               | YES     | NULL       |
+  | tbl9  |          1 | i1       |            1 | c2_         | A         |        NULL | 10       | NULL   | YES  | BTREE      | available |               | YES     | NULL       |
+  +-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+-----------+---------------+---------+------------+
+  2 rows in set
+  ```
+
+* 如果重命名的列上建有外键约束，`RENAME COLUMN` 可以正常执行，外键约束会自动级联修改。
+
+  ```shell
+  obclient> CREATE TABLE tbl10 (a INT PRIMARY KEY);
+  Query OK, 0 rows affected
+
+  obclient> CREATE TABLE tbl11(b INT, FOREIGN KEY (b) REFERENCES tbl10(a));
+
+  obclient> SHOW CREATE TABLE tbl11;
+  +-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Table | Create Table                                                                                                                                                                                                                                                                                                                                                      |
+  +-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | tbl11 | CREATE TABLE `tbl11` (
+  `b` int(11) DEFAULT NULL,
+  CONSTRAINT `tbl11_OBFK_1694681944513338` FOREIGN KEY (`b`) REFERENCES `test`.`tbl10`(`a`) ON UPDATE RESTRICT ON DELETE RESTRICT
+  ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE =  16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+  +-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1 row in set
+
+  obclient> ALTER TABLE tbl10 RENAME COLUMN a TO c;
+  Query OK, 0 rows affected
+
+  obclient> SHOW CREATE TABLE tbl11;
+  +-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Table | Create Table                                                                                                                                                                                                                                                                                                                                                      |
+  +-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | tbl11 | CREATE TABLE `tbl11` (
+  `b` int(11) DEFAULT NULL,
+  CONSTRAINT `tbl11_OBFK_1694681944513338` FOREIGN KEY (`b`) REFERENCES `test`.`tbl10`(`c`) ON UPDATE RESTRICT ON DELETE RESTRICT
+  ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+  +-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1 row in set
+  ```
+
+OceanBase 数据库在以下场景，不支持修改或者不会自动级联修改：
+
+* 重命名的列被生成列表达式引用，不支持修改列名，执行会报错。
+
+  ```shell
+  obclient> CREATE TABLE tbl12(a INT, b INT AS (a + 1), c INT, d INT, CONSTRAINT d_check CHECK(d > 0)) PARTITION BY HASH(c + 1) PARTITIONS 2;
+
+  obclient> ALTER TABLE tbl12 RENAME COLUMN a TO e;
+  ERROR 3108 (HY000): Column 'a' has a generated column dependency
+  ```
+
+* 重命名的列被分区表达式引用，不支持修改列名，执行会报错。
+
+  ```shell
+  obclient> ALTER TABLE tbl12 RENAME COLUMN c TO e;
+  ERROR 3855 (HY000): Column 'c' has a partitioning function dependency and cannot be dropped or renamed.
+  ```
+
+* 重命名的列被 `CHECK` 约束引用，不支持修改列名，执行会报错。
+
+  ```shell
+  obclient> ALTER TABLE tbl12 RENAME COLUMN d TO e;
+  ERROR 3959 (HY000): Check constraint 'd_check' uses column 'd', hence column cannot be dropped or renamed.
+  ```
+
+* 重命名的列被函数索引引用，不支持修改列名，执行会报错。
+
+  ```shell
+  DROP TABLE IF EXISTS tbl12;
+  obclient> CREATE TABLE tbl12(i INT, INDEX ((i+1)));
+  Query OK, 0 rows affected
+
+  obclient> ALTER TABLE tbl12 RENAME COLUMN i TO j;
+  ERROR 3837 (HY000): Column 'i' has a functional index dependency and cannot be dropped or renamed.
+  ```
+
+* 重命名的列被视图引用，`RENAME COLUMN` 执行成功，查询视图会报错，需要用户手动修改视图定义。
+
+  ```shell
+  obclient> CREATE TABLE tbl13(a INT);
+  Query OK, 0 rows affected
+
+  obclient> CREATE VIEW v1 AS SELECT a + 1 FROM tbl13;
+  Query OK, 0 rows affected
+
+  obclient> SELECT * FROM v1;
+  Empty set
+
+  obclient> ALTER TABLE tbl13 RENAME COLUMN a TO b;
+  Query OK, 0 rows affected
+
+  obclient> SELECT * FROM v1;
+  ERROR 1356 (42S22): View 'test.v1' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them
+  ```
+
+* 重命名的列被存储过程引用，`RENAME COLUMN` 执行成功，`CALL` Procedure 报错，需要用户手动修改。
+
+  ```shell
+  obclient> CREATE TABLE tbl14(a INT);
+  Query OK, 0 rows affected
+
+  obclient> CREATE PROCEDURE proc() SELECT a + 1 FROM tbl14;
+  Query OK, 0 rows affected
+
+  obclient> CALL proc();
+  Empty set
+
+  obclient> ALTER TABLE tbl14 RENAME COLUMN a TO b;
+  Query OK, 0 rows affected
+
+  obclient> CALL proc();
+  ERROR 1054 (42S22): Unknown column 'a' in 'field list'
+  ```
+
+## 相关文档
+
+[更改表](../../../../300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/600.change-table-of-mysql-mode.md)

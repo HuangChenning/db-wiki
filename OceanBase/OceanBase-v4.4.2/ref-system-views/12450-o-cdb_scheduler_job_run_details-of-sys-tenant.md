@@ -1,0 +1,96 @@
+---
+title: oceanbase.CDB_SCHEDULER_JOB_RUN_DETAILS
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284384.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_SCHEDULER_JOB_RUN_DETAILS
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul><li>在 V4.3.x 版本中，该视图从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该视图从 V4.2.4 版本开始引入。</li></ul>
+</main>
+
+## 功能描述
+
+视图 `CDB_SCHEDULER_JOB_RUN_DETAILS` 展示所有租户下所有调度程序作业的信息。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| -------- | -------- | --------------- | -------- |
+| LOG_ID            | decimal(20,0)                    | NO   | 暂不支持该字段，该字段默认为 0。|
+| LOG_DATE          | datetime                         | NO   | 日志条目。|
+| OWNER             | varchar(128)                     | NO   | Job 的所有者。|
+| JOB_NAME          | varchar(128)                     | NO   | Job 的名称。|
+| JOB_SUBNAME       | varchar(128)                     | NO   | 暂不支持该字段，该字段默认为 NULL。|
+| STATUS            | varchar(128)                     | NO   | 作业状态。|
+| CODE              | bigint(20)                       | YES  | Job 运行发生错误时的错误编号。 |
+| REQ_START_DATE    | datetime                         | NO   | Job 预期开始时间。|
+| ACTUAL_START_DATE | datetime                         | NO   | Job 实际开始时间。|
+| RUN_DURATION      | decimal(20,0)                    | NO   | Job 运行的持续时间。|
+| INSTANCE_ID       | varchar(128)                     | NO   | 暂不支持该字段，该字段默认为 NULL。|
+| SESSION_ID        | decimal(10,0)                    | NO   | 暂不支持该字段，该字段默认为 NULL。|
+| SLAVE_PID         | varchar(128)                     | NO   | 暂不支持该字段，该字段默认为 NULL。|
+| CPU_USED          | decimal(20,0)                    | NO   | 暂不支持该字段，该字段默认为 NULL。|
+| CREDENTIAL_OWNER  | varchar(128)                     | NO   | 暂不支持该字段，该字段默认为 NULL。|
+| CREDENTIAL_NAME   | varchar(128)                     | NO   | 暂不支持该字段，该字段默认为 NULL。|
+| DESTINATION_OWNER | varchar(128)                     | NO   | 暂不支持跨库 Job，该字段默认为 NULL。|
+| DESTINATION       | varchar(128)                     | NO   | 暂不支持跨库 Job，该字段默认为 NULL。|
+| MESSAGE           | varchar(4000)                    | NO   | Job 运行返回的错误信息。 |
+| TENANT_ID         | bigint(20)                       | NO   | 租户 ID。 |
+| JOB               | bigint(20)                       | NO   | 程序作业的名称。 |
+| TIME              | timestamp(6)                     | NO   | Job 运行日志记录时间，单位为秒。 |
+| JOB_CLASS         | varchar(30)                      | YES  | 程序作业的类别。 |
+| GMT_CREATE        | timestamp(6)                     | NO   | 程序作业创建的时间，单位为秒。 |
+| GMT_MODIFIED      | timestamp(6)                     | NO   | 程序作业修改的时间，单位为秒。 |
+
+## 查询示例
+
+查看所有租户下所有调度作业的信息。
+
+```shell
+obclient(root@sys)[oceanbase]> SELECT * FROM oceanbase.CDB_SCHEDULER_JOB_RUN_DETAILS limit  1\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+           LOG_ID: 0
+         LOG_DATE: NULL
+            OWNER: root@%
+         JOB_NAME: ASYNC_GATHER_STATS_JOB_PROC
+      JOB_SUBNAME: NULL
+           STATUS: SCHEDULED
+             CODE: -5001
+   REQ_START_DATE: 2025-08-29 11:57:22.818044
+ACTUAL_START_DATE: NULL
+     RUN_DURATION: 0
+      INSTANCE_ID: NULL
+       SESSION_ID: NULL
+        SLAVE_PID: NULL
+         CPU_USED: NULL
+ CREDENTIAL_OWNER: NULL
+  CREDENTIAL_NAME: NULL
+DESTINATION_OWNER: NULL
+      DESTINATION: NULL
+          MESSAGE: You have an error in your SQL syntax; check the manual that corresponds to your OceanBase version for the right syntax to use near 'and m.tablet_id < 1000  order by ratio desc,table_id  limit 139798281832208' at line 1
+        TENANT_ID: 1
+              JOB: 9
+             TIME: 2025-08-29 11:57:23.392851
+        JOB_CLASS: DEFAULT_JOB_CLASS
+       GMT_CREATE: 2025-08-29 11:57:23.392851
+     GMT_MODIFIED: 2025-08-29 11:57:23.392851
+1 row in set (0.020 sec)
+```
+
+## 相关视图或文档
+
+* 查询租户中所有调度程序作业的信息：[DBA_SCHEDULER_JOB_RUN_DETAILS](25450.o-dba_scheduler_job_run_details-of-sys-tenant.md)
+* 有关 DBMS_SCHEDULER 的详细介绍，参见 [DBMS_SCHEDULER 概述](../../../600.pl-reference/300.pl-oracle/1400.pl-system-package-oracle/14200.dbms-scheduler-oracle/100.dbms-scheduler-overview-oracle.md)

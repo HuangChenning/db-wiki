@@ -1,0 +1,26 @@
+---
+title: OLD_CURRENT_SCHEMA
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503857.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# OLD_CURRENT_SCHEMA
+
+`OLD_CURRENT_SCHEMA` 函数用于从 `sys_context` 返回会话值（'`userenv`', '`current_schema`'）。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 语法 
+
+```sql
+DBMS_UTILITY.OLD_CURRENT_SCHEMA 
+RETURN VARCHAR2;
+```

@@ -1,0 +1,485 @@
+---
+title: SQL FAQ
+book: "常见问题"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001499479.html"
+tags:
+  - oceanbase
+  - distributed
+  - faq
+---
+
+# SQL FAQ
+
+## SQL 操作执行 FAQ
+
+### 如何定位创建 PL 的错误？
+
+可以通过 SHOW ERRORS 命令，查看创建存储过程时的错误信息。
+
+### 如何分析 PL 的错误日志？
+
+用户只需要关心返回给客户端的错误日志即可。这是由于 OceanBase 数据库会将 Resolve 尝试过程中留下的错误信息记录到日志中；并且如果 PL 中包含了 EXPECTION OTHERS 语句，则执行到此处时，会在日志中留下错误信息。因此，PL 错误日志中记录的信息是不准确的，可以忽略；用户只需要关心返回给客户端的错误日志即可。
+
+### 如何查询已经创建的 PL 对象的源码？
+
+可以通过查询 DBA_SOURCE、ALL_SOURCE 或 USER_SOURCE 视图来查询已经创建的 PL 对象的源码，其中，TEXT 列即为 PL 对象的源码。
+
+### MySQL 模式是否支持 INSERT ALL INTO 这种语法？
+
+不支持。当前仅 Oracle 模式支持 INSERT ALL INTO 语法，MySQL 模式暂不支持 INSERT ALL INTO 语法。
+
+### SQL 引擎、事务引擎等对于租户而言，资源是如何分配和隔离的？
+
+SQL 引擎和事务引擎都是区分租户的，不同租户之间完全隔离。其中：
+
+- SQL 引擎的 Plan Cache 与事务引擎的锁是完全独立的。
+- CPU：一个租户 SQL 线程的 CPU 占用，用于控制同时活跃的 SQL 线程。
+- 内存：不同租户的 SQL 内存与事务内存分开管理，一个租户的内存耗光，不会影响另一个租户。
+- 线程：不同租户的 SQL 引擎与事务引擎的线程完全独立，一个租户的线程挂起不会影响另一个租户。
+
+### OceanBase 数据库的 Batch 执行是什么？
+
+当我们使用 JDBC 和 OceanBase 数据库进行交互时，把多次请求放进一个组，从而进行一次网络传输可完成多次请求，这被称为 Batch 执行，通常也被称为“批处理”。
+
+### 为什么要使用 Batch 执行？
+
+有时候我们会因为数据的一致性而使用 Batch 执行，但更多时候，使用 Batch 执行最大的好处是可以提升性能，这体现在以下几个方面：
+
+- Batch 语句会被改写以提高性能；
+- Batch 执行可以减少和数据库的交互次数；
+- OceanBase 数据库在收到 Batch 执行时可以做一些优化工作，进一步提升性能。
+
+### JDBC 中哪些 class/object 可以实现 Batch 执行？
+
+无论使用 Statement 还是 PrepareStatement 都可以实现 Batch 执行。
+
+### 使用 Batch 执行需要设置什么 JDBC 配置属性？
+
+- 从功能上说，使用 Batch 执行必须要设置 `rewriteBatchedStatements=TRUE`；
+- 从实现和行为上说，useServerPrepStmts 会决定 Batch 执行的不同行为；
+- 从性能上说，cachePrepStmt、prepStmtCacheSize、prepStmtCacheSqlLimit、maxBatchTotalParamsNum 都会对性能有所提升。
+
+如下是有关配置属性的说明：
+
+| 配置属性 | 默认值 | 说明 |
+| ----- | ----- | ----- |
+| allowMultiQueries | FALSE | 决定了一条语句中是否可以用“;”分割多个请求，Batch 执行并不依赖于这个属性，而仅仅依赖于 rewriteBatchedStatements。<main id="notice" type='explain'><h4>说明</h4><ul><li>如果 JDBC 版本小于等于 1.1.9，那么 allowMultiQueries 必须开启 update 语句才会用“；”拼接，否则将报错：Not supported feature or function。</li><li>如果 JDBC 版本大于等于 2.2.6，那么 allowMultiQueries 是否开启是没有影响的。</li></ul></main>|
+| rewriteBatchedStatements | FALSE | 决定了 Batch 执行中是否会重写 INSERT 语句。<ul><li> 对于 PrepareStatement 对象，会使用多个 VALUES 来拼接；</li><li> 对于 Statement 对象，会使用分号来拼接多个 INSERT 语句。</li></ul>|
+| useServerPrepStmts | FALSE | 决定了是否使用 Server 端的 Prepared 语句，仅对 PrepareStatement 对象有效。<ul><li>TRUE 表示使用 Server 端的 Prepared 语句，这需要在 OBServer 端开启 `_ob_enable_prepared_statement`，同时意味着使用二进制协议进行通讯；</li><li>FALSE 表示使用 Client 端的 Prepared 语句，同时意味着使用文本协议进行通讯。</li></ul>|
+| cachePrepStmts | FALSE/TRUE | 决定了 JDBC Driver 是否缓存 Prepared 语句，针对 Client 端的 Prepared 语句和 Server 端的 Prepared 语句，缓存的内容稍有不同。<main id="notice" type='explain'><h4>说明</h4><p>这个参数在 OceanBase Connector/J 1.x 中默认是 FALSE；在 OceanBase Connector/J 2.x 中默认是 TRUE。</p></main>|
+| prepStmtCacheSize | 25/250 | 如果开启了 cachePrepStmts，决定了可以缓存多少条 Prepared statements。<main id="notice" type='explain'><h4>说明</h4><p>这个参数在 OceanBase Connector/J 1.x 中默认是 25；在 OceanBase Connector/J 2.x 中默认是 250。</p></main>|
+| prepStmtCacheSqlLimit | 256/2048 | 如果开启了 cachePrepStmts，决定了可以缓存最大的 SQL 是多大。<main id="notice" type='explain'><h4>说明</h4><p>这个参数在 OceanBase Connector/J 1.x 中默认是 256；在 OceanBase Connector/J 2.x 中默认是 2048。 </p></main>|
+| maxBatchTotalParamsNum | 30000 | 当使用 executeBatch，决定了最大可以拼接多少个参数。<main id="notice" type='explain'><h4>说明</h4><p>这个参数仅在 OceanBase Connector/J 2.2.7 及以后才有。</p></main>|
+
+### 哪些 OceanBase 数据库的配置项和 Batch 执行有关？
+
+如下配置项和 Batch 执行有关系：
+
+| 配置项 | 默认值 | 范围 | 生效方式 | 含义 |
+| --- | --- | --- | --- | --- |
+| ob_enable_batched_multi_statement | FALSE | 租户 | 动态 | 用于设置是否启用批处理多条语句的功能。开启这个参数同时也意味着：在 Batch 执行场景下，当 Client/Server 使用文本协议进行通讯时，OceanBase 数据库会对格式一致的多条 UPDATE 语句当成一条语句进行解析，并根据对应的参数和数据分布，生成 Batch physical plan。 |
+| _ob_enable_prepared_statement | FALSE | 集群 | 动态 | 表示是否可以使用 Server 端的 Prepared 语句。 |
+
+### Statement 和 PrepareStatement 在行为和使用方法上有什么不同？
+
+- 使用 Statement 对象：
+
+    ```sql
+    conn = DriverManager.getConnection(obUrl);
+    conn.setAutoCommit(false);
+    Statement stmt = conn.createStatement();
+    String SQL = "INSERT INTO test1 (c1, c2) VALUES (1, 'test11')";
+    stmt.addBatch(SQL);
+    String SQL = "INSERT INTO test1 (c1, c2) VALUES (2, 'test12')";
+    stmt.addBatch(SQL);
+    String SQL = "INSERT INTO test1 (c1, c2) VALUES (3, 'test13')";
+    stmt.addBatch(SQL);
+    int[] count = stmt.executeBatch();
+    stmt.clearBatch();
+    conn.commit();
+    ```
+
+- 使用 PrepareStatement 对象：
+
+    ```sql
+    conn = DriverManager.getConnection(obUrl);
+    conn.setAutoCommit(false);
+    String SQL = "INSERT INTO TEST1 (C1, C2) VALUES (?, ?)";
+    PreparedStatemen pstmt = conn.prepareStatement(SQL);
+    int rowCount = 5, batchCount = 10;
+    for (int k=1; k<=batchCount; k++) {
+        for (int i=1; i<=rowCount; i++) {
+            pstmt.setInt(1, (k*100+i));
+            pstmt.setString(2, "test value");
+            pstmt.addBatch();
+        }
+        int[] count = pstmt.executeBatch();
+        pstmt.clearBatch();
+    }
+    conn.commit();
+    pstmt.close();
+    ```
+
+下表列出了使用 PrepareStatement 和 Statement 对象时，Batch 执行的不同行为（前提是 `rewriteBatchedStatements=TRUE` ）：
+
+使用 PrepareStatement 对象：
+
+| useServerPrepStmts | INSERT | UPDATE | 场景 |
+| --- | --- | --- | --- |
+| TRUE | 多条 INSERT 语句的 VALUES 会以多个 “?” 的形式，拼接在一条 INSERT 语句的多个 VALUES 中，形如：INSERT INTO TEST1 VALUES (?), (?),...,(?) | 多条单独的 UPDATE 语句，其中的变量用 “?” 替代 | 场景1 |
+| FALSE | 多条 INSERT 语句的 VALUES 会以多个具体值的形式，拼接在一条 INSERT 语句的多个 VALUES 中，形如：INSERT INTO TEST1 VALUES (1), (2),...,(10) | 多条单独的 UPDATE 语句用 “;” 拼接在一起 | 场景2 |
+
+使用 Statement 对象：
+
+| useServerPrepStmts | INSERT | UPDATE | 场景 |
+| --- | --- | --- | --- |
+| TRUE | 多条单独的 INSERT 语句用 “;” 拼接在一起 | 多条单独的 UPDATE 语句用 “;” 拼接在一起 | 场景3 |
+| FALSE | 多条单独的 INSERT 语句用 “;” 拼接在一起 | 多条单独的 UPDATE 语句用 “;” 拼接在一起 | 场景4 |
+
+### OceanBase 数据库的 Batch 执行有哪些类型，分别对请求的优化处理有哪些？
+
+从语句角度看，OceanBase 数据库的 Batch 执行针对 INSERT，UPDATE 和 DELETE 的处理是不同的，具体来说：
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>以下所涉及的场景均以 <code>rewriteBatchedStatements=TRUE</code> 为前提。   </p>
+</main>
+
+**INSERT**
+
+- 场景1
+  
+  使用 PrepareStatement 对象：
+
+  | useServerPrepStmts | INSERT |
+  | ------ | ------ |
+  | TRUE | 多条 INSERT 语句的 VALUES 会以多个 “?” 的形式，拼接在一条 INSERT 语句的多个 VALUES 中，形如：INSERT INTO TEST1 VALUES (?), (?),...,(?) |
+
+  在场景1 中，OceanBase 服务器端会收到一次 INSERT 语句的 `COM_STMT_PREPARE` 请求（`request_type=5`）和 一次 INSERT 语句的 `COM_STMT_EXECUTE` 请求（`request_type=6`），从优化的角度看，有如下好处：
+
+  - 只需要发生两次通讯就完成了 INSERT 语句的 Batch 执行。
+  - PrepareStatement 天然的属性可以减少编译时间。
+  - 假设后续有更多的 executeBatch，且设置了合理的 cachePrepStmts 及相关参数，可以减少 Prepare 请求（`request_type=5`）的次数，而只需要执行 execute 请求（`request_type=6`）。
+
+- 场景2
+  
+  使用 PrepareStatement 对象：
+
+  | useServerPrepStmts | INSERT |
+  | ------ | ------ |
+  | FALSE | 多条 INSERT 语句的 VALUES 会以多个具体值的形式，拼接在一条 INSERT 语句的多个 VALUES 中，形如：INSERT INTO TEST1 VALUES (1), (2),...,(10) |
+
+  在场景2 中，OceanBase 服务器端会收到一次 INSERT 语句的 `COM_QUERY` 请求（`request_type=2`），从优化的角度看，有如下好处：
+
+  - 只需要发生一次通讯就完成了 INSERT 语句的 Batch 执行。
+
+- 场景3/4
+  
+  使用 Statement 对象：
+
+  | useServerPrepStmts | INSERT | 场景 |
+  | ------ | ------ |------ |
+  | TRUE | 多条单独的 INSERT 语句用 “;” 拼接在一起 |  场景3 |
+  | FALSE | 多条单独的 INSERT 语句用 “;” 拼接在一起 |  场景4 |
+
+  在场景3/4中，OceanBase 服务器端会收到一个由多条 INSERT 语句用 “;” 拼接在一起的请求，并依次执行它们，所以也具有如下好处：
+
+  - 只需要发生一次通讯就完成了 INSERT 语句的 Batch 执行。
+
+**UPDATE**
+
+使用 PrepareStatement 对象：
+
+| useServerPrepStmts| UPDATE | 场景 |
+| --- | --- |  --- |
+| TRUE | 多条单独的 UPDATE 语句，其中的变量用 “?” 替代 | 场景1 |
+| FALSE | 多条单独的 UPDATE 语句用 “;” 拼接在一起 | 场景2 |
+
+使用 Statement 对象：
+
+| useServerPrepStmts |UPDATE | 场景 |
+| --- | --- | --- |
+| TRUE | 多条单独的 UPDATE 语句用 “;” 拼接在一起 | 场景3 |
+| FALSE | 多条单独的 UPDATE 语句用 “;” 拼接在一起 | 场景4 |
+
+- 如果没有开启 `ob_enable_batched_multi_statement`，场景1/2/3/4 的 UPDATE Batch 执行在 OceanBase Server 端都会被依次执行，不会有特别的优化。
+- 如果开启了 `ob_enable_batched_multi_statement`，那么对于场景2/3/4 的 UPDATE Batch 执行，OceanBase Server 端会对格式一致的多条 UPDATE 语句当成一条语句进行解析，并根据对应的参数和数据分布，生成 batch physical plan，这可以有效的提升 Batch UPDATE 执行的效率。但在使用这个功能时需要开启显式事务。
+
+**DELETE**
+当前版本对于 Batch DELETE 语句没有优化效果。
+
+### 如何在不同的场景下选择不同的配置？
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>请尽量选择较新版本的 oceanbase-client jar 包进行配置。 </p>
+</main>
+
+下表列出了使用 PrepareStatement 和 Statement 对象时，Batch 执行的不同行为（前提是 `rewriteBatchedStatements=TRUE` ）：
+
+使用 PrepareStatement 对象：
+
+| useServerPrepStmts | INSERT | UPDATE | 场景 |
+| --- | --- | --- | --- |
+| TRUE | 多条 INSERT 语句的 VALUES 会以多个 “?” 的形式，拼接在一条 INSERT 语句的多个 VALUES 中，形如：INSERT INTO TEST1 VALUES (?), (?),...,(?) | 多条单独的 UPDATE 语句，其中的变量用 “?” 替代 | 场景1 |
+| FALSE | 多条 INSERT 语句的 VALUES 会以多个具体值的形式，拼接在一条 INSERT 语句的多个 VALUES 中，形如：INSERT INTO TEST1 VALUES (1), (2),...,(10) | 多条单独的 UPDATE 语句用 “;” 拼接在一起 | 场景2 |
+
+使用 Statement 对象：
+
+| useServerPrepStmts | INSERT | UPDATE | 场景 |
+| --- | --- | --- | --- |
+| TRUE | 多条单独的 INSERT 语句用“;”拼接在一起 | 多条单独的 UPDATE 语句用“;”拼接在一起 | 场景3 |
+| FALSE | 多条单独的 INSERT 语句用“;”拼接在一起 | 多条单独的 UPDATE 语句用“;”拼接在一起 | 场景4 |
+
+**Batch INSERT**
+场景1/2 能更有效的发挥 Batch 执行的性能，是推荐的配置，也就是使用如下配置：
+
+- 场景1
+  - JDBC 对象：PrepareStatement 对象
+
+  - Server 端参数：
+
+    ```sql
+    _ob_enable_prepared_statement=TRUE
+    ```
+
+  - JDBC 配置属性：
+
+    ```sql
+    rewriteBatchedStatements=TRUE
+    useServerPrepStmts=TRUE
+    cachePrepStmts=TRUE
+    prepStmtCacheSize=<根据实际情况>
+    prepStmtCacheSqlLimit=<根据实际情况>
+    maxBatchTotalParamsNum=<根据实际情况>
+    ```
+
+- 场景2
+
+  - JDBC 对象：PrepareStatement 对象
+
+  - JDBC 配置属性：
+
+    ```sql
+    rewriteBatchedStatements=TRUE
+    useServerPrepStmts=FALSE
+    ```
+
+**Batch UPDATE**
+场景2/3/4 使用了文本协议进行通讯，因此都能利用到多 UPDATE 语句批处理的功能，是推荐的配置，也就是使用如下配置：
+
+- 场景2
+
+  - JDBC 对象：PrepareStatement 对象
+
+  - Server 端参数：
+
+      ```sql
+      ob_enable_batched_multi_statement=TRUE
+      _enable_static_typing_engine=TRUE
+      ```
+
+  - Server 端变量：
+
+      ```sql
+      _enable_dist_data_access_service=1
+      ```
+
+  - JDBC 配置属性：
+
+      ```sql
+      rewriteBatchedStatements=TRUE
+      useServerPrepStmts=FALSE
+      allowMultiQueries=TRUE
+      --设置这个是为了避免 JDBC 驱动不同版本间的行为差异
+      ```
+
+- 场景3/4
+
+  - JDBC 对象：Statement 对象
+  - Server 端参数：
+
+    ```sql
+    ob_enable_batched_multi_statement=TRUE
+    _enable_static_typing_engine=TRUE
+    ```
+
+  - Server 端变量：
+
+    ```sql
+    _enable_dist_data_access_service=1
+    ```
+
+  - JDBC 配置属性：
+
+    ```sql
+    rewriteBatchedStatements=TRUE
+    allowMultiQueries=TRUE
+    --设置这个是为了避免 JDBC 驱动不同版本间的行为差异
+    ```
+
+### 如何查看 OceanBase 数据库的 Batch 执行是否生效？
+
+最常用的方法就是通过 `gv$sql_audit` 来观察 Batch 执行是否生效，以下分几种场景举例：
+
+- 场景1 的 Batch INSERT 如果生效，会在 `gv$sql_audit` 中看到如下记录：
+
+  ```sql
+    query_sql: insert into test_multi_queries (c1, c2) values (?, ?)
+  request_type: 5
+    ps_stmt_id: 1
+
+    query_sql: insert into test_multi_queries (c1, c2) values (?, ?),(?, ?),(?, ?)
+  request_type: 5
+    ps_stmt_id: 2
+
+    query_sql: insert into test_multi_queries (c1, c2) values (?, ?),(?, ?),(?, ?)
+  request_type: 6
+    ps_stmt_id: 2
+  ```
+
+- 场景2 的 Batch INSERT 如果生效，会在 `gv$sql_audit` 中看到如下记录：
+
+  ```sql
+  query_sql: insert into test_multi_queries (c1, c2) values (1, 'PreparedStatement; rewriteBatchedStatements=true&allowMultiQueries=true&useLocalSessionState=true'),(2, 'PreparedStatement; rewriteBatchedStatements=true&allowMultiQueries=true&useLocalSessionState=true'),(3, 'PreparedStatement; rewriteBatchedStatements=true&allowMultiQueries=true&useLocalSessionState=true')
+  ```
+
+- 场景2 的 Batch UPDATE 如果生效，会在 `gv$sql_audit` 中看到如下记录：
+
+  ```sql
+              query_sql: update test2 set c2='batch update1' where c1=1;update test2 set c2='batch update2' where c1=2;update test2 set c2='batch update3' where c1=3
+              ret_code: 0
+  is_batched_multi_stmt: 1
+  ```
+
+  <main id="notice" type='notice'>
+   <h4>注意</h4>
+   <p>如果  <code> ret_code = -5787 </code>，这表明 Batch UPDATE 没有生效，需要根据上述说明查找原因。 </p>
+  </main>
+
+### Batch 执行时，executeBatch 方法返回的值是多少？
+
+executeBatch 方法被调用后，会返回一个整型数组 int []。对于 Batch INSERT 和 Batch UPDATE 来说：
+
+- 如果在 OceanBase 客户端最终是依次执行的，那么这个数组会返回 Batch 中每一个 Operation 所修改的行数。
+- 如果在 OceanBase 客户端最终是作为一个整体执行的，比如 JDBC 驱动把多条 INSERT 语句改成了一个 INSERT 语句的多个 values（场景1/2）；又比如 UPDATE 语句作为一个 Batch physical plan 被执行（场景2），那么这个数组的每个元素会返回 -2，表示执行成功但更新行数未知。
+
+## SQL 调优 FAQ
+
+### 数据库物理设计降低查询性能
+
+查询的性能很大程度上取决于数据库的物理设计，包括所访问对象的 Schema 信息等。例如，对于二级索引，如果所需的投影列没有包括在索引列之中，则需要使用回表的机制访问主表，查询的代价会增加很多。此时，可以考虑将用户的投影列加入到索引列中，构成所谓的"覆盖索引"，避免回表访问。
+
+### 系统负载影响单条 SQL 的响应时间
+
+系统的整体负载除了会影响系统的整体吞吐量，也会引起单条 SQL 的响应时间变化。OceanBase 数据库的 SQL 引擎采用队列模型，针对用户请求，如果可用线程全部被占用，则新的请求需要在请求队列中排队，直到某个线程完成当前请求。请求在队列中的排队时间可以在 `(G)V$OB_SQL_AUDIT` 中看到。
+
+### 代价模型缺陷导致的执行计划选择错误
+
+OceanBase 数据库内建的代价模型是服务器的固有逻辑，最佳的执行计划依赖此代价模型。因此，一旦出现由代价模型导致的计划选择错误，用户只能通过执行计划绑定来确保选择"正确"的执行计划。
+
+### 客户端路由与服务器之间出现路由反馈逻辑错误
+
+obproxy 的一个主要功能是将 SQL 查询路由到恰当的服务器节点。具体来说，如果用户查询没有指定使用弱一致性读属性，Proxy 需要将其路由到所涉及的表（或具体分区）的主节点上，以避免服务器节点之前的二次转发；否则，Proxy 会根据预先设置好的规则将其转发到恰当的节点。
+由于 Proxy 与服务器之间采用松耦合的方式，Proxy 上缓存的数据物理分布信息刷新可能不及时，导致错误的路由选择。可能导致路由信息变化的场景有：
+
+- 负载均衡导致重新选主。
+- 网络不稳导致服务器间重新选主。
+- 由服务器上下线、轮转合并等导致的重新选主。
+
+当在 SQL Audit 或执行计划缓存中发现有大量远程执行时，需要考虑是否与上述场景吻合。客户端与服务器之间有路由反馈逻辑，一旦发生错误，客户端会主动刷新数据物理分布信息，随后路由的选择也将恢复正常。
+
+## 索引监控 FAQ
+
+### 索引监控默认启动，会不会影响性能？
+
+会影响到，但默认（SAMPLED）模式下影响很小，几乎可以忽略。
+
+### 采样模式下的数据是否准确 ？例如查询了 1 次，是否一定会被记录下来？
+
+不一定，采样的目的是为了过滤部分数据，因此某次查询的记录可能会被丢弃。
+
+### 备库的索引监控是只统计自己还是同步主库的?
+
+统计是租户级的，备库可以查到主库同步的数据，但不能写入。
+
+## 复制表 FAQ
+
+### 什么是复制表？
+
+复制表是 OceanBase 数据库支持的一种特殊表，这种表可以在任意一个副本上读到数据的最新修改。推荐应用于写入频率较低、对读操作延迟和负载均衡要求较高的业务场景。
+
+### 复制表适用场景？
+
+#### 适用场景一：写入频率较低、读操作延迟和负载均衡要求高的场景
+
+当表的数据量不大，访问又特别频繁的情况下，使用普通表，数据会集中在一个节点，形成热点，影响性能，可以选择用复制表。
+
+典型复制表场景：
+
+* 配置表，业务通过该表读取配置信息。
+* 金融场景中的存储汇率的表，该表不会实时更新，每天只更新一次。
+* 银行分行或者网点信息表，该表很少新增记录项。
+
+复制表最佳实践：
+
+1. 创建复制表时，建议按需选择，而不是在租户中创建大量复制表。
+2. 写入复制表数据时，不建议复制表的写跟读在同一个事务中。
+3. 查询复制表时，如果有 `JOIN` 查询，则按照普通表 `JOIN` 复制表的顺序设计查询（Query）SQL。
+
+#### 适用场景二：业务上不能设置为分区表、同时频繁参与跟分区表 JOIN 的场景
+
+出于业务逻辑考虑，某些表不能拆分为分区表或者没有必要拆分（比如查询没有明显的分区条件），但它又频繁的跟分区表有关联关系。为了减少不必要的跨机分布式查询，可以将这类表设置为复制表，每个节点都支持强读，不管分区表的分区的主副本在哪个机器上，它都可以在同机跟复制表的副本做表连接。
+
+### 复制表误用场景？
+
+#### 误用场景一：为了避免两个分区表的跨节点连接，将其中一个分区表设成复制表
+
+为了提升性能，无脑将 Query 中的分区表设置为复制表，并不科学，这些表不一定是复制表适用场景，可能达不到预期的效果。
+
+* 表存在频繁的写入操作，复制表的写是有性能代价的，需要同步到所有副本，理论上同步是并发的，如果有个别节点，因为网络等原因，同步非常慢，会导致整个复制表的写性能下降。
+* 如果复制表数据量非常大，复制表在每个节点都有副本，会占用大量的存储空间。
+
+#### 误用场景二： 事务中含有复制表的写和读
+
+复制表的纯写事务或者纯读事务，都是推荐的，只需要关注业务是否能接受写入延迟。
+
+如果事务中同时存在复制表的写和读，因为需要读 Leader，则会导致事务中所有复制表都退化为普通表的性能，无法发挥复制表可以读取本地副本的优势。
+
+#### 误用场景三：复制表 JOIN 普通表
+
+ODP（obproxy）对多表 `JOIN` 的路由规则是，按照解析到的第一张表路由，如果是复制表，会随机选择一个副本路由。如果此节点恰好不是普通表的 Leader，则会发生远程路由，影响性能。
+
+如果业务中涉及复制表跟普通分区表的 `JOIN`，建议调整 `JOIN` 顺序为普通分区表 `JOIN` 复制表，按照普通分区表路由，按预期生成本地计划，优化性能。
+
+#### 误用场景四：复制表设置为分区表
+
+复制表本身就是各个节点都会创建副本的，不需要再设置为分区表。
+
+## 自增列 FAQ
+
+### 什么情况下需要将自增列数据类型设置为 BIGINT？
+
+* 业务本身数据增长快，保留数据周期长。
+* 业务不在意建表使用 `BIGINT` 还是 `INT`。
+* Leader 打散，机器切主的概率变大（例如宕机、random 负载均衡等），自增列数值跳变的概率变大。
+* `NOORDER` 模式，需要显式指定自增列值。
+
+### 什么情况下允许自增列数据类型保持为 INT？
+
+* 业务数据量本身远小于 `INT` 上限。
+* 从 MySQL 迁移的业务，需要使用 `INT` 类型，否则应用可能存在兼容性问题。
+* 单机场景，切主的场景很少。
+* 有一定的监控运维能力，自增值个数接近上限时进行运维处理，如重建表导数、或 `INT` 改 `BIGINT`（从 V4.2.2 版本开始，列类型由 `INT` 修改为 `BIGINT` 为 Online DDL 操作）等。
+
+### 什么情况下可以将自增列改为 NOORDER？
+
+* 当用户无自增列表级有序需求，并期望优化高并发操作的性能时，可以将 `ORDER` 修改为 `NOORDER`。
+* 当用户有自增列表级有序需求，但是 Leader 都在一个 OBServer 上时，且期望优化高并发操作的性能时，可以将 `ORDER` 修改为 `NOORDER`。
+
+### 什么情况下可以改小自增列 auto_increment_cache_size？
+
+* 跳变问题比较突出。
+* 业务流量很低。
+* 性能不敏感。
+* 对性能有要求，但是为单机模式，Leader 集中在 1 个节点。

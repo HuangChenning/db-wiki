@@ -1,0 +1,218 @@
+---
+title: "计划缓存的缺点和解决方案"
+book: "管理数据库"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286179.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 计划缓存的缺点和解决方案
+
+## 计划缓存的缺点
+
+上一节中我们提到了对于一条参数化后的 SQL，生成执行计划后会将该计划保存到计划缓存中，后续的 SQL 执行都会命中这个执行计划。这种复用计划的方式虽然能够节省生成计划的时间，但在数据倾斜的场景下隐含了一个 bad case，这里我们举一个例子来说明。
+
+表 `t1` 的定义如下所示，假设 `c1` 列只有两种值，其中值 `0` 占了全部数据的 1%，值 `1` 占了全部数据的 99%；`c2` 列有 1 到 10 共 10 种值，每种值各占了 10%。那么对于 `SELECT * FROM t1 WHERE c1 = ? AND c2 = ?` 这一条 SQL，如果生成计划时优化器看到的条件是 `c1 = 0 and c2 = 1`，那么优化器会选择走索引 `idx1`，先从索引上查出满足 `c1 = 0` 的 1% 的数据，然后索引回表后通过 `C2 = 1` 过滤掉不满足条件的数据后返回。这种情况下只要扫描 1% 的数据加索引回表1%的数据就完成了查询。但是如果后续 server 又收到了一条 SQL，此时用户给到的条件变成了 `c1 = 1 and c2 = 1`，这时复用前面生成的计划就变成了先从索引 `idx1` 上查出满足 `C1 = 1` 的 99% 的数据，然后索引回表后通过 `C2 = 1` 过滤掉不满足条件的数据后返回。此时需要扫描 99% 的数据加索引回表 99% 的数据才能完成查询。很显然对于这一条 SQL，使用索引 `idx2` 是一个更好的选择，因为无论如何取值，走 `idx2` 总是只需要扫描 10% 的数据加回表 10%，这样会让 SQL 的执行时间更加稳定。
+
+```sql
+create table t1 (
+  c1 int,
+  c2 int,
+  c3 int,
+  key idx1 (c1),
+  key idx2 (c2)
+);
+```
+
+当遇到这种情况时，用户可以使用 outline 对 SQL 进行执行计划绑定（对于分库分表场景，一条模板 Outline 即可覆盖所有分表，无需逐表创建），强制这条查询请求使用 `idx2` 索引。当然针对这条 SQL，其实还有更好的优化方法，不过这不是本文讨论的重点，因此也不做展开。
+
+## 计划绑定
+
+计划绑定是 OceanBase 数据库提供的一种允许用户在不修改 SQL 的情况下，通过在数据库中创建 outline 达到控制执行计划的一种机制。OceanBase 数据库支持通过两种方式创建 Outline，一种是通过 `SQL_TEXT` (用户执行的带参数的原始语句)，另一种是通过 `SQL_ID` 创建。
+
+V4.4.2 BP3 之前版本创建 Outline 需要进入对应的数据库下执行。对于 OceanBase 数据库 V4.4.2 版本，从 V4.4.2 BP3 版本开始引入 `BINDING_RULE` 子句，用于设置 Outline 的生效级别。该功能具有以下特点：
+
+* 跨库绑定：一条 Outline 可对租户内所有同名表生效。
+* 模板绑定：通过 `${var:regex}` 通配表名或库名，一条 Outline 可覆盖任意命名规范的分库分表。
+* 多表变量约束：在 `JOIN` 多张分表时，同一变量必须取相同值，以避免错误匹配。
+* 完全向后兼容：若不显式编写 `BINDING_RULE`，其行为将与历史版本（V4.4.2 BP3 之前）保持一致。
+
+### 使用 SQL_TEXT 创建 Outline
+
+使用 `SQL_TEXT` 创建 Outline 后，会生成一个 Key-Value 对存储在 Map 中，其中 Key 为绑定的 SQL 参数化后的文本，Value 为绑定的 Hint。具体参数化原则，请参见 [快速参数化](../../../../../700.reference/1000.performance-tuning-guide/500.sql-optimization/200.sql-execution-plan/400.fast-parameterization.md)。
+
+使用 `SQL_TEXT` 创建 Outline 的语法如下：
+
+```sql
+CREATE [OR REPLACE] OUTLINE outline_name ON stmt
+    [TO target_stmt
+    | BINDING_RULE (binding_item)];
+
+binding_item:
+    SCOPE = {DATABASE | TENANT}
+    | MAP = {real_name TO 'pattern', ...}
+```
+
+参数说明如下：
+
+* `OR REPLACE`：可选项，指定 `OR REPLACE` 后，可以对已经存在执行计划进行替换。
+* `outline_name`：指定要创建的 Outline 名称。
+* `stmt`：一般为一个带有 Hint 和原始参数的 DML 语句。
+* `TO target_stmt`：如果不指定 `TO target_stmt`，则表示如果数据库接受的 SQL 参数化后与 `stmt` 去掉 Hint 参数化文本相同，则将该 SQL 绑定 `stmt` 中 Hint 生成执行计划。如果期望对含有 Hint 的语句执行固定计划，则需要 `TO target_stmt` 来指明原始的 SQL。示例如下：
+
+    ```shell
+    obclient> CREATE OUTLINE outline1
+        ON SELECT /*+NO_REWRITE*/ * FROM tbl1
+          WHERE col1 = 4
+          AND col2 = 6
+          ORDER BY 2
+        TO SELECT * FROM tbl1
+          WHERE col1 = 4
+          AND col2 = 6
+          ORDER BY 2;
+    ```
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>在使用 <code>target_stmt</code> 时，严格要求 <code>stmt</code> 与 <code>target_stmt</code> 在去掉 Hint 后完全匹配。</p>
+    </main>
+
+* `BINDING_RULE (binding_item)`：可选项，用于指定该 Outline 生效级别。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>对于 V4.4.2 版本，从 V4.4.2 BP3 版本开始引入 <code>BINDING_RULE</code> 子句。</p>
+  </main>
+
+  * `SCOPE = {DATABASE | TENANT}`：
+
+    * `SCOPE = DATABASE`：默认值，表示仅当前库生效。
+    * `SCOPE = TENANT`：表示当前租户下所有库生效。
+
+  * `MAP = {real_name TO 'pattern', ...}`：对左侧真实表名/`db.table` 应用右侧 `pattern`。`pattern` 中可写 `${变量名}` 或 `${变量名:正则}`。示例可查看下文 **当前库分表通配** 中的内容。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p><ul>
+        <li>当 <code>MAP</code> 左侧为 <code>db.table</code> 形式时，右侧 <code>pattern</code> 必须拆成两组引号：<code>'db_pattern'.'table_pattern'</code>。</li>
+        <li>同一 <code>BINDING_RULE</code> 内，变量必须先定义后引用，同名变量在所有引用处取值必须一致。</li>
+      </ul></p>
+    </main>
+
+### 使用 SQL_ID 创建 Outline
+
+使用 `SQL_ID` 创建 Outline 的语法如下：
+
+```shell
+obclient> CREATE OUTLINE outline_name ON sql_id USING HINT hint_text;
+```
+
+`SQL_ID` 为需要绑定的 SQL 对应的 `SQL_ID`，可以通过以下方式获取：
+
+* 通过查询 `V$OB_PLAN_CACHE_PLAN_STAT` 获取。
+* 通过查询 `GV$OB_SQL_AUDIT` 获取。
+* 通过参数化的原始 SQL，使用 MD5 生成 `SQL_ID`。可参考如下脚本生成对应 SQL 的 `SQL_ID`。
+
+    ```sql
+    IMPORT hashlib
+    sql_text='SELECT * FROM t1 WHERE c2 = ?'
+    sql_id=hashlib.md5(sql_text.encode('utf-8')).hexdigest().upper()
+    PRINT(sql_id)
+    ```
+
+使用 `SQL_ID` 绑定 Outline，如下例所示：
+
+```shell
+obclient> CREATE OUTLINE otl_idx_c2
+    ON 'ED570339F2C856BA96008A29EDF04C74'
+    USING HINT /*+ INDEX(t1 idx_c2)*/ ;
+```
+
+### 分库分表场景下的模板绑定
+
+#### 跨库同名表绑定
+
+在分库架构中，多张分库下存在同名表（如 `db_001.orders`、`db_002.orders`）。使用 `SCOPE = TENANT` 可以用一条 Outline 覆盖所有分库的同名表。
+
+**示例如下：**
+
+所有库下的 `orders` 表都走 `idx_status` 索引：
+
+```shell
+obclient> CREATE OUTLINE otl_orders
+    ON SELECT /*+ index(orders, idx_status) */*
+        FROM orders
+        WHERE status = 'a'
+    BINDING_RULE (SCOPE = TENANT);
+```
+
+* 在库 `db_001` 中查询命中示例。
+
+    ```shell
+    obclient> USE db_001;
+    ```
+
+    ```shell
+    obclient> SELECT * FROM orders WHERE status = 'pending';
+    ```
+
+* 在库 `db_002` 中查询命中示例。
+
+    ```shell
+    obclient> USE db_002;
+    ```
+
+    ```shell
+    obclient> SELECT * FROM orders WHERE status = 'pending';
+    ```
+
+* 在库 `db_test` 中查询命中示例。
+
+    ```shell
+    obclient> USE db_test;
+    ```
+
+    ```shell
+    obclient> SELECT * FROM orders WHERE status = 'pending';
+    ```
+
+#### 当前库分表通配
+
+在分表架构中，单库内存在多张命名规律的分表（如 `orders_sh`、`orders_hz`、`orders_bj`）。使用 `MAP` 配合正则变量可以用一条 Outline 覆盖所有分表。
+
+**示例如下：**
+
+`orders_xx` 系列分表共享同一条 Outline：
+
+```shell
+obclient> CREATE OUTLINE otl_orders_tpl
+    ON SELECT /*+ index(orders_sh, idx_status) */*
+        FROM orders_sh
+        WHERE status = 'a'
+    BINDING_RULE (MAP = {orders_sh TO 'orders_${S:[a-z]+}'});
+```
+
+* 查询命中示例 `S=bj`。
+
+    ```shell
+    obclient> SELECT * FROM orders_bj WHERE status = 'pending';
+    ```
+
+* 查询命中示例 `S=hz`。
+
+    ```shell
+    obclient> SELECT * FROM orders_hz WHERE status = 'pending';
+    ```
+
+* 查询不命中示例，`001` 不符合 `[a-z]+`。
+
+    ```shell
+    obclient> SELECT * FROM orders_001 WHERE status = 'pending';
+    ```
+
+### 相关文档
+
+除 `SQL_TEXT` 和 `SQL_ID` 方式外，还可通过 `CREATE FORMAT OUTLINE` 创建模糊 Outline 进行计划绑定，且该方式在文本协议和 PS 协议下均生效。详细介绍参见 [CREATE FORMAT OUTLINE（MySQL 模式）](../../../../../700.reference/500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2350.create-format-outline-of-mysql-mode.md) 和 [CREATE FORMAT OUTLINE（Oracle 模式）](../../../../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/2000.create-format-outline-of-oracle-mode.md)。

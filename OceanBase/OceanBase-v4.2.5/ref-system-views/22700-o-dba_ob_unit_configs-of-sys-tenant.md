@@ -1,0 +1,58 @@
+---
+title: oceanbase.DBA_OB_UNIT_CONFIGS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501083.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_UNIT_CONFIGS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示所有租户的 Unit 规格信息。
+
+## 字段说明
+
+|      字段名称       |      类型      | 是否可以为 NULL |        描述        |
+|-----------------|--------------|------------|------------------|
+| UNIT_CONFIG_ID  | bigint(20)   | NO         | Unit 规格 ID       |
+| NAME            | varchar(128) | NO         | Unit 规格名称        |
+| CREATE_TIME         | timestamp(6)       | YES         | Unit 规格创建时间         |
+| MODIFY_TIME         | timestamp(6)       | YES         | 信息更新时间         |
+| MAX_CPU         | double       | NO         | CPU 规格上限         |
+| MIN_CPU         | double       | NO         | CPU 规格下限         |
+| MEMORY_SIZE      | bigint(20)   | NO         | 内存规格，单位为字节     |
+| LOG_DISK_SIZE      | bigint(20)   | NO         | 日志盘规格，单位为字节     |
+| MAX_IOPS        | bigint(20)   | NO         | 磁盘 IOPS 规格上限     |
+| MIN_IOPS        | bigint(20)   | NO         | 磁盘 IOPS 规格下限     |
+| IOPS_WEIGHT   | bigint(20)   | NO         | IOPS 权重   |
+
+## 查询示例
+
+系统租户查询所有租户的 Unit 规格信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OB_UNIT_CONFIGS;
+```
+
+查询结果如下：
+
+```shell
++----------------+-----------------+----------------------------+----------------------------+---------+---------+-------------+---------------+---------------------+---------------------+-------------+
+| UNIT_CONFIG_ID | NAME            | CREATE_TIME                | MODIFY_TIME                | MAX_CPU | MIN_CPU | MEMORY_SIZE | LOG_DISK_SIZE | MAX_IOPS            | MIN_IOPS            | IOPS_WEIGHT |
++----------------+-----------------+----------------------------+----------------------------+---------+---------+-------------+---------------+---------------------+---------------------+-------------+
+|              1 | sys_unit_config | 2025-01-06 16:31:31.406811 | 2025-01-06 16:31:31.406811 |       4 |       4 |  5368709120 |   17448304640 | 9223372036854775807 | 9223372036854775807 |           4 |
+|           1001 | unit001         | 2025-01-06 16:33:09.768329 | 2025-01-06 16:33:09.768329 |       2 |       2 |  6442450944 |   19327352832 | 9223372036854775807 | 9223372036854775807 |           2 |
++----------------+-----------------+----------------------------+----------------------------+---------+---------+-------------+---------------+---------------------+---------------------+-------------+
+2 rows in set
+
+```

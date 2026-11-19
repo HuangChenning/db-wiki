@@ -1,0 +1,27 @@
+---
+title: "DBMS_ERRLOG 概述"
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006288407.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DBMS_ERRLOG 概述
+
+`DBMS_ERRLOG` 系统包提供创建错误日志表的功能。通过该包，您可以为 DML 操作创建专用的错误日志表，用于记录执行 DML 操作时出现的错误。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## DBMS_ERRLOG 子程序概览
+
+下表列出了 OceanBase 数据库当前版本所支持的 `DBMS_ERRLOG` 子程序以及简要描述。
+
+|        子程序            |      描述       |
+|--------------------------|---------------|
+| [CREATE_ERROR_LOG](200.create-error-log-oracle.md) | 为指定的 DML 表创建错误日志表。 |

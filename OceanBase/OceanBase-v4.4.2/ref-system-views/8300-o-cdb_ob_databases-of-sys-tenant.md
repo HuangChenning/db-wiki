@@ -1,0 +1,59 @@
+---
+title: oceanbase.CDB_OB_DATABASES
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284643.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_DATABASES
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+系统租户下展示所有租户的数据库元信息。
+
+## 字段说明
+
+|     字段名称      |      类型       | 是否可以为 NULL |             描述             |
+|---------------|---------------|------------|----------------------------|
+| TENANT_ID     | bigint(20)    | NO         | 租户 ID                      |
+| DATABASE_NAME | varchar(128)  | NO         | 数据库名                       |
+| IN_RECYCLEBIN | varchar(3)    | NO         | 数据库是否在回收站中：<ul><li> `YES` </li><li> `NO`</li></ul> |
+| COLLATION     | varchar(128)  | NO         | 数据库缺省 COLLATION            |
+| READ_ONLY     | varchar(3)    | NO   | <ul><li>YES：只读</li><li>NO：可读/写</li></ul>    |
+| COMMENT       | varchar(2048) | NO         | 数据库的描述                     |
+| TABLEGROUP_NAME | varchar(128)  | NO       | DataBase 绑定的表组名称 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.4.1 版本开始引入。</p></main>|
+
+## 查询示例
+
+系统租户下，查询租户 ID 为 1002 的租户的数据库元信息。
+
+```shell
+obclient> SELECT * FROM oceanbase.CDB_OB_DATABASES WHERE TENANT_ID =1002 LIMIT 1\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+      TENANT_ID: 1002
+  DATABASE_NAME: oceanbase
+  IN_RECYCLEBIN: NO
+      COLLATION: utf8mb4_general_ci
+      READ_ONLY: NO
+        COMMENT: system database
+TABLEGROUP_NAME: NULL
+1 row in set
+```
+
+## 相关视图或文档
+
+[查看数据库](../../../300.database-object-management/100.manage-object-of-mysql-mode/100.manage-databases-of-mysql-mode/200.view-a-database-of-mysql-mode.md)

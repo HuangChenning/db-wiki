@@ -1,0 +1,71 @@
+---
+title: EXTRACTVALUE
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005688076.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# EXTRACTVALUE
+
+## 描述
+
+该函数用于从 XML 字符串中提取指定路径的值。
+
+## 语法
+
+```sql
+EXTRACTVALUE(xml_frag, xpath_expr)
+```
+
+## 参数解释
+
+| **字段** | **说明** |
+| -------- | -------- |
+| xml_frag | 指定的 XML 字符串，可以是一个 XML 文档或片段。|
+| xpath_expr | 指定要提取的值的路径（XPath）表达式。|
+
+## 返回类型
+
+返回类型为 `LONGTEXT`。
+
+## 示例
+
+* 匹配到多个结果用空格分开。
+
+  使用 `EXTRACTVALUE` 函数从给定的 XML 字符串 `<a><b>x</b><b>y</b></a>` 中提取特定节点的值，要提取的节点路径为 `/a/b`。
+
+  ```shell
+  obclient [test_db]> SELECT EXTRACTVALUE('<a><b>x</b><b>y</b></a>', '/a/b');
+  ```
+
+  返回结果如下：
+
+  ```shell
+  +-------------------------------------------------+
+  | EXTRACTVALUE('<a><b>x</b><b>y</b></a>', '/a/b') |
+  +-------------------------------------------------+
+  | x y                                             |
+  +-------------------------------------------------+
+  1 row in set
+  ```
+
+* 没有匹配到结果返回空字符串。
+
+  ```shell
+  obclient [test_db]> SELECT EXTRACTVALUE('<a><b>x</b><b>y</b></a>', '/a/c');
+  ```
+
+  返回结果如下：
+
+  ```shell
+  +-------------------------------------------------+
+  | EXTRACTVALUE('<a><b>x</b><b>y</b></a>', '/a/c') |
+  +-------------------------------------------------+
+  |                                                 |
+  +-------------------------------------------------+
+  1 row in set
+  ```

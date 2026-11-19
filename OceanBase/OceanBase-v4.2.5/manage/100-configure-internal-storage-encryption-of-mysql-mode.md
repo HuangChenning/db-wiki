@@ -1,0 +1,116 @@
+---
+title: "为新创建的表设置透明加密"
+book: "管理数据库"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500200.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 为新创建的表设置透明加密
+
+<main id="notice">
+      <h4>功能适用性</h4>
+      <p>OceanBase 数据库社区版暂不支持数据透明加密。</p>
+  </main>
+  
+本节主要介绍如何创建加密表空间来对新创建的表实现透明加密。
+
+OceanBase 数据库的数据加密单位为表空间（Tablespace）。OceanBase 数据库并非一个多数据文件的数据库系统，表空间是为了兼容而设计的概念，可以简单理解为表空间是一组表的集合。
+
+本节以在加密表空间 `sectest_ts1` 上创建表 `t1` 为例，提供透明加密的操作指导。
+
+## 使用限制
+
+* 系统租户不能开启加密。
+* 租户配置透明加密后，除非租户重建，否则无法再切换为其他加密模式。
+
+## 配置 internal 方式的存储加密
+
+internal 方式的存储主密钥，其加密信息主要在内部表中进行管理。为了避免日志回放时的循环依赖，该加密方式下的 clog 不做加密。
+
+1. 管理员用户登录到集群的 MySQL 租户。
+
+2. 执行以下语句，开启 internal 方式的透明加密。
+
+   配置项 `tde_method` 用于设置透明表空间加密的方式，默认为 `none`，表示关闭透明表空间加密。
+
+   更多配置项 `tde_method` 的说明信息，参见 [tde_method](../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/8300.tde_method.md)。
+
+      <main id="notice" type='notice'>
+       <h4>注意</h4>
+       <ul><li>如果主租户有对应的备租户，建议您先设置备租户的 <code>tde_method</code>，再设置主租户的 <code>tde_method</code>。  </li><li>配置项 <code>tde_method</code> 一旦设置就不能再修改，并且在存在备租户的场景下，需要在备租户中也设置相同的值。 </li></ul>
+      </main>
+
+      ```shell
+      obclient> ALTER SYSTEM SET tde_method='internal';
+      ```
+
+3. 执行以下语句，确认该租户上所有 OBServer 节点上的配置项 `tde_method` 的值均为 `internal`。
+
+   ```shell
+   obclient> SHOW PARAMETERS LIKE 'tde_method';
+   ```
+
+4. 确认后，执行以下语句，生成主密钥。
+
+      <main id="notice" type='explain'>
+       <h4>说明</h4>
+       <p>仅当租户上所有 OBServer 节点上的配置项 <code>tde_method</code> 的值均为 <code>internal</code>，该语句才能执行成功。</p>
+      </main>
+
+      ```shell
+      obclient> ALTER INSTANCE ROTATE INNODB MASTER KEY;
+      ```
+
+      <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>在执行完该语句之后，需要等 20 秒左右，等待秘钥生效后再执行后续操作。</p>
+      </main>
+
+5. 创建表空间并指定加密算法。
+
+   可以指定加密算法 `aes-256`、`aes-128`、`aes-192`、`sm4-cbc`、`aes-128-gcm`、`aes-192-gcm`、`aes-256-gcm`、`sm4-gcm`，如果使用 `'y'`，则表示默认使用 aes-256。
+
+   示例如下：
+
+   ```shell
+   obclient> CREATE TABLESPACE sectest_ts1 encryption = 'y'; 
+   ```
+
+## 在加密的表空间中创建新表
+
+1. 普通用户登录到数据库的 MySQL 租户。
+
+2. 进入对应的数据库后，创建表并指定表空间。
+
+   ```shell
+   obclient> CREATE TABLE t1 (id1 int, id2 int) TABLESPACE sectest_ts1;
+   ```
+
+   创建后，该表对应的任何事务都需要加密。
+
+3. 确认表空间内的表是否标记为加密。
+
+   执行以下语句，查看 `encryptionalg` 是否为之前设置的 `aes-256`。
+
+   ```shell
+   obclient> SELECT table_name,encryptionalg,encrypted FROM oceanbase.V$OB_ENCRYPTED_TABLES;
+   +------------+---------------+-----------+
+   | table_name | encryptionalg | encrypted |
+   +------------+---------------+-----------+
+   | t1         | aes-256       | YES       |
+   +------------+---------------+-----------+
+   1 row in set
+   ```
+
+   `encryptionalg` 为 `aes-256`，且 `encrypted` 为 `YES` 则表示表加密配置成功。
+
+   更多视图 `V$OB_ENCRYPTED_TABLES` 的字段及说明信息，参见 [V$OB_ENCRYPTED_TABLES](../../../../700.reference/700.system-views/400.system-view-of-mysql-mode/300.performance-view-of-mysql-mode/30200.v-encrypted_tables-of-mysql-mode.md)。
+
+## 相关文档
+
+* [为已有表设置透明加密](../200.data-storage-encryption-of-mysql-mode/200.set-storage-encryption-for-existing-tables-of-mysql-mode.md)
+* [解除加密](../200.data-storage-encryption-of-mysql-mode/300.unencrypt-of-mysql-mode.md)

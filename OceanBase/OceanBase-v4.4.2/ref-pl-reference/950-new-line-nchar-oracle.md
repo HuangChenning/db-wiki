@@ -1,0 +1,34 @@
+---
+title: NEW_LINE_NCHAR
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005719948.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# NEW_LINE_NCHAR
+
+`NEW_LINE_NCHAR` 用于向文件中插入换行符。
+
+ <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+UTL_FILE.NEW_LINE (
+file      IN FILE_TYPE,
+lines    IN BINARY_INTEGER := 1);
+```
+
+## 参数解释
+
+|  参数   |                   解释                   |
+|-------|----------------------------------------|
+| file  | 代表已打开的文件句柄。 |
+| lines | 用于指定要写入的行结束符序列的数量，默认值为 `1`。此参数决定了在文件中插入多少个换行符。                           |

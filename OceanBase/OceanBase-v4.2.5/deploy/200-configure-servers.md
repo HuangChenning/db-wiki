@@ -1,0 +1,208 @@
+---
+title: "服务器配置"
+book: "OceanBase 部署"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500188.html"
+tags:
+  - oceanbase
+  - distributed
+  - deploy
+---
+
+# 服务器配置
+
+本节主要介绍服务器的硬件设置要求，包括操作系统、BIOS 设置、磁盘挂载、网卡设置、软件要求等。
+
+## 准备操作系统
+
+### OAT/OCP 操作系统
+
+支持在下表所示的操作系统中部署 OAT/OCP。
+
+|                操作系统                 | 支持版本 | 服务器类型  |
+|----------------------------------------|---------|------------|
+| Rocky Linux         | 9      | x86_64/ARM aarch64 |
+| Alibaba Cloud Linux | 2、3   | x86_64/ARM aarch64 |
+| 龙蜥 AnolisOS        | 8      | x86_64/ARM aarch64 |
+| 麒麟 OS（KylinOS）   | V10、V11 | x86_64/ARM aarch64 |
+| 统信 UOS             | V20   | x86_64/ARM aarch64 |
+| 中科方德 NFSChina    | 4.0   | x86_64/ARM aarch64 |
+| CentOS/RHEL（Red Hat Enterprise Linux）| 7、8、9   | x86_64/ARM aarch64 |
+| openSUSE             | 12SP5                | x86_64/ARM aarch64 |
+| Debian               | 12                   | x86_64/ARM aarch64 |
+| openEuler            | 20.03 LTS、22.03 LTS | x86_64/ARM aarch64 |
+| 凝思 OS              | V6.0.99、V6.0.100   | x86_64/ARM aarch64 |
+| Ubuntu               | 22.04 LTS、24.04 LTS | x86_64/ARM aarch64 |
+
+### OceanBase 数据库支持的操作系统
+
+支持在下表所示的 Linux 操作系统中安装 OceanBase 数据库。
+
+|       Linux 操作系统     |    版本   |             服务器架构         |
+|-------------------------|-----------|-------------------------------|
+| Rocky Linux             | 9           | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| Alibaba Cloud Linux     | 2、3        | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| 龙蜥 AnolisOS           | 8           | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| KylinOS                 | V10、V11    | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| 统信 UOS                | V20         | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| 中科方德 NFSChina        | 4.0        | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| 浪潮 Inspur kos          | 5.8        | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| CentOS / Red Hat Enterprise Linux | 7、8、9 | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| SUSE Enterprise Linux     | 12SP5        | x86_64（包括海光）|
+| Debian                    | 12           | x86_64（包括海光）|
+| openEuler                 | 20.03 LTS、22.03 LTS | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| 凝思 Linux                | V6.0.99、V6.0.100   | x86_64（包括海光），ARM_64（鲲鹏、飞腾）|
+| Ubuntu                    | 22.04 LTS、24.04 LTS | x86_64（包括海光）|
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>操作系统需要配置网络和软件管理器（ yum 或 zypper 源）。</li><li>部署 OceanBase 集群的服务器需要是小端模式。</li><li>如果使用的是 Hygon 7490 芯片，必须安装 Hygon（海光）服务器厂家推荐的已经包含了 4 号补丁的操作系统。</li></ul></p>
+</main>
+
+## OceanBase 服务器 BIOS 设置
+
+### 特殊设置
+
+* 在 Intel x86 架构的环境中：
+
+  * 建议修改配置文件 `/etc/sysctl.conf`，将参数 `vm.swappiness` 设置为 `0`，方法如下：
+
+    ```bash
+    [root@xxx /]
+    $vi /etc/sysctl.conf
+    vm.swappiness = 0
+    ```
+
+    应用 sysctl.conf 配置文件里的值：
+
+    ```bash
+    [root@xxx /]
+    $sysctl -p    
+    ```
+
+* 在 AMD 或者 ARM 架构的环境中，建议开启 Numa。
+
+* 在 ARM 和海光架构的环境中，建议修改配置文件 `/etc/sysctl.conf`，将参数 `kernel.numa_balancing`、`vm.zone_reclaim_mode` 和 `vm.swappiness` 设置为 `0`，方法如下：
+
+  ```bash
+  [root@xxx /]
+  $vi /etc/sysctl.conf
+  kernel.numa_balancing = 0
+  vm.zone_reclaim_mode = 0
+  vm.swappiness = 0
+  ```
+
+  应用 sysctl.conf 配置文件里的值：
+
+  ```bash
+  [root@xxx /]
+  $sysctl -p
+  ```
+
+### BIOS 需要关闭以下选项
+
+* Cstate
+
+* Pstate
+
+* EIST
+
+* Power saving
+
+* SMMU（ARM 架构）
+
+### BIOS 需要配置以下选项
+
+* Automatic Power on After Power Loss: Always on
+
+* Intel Virtualization Technology：开启
+
+* Hyper-threading：开启
+
+* Hardware prefetcher：开启
+
+* VT-d：开启
+
+* SR-IOV：开启
+
+* Turbo Mode：开启
+
+* Energy performance：开启最大 performance
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>不同的服务器修改 BIOS 的方式不同，具体操作请参见服务器操作手册。</p>
+  </main>
+
+## OceanBase 服务器参数设置
+
+|       参数       | 允许的取值范围 | 推荐值   |  说明  |
+| ---------------- | ------------ |  ------ | ------ |
+| vm.max_map_count | [327680, +∞) | 655360 | 用于设置一个进程可拥有的最大内存映射区域数量。|
+| vm.min_free_kbytes | [32768, 2097152] | 2097152 <main id="notice" type='notice'><h4>注意</h4><p>当您的部署服务器物理内存小于等于 8GB 时（比如在小规格服务器上部署 observer 进程或仲裁服务），建议该参数 <code>vm.min_free_kbytes</code> 保持默认值，不要进行更改。</p></main>| 用于设置系统保留的最小空闲内存量，以防止内存碎片化。|
+| vm.overcommit_memory | 0 | 0 | 用于控制内存过量提交机制（Overcommit），指定当内存不足时是否允许过量提交内存。|
+| fs.file-max | [6573688, +∞) | N/A | 用于设置系统允许打开的最大文件数。<main id="notice" type='explain'><h4>说明</h4><p><code>fs.file-max</code> 是对整个系统的文件描述符限制，而不是针对个别用户。</p></main> |
+| ulimit.open files | <ul><li>soft nofile 655300</li><li>hard nofile 655300</li></ul> | <ul><li>soft nofile 655300</li><li>hard nofile 655300</li></ul> | 用于设置用户可同时打开的最大文件描述符数。|
+| ulimit.max_user_processes| <ul><li>soft nproc 655300</li><li>hard nproc 655300</li></ul> | <ul><li>soft nproc 655300</li><li>hard nproc 655300</li></ul> | 用于设置用户可以创建的最大进程数。|
+| ulimit.core file size | <ul><li>soft core unlimited</li><li>hard core unlimited</li></ul> | <ul><li>soft core unlimited</li><li>hard core unlimited</li></ul> | 用于设置核心转储文件（core dump）的最大大小。 <main id="notice" type='explain'><h4>说明</h4><p>该参数在严格和宽松检查模式下不符合范围都打 <code>warning</code>。</p></main> |
+| ulimit.stack | <ul><li>soft stack > 1M </li><li>hard stack > 1M</li></ul> | <ul><li>soft stack unlimited</li><li>hard stack unlimited</li></ul> | 用于设置系统的栈大小的参数，通常使用 ulimit 命令进行设置。一般来说，栈大小的限制是一个弱限制，大于 1M 的大小通常就足够。|
+| current_clocksource | N/A | tsc | 用于显示当前系统使用的时钟源。|
+
+## 磁盘挂载
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>如果一个挂载点的目录文件容量大于 16 TB，仅支持 xfs 类型。</p>
+</main>
+
+* OCP 服务器的磁盘挂载点要求如下表所示。
+
+  |    挂载点     |       大小       |     用途      |          磁盘格式           |
+  |------------|----------------|-------------|-------------------------|
+  | /home      | 100 GB\~300 GB | 各组件运行日志盘    | 建议 ext4 或 xfs |
+  | /data/log1 | 内存大小的 3\~4 倍   | OCP 元数据库日志盘 | 建议 ext4 或 xfs |
+  | /data/1    | 取决于所需存储的数据大小   | OCP 元数据库数据盘 | 建议 ext4 或 xfs |
+  | /docker    | 200 GB\~500 GB | Docker 根目录  | 建议 ext4 或 xfs |
+
+* OBServer 节点的磁盘挂载点要求如下表所示。
+
+  |    挂载点     |       大小       |       用途       |         文件系统格式          |
+  |------------|----------------|----------------|-------------------------|
+  | /home      | 100 GB\~300 GB | observer 进程运行日志盘 | 建议 ext4 或 xfs |
+  | /data/log1 | 内存大小的 3\~4 倍   | observer 进程日志盘   | 建议 ext4 或 xfs |
+  | /data/1    | 取决于所需存储的数据大小   | observer 进程数据盘   | 建议 ext4 或 xfs |
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>建议根目录不小于 50 GB。如果使用 LVM，建议创建时使用条带化参数。示例如下：</p>
+    <p><code>lvcreate -n data -L 3000G obvg --stripes=3 --stripesize=128</code></p>
+  </main>
+
+## 网卡设置
+
+建议配置 2 块万兆网卡：
+
+* bond 模式取名 bond0，绑定的模式可以选择 mode1 或 mode4，但建议选择 mode4。对于 mode4 模式，交换机需要配置 802.3ad 协议。
+* 网卡名建议使用 eth0、eth1。
+
+## SSD 的 I/O 调度器建议
+
+* NVMe SSD 默认的 I/O 调度器为 `none`，无需调整。
+* SATA SSD 的 I/O 调度器建议设置为 `none`。
+
+## RAID 卡使用建议
+
+使用 NVMe 磁盘时，不建议配置 RAID，原因如下：
+
+* OceanBase 数据库自身通过多副本（Paxos 协议）实现数据容灾，不依赖 RAID 提供磁盘容灾能力。
+* RAID 会带来额外的写放大，降低 NVMe 磁盘的随机写性能，并增加运维复杂度。
+* 建议直接使用裸盘（JBOD 模式或单盘挂载），并通过多 Zone、多副本部署保证高可用。
+
+## 注意事项
+
+OceanBase 数据库在 V4.2.5 BP3、V4.2.5 BP4、V4.2.5 BP5、V4.3.5 BP1、V4.3.5 BP2、V4.3.5 BP3 版本增加了对 X86 架构环境运行的指令集要求。OBServer 进程会在启动前检查当前环境是否支持 AVX 指令集，如果缺少该指令集会禁止启动。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>OceanBase 数据库自以下版本开始对 AVX 指令集的强制依赖策略已调整：<ul><li>对于 V4.3.5 版本，从 V4.3.5 BP4 版本开始不再强制要求 AVX 指令集支持。</li><li>对于 V4.2.5 版本，从 V4.2.5 BP6 版本开始不再强制要求 AVX 指令集支持。</li><li>对于 V4.4.0 版本，从 V4.4.1 版本开始不再强制要求 AVX 指令集支持。</li></ul></p>
+</main>

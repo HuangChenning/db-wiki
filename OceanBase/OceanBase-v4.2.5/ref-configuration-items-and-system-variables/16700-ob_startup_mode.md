@@ -1,0 +1,41 @@
+---
+title: ob_startup_mode
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502236.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# ob_startup_mode
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.1.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`ob_startup_mode` 用于设置 OBServer 节点的启动模式，仅支持在第一次启动时修改。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅支持在集群第一次启动时修改。
+
+## 属性说明
+
+|      **属性**      |    **描述**    |
+|------------------|--------------|
+| 参数类型             | String           |
+| 默认值               | NORMAL |
+| 取值范围             |<ul><li> NORMAL：表示以正常模式启动  </li><li>ARBITRATION：表示以仲裁模式启动 </li></ul>|
+| 是否可修改           | 否，不支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，仅支持只读。            |

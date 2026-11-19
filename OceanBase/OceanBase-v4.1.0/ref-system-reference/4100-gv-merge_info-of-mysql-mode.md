@@ -1,0 +1,35 @@
+---
+title: "GV$OB_MERGE_INFO"
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699219.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# GV$OB_MERGE_INFO
+
+## 功能描述
+
+展示 OceanBase 集群已经完成的 compaction 相关的统计信息。
+
+## 字段说明
+
+
+
+|       字段名称        |      类型       | 是否可以为 NULL |                                                                                                                    描述                                                                                                                     |
+|-------------------|---------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SVR_IP            | varchar(46)   | NO         | 服务器 IP 地址                                                                                                                                                                                                                                 |
+| SVR_PORT          | bigint(20)    | NO         | 服务器端口号                                                                                                                                                                                                                                    |
+| TENANT_ID         | bigint(20)    | NO         | 租户 ID                                                                                                                                                                                                                                     |
+| LS_ID             | bigint(20)    | NO         | 日志流 ID                                                                                                                                                                                                                                    |
+| TABLET_ID         | bigint(20)    | NO         | 数据分片 ID                                                                                                                                                                                                                                   |
+| ACTION            | varchar(64)   | NO         | Compaction 具体动作：<ul><li>`MDS_TABLE_MERGE`：将系统的元数据按照 SSTable 的格式持久化到磁盘里。</li> <li>`MAJOR_MERGE`：租户级合并</li> <li>`MEDIUM_MERGE`：分区级合并</li> <li>`MINI_MERGE`：Mini Compaction，将 MemTable 转变成 Mini SSTable。</li> <li>`MINOR_MERGE`：Minor Compaction，多个 Mini SSTable 或多个 Mini SSTable 与 Minor SSTable 合成一个 Minor SSTable。</li> <li>`META_MAJOR_MERGE`：一种特殊的 Compaction 类型，是将某个指定时间点之前的数据合成一个 Meta Major SSTable，其数据格式与 Major SSTable 一样，不包含多版本数据和未提交事务数据。</li></ul>   |
+| VERSION           | bigint(20)    | NO         | compaction 版本号                                                                                                                                                                                                                            |
+| START_TIME        | timestamp(6)  | NO         | compaction 开始时间                                                                                                                                                                                                                           |
+| END_TIME          | timestamp(6)  | NO         | compaction 结束时间                                                                                                                                                                                                                           |
+| MACRO_BLOCK_COUNT | bigint(20)    | NO         | compaction 宏块总数                                                                                                                                                                                                                           |
+| REUSE_PCT         | decimal(26,2) | NO         | compaction 宏块重用率                                                                                                                                                                                                                          |
+| PARALLEL_DEGREE   | bigint(20)    | NO         | compaction 并行度                                                                                                                                                                                                                            |

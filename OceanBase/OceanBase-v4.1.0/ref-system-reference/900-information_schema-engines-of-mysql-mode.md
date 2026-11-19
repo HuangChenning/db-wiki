@@ -1,0 +1,27 @@
+---
+title: information_schema.ENGINES
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699254.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# information_schema.ENGINES
+
+## 功能
+
+记录存储引擎相关信息。
+
+## 字段说明
+
+|   **字段名称**   |    **类型**     | **是否可以为 NULL** |     **描述**      |
+|--------------|---------------|----------------|-----------------|
+| Engine       | varchar(64)   | NO             | 引擎类型            |
+| Support      | varchar(80)    | NO             | 是否支持当前存储引擎      |
+| Comment      | varchar(3) | NO             | 注释              |
+| Transactions | varchar(3)    | NO             | 事务相关内容          |
+| XA           | varchar(3)    | NO             | 分布式事务 XA 相关内容   |
+| Savepoints   | varchar(3)    | NO             | Savepoints 相关内容 |

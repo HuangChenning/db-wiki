@@ -1,0 +1,26 @@
+---
+title: trace_log_sampling_interval
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702114.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# trace_log_sampling_interval
+
+trace_log_sampling_interval 用于设置定期打印跟踪日志信息的时间。 
+
+
+|      **属性**      |   **描述**   |
+|------------------|------------|
+| 参数类型             | 时间类型       |
+| 默认值              | 10ms       |
+| 取值范围             | \[0ms, +∞) |
+| 是否重启 OBServer 节点生效 | 否          |
+
+
+
+当 enable_record_trace_log 设置为 false 时，由 trace_log_sampling_interval 决定打印慢查询和白名单信息的时间间隔。enable_record_trace_log 配置项相关信息请参见 [enable_record_trace_log](../300.cluster-level-configuration-items/8100.enable_record_trace_log.md)。

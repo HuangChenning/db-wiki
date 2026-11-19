@@ -1,0 +1,73 @@
+---
+title: "流量分布"
+book: "管理数据库"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001499576.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 流量分布
+
+在 OceanBase 数据库中，Leader 承担事务中的读写请求，因此每个分区 Leader 的分布决定了流量在每个节点上的分布。
+
+## 流量介绍
+
+数据库系统在应用架构中承担了数据存储和查询的功能，应用的读写请求称为数据库流量。数据库流量分为写流量、强一致读流量和弱一致读流量，写流量和强一致读流量由 OceanBase 数据库的 Leader 副本提供服务，弱一致读流量由 Leader 副本和 Follower 副本提供服务。ODP 提供了数据库流量的路由选择能力，ODP 实现了一个简单的 SQL Parser 模块，解析出 SQL 中的库名、表名及 hint，从而根据业务 SQL、路由规则、及 OBServer 节点的状态，选择最合适的一个 OBServer 节点转发请求。
+
+## Primary Zone 介绍
+
+流量分布通过 Primary Zone 来描述，Primary Zone 描述了 Leader 副本的偏好位置，而 Leader 副本承载了业务的强一致读写流量，即 Primary Zone 决定了 OceanBase 数据库的流量分布。假设某张表 `t1` 的 `primary_zone="Zone1"`，则 `RootService` 会尽量将 `t1` 表的 Leader 调度到 Zone1 上来。
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>副本描述的对象是数据，而 Primary Zone 描述的对象是承载数据的容器，从而该容器下的数据继承容器的 Primary Zone 属性所描述的 Leader 偏好位置。OceanBase 数据库当前版本仅支持租户级别的 Primary Zone，而 OceanBase 数据库 V3.x 还支持表级、DB级、Table Group 级别配置 Primary Zone。</p>
+</main>
+
+Primary Zone 实际上是一个 Zone 的列表，列表中包含多个 Zone。该列表用如下方式为 Zone 配置优先级：
+
+当 Primary Zone 列表包含多个 Zone 时，用 ';' 分隔的具有从高到低的优先级；用 ',' 分隔的具有相同优先级，表示流量打散在多个 Zone 上，这几个 Zone 同时提供服务。
+
+例如：`'hz1,hz2;sh1,sh2;sz1'` 表示 `hz1` 和 `hz2` 具有相同的优先级，并且优先级高于 `sh1/sh2` 和 `sz1`；`sh1` 和 `sh2` 具有相同优先级，并且优先级高于 `sz1`。
+
+OceanBase 数据库当前版本仅支持租户级别的 Primary Zone，不再支持表级、DB 级、Table Group 级配置 Primary Zone。如果创建租户时未指定 `primary_zone`，默认填写为 `RANDOM`，表示各个 Zone 优先级相同。
+
+租户的 Primary Zone 属性可以通过系统租户下 `oceanbase.DBA_OB_TENANTS` 视图的 `PRIMARY_ZONE` 字段查看。示例如下：
+
+```shell
+obclient(root@sys)[oceanbase]> SELECT TENANT_ID, TENANT_NAME, TENANT_TYPE, PRIMARY_ZONE, LOCALITY, COMPATIBILITY_MODE, STATUS FROM oceanbase.DBA_OB_TENANTS limit 10;
+```
+
+查询结果如下：
+
+```shell
++-----------+-------------+-------------+--------------+---------------+--------------------+--------+
+| TENANT_ID | TENANT_NAME | TENANT_TYPE | PRIMARY_ZONE | LOCALITY      | COMPATIBILITY_MODE | STATUS |
++-----------+-------------+-------------+--------------+---------------+--------------------+--------+
+|         1 | sys         | SYS         | RANDOM       | FULL{1}@zone1 | MYSQL              | NORMAL |
+|      1001 | META$1002   | META        | zone1        | FULL{1}@zone1 | MYSQL              | NORMAL |
+|      1002 | mysql001    | USER        | zone1        | FULL{1}@zone1 | MYSQL              | NORMAL |
+|      1003 | META$1004   | META        | zone1        | FULL{1}@zone1 | MYSQL              | NORMAL |
+|      1004 | oracle001   | USER        | zone1        | FULL{1}@zone1 | ORACLE             | NORMAL |
++-----------+-------------+-------------+--------------+---------------+--------------------+--------+
+5 rows in set
+```
+
+此外，在 V4.2.5 版本中，从 V4.2.5 BP7 版本开始，支持日志流 Leader 按二级 Primary Zone 打散，即当第一优先级的 Zone 故障后，日志流 Leader 会均匀打散到 <code>PRIMARY_ZONE</code> 低一个优先级的各个 Zone。
+
+<main id="notice" type='notice'>
+<h4>注意</h4>
+<p>如果第二优先级的 <code>PRIMARY_ZONE</code> 个数与第一优先级不同，则日志流 Leader 可能无法在第二优先级完全打散。</p>
+</main>
+
+## Region 属性
+
+在 OceanBase 数据库中，Zone 有一个 Region 属性（`DBA_OB_ZONES` 视图的 `REGION` 字段），表示该 Zone 所处的地区，每个 Zone 仅能配置一个 Region，但一个 Region 内可包含多个 Zone。Primary Zone 的设置隐含的包含了 Leader 偏好的 Region 位置。具体指用户设置 Primary Zone 时包含两层语义：
+
+* 被指定的 Primary Zone 为 Leader 的偏好 Zone 的 Region。
+
+* 被指定 Primary Zone 所在的 Region 为 Leader 偏好的 Region。
+  
+具体地，Leader 会被优先调度到最高优先级的 Zone 上去，如果最高优先级的 Zone 上的副本不能成为 Leader，会优先选择同一个 Region 内的其他 Zone 作为 Leader 的位置，从而保证业务访问 OceanBase 数据库尽量不跨城。

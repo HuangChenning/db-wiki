@@ -1,0 +1,62 @@
+---
+title: information_schema.PROCESSLIST
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004477622.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# information_schema.PROCESSLIST
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+提供运行中的线程信息。
+
+## 字段说明
+
+| **字段名称** |       **类型**        | **是否可以为 NULL** |    **描述**    |
+|----------|---------------------|----------------|--------------|
+| ID       | bigint(20) unsigned | NO             | 连接标识符<ul><li>在直连模式下：<br>该字段表示 Server Session ID。</li> <li>在 ODP 模式下：</li><ul><li>当 ODP 中的配置项 <code>client_session_id_version = 2</code> 时，该字段表示 Client Session ID。 </li> <li>当 <code>client_session_id_version = 1</code> 时，该字段表示 Server Session ID。</li></ul></ul>        |
+| USER     | varchar(32)         | NO             | 用户名          |
+| HOST     | varchar(128)        | NO             | 客户端主机名称      |
+| DB       | varchar(128)        | YES            | 数据库名称        |
+| COMMAND  | varchar(4096)       | NO             | 线程执行的命令类型    |
+| TIME     | bigint(20)          | NO             | 线程在当前状态的持续时间，单位为秒 |
+| STATE    | varchar(128)        | YES            | 表示线程正在做的任务标识 |
+| INFO     | varchar(262143)     | YES            | 当前线程正在执行的语句  |
+
+## 查询示例
+
+系统租户查询所有运行中的线程信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM information_schema.PROCESSLIST;
+```
+
+查询结果如下：
+
+```shell
++------------+------+----------------------+-----------+---------+------+--------+----------------------------------------------+
+| ID         | USER | HOST                 | DB        | COMMAND | TIME | STATE  | INFO                                         |
++------------+------+----------------------+-----------+---------+------+--------+----------------------------------------------+
+| 3221741020 | root | 100.xx.xxx.xxx:13803 | NULL      | Sleep   |  871 | SLEEP  | NULL                                         |
+| 3221633480 | SYS  | 100.xx.xxx.xxx:59160 | SYS       | Sleep   | 1157 | SLEEP  | NULL                                         |
+| 3221660128 | root | 100.xx.xxx.xxx:44492 | oceanbase | Query   |    0 | ACTIVE | SELECT * FROM information_schema.PROCESSLIST |
+| 3221688871 | root | 100.xx.xxx.xxx:49218 | infotest  | Sleep   |    7 | SLEEP  | NULL                                         |
++------------+------+----------------------+-----------+---------+------+--------+----------------------------------------------+
+4 rows in set
+```
+
+## 相关视图或文档
+
+* [GV$OB_PROCESSLIST](../300.performance-view-of-sys-tenant/2500.gv-ob_processlist-of-sys-tenant.md)
+
+* [查看租户会话](../../../1200.database-proxy/1500.view-tenant-sessions.md)

@@ -1,0 +1,67 @@
+---
+title: log_archive_concurrency
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285699.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# log_archive_concurrency
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该配置项从 V4.1.0 版本开始生效范围调整为租户级。</p>
+</main>
+
+## 功能描述
+
+`log_archive_concurrency` 用于设置日志归档的并发度。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户都可修改该配置项。
+
+## 属性说明
+
+| **属性** | **描述** |
+| --- | --- |
+| 参数类型 | Int |
+| 默认值 | 0，表示使用 OceanBase 数据库自适应的日志归档并行度。 <main id="notice" type='explain'><h4>说明</h4><p>该配置项从 V4.2.0 版本开始默认值从 1 调整为 0。</p></main>|
+| 取值范围 | [0，100] <main id="notice" type='explain'><h4>说明</h4><p>该配置项从 V4.2.0 版本开始取值范围由 [1,100] 调整为 [0,100]。</p></main>|
+| 是否可修改  | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。  |
+
+## 使用说明
+
+归档工作线程数根据租户 `max_cpu` 自适应值计算规则分别为：
+
+* 当 `租户的 MAX_CPU <= 8` 时，`归档线程数 = MAX_CPU`。
+* 当 `8 < 租户的 MAX_CPU < 32` 时，`归档线程数 = max(8, MAX_CPU/2)`，即 `MAX_CPU/2` 的计算结果如果不足 8，则取 8。
+* 当 `租户的 MAX_CPU >= 32` 时，`归档线程数 = max(16, MAX_CPU/4)`，即 `MAX_CPU/4` 的计算结果如果不足 16，则取 16。
+
+## 配置示例
+
+* sys 租户调整用户租户 MySQL 的日志归档并行度。
+
+  ```shell
+  obclient> ALTER SYSTEM SET log_archive_concurrency = 5 tenant = 'mysql';
+  ```
+
+* MySQL 租户调整本租户日志归档并行度。
+
+  ```shell
+  obclient> ALTER SYSTEM SET log_archive_concurrency = 5;
+  ```
+
+## 相关文档
+
+[日志归档](../../../../600.manage/600.backup-and-recovery/300.log-archive/100.overview-of-log-archive.md)

@@ -1,0 +1,85 @@
+---
+title: ALTER PROCEDURE
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478384.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# ALTER PROCEDURE
+
+`ALTER PROCEDURE` 用于更改存储过程的一个或多个特性。
+
+## 语法
+
+```sql
+ALTER PROCEDURE proc_name [characteristic ...]
+
+characteristic: {
+    COMMENT 'string'
+  | LANGUAGE SQL
+  | { CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA }
+  | SQL SECURITY { DEFINER | INVOKER }
+}
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| proc_name | 要修改的存储过程名称。可以使用 `database_name.proc_name` 指定数据库。 |
+| characteristic | 要修改的存储过程特性，可以包括：<br>- `COMMENT 'string'`：存储过程注释<br>- `LANGUAGE SQL`：指定语言（仅 SQL，可忽略）<br>- `CONTAINS SQL \| NO SQL \| READS SQL DATA \| MODIFIES SQL DATA`：指定存储过程的数据访问特性<br>- `SQL SECURITY { DEFINER \| INVOKER }`：指定执行权限模式 |
+
+`ALTER PROCEDURE` 语句不能用于更改存储过程的参数或主体，如果需要进行此类更改，必须使用 `DROP PROCEDURE` 和 `CREATE PROCEDURE` 删除并重新创建过程。
+
+您必须具有该过程的 `ALTER PROCEDURE` 权限。默认情况下，该权限自动授予过程创建者。
+
+有关例程使用数据的特性信息如下：
+
+* `CONTAINS SQL` 表示例程不包含读写数据的语句，这是默认值。例如，`SET@x=1` 或 `DO RELEASE_LOCK('abc')` 会被执行但既不读取也不写入数据。
+
+* `NO SQL` 表示例程不包含 SQL 语句。
+
+* `READS SQL DATA` 表示例程包含读取数据的语句（例如 `SELECT`），但不包含写入数据的语句。
+
+* `MODIFIES SQL DATA` 表示例程包含可能写入数据的语句（例如 `INSERT` 或 `DELETE`）。
+
+`SQL SECURITY` 可以是 `DEFINER` 或 `INVOKER`，来指定例程是使用指定用户（此用户必须具有访问与例程关联的数据库的权限）的权限执行，还是使用调用者的权限执行。默认值为 `DEFINER`。调用例程的用户必须具有该例程的 `EXECUTE` 权限。
+
+## 示例
+
+修改存储过程的特性。
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE PROCEDURE proc_name() BEGIN SELECT 1; END //
+
+obclient> DELIMITER ;
+
+obclient> ALTER PROCEDURE proc_name LANGUAGE SQL READS SQL DATA SQL SECURITY INVOKER COMMENT 'demo procedure';
+```
+
+使用 `SHOW CREATE PROCEDURE` 查看修改后的存储过程定义：
+
+```sql
+obclient> SHOW CREATE PROCEDURE proc_name;
+```
+
+查询结果如下：
+
+```sql
++-----------+-------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+
+| Procedure | sql_mode                                              | Create Procedure                                                                                                                                 | character_set_client | collation_connection | Database Collation |
++-----------+-------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+
+| proc_name | STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_AUTO_CREATE_USER | CREATE DEFINER = `root`@`%` PROCEDURE `proc_name`()
+    READS SQL DATA
+    SQL SECURITY INVOKER
+    COMMENT 'demo procedure'
+BEGIN SELECT 1; END | utf8mb4              | utf8mb4_general_ci   | utf8mb4_general_ci |
++-----------+-------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+--------------------+
+1 row in set (0.008 sec)
+```

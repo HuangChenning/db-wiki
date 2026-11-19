@@ -1,0 +1,76 @@
+---
+title: GETELEMENTSBYTAGNAME
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354588.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# GETELEMENTSBYTAGNAME
+
+`getElementsByTagName` 函数用于在指定文档 `doc` 的整个子树中，以深度优先方式查找所有标签名为 `tag_name` 的元素节点，并将其汇总为一个节点列表返回。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该子程序从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_XMLDOM.getElementsByTagName (
+   doc      IN DBMS_XMLDOM.DOMDOCUMENT,
+   tag_name IN VARCHAR2);
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| doc | XML 文档的 `DBMS_XMLDOM.DOMDOCUMENT` 句柄。 |
+| tag_name | 待匹配的元素标签名。取值为 `'*'` 时表示匹配任意元素标签。 |
+
+## 返回值
+
+匹配元素节点组成的 `DBMS_XMLDOM.DOMNODELIST`。
+
+## 使用说明
+
+返回列表为空表示未找到匹配元素。遍历结果请配合 [GETLENGTH](../19500.dbms-xmldom-oracle/800.getlength-xmldom-oracle.md) 与 [ITEM](../19500.dbms-xmldom-oracle/1000.item-oracle.md) 使用；读取元素文本可进一步调用 [GETNODEVALUE](../19500.dbms-xmldom-oracle/900.getnodevalue-oracle.md)。
+
+## 示例
+
+该示例通过 `DBMS_XMLPARSER` 系统包解析 XML 文档并获取 `DOMDOCUMENT` 句柄，然后通过 `DBMS_XMLDOM` 系统包获取 XML 文档的 `DOMNODELIST` 句柄，并获取 XML 文档中所有名为 "item" 的元素列表和所有元素列表：
+
+```sql
+-- 声明解析器和文档句柄变量
+DECLARE
+  p   DBMS_XMLPARSER.PARSER;
+  doc DBMS_XMLDOM.DOMDOCUMENT;
+  nl  DBMS_XMLDOM.DOMNODELIST;
+BEGIN
+  -- 创建解析器实例
+  p := DBMS_XMLPARSER.NEWPARSER;
+  -- 在解析器上解析 XML 文档
+  DBMS_XMLPARSER.PARSECLOB(p, '<root><item/><item/></root>');
+  -- 获取 XML 文档的 DOMDOCUMENT 句柄
+  doc := DBMS_XMLPARSER.GETDOCUMENT(p);
+  -- 释放解析器实例
+  DBMS_XMLPARSER.FREEPARSER(p);
+  -- 获取 XML 文档中所有名为 "item" 的元素列表
+  nl := DBMS_XMLDOM.GETELEMENTSBYTAGNAME(doc, 'item');
+  -- 获取 XML 文档中所有元素列表
+  nl := DBMS_XMLDOM.GETELEMENTSBYTAGNAME(doc, '*');
+  -- 释放 XML 文档资源
+  DBMS_XMLDOM.FREEDOCUMENT(doc);
+END;
+/
+```

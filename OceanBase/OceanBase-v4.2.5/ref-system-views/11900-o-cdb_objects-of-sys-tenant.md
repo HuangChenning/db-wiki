@@ -1,0 +1,101 @@
+---
+title: oceanbase.CDB_OBJECTS
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501312.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OBJECTS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+系统租户下展示所有租户的对象信息。
+
+## 字段说明
+
+|       字段名称        |      类型      | 是否可以为 NULL |              描述               |
+|-------------------|--------------|------------|-------------------------------|
+| CON_ID            | bigint(20)   | NO         | 租户 ID  |
+| OWNER             | varchar(128) | NO         | 对象所属的拥有者                      |
+| OBJECT_NAME       | varchar(128) | NO         | 对象名字                          |
+| SUBOBJECT_NAME    | varchar(128) | NO         | 子对象名字（例如，partition）           |
+| OBJECT_ID         | bigint(20)   | NO         | 对象的字典 ID 值                    |
+| DATA_OBJECT_ID    | bigint(20)   | NO         | 包含该对象 Segment 的字典 ID值         |
+| OBJECT_TYPE       | varchar(23)  | NO         | 对象类型，包括表、索引、分区、包、存储过程、同义词、序列等 |
+| CREATED           | datetime     | NO         | 对象创建时间                        |
+| LAST_DDL_TIME     | datetime     | NO         | 对象最后一次 DDL 时间                 |
+| TIMESTAMP         | datetime     | NO         | 对象指定的时间戳，以字符形式输出              |
+| STATUS            | varchar(7)   | NO         | 对象状态：<ul><li>`VALID`：有效的 </li><li>`INVALID`：无效的</li></ul>           |
+| TEMPORARY         | varchar(1)   | NO         | 该对象是否是一个临时对象                  |
+| GENERATED         | varchar(1)   | NO         | 该对象的名字是否是由系统生成              |
+| SECONDARY         | varchar(1)   | NO         | 目前该字段暂未使用                     |
+| NAMESPACE         | bigint(20)   | NO         | 对象的命名空间                       |
+| EDITION_NAME      | varchar(128) | NO         | 保留字段                          |
+| SHARING           | varchar(18)  | NO         | 该字段默认为 `NULL`                           |
+| EDITIONABLE       | varchar(1)   | NO         | 该字段默认为 `NULL`  |
+| ORACLE_MAINTAINED | varchar(1)   | NO         | 该字段默认为 `NULL`                              |
+| APPLICATION       | varchar(1)   | NO         | 该字段默认为 `NULL`                             |
+| DEFAULT_COLLATION | varchar(1)   | NO         | 该字段默认为 `NULL`                            |
+| DUPLICATED        | varchar(1)   | NO         | 该字段默认为 `NULL`         |
+| SHARDED           | varchar(1)   | NO         | 该字段默认为 `NULL`                             |
+| IMPORTED_OBJECT   | varchar(1)   | NO         | 该字段默认为 `NULL`                            |
+| CREATED_APPID     | bigint(0)    | NO         | 该字段默认为 `NULL`      |
+| CREATED_VSNID     | bigint(0)    | NO         | 该字段默认为 `NULL`           |
+| MODIFIED_APPID    | bigint(0)    | NO         | 该字段默认为 `NULL`     |
+| MODIFIED_VSNID    | bigint(0)    | NO         | 该字段默认为 `NULL`      |
+
+## 查询示例
+
+系统租户下，查询租户 ID 为 1002 的租户内名为 `tbl1` 的对象信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OBJECTS WHERE CON_ID=1002 AND OBJECT_NAME='tbl1'\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+           CON_ID: 1002
+            OWNER: infotest
+      OBJECT_NAME: tbl1
+   SUBOBJECT_NAME: NULL
+        OBJECT_ID: 500008
+   DATA_OBJECT_ID: 200005
+      OBJECT_TYPE: TABLE
+          CREATED: 2025-02-20 14:39:19
+    LAST_DDL_TIME: 2025-02-20 14:39:19
+        TIMESTAMP: 2025-02-20 14:39:19
+           STATUS: VALID
+        TEMPORARY: N
+        GENERATED: N
+        SECONDARY: N
+        NAMESPACE: 0
+     EDITION_NAME: NULL
+          SHARING: NULL
+      EDITIONABLE: NULL
+ORACLE_MAINTAINED: NULL
+      APPLICATION: NULL
+DEFAULT_COLLATION: NULL
+       DUPLICATED: NULL
+          SHARDED: NULL
+  IMPORTED_OBJECT: NULL
+    CREATED_APPID: NULL
+    CREATED_VSNID: NULL
+   MODIFIED_APPID: NULL
+   MODIFIED_VSNID: NULL
+1 row in set
+```
+
+## 相关视图或文档
+
+[DBA_OBJECTS](23400.o-dba_objects-of-sys-tenant.md)

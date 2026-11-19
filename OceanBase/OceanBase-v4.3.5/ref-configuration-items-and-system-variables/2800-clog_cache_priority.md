@@ -1,0 +1,30 @@
+---
+title: clog_cache_priority
+book: "配置项和系统变量"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002015760.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# clog_cache_priority
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于 V4.x 版本对架构进行了变更升级，事务日志不再使用 Cache，该配置项从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`clog_cache_priority` 用于设置事务日志占用缓存的优先级。
+
+## 属性说明
+
+|      **属性**      |  **描述**  |
+|------------------|----------|
+| 参数类型             | Int       |
+| 默认值               | 1        |
+| 取值范围             | \[1, +∞) |
+| 是否重启 OBServer 节点生效 | 否        |

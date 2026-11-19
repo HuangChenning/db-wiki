@@ -1,0 +1,36 @@
+---
+title: PURGE RECYCLEBIN
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699564.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# PURGE RECYCLEBIN
+
+## 描述
+
+该语句用于清空回收站。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p><code>PURGE RECYCLEBIN</code> 会清除回收站中的所有数据库对象，只有 root 用户才能够执行这条语句，操作时请谨慎。</p>
+  </main>
+
+## 语法
+
+```sql
+ PURGE RECYCLEBIN;
+```
+
+## 示例
+
+清空回收站。
+
+```sql
+obclient> PURGE RECYCLEBIN;
+Query OK, 0 rows affected 
+```

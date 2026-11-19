@@ -1,0 +1,18 @@
+---
+title: "网络传输相关参数"
+book: "性能调优"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478561.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 网络传输相关参数
+
+|                     配置项                      |               描述                |                        建议                        |
+|----------------------------------------------|---------------------------------|--------------------------------------------------|
+| __easy_memory_limit                          | 发往单个 observer 的 rpc packet 内存上限 | 默认 4 G，大查询建议调大                                   |
+| ob_proxy_readonly_transaction_routing_policy | 控制 Proxy 对于事务的路由是否受只读语句的影响      | 建议将取值修改为 False，表示 Proxy 对于事务的路由以第一条实际开启事务的语句为准   |
+|

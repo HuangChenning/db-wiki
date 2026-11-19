@@ -1,0 +1,32 @@
+---
+title: FORMAT_ERROR_STACK
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686822.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# FORMAT_ERROR_STACK
+
+`FORMAT_ERROR_STACK` 函数用于格式化当前错误堆栈。
+
+异常处理程序可以使用 `FORMAT_ERROR_STACK` 查看完整的错误堆栈。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_UTILITY.FORMAT_ERROR_STACK
+RETURN VARCHAR2;
+```
+
+## 返回值
+
+返回错误堆栈，最多 2000 个字节。

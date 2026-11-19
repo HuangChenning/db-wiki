@@ -1,0 +1,86 @@
+---
+title: "GV$SESSION_EVENT"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501581.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$SESSION_EVENT
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前租户在所有 OBServer 节点上的 Session 级别的等待事件。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| CON_ID | bigint(20) | NO | 租户 ID |
+| SVR_IP | varchar(46) | NO | 服务器 IP 地址 |
+| SVR_PORT | bigint(20) | NO | 服务器端口号 |
+| SID | bigint(20) | NO | 对于 V4.2.x 版本：<ul><li> V4.2.5 BP4 之前版本：<br>在所有连接方式（直连模式/ODP 模式）下，该字段均表示 Server Session ID。</li><li> V4.2.5 BP4 及之后版本：<ul><li>在直连模式下：<br>该字段表示 Server Session ID。</li> <li>在 ODP 模式下：</li><ul><li>当 ODP 中的配置项 <code>client_session_id_version = 2</code> 时，该字段表示 Client Session ID。 </li> <li>当 <code>client_session_id_version = 1</code> 时，该字段表示 Server Session ID。</li></ul></ul></li></ul> |
+| EVENT | varchar(64) | NO | 等待事件的描述 |
+| TOTAL_WAITS | bigint(20) | NO | 等待事件的总等待次数 |
+| TOTAL_TIMEOUTS | bigint(20) | NO | 等待事件的总等待超时次数 |
+| TIME_WAITED | double | NO | 等待事件的总等待时间，单位为百分之一秒 |
+| AVERAGE_WAIT | double | NO | 等待事件的平均等待时间，单位为百分之一秒 |
+| MAX_WAIT | double | NO | 等待事件的最长等待时间，单位为百分之一秒 |
+| TIME_WAITED_MICRO | bigint(20) | NO | 等待事件的总等待时间（微秒）  |
+| CPU | null | NO | 无效列 |
+| EVENT_ID | bigint(20) | NO | 等待事件 ID |
+| WAIT_CLASS_ID | bigint(20) | NO | 等待事件所属类型的 ID |
+| WAIT_CLASS# | bigint(20) | NO | 等待事件所属类型的下标 |
+| WAIT_CLASS | varchar(64) | NO | 等待事件所属类型的名称 |
+
+## 查询示例
+
+用户租户下，查看本租户在所有节点上的 `sql` 相关的 Session 级别的等待事件，展示前 10 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.GV$SESSION_EVENT WHERE EVENT LIKE '%sql%' LIMIT 10;
+```
+
+查询结果如下：
+
+```shell
++--------+----------------+----------+----------------------+---------------------+-------------+----------------+-------------+-----------------------+----------+-------------------+------+----------+---------------+-------------+------------+
+| CON_ID | SVR_IP         | SVR_PORT | SID                  | EVENT               | TOTAL_WAITS | TOTAL_TIMEOUTS | TIME_WAITED | AVERAGE_WAIT          | MAX_WAIT | TIME_WAITED_MICRO | CPU  | EVENT_ID | WAIT_CLASS_ID | WAIT_CLASS# | WAIT_CLASS |
++--------+----------------+----------+----------------------+---------------------+-------------+----------------+-------------+-----------------------+----------+-------------------+------+----------+---------------+-------------+------------+
+|   1002 | 11.xxx.xxx.xxx |    28825 |           3221716963 | exec inner sql wait |           4 |              0 |       0.082 |                0.0205 |   0.0702 |               820 | NULL |    30000 |           100 |           0 | OTHER      |
+|   1002 | 11.xxx.xxx.xxx |    28825 | -9223372036854727934 | exec inner sql wait |     1826940 |              0 |   7474.8778 |  0.004091474158976212 |   0.9016 |          74748778 | NULL |    30000 |           100 |           0 | OTHER      |
+|   1002 | 11.xxx.xxx.xxx |    28825 | -9223372036854727870 | exec inner sql wait |     6305515 |              0 |  22349.8128 |  0.003544486501102606 |   4.1072 |         223498128 | NULL |    30000 |           100 |           0 | OTHER      |
+|   1002 | 11.xxx.xxx.xxx |    28825 | -9223372036854727869 | exec inner sql wait |      203661 |              0 |   1131.0565 |  0.005553623423237635 |    0.335 |          11310565 | NULL |    30000 |           100 |           0 | OTHER      |
+|   1002 | 11.xxx.xxx.xxx |    28825 | -9223372036854727868 | exec inner sql wait |      203661 |              0 |   1096.0671 |  0.005381821261802702 |   0.4135 |          10960671 | NULL |    30000 |           100 |           0 | OTHER      |
+|   1002 | 11.xxx.xxx.xxx |    28825 | -9223372036854727867 | exec inner sql wait |      203661 |              0 |   1125.6153 | 0.0055269064769396204 |   0.3247 |          11256153 | NULL |    30000 |           100 |           0 | OTHER      |
+|   1002 | 11.xxx.xxx.xxx |    28825 | -9223372036854727866 | exec inner sql wait |      203661 |              0 |   1112.3133 |  0.005461592057389485 |   0.4123 |          11123133 | NULL |    30000 |           100 |           0 | OTHER      |
+|   1002 | 11.xxx.xxx.xxx |    28825 | -9223372036854727929 | exec inner sql wait |        2262 |              0 |     10.3428 |  0.004572413793103448 |   0.3312 |            103428 | NULL |    30000 |           100 |           0 | OTHER      |
+|   1002 | 11.xxx.xxx.xxx |    28825 | -9223372036854727865 | exec inner sql wait |      542950 |              0 |  10729.4608 |   0.01976141596832121 |  17.0666 |         107294608 | NULL |    30000 |           100 |           0 | OTHER      |
+|   1002 | 11.xxx.xxx.xxx |    28825 | -9223372036854727928 | exec inner sql wait |          18 |              0 |      0.5979 |  0.033216666666666665 |   0.3193 |              5979 | NULL |    30000 |           100 |           0 | OTHER      |
++--------+----------------+----------+----------------------+---------------------+-------------+----------------+-------------+-----------------------+----------+-------------------+------+----------+---------------+-------------+------------+
+10 rows in set
+```
+
+## 相关视图或文档
+
+* 查看所有 Session 的当前或上一次等待事件：
+
+  * [GV$SESSION_WAIT](5000.gv-session_wait-of-mysql-mode.md)
+  * [V$SESSION_WAIT](35600.v-session_wait-of-mysql-mode.md)
+
+* 查看租户级别的所有等待事件：
+
+  * [GV$SYSTEM_EVENT](6100.gv-system_event-of-mysql-mode.md)
+  * [V$SYSTEM_EVENT](36900.v-system_event-of-mysql-mode.md)
+
+* 查看租户所有等待事件的定义：[V$EVENT_NAME](30400.v-event_name-of-mysql-mode.md)
+
+* 有关等待事件的详细说明，参见 [常见等待事件说明](../../520.wait-event-description.md)。

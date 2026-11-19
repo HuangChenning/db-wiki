@@ -1,0 +1,69 @@
+---
+title: FREEDOCUMENT
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354586.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# FREEDOCUMENT
+
+`FREEDOCUMENT` 过程用于释放通过 `GETDOCUMENT` 等方法获取的 `DOMDOCUMENT` 及其关联的 DOM 资源。释放后，请勿再使用该文档句柄及所有由其派生的引用，以避免悬空引用问题。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该子程序从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_XMLDOM.freeDocument (
+   doc IN DBMS_XMLDOM.DOMDOCUMENT);
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| doc | 待释放的 `DBMS_XMLDOM.DOMDOCUMENT` 句柄。 |
+
+## 返回值
+
+无返回值。
+
+## 使用说明
+
+释放文档后，应用侧应避免继续使用该句柄及由其派生的 `DBMS_XMLDOM.DOMNODE`、`DBMS_XMLDOM.DOMNODELIST` 引用，以防悬空访问。
+
+## 示例
+
+该示例通过 `DBMS_XMLPARSER` 系统包解析 XML 文档并获取 `DOMDOCUMENT` 句柄，然后通过 `DBMS_XMLDOM` 系统包释放文档资源：
+
+```sql
+-- 声明解析器和文档句柄变量
+DECLARE
+  p   DBMS_XMLPARSER.PARSER;
+  doc DBMS_XMLDOM.DOMDOCUMENT;
+BEGIN
+  -- 创建解析器实例
+  p := DBMS_XMLPARSER.NEWPARSER;
+  -- 在解析器上解析 XML 文档
+  DBMS_XMLPARSER.PARSECLOB(p, '<root/>');
+  -- 获取 XML 文档的 DOMDOCUMENT 句柄
+  doc := DBMS_XMLPARSER.GETDOCUMENT(p);
+  -- 释放解析器实例
+  DBMS_XMLPARSER.FREEPARSER(p);
+  -- 释放 XML 文档资源
+  DBMS_XMLDOM.FREEDOCUMENT(doc);
+END;
+/
+```

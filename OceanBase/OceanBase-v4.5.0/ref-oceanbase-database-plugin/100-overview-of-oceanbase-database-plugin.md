@@ -1,0 +1,41 @@
+---
+title: "OceanBase 数据库插件概述"
+book: "OceanBase 数据库插件"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004475828.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-oceanbase-database-plugin
+---
+
+# OceanBase 数据库插件概述
+
+从 OceanBase 数据库 V4.3.5 BP1 版本开始，OceanBase 引入了插件机制，旨在为用户提供一种轻量、灵活且高效的功能扩展方式。通过插件机制，用户可以根据自身需求定制和增强 OceanBase 数据库的功能。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>OceanBase 数据库插件机制目前为实验特性，暂不建议在生产环境中使用。</p>
+</main>
+
+## 如何开发和使用插件
+
+OceanBase 数据库支持使用 C/C++ 语言开发插件，并提供了一套完整的插件开发包（Plugin Development Kit, PDK）。只要您的开发环境中已安装 C/C++ 开发工具链，并配置了 OceanBase 插件开发包，即可快速上手插件开发。
+
+## 支持场景
+
+当前，OceanBase 数据库插件机制主要支持以下场景：
+
+* 分词器插件：用于扩展数据库的全文搜索能力，允许用户自定义分词逻辑，满足多样化的文本处理需求。
+* 外表 JDBC 插件：通过外表 JDBC 插件，可以访问 JDBC 支持的数据源。当前版本仅支持 MySQL 模式。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>从 V4.4.1 版本开始支持外表 JDBC 插件服务。同时 OceanBase 数据库也基于 JDBC 插件服务发布了 MySQL 外表插件。</p>
+  </main>
+
+## 相关文档
+
+* [插件机制](../100.oceanbase-database-concepts/1200.observer-node-architecture/600.plugin-mechanism.md)
+* [分词器插件](200.tokenizer-plugin.md)
+* [MySQL 外表插件](300.external-table-mysql-jdbc-plugin.md)

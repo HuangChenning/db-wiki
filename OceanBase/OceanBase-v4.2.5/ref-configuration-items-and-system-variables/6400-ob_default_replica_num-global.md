@@ -1,0 +1,30 @@
+---
+title: ob_default_replica_num
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502619.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# ob_default_replica_num
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>由于 V3.x 版本的系统架构优化，相关功能已不再使用，该配置项从 V3.2.1 版本开始弃用。</p>
+</main>
+
+## 功能描述
+
+`ob_default_replica_num` 用于设置每个集群中表的默认副本数。
+
+## 属性说明
+
+| **属性**  |    **描述**     |
+|-----------|-----------------|
+| 参数类型   | Int     |
+| 默认值     | 1   |
+| 取值范围   | [1, 7] |
+| 生效范围   | <ul><li>Global </li><li>Session </li></ul>    |

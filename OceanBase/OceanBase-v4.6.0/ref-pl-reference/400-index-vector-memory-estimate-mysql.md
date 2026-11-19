@@ -1,0 +1,97 @@
+---
+title: INDEX_VECTOR_MEMORY_ESTIMATE
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686457.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# INDEX_VECTOR_MEMORY_ESTIMATE
+
+`INDEX_VECTOR_MEMORY_ESTIMATE` 函数用于分析已建表的向量索引内存使用情况。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>该函数的计算依赖于统计信息，调用前需要先执行 <code>ANALYZE TABLE</code> 更新统计信息。</p>
+</main> 
+
+## 语法
+
+```sql
+FUNCTION INDEX_VECTOR_MEMORY_ESTIMATE (
+    IN     TABLE_NAME        VARCHAR(65535),
+    IN     COLUMN_NAME       VARCHAR(65535),
+    IN     IDX_TYPE          VARCHAR(65535),
+    IN     IDX_PARAMETERS    LONGTEXT DEFAULT NULL
+);
+```
+
+说明如下：
+
+* `INDEX_VECTOR_MEMORY_ESTIMATE` 会根据 `table_name` 和 `column_name` 读取向量列的维度和数据类型信息，并根据统计信息获取总的向量数和最大分区向量数。预估内存的计算过程和 `INDEX_VECTOR_MEMORY_ADVISOR` 一致。
+* 对于稀疏向量，本函数会从表中随机采样 100 条向量，计算这 100 条向量的非零维度数的平均值作为稀疏向量的平均长度，并基于该平均长度进行内存估算。
+
+## 参数说明
+
+| 参数 | 描述 |
+| --- | --- |
+| table_name | 表名。可以直接是表名，也可以指定数据库和表名。 |
+| column_name | 向量列名。 |
+| idx_type | 索引类型。支持 `HNSW`/`HNSW_SQ`/`HNSW_BQ`/`IVF_FLAT`/`IVF_PQ`/`SINDI`/`SINDI_SQ`，大小写不敏感。 |
+| idx_parameters | 索引参数。即建表时所用的向量索引参数字符串，如 `distance=l2, type=hnsw, lib=vsag`。更多参数请参见[向量索引内存管理](../../../../../640.ob-vector-search/200.ob-vector-index/200.ob-vector-index-memory-management.md)。 |
+
+返回值为字符串格式的描述内存估算结果的一句话。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>在 OceanBase 中，创建 HNSW_BQ 索引时，系统会根据内存情况自动选择并行或串行方式为分区表创建索引。<code>INDEX_VECTOR_MEMORY_ESTIMATE</code> 函数返回的建议值是串行创建索引时的最大内存需求值。如果内存仅满足这个值，可能会因为无法并行创建索引而延长索引创建时间。</p>
+</main>
+
+## 示例
+
+1. 创建表 `t1` 并插入数据
+
+    ```sql
+    CREATE TABLE t1 (id int auto_increment, c1 vector(3));
+    INSERT INTO t1(c1) SELECT array(1/UNIFORM(1,1000,RANDOM(1)), 1/UNIFORM(1,1000,RANDOM(2)) , 1/UNIFORM(1,1000,RANDOM(3))) FROM table(generator(10000));
+    ```
+
+2. 更新表 `t1` 的统计信息
+
+    ```sql
+    ANALYZE TABLE t1;
+    ```
+
+3. 查询表 `t1` 的向量索引的内存估算结果
+
+    ```sql
+    -- 查询 HNSW 索引的内存估算结果
+    SELECT dbms_vector.index_vector_memory_estimate('t1','c1','HNSW','M=10,TYPE=HNSW');
+    +-----------------------------------------------------------------------------+
+    | dbms_vector.index_vector_memory_estimate('t1','c1','HNSW','M=10,TYPE=HNSW') |
+    +-----------------------------------------------------------------------------+
+    | Suggested minimum vector memory is 11.5 MB                                  |
+    +-----------------------------------------------------------------------------+
+    1 row in set
+
+    -- 查询 IVF 索引的内存估算结果
+    SELECT dbms_vector.index_vector_memory_estimate('t1','c1','IVF_FLAT','SAMPLE_PER_NLIST=100');
+    +---------------------------------------------------------------------------------------------------------+
+    | dbms_vector.index_vector_memory_estimate('t1','c1','IVF_FLAT','SAMPLE_PER_NLIST=100')                   |
+    +---------------------------------------------------------------------------------------------------------+
+    | Suggested minimum vector memory is 151.5 KB, memory consumption when providing search service is 1.5 KB |
+    +---------------------------------------------------------------------------------------------------------+
+    1 row in set
+
+    -- 查询 SINDI 索引的内存估算结果
+    SELECT dbms_vector.index_vector_memory_estimate('t1','c1','SINDI','TYPE=SINDI,LIB=VSAG,DISTANCE=INNER_PRODUCT');
+    +----------------------------------------------------------------------------------------------------------+
+    | dbms_vector.index_vector_memory_estimate('t1','c1','SINDI','TYPE=SINDI,LIB=VSAG,DISTANCE=INNER_PRODUCT') |
+    +----------------------------------------------------------------------------------------------------------+
+    | Suggested minimum vector memory is 73.6 MB                                                               |
+    +----------------------------------------------------------------------------------------------------------+
+    1 row in set
+    ```

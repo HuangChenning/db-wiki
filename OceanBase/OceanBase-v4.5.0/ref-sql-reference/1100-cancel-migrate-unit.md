@@ -1,0 +1,41 @@
+---
+title: CANCEL MIGRATE UNIT
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479695.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CANCEL MIGRATE UNIT
+
+## 描述
+
+该语句用来取消 Unit 的迁移。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>该语句仅支持在 sys 租户执行。</p>
+  </main>
+
+## 语法
+
+```sql
+ALTER SYSTEM CANCEL MIGRATE UNIT unit_id;
+```
+
+## 参数解释
+
+| **参数**  |      **描述**      |
+|---------|------------------|
+| unit_id | 指定迁移的 Unit 的 ID。 |
+
+## 示例
+
+取消 `unit_id` 为 `1001` 的资源单元的迁移。
+
+```sql
+obclient> ALTER SYSTEM CANCEL MIGRATE UNIT 1001;
+```

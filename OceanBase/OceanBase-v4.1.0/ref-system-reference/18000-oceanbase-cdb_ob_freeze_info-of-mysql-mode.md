@@ -1,0 +1,25 @@
+---
+title: oceanbase.CDB_OB_FREEZE_INFO
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699318.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# oceanbase.CDB_OB_FREEZE_INFO
+
+## 功能
+展示合并（major_freeze）产生的版本信息。
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| TENANT_ID| bigint(20) | NO | 租户 ID |
+| FROZEN_SCN | bigint(20) unsigned | NO | major_freeze 生成的合并版本号 |
+| CLUSTER_VERSION | bigint(20) | NO | major_freeze 时当前集群版本号 |
+| SCHEMA_VERSION | bigint(20) | NO | major_freeze 时当前 schema 版本号 |
+| GMT_CREATE | timestamp(6) | NO | 记录创建时间 |
+| GMT_MODIFIED | timestamp(6) | NO | 记录最近修改时间 |

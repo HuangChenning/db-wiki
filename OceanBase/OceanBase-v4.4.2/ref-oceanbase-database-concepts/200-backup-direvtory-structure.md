@@ -1,0 +1,131 @@
+---
+title: "备份目录结构"
+book: "系统原理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283660.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-oceanbase-database-concepts
+---
+
+# 备份目录结构
+
+## 日志归档的目录结构
+
+日志归档可以由用户通过 `PIECE_SWITCH_INTERVAL` 参数指定切分目录的时间间隔，默认按照一天来切分目录：即每一天的日志数据目录对应一个 backup_piece。
+
+对于 NFS、OSS、Azure Blob 等备份介质，日志归档的目录结构如下：
+
+```javascript
+log_archive_dest
+    ├── check_file
+    │   └── 1002_connect_file_20230111T193049.obbak // 连通性检查文件
+    ├── format.obbak                                // 备份路径的格式化信息
+    ├── rounds                                      // Rounds 占位符目录
+    │   └── round_d1002r1_start.obarc               // Round 开始占位符
+    ├── pieces                                      // Piece 占位符目录
+    │   ├── piece_d1002r1p1_start_20230111T193049.obarc // Piece 开始占位符，piece_DESTID_ROUNDID_PIECEID_start_DATE
+    │   └── piece_d1002r1p1_end_20230111T193249.obarc   // Piece 结束占位符，piece_DESTID_ROUNDID_PIECEID_end_DATE
+    └── piece_d1002r1p1                             // Piece 目录，目录命名格式为 piece_DESTID_ROUNDID_PIECEID
+        ├── file_list.0.obarc
+        ├── piece_d1002r1p1_20230111T193049_20230111T193249.obarc // 记录了 Piece 的连续区间
+        ├── checkpoint   
+        ├── single_piece_info.obarc                 // 记录该 Piece 的元信息
+        ├── tenant_archive_piece_infos.obarc        // 记录该 Piece 之前的所有 frozen Piece 的元信息        
+        ├── file_info.obarc                         // 所有日志流文件列表
+        ├── logstream_1                             // 1 号日志流
+        └── logstream_1001                          // 1001 号日志流
+```
+
+在上述目录中，顶层目录包含以下三种数据：
+
+* `format.obbak`：用于记录归档路径的元信息，包括使用路径的租户等信息。
+
+* `check_file`：用于用户日志归档目录的连通性检查。
+
+* `rounds`：日志归档的 Round 汇总列表，记录了所有 Round 的列表。
+
+* `pieces`：日志归档的 Piece 汇总列表，记录了所有的 Piece 的列表。
+
+* `piece_d1002r1p1`：日志归档的 Piece 目录，目录命名格式为 `piece_DESTID_ROUNDID_PIECEID`。其中，`DESTID` 指的是 `log_archive_dest` 对应的 id；`ROUNDID` 指的是日志归档 Round 的 id，是一个单调递增的整数；`PIECEID` 指的是日志归档 piece_id，也是一个单调递增的整数。
+
+  一个日志归档的 Piece 目录下，又包含以下数据：
+
+  * `file_list.0.obarc`：该文件用于记录当前目录所包含的文件及目录。
+
+  * `piece_d1002r1p1_20230111T193049_20230111T193249.obarc`：该文件展示了当前 Piece 的 id、开始和结束的时间，并且仅用来展示信息。
+
+  * `checkpoint`：该目录是 Active 的 Piece 记录归档位点的目录，ObArchiveScheduler 模块会定期更新该目录的位点信息。
+
+  * `single_piece_info.obarc`：该文件记录了当前 Piece 的元信息。
+
+  * `tenant_archive_piece_infos.obarc`：该文件记录了当前租户内所有 Frozen  Pieces 的元信息。
+
+  * `file_info.obarc`：该文件记录了 Piece 内的日志流列表。
+
+  * `logstream_1`：该目录记录了 1 号日志流的日志文件，1 号日志流是 OceanBase 数据库租户的系统日志流。
+  
+  * `logstream_1001`：该目录记录了 1001 号日志流的日志文件，大于 1000 的日志流是 OceanBase 数据库租户的用户日志流。
+
+## 数据备份的目录结构
+
+单次的数据备份对应一个 backup_set。每次用户运行 `ALTER SYSTEM BACKUP DATABASE` 都会生成一个新的 backup_set 的目录，该目录包含了本次备份的所有数据。
+
+数据备份的目录结构如下：
+
+```javascript
+data_backup_dest
+├── format.obbak                                            // 备份路径的格式化信息
+├── check_file
+│   └── 1002_connect_file_20230111T193020.obbak             // 连通性检查文件
+├── backup_sets                                             // 数据备份列表的汇总目录，记录了所有的数据备份集列表
+│   ├── backup_set_1_full_end_success_20230111T193420.obbak // 全量备份结束占位符
+│   ├── backup_set_1_full_start.obbak                       // 全量备份起始占位符
+│   ├── backup_set_2_inc_start.obbak                        // 增量备份起始占位符
+│   └── backup_set_2_inc_end_success_20230111T194420.obbak  // 增量备份结束占位符
+└── backup_set_1_full                                        // 全量备份集，文件结尾为 full 表示是全量备份，inc 表示是增量备份
+    ├── file_list.0.obbak
+    ├── backup_set_1_full_20230111T193330_20230111T193420.obbak //占位符，展示全量备份的开始和结束时间
+    ├── single_backup_set_info.obbak                        // 当前备份集的元信息
+    ├── tenant_backup_set_infos.obbak                       // 当前租户的全量备份集信息
+    ├── infos
+    ├── logstream_1                                          // 1 号日志流
+    └── logstream_1001                                       // 1001 号日志流
+```
+
+数据备份目录中，顶层目录包含以下三种数据：
+
+* `format.obbak`：用于记录备份路径的元信息。
+
+* `check_file`：用于用户数据备份目录的连通性检查。
+
+* `backup_sets`：数据备份列表的汇总目录，记录了所有的数据备份集列表。
+
+* `backup_set_1_full`：该目录表示的是一个数据备份集，`backup_set_1` 表示该备份集的 `backup_set_id` 为 `1`；目录名结尾为 `full` 表示全量备份，为 `inc` 表示增量备份。每一次数据备份都会生成一个对应的备份集，数据备份结束后，该备份集就不会再修改了。
+
+  在一个数据备份集下，主要包含以下数据：
+
+  * `file_list.0.obbak`：该文件用于记录当前目录所包含的文件及目录。
+
+  * `backup_set_1_full_20230111T193330_20230111T193420.obbak`：该文件展示了当前备份集的 ID、开始和结束的时间。此文件仅用来展示信息。
+
+  * `single_backup_set_info.obbak`：该文件记录了当前备份集的元信息，包括备份的位点、依赖的日志等信息。
+
+  * `tenant_backup_set_infos.obbak`：该文件记录了当前租户已有的所有备份集的元信息。
+
+  * `infos`：该目录记录了数据备份集的元信息。
+
+  * `logstream_1`：该目录记录了 1 号日志流的所有数据，1 号日志流是 OceanBase 数据库租户的系统日志流。
+
+  * `logstream_1001`：该目录记录了 1001 号日志流的所有数据，大于 1000 的日志流是 OceanBase 数据库租户的用户日志流。
+
+## 集群级配置项备份目录
+
+每发起一次集群级配置项的备份，系统就会在指定目录下产生一个集群级配置项的备份文件。具体目录结构如下所示。
+
+```javascript
+cluster_parameters_backup_dest
+├── cluster_parameter.20240710T103610.obbak # 非默认设置的集群级配置项信息，文件命名格式：`cluster_parameter.[timestamp]`
+└── cluster_parameter.20241018T140609.obbak
+```

@@ -1,0 +1,54 @@
+---
+title: "V$OB_TABLET_COMPACTION_HISTORY"
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699230.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# V$OB_TABLET_COMPACTION_HISTORY
+
+V$OB_TABLET_COMPACTION_HISTORY 
+===================================================
+
+功能 
+-------------------
+
+展示 TABLET 级 COMPACTION 的历史信息。
+
+字段说明 
+----------------------
+
+
+
+|                 字段名称                 |      类型      | **是否可以为 NULL** |                                                                                                                                                                                                                  描述                                                                                                                                                                                                                  |
+|--------------------------------------|--------------|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|SVR_IP    |varchar(46)    |NO   |服务器IP    |
+|SVR_PORT    |bigint(20)    |NO   |服务器端口号    |
+|TENANT_ID    |bigint(20)    |NO   |租户ID    |
+|LS_ID    |bigint(20)    |NO   |日志流ID    |
+|TABLET_ID    |bigint(20)    |NO   |数据分片ID    |
+|TYPE    |varchar(64)    |NO   |Compaction 的类型：<ul><li>`MDS_TABLE_MERGE`：将系统的元数据按照 SSTable 的格式持久化到磁盘里。</li> <li>`MAJOR_MERGE`：租户级合并</li> <li>`MEDIUM_MERGE`：分区级合并</li> <li>`MINI_MERGE`：Mini Compaction，将 MemTable 转变成 Mini SSTable。</li> <li>`MINOR_MERGE`：Minor Compaction，多个 Mini SSTable 或多个 Mini SSTable 与 Minor SSTable 合成一个 Minor SSTable。</li> <li>`META_MAJOR_MERGE`：一种特殊的 Compaction 类型，是将某个指定时间点之前的数据合成一个 Meta Major SSTable，其数据格式与 Major SSTable 一样，不包含多版本数据和未提交事务数据。</li></ul>   |
+|COMPACTION_SCN    |bigint(20) unsigned    |NO   |合并版本信息    |
+|START_TIME    |timestamp    |NO   |开始时间    |
+|FINISH_TIME    |timestamp    |NO   |结束时间    |
+|TASK_ID    |varchar(64)    |NO   |任务执行Trace    |
+|OCCUPY_SIZE    |bigint(20)    |NO   |数据量    |
+|MACRO_BLOCK_COUNT    |bigint(20)    |NO   |宏块数    |
+|MULTIPLEXED_MACRO_BLOCK_COUNT    |bigint(20)    |NO   |重用宏块数    |
+|NEW_MICRO_COUNT_IN_NEW_MACRO    |bigint(20)    |NO   |新生成宏块中的新微块数    |
+|MULTIPLEXED_MICRO_COUNT_IN_NEW_MACRO    |bigint(20)    |NO   |新生成宏块中的重用微块数    |
+|TOTAL_ROW_COUNT    |bigint(20)    |NO   |总行数    |
+|INCREMENTAL_ROW_COUNT    |bigint(20)    |NO   |新输出的行    |
+|COMPRESSION_RATIO    |double    |NO   |新数据的压缩率 = 新增宏块数据在压缩后/压缩前比率    |
+|NEW_FLUSH_DATA_RATE    |bigint(20)    |NO   |新数据的输出速度，单位KB/s    |
+|PROGRESSIVE_COMPACTION_ROUND    |bigint(20)    |NO   |渐近合并当前轮次（如果为全量合并，该列为-1）    |
+|PROGRESSIVE_COMPACTION_NUM    |bigint(20)    |NO   |渐近合并总轮次    |
+|PARALLEL_DEGREE    |bigint(20)    |NO   |并行度    |
+|PARALLEL_INFO    |varchar(512)    |NO   |并行任务信息，会展示并行任务扫描的数据量/运行时间/输出的数据量的统计信息（min/max/avg）    |
+|PARTICIPANT_TABLE    |varchar(512)    |NO   |参与本次compaction的table信息    |
+|MACRO_ID_LIST    |varchar(256)    |NO   |输出的宏块列表，宏块列表过长则不展示    |
+|COMMENTS    |varchar(256)    |NO   |记录曾经失败的compaction历史信息、本次compaction的耗时采集信息等    |

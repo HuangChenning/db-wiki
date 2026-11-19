@@ -1,0 +1,49 @@
+---
+title: stack_size
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285988.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# stack_size
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V2.2.50 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`stack_size` 用于设置程序函数调用栈的大小。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+| **属性** | **描述** |
+| -------- | -------- |
+| 参数类型             | Capacity        |
+| 默认值               | 512K，默认单位为 MB，配置时需说明单位。<main id="notice" type='explain'><h4>说明</h4><p>该配置项从 V4.0.0 版本开始默认值由 1M 调整为 512K。</p></main>            |
+| 取值范围             | [512K, 20M] |
+| 是否可修改           | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 是，需要重启生效。 |
+
+## 配置示例
+
+设置程序函数调用栈的大小为 512K。
+
+```shell
+obclient> ALTER SYSTEM SET stack_size = '512K';
+```

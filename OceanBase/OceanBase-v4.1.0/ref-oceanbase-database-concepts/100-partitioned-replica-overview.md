@@ -1,0 +1,26 @@
+---
+title: "日志流副本概述"
+book: "系统概念"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001701187.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-oceanbase-database-concepts
+---
+
+# 日志流副本概述
+
+为了数据安全和提供高可用的数据服务，每个日志流的数据在物理上存储多份，每一份叫做日志流的一个副本。每个副本，包括存储在磁盘上的 Tablet 的静态数据（SSTable）、存储在内存上的 Tablet 的增量数据（MemTable）、以及记录事务的日志三类主要的数据。根据存储数据种类的不同，副本有几种不同的类型，以支持不同业务在在数据安全、性能伸缩性、可用性、成本等之间的选择。
+
+OceanBase 数据库当前版本仅支持全能型副本（FULL/F）。全能型副本称为 Paxos 副本，对应副本可构成 Paxos 成员组，参与选举投票。
+
+## 副本类型属性
+
+当前，指定副本类型和位置分布的 Locality 的语法如下：
+
+```sql
+LOCALITY='F{1}@z1,F@z2,F@z3'
+```
+
+在上述语法中，`F{1}@z1` 写法等效于 `F@z1`，花括号内的数字只能是 1。

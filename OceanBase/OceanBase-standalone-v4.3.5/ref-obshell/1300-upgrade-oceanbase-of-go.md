@@ -1,0 +1,16 @@
+---
+title: "升级 OceanBase 数据库"
+book: obshell
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000004046722.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-obshell
+---
+
+# 升级 OceanBase 数据库
+
+#### 说明
+
+建议先查看 [obshell-sdk-go 快速上手](100-quickstart-of-go.md) 内容，了解如何使用 obshell-sdk-go。

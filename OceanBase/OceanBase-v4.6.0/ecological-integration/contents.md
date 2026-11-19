@@ -1,0 +1,88 @@
+---
+title: "生态集成 目录"
+book: "生态集成"
+version: "V4.6.0"
+tags:
+  - oceanbase
+  - distributed
+  - v4.6.0
+  - ecological-integration
+  - contents
+---
+
+# 生态集成
+
+按原站点顺序排列。路径相对于本目录。
+
+- [生态集成概述](50-integration.md)
+- [SpringBoot](100-connect-to-the-oceanbase-database-through-spring-boot.md)
+- [SpringBatch](200-connect-to-the-oceanbase-database-through-spring-batch.md)
+- [Spring JDBC](300-connect-to-the-oceanbase-database-through-spring-jdbc.md)
+- [SpringDataJPA](400-connect-to-the-oceanbase-database-through-springjpa.md)
+- [Hibernate](500-connect-to-the-oceanbase-database-through-hibernate.md)
+- [MyBatis](600-connect-to-the-oceanbase-database-through-mybatis.md)
+- [SQLAlchemy](100-sqlalchemy-connection-oceanbase-database-program.md)
+- [peewee](200-peewee-connection-oceanbase-database-program.md)
+- [tortoise-orm](300-tortoise-orm-connection-oceanbase-database-program.md)
+- [GORM](100-gorm-connection-oceanbase-database-program.md)
+- [beego ORM](200-beego-orm-connection-oceanbase-database-program.md)
+- [SeaORM](100-sea-connection-oceanbase-database-program-ecological.md)
+- [Diesel](200-diesel-oceanbase-database-program.md)
+- [Active Record](100-activerecord-connection-oceanbase-database-program.md)
+- [Sequel](200-sequel-connection-oceanbase-database-program.md)
+- [Ruby on Rails](300-rails-connection-oceanbase-database-program.md)
+- [Sequelize](100-sequelize-connection-oceanbase-database-program.md)
+- [TypeORM](200-typeorm-connection-oceanbase-database-program.md)
+- [Prisma](300-prisma-connection-oceanbase-database-program.md)
+- [Drizzle](400-drizzle-connection-oceanbase-database-program.md)
+- [Dapper](100-dapper-connection-oceanbase-database-program.md)
+- [SqlSugar](200-sqlsugar-connection-oceanbase-database-program.md)
+- [FreeSQL](300-freesql-connection-oceanbase-database-program.md)
+- [Yii 2.0 ORM](100-yii2-connection-oceanbase-database-program.md)
+- [Laravel Eloquent ORM](200-laravel-connection-oceanbase-database-program.md)
+- [Liquibase](200-liquibase.md)
+- [Flyway](300-flyway.md)
+- [AWS Glue](100-glue.md)
+- [Apache Flink](100-apache-flink.md)
+- [Flink DirectLoad](300-load-data-bypass-through-flink.md)
+- [Flink Connector OceanBase](400-synchronize-data-in-real-time-using-flink.md)
+- [dbt](200-dbt.md)
+- [SeaTunnel](1300-seatunnel.md)
+- [Maxwell](1500-maxwell.md)
+- [Debezium](1600-debezium.md)
+- [Spark Catalog](1700-oceanbase-spark-catalog.md)
+- [NiFi](1800-apache-nifi.md)
+- [DBeaver](300-dbeaver.md)
+- [Navicat](400-navicat.md)
+- [DataGrip](500-Datagrip.md)
+- [TablePlus](600-Tableplus.md)
+- [DMS](700-dms.md)
+- [DolphinScheduler](1200-dolphinscheduler.md)
+- [Linkis](1400-linkis.md)
+- [Superset](100-superset-mysql-connection-oceanbase-sample-program.md)
+- [Power BI](300-power-bi.md)
+- [Quick BI](400-quick-bi.md)
+- [Tableau](500-tableau.md)
+- [观远 BI](600-guanyuan.md)
+- [永洪 BI](700-yonghong.md)
+- [NineData](100-ninedata.md)
+- [Bytebase](200-bytebase.md)
+- [OpenAI](100-openai.md)
+- [Tongyi Qianwen](200-tongyi-qianwen.md)
+- [LangChain](300-langchain.md)
+- [LlamaIndex](400-liamalndex.md)
+- [Dify](500-dify.md)
+- [n8n](600-n8n.md)
+- [Trae](700-trae.md)
+- [SpringAI](800-springai.md)
+- [Cline](900-cline.md)
+- [Cursor](1000-cursor.md)
+- [Continue](1100-continue.md)
+- [Toolbox](1300-toolbox.md)
+- [CamelAI](1500-camel.md)
+- [Firecrawl](1600-firecrawl.md)
+- [Hugging Face](1700-huggingface.md)
+- [Ollama](1800-ollama.md)
+- [Google Gemini](1900-google-gemini.md)
+- [Cloudflare Workers AI](2000-cloudflare-workers-ai.md)
+- [Jina AI](3000-jina-ai.md)

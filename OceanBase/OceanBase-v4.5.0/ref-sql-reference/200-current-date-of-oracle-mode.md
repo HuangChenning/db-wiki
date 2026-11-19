@@ -1,0 +1,40 @@
+---
+title: CURRENT_DATE
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004481620.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CURRENT_DATE
+
+## 描述
+
+该函数返回当前会话时区的当前日期。
+
+## 语法
+
+```sql
+CURRENT_DATE
+```
+
+## 返回类型
+
+返回 `DATE` 数据类型。
+
+## 示例
+
+使用 `CURRENT_DATE` 函数返回当前时区日期。
+
+```sql
+obclient> SELECT CURRENT_DATE FROM DUAL;
++--------------+
+| CURRENT_DATE |
++--------------+
+| 17-NOV-21    |
++--------------+
+1 row in set
+```

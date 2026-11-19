@@ -1,0 +1,36 @@
+---
+title: CHAR_LENGTH
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687997.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CHAR_LENGTH
+
+## 声明
+
+```sql
+CHAR_LENGTH(str)
+```
+
+## 说明
+
+返回字符串 `str` 包含的字符数。
+
+多字节的字符会被计为一个字符，例如，输入 5 个 2 字节字符，`LENGTH()` 返回 `10`，而 `CHAR_LENGTH()` 则返回 `5`。
+
+## 示例
+
+```sql
+obclient> SELECT CHAR_LENGTH('中国'), LENGTH('中国'),CHAR_LENGTH('hello');
++-----------------------+------------------+----------------------+
+| CHAR_LENGTH('中国')   | LENGTH('中国')   | CHAR_LENGTH('hello') |
++-----------------------+------------------+----------------------+
+|                     2 |                6 |                    5 |
++-----------------------+------------------+----------------------+
+1 row in set
+```

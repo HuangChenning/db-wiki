@@ -1,0 +1,27 @@
+---
+title: information_schema.ST_GEOMETRY_COLUMNS
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700903.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# information_schema.ST_GEOMETRY_COLUMNS
+
+## 功能
+
+展示存在空间数据列以及空间数据类型等信息的表。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| TABLE_SCHEMA | varchar(128) | NO | 列所属的 Database |
+| TABLE_NAME | varchar(256) | NO | 包含该空间列的表名 |
+| COLUMN_NAME | varchar(128) | NO | 列名 |
+| SRS_NAME | varchar(128) | NO | 空间坐标系名称 |
+| SRS_ID | bigint(20) unsigned | NO | 空间坐标系 ID |
+| GEOMETRY_TYPE_NAME | varchar(15) | NO | 空间数据类型 |

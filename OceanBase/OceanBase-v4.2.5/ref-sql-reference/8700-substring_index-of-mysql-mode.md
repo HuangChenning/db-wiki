@@ -1,0 +1,49 @@
+---
+title: SUBSTRING_INDEX
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504767.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SUBSTRING_INDEX
+
+## 声明
+
+```sql
+SUBSTRING_INDEX(str, delim, count)
+```
+
+## 说明
+
+在定界符 `delim` 以及 `count` 出现前，从字符串 `str` 返回字符串。
+
+* 如果 `count` 为正值，则返回最终定界符（从左边开始）左边的一切内容。
+
+* 如果 `count` 为负值，则返回定界符（从右边开始）右边的一切内容。
+
+* 如果任意一个参数为 `NULL`，返回 `NULL`；
+
+* 如果 `str` 或 `delim` 为空字符串，则返回空串；
+
+* 如果 `count=0`，也返回空串。
+
+*`str`、`delim` 和 `count` 参数支持数值与字符串的隐式转换。
+
+## 示例
+
+```javascript
+obclient> SELECT SUBSTRING_INDEX('ABCDABC', 'ABC', 0), SUBSTRING_INDEX('ABCDABC', 'ABC', 1), SUBSTRING_INDEX('ABCDABC', 'ABC', 2), SUBSTRING_INDEX('ABCDABC', 'ABC', 3), SUBSTRING_INDEX('ABCDABC', 'ABC', -1), SUBSTRING_INDEX('ABCDABC', 'ABC', -2), SUBSTRING_INDEX('ABCDABC', 'ABC', -3)\G
+*************************** 1. row ***************************
+ SUBSTRING_INDEX('ABCDABC', 'ABC', 0):
+ SUBSTRING_INDEX('ABCDABC', 'ABC', 1):
+ SUBSTRING_INDEX('ABCDABC', 'ABC', 2): ABCD
+ SUBSTRING_INDEX('ABCDABC', 'ABC', 3): ABCDABC
+SUBSTRING_INDEX('ABCDABC', 'ABC', -1):
+SUBSTRING_INDEX('ABCDABC', 'ABC', -2): DABC
+SUBSTRING_INDEX('ABCDABC', 'ABC', -3): ABCDABC
+1 row in set
+```

@@ -1,0 +1,503 @@
+---
+title: CREATE TABLE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503343.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE TABLE
+
+## 描述
+
+该语句用来在数据库中创建一张新表。
+
+## 语法
+
+```sql
+CREATE [hint_options] TABLE [IF NOT EXISTS] table_name
+      (table_definition_list) [table_option_list] [partition_option] [IGNORE | REPLACE] [AS] select;
+
+CREATE TABLE [IF NOT EXISTS] table_name
+      LIKE table_name;
+
+table_definition_list:
+    table_definition [, table_definition ...]
+
+table_definition:
+      column_definition
+    | [CONSTRAINT [constraint_name]] PRIMARY KEY index_desc
+    | [CONSTRAINT [constraint_name]] UNIQUE {INDEX | KEY} [index_name] index_desc
+    | [CONSTRAINT [constraint_name]] FOREIGN KEY [index_name] (column_name, ...) reference_definition
+    | {INDEX | KEY} [index_name] [index_type] (key_part,...) [index_optionn_list]
+    | [CONSTRAINT [constraint_name]] CHECK(expression) [NOT ENFORCED | ENFORCED]
+
+column_definition_list:
+    column_definition [, column_definition ...]
+
+column_definition:
+     column_name data_type
+         [DEFAULT const_value] [AUTO_INCREMENT]
+         [NULL | NOT NULL] [[PRIMARY] KEY] [UNIQUE [KEY]] comment [ON UPDATE CURRENT_TIMESTAMP]
+         [COLUMN_FORMAT {FIXED | DYNAMIC | DEFAULT}]
+         [STORAGE {DISK | MEMORY}]
+         [reference_definition]
+   | column_name data_type
+         [GENERATED ALWAYS] AS (expr) [VIRTUAL | STORED]
+         [opt_generated_column_attribute]
+         [reference_definition]
+
+index_desc:
+    (column_desc_list) [index_type] [index_option_list]
+
+reference_definition:
+    REFERENCES tbl_name (key_part,...)
+    [match_action] [opt_reference_option_list]
+
+match_action:
+    MATCH {SIMPLE | FULL | PARTIAL}
+
+opt_reference_option_list:
+    reference_option [,reference_option ...]
+
+reference_option:
+    ON {DELETE | UPDATE} {RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT}
+
+key_part:
+    {index_col_name [(length)] | (expr)} [ASC | DESC]
+
+index_type:
+    USING BTREE
+
+index_option_list:
+    index_option [ index_option ...]
+
+index_option:
+      [GLOBAL | LOCAL]
+    | block_size
+    | compression
+    | STORING(column_name_list)
+    | comment
+    | KEY_BLOCK_SIZE [=] INT_VALUE
+    | WITH PARSER parser_name
+
+table_option_list:
+    table_option [ table_option ...]
+
+table_option:
+      [DEFAULT] {CHARSET | CHARACTER SET} [=] charset_name
+    | [DEFAULT] COLLATE [=] collation_name
+    | table_tablegroup
+    | block_size
+    | lob_inrow_threshold [=] num
+    | compression
+    | AUTO_INCREMENT [=] INT_VALUE
+    | comment
+    | TTL (ttl_definition) 
+    | ROW_FORMAT [=] REDUNDANT|COMPACT|DYNAMIC|COMPRESSED|DEFAULT
+    | PCTFREE [=] num
+    | parallel_clause
+    | READ {ONLY | WRITE}
+    | DUPLICATE_SCOPE [=] 'none|cluster'
+    | KEY_BLOCK_SIZE [=] INT_VALUE
+    | TABLE_MODE [=] 'table_mode_value'
+    | auto_increment_cache_size [=] INT_VALUE
+    | AVG_ROW_LENGTH [=] value
+    | CHECKSUM [=] {0 | 1}
+    | CONNECTION [=] 'connect_string'
+    | {DATA | INDEX} DIRECTORY [=] 'absolute path to directory'
+    | DELAY_KEY_WRITE [=] {0 | 1}
+    | ENCRYPTION [=] {'Y' | 'N'}
+    | ENGINE [=] engine_name
+    | INSERT_METHOD [=] { NO | FIRST | LAST}
+    | MAX_ROWS [=] value
+    | MIN_ROWS [=] value
+    | PACK_KEYS [=] {0 | 1 | DEFAULT}
+    | PASSWORD [=] 'string'
+    | STATS_AUTO_RECALC [=] {DEFAULT | 0 | 1}
+    | STATS_PERSISTENT [=] {DEFAULT | 0 | 1}
+    | STATS_SAMPLE_PAGES [=] value
+    | UNION [=] (tbl_name[,tbl_name]...)
+
+parallel_clause:
+    {NOPARALLEL | PARALLEL integer}
+
+table_mode_value:
+    NORMAL
+    | QUEUING
+    | MODERATE
+    | SUPER
+    | EXTREME
+
+partition_option:
+      PARTITION BY HASH(expression)
+      [subpartition_option] PARTITIONS partition_count
+    | PARTITION BY KEY([column_name_list])
+      [subpartition_option] PARTITIONS partition_count
+    | PARTITION BY RANGE {(expression) | COLUMNS (column_name_list)}
+      [subpartition_option] (range_partition_list)
+    | PARTITION BY LIST {(expression) | COLUMNS (column_name_list)}
+      [subpartition_option] (list_partition_list)
+
+subpartition_option:
+      SUBPARTITION BY HASH(expression)
+      SUBPARTITIONS subpartition_count
+    | SUBPARTITION BY KEY(column_name_list)
+      SUBPARTITIONS subpartition_count
+    | SUBPARTITION BY RANGE {(expression) | COLUMNS (column_name_list)}
+      (range_subpartition_list)
+    | SUBPARTITION BY LIST(expression)
+
+range_partition_list:
+    range_partition [, range_partition ...]
+
+range_partition:
+    PARTITION partition_name
+    VALUES LESS THAN {(expression_list) | MAXVALUE}
+
+list_partition_list:
+    list_partition [, list_partition ...]
+
+list_partition:
+    PARTITION partition_name
+    VALUES IN {(expression_list) | (DEFAULT)}
+
+range_subpartition_list:
+    range_subpartition [, range_subpartition ...]
+
+range_subpartition:
+    SUBPARTITION subpartition_name
+    VALUES LESS THAN {(expression_list) | MAXVALUE}
+
+expression_list:
+    expression [, expression ...]
+
+column_name_list:
+    column_name [, column_name ...]
+
+partition_name_list:
+    partition_name [, partition_name ...]
+
+partition_count | subpartition_count:
+    INT_VALUE
+```
+
+## 参数说明
+
+|                        **参数**                        |        **描述**        |
+|------------------------------------------------------|-----------------------------------|
+| hint_options | 指定 Hint 选项，为可选项。<main id="notice" type='notice'><h4>注意</h4><p>在当前版本中，<code>CREATE TABLE</code> 语句的 Hint 选项仅限于支持 <code>/*+ parallel(N) */</code> 类型，其中 <code>N</code> 是并行度。并且该 Hint 选项仅适用于 <code>CREATE TABLE ... AS SELECT ...</code> 的场景，可以控制在表创建时数据查询和写入操作的并行度。</p></main>|
+| IF NOT EXISTS | 如果指定 `IF NOT EXISTS`，即使待创建的表已存在，也不会报错；如果不指定且待创建的表已存在，则系统会报错。 |
+| IGNORE \| REPLACE | 可选项，使用 `CREATE TABLE ... SELECT` 语句时指示如何处理重复唯一键值的行。当有重复唯一键值的行时，如果不指定 <code>IGNORE</code> 或者 <code>REPLACE</code> 将会报错。<ul><li><code>IGNORE</code>：如果新表中的唯一键值与复制的数据中的某行发生冲突，那么该冲突行将被忽略，不会被复制到新表中。即 <code>IGNORE</code> 选项会跳过重复的数据，只复制那些不会造成唯一键冲突的行。</li><li><code>REPLACE</code>：在遇到唯一键值重复的数据行，原新表中的行将被替换为新复制的数据中的行。</li></ul>|
+| PRIMARY KEY                                          | 为创建的表指定主键。如果不指定，则使用隐藏主键。OceanBase 数据库支持修改表的主键或通过 `ALTER TABLE` 语句为表添加主键，参见[ALTER TABLE](1600.alter-table-of-mysql-mode.md)。    |
+| FOREIGN KEY                                          | 为创建的表指定外键。如果不指定外键名，则会使用表名 + `OBFK` + 创建时间命名。（例如，在 2021 年 8 月 1 日 00:00:00 为 `t1` 表创建的外键名称为 `t1_OBFK_1627747200000000`）。外键允许跨表交叉引用相关数据，详细介绍可参见下文 [reference_definition](#reference_definition)。<main id="notice" type='notice'><h4>注意</h4><p>添加外键约束时，需要确保当前用户对父表具备 <code>REFERENCES</code> 权限。</p></main>|
+| KEY \| INDEX                                         | 为创建的表指定键或索引。 如果不指定索引名，则会使用索引引用的第一列作为索引名，如果命名存在重复，则会使用下划线（_）+ 序号的方式命名。（例如，使用 `c1` 列创建的索引如果命名重复，则会将索引命名为 `c1_2`。） 您可以通过 `SHOW INDEX` 语句查看表上的索引。    |
+| key_part        | 创建（函数）索引。 |
+| index_col_name  | 指定索引的列名，每个列名后都支持 `ASC`（升序）；当前版本仅支持降序（`DESC`）排序索引语法，功能不生效。默认为升序。 建立索引的排序方式为：首先以 `index_col_name` 中第一个列的值排序；该列值相同的记录，按下一列名的值排序；以此类推。 |
+| expr            | 表示合法的函数索引表达式，且允许是布尔表达式，例如 `c1=c1`。<main id="notice" type='notice'><h4>注意</h4><p> OceanBase 数据库当前版本禁止创建生成列上的函数索引。 </p></main>              |
+| ROW_FORMAT                                           | 指定表是否开启 Encoding 存储格式。 <ul><li> `redundant`：不开启 Encoding 存储格式。   <li> `compact`：不开启 Encoding 存储格式。</li>   <li> `dynamic`：Encoding 存储格式。   <li> `compressed`：Encoding 存储格式。</li>   <li> `default`：等价 `dynamic` 模式。</li></ul>    |
+| \[GENERATED ALWAYS\] AS (expr) \[VIRTUAL \| STORED\] | 创建生成列，`expr` 为用于计算列值的表达式。 <ul><li> `VIRTUAL`：列值不会被存储，而是在读取行时，在任何 `BEFORE` 触发器之后立即计算。虚拟列不占用存储空间。</li>   <li> `STORED`：在插入或更新行时评估和存储列值。存储列确实需要存储空间并且可以被索引。</li></ul>    |
+| BLOCK_SIZE                                           | 指定表的微块大小。  |
+| lob_inrow_threshold                                  | 用于配置 `LOB` 字段 `INROW` 阈值，当某个 `LOB` 字段数据大小超过该阈值时，超过部分会转为`OUTROW` 存储在 LOB Meta 表中，默认值由变量 `ob_default_lob_inrow_threshold` 控制。|
+| COMPRESSION                                          | 指定表的压缩算法，取值如下： <ul><li> `none`：不使用压缩算法。</li>   <li> `lz4_1.0`: 使用 `lz4` 压缩算法。</li>   <li> `zstd_1.0`: 使用 `zstd` 压缩算法。</li>  <li> `snappy_1.0`: 使用 `snappy` 压缩算法。</li> </ul>    |
+| CHARSET \| CHARACTER SET                             | 指定表中列的默认字符集，可使用的字符集请参见 [字符集](../100.basic-elements-of-mysql-mode/300.character-set-and-collation-of-mysql-mode/200.character-set-of-mysql-mode.md)。    |
+| COLLATE                                              | 指定表中列的默认字符序，可使用的字符序请参见 [字符序](../100.basic-elements-of-mysql-mode/300.character-set-and-collation-of-mysql-mode/300.collation-of-mysql-mode.md)。  |
+| table_tablegroup                                     | 指定表所属的 `tablegroup`。   |
+| AUTO_INCREMENT                                       | 指定表中自增列的初始值。OceanBase 数据库支持使用自增列作为分区键。  |
+| comment                                              | 注释。注释的最大长度为 1024 字符，不区分大小写。   |
+| TTL | Time To Live，指定删除过期数据。|
+| PCTFREE                                              | 指定宏块保留空间百分比。   |
+| parallel_clause                                      | 指定表级别的并行度： <ul><li> `NOPARALLEL`：并行度为 `1`，默认配置 </li>  <li> `PARALLEL integer`：指定并行度，`integer` 取值大于等于 `1`。 </li></ul>    |
+| READ {ONLY \| WRITE} | 指定表的读写权限。具体如下：<ul><li>`READ ONLY`：表示表只能被读取，不能被修改或删除。<main id="notice" type='notice'><h4>注意</h4><p>表级别的 <code>READ ONLY</code> 参数对具有 <code>SUPER</code> 权限的用户不生效，只对普通用户生效。</p></main></li><li>`READ WRITE`：默认值，表示表可以被读取、修改和删除。</li></ul>|
+| DUPLICATE_SCOPE |  指定复制表的属性，取值如下：<ul><li> `none`：表示该表是一个普通表，为默认值。</li><li> `cluster`：表示该表是一个复制表，Leader 需要将事务复制到当前租户的所有 F（全能）副本及 R（只读）副本。</li></ul>OceanBase 数据库目前仅支持 `cluster` 级别的复制表。|
+| CHECK                                                | 限制列中的值的范围。 <ul><li> 如果对单个列定义 `CHECK` 约束，那么该列级约束可以写到列定义中，并且可以指定名称。</li>   <li> 如果对一个表定义 `CHECK` 约束，那么此约束会应用于表中多个列，且允许出现在列的定义前。在删除表时，表中创建的 `CHECK` 约束也会一起被删除。</li></ul> 可以通过如下方式查看约束信息： <li> 使用 `SHOW CREATE TABLE` 命令 </li>  <li> 查看 `information_schema.TABLE_CONSTRAINTS` 视图 </li>  <li> 查看 `information_schema.CHECK_CONSTRAINTS` 视图  </li> </ul>    |
+| constraint_name                                      | 约束名称，最多包含 64 个字符。 <ul><li> 约束名称的开头结尾中间都允许有空格，但需要用"\`"标识名称的开头和结尾。   <li> 约束名称可以包含特殊字符"$"。   <li> 如果约束名称为保留字，需要用"\`"标识，否则会报错。   <li> 在同一 Database 下不允许 `CHECK` 约束的名称重复。</ul>    |
+| expression                                           | 约束表达式。 <ul><li> `expression` 不允许为空。   <li> `expression` 结果不能为非布尔类型。  <li> `expression` 不能包含不存在的列。 </ul>   |
+| KEY_BLOCK_SIZE [=] INT_VALUE | 可选项，用于指定索引键块的大小（以字节计），用来控制表或者索引的压缩程度。当前版本仅支持该关键字语法，功能不生效。|
+| TABLE_MODE | 可选项，用于指定合并触发阈值与合并策略，即控制数据转储后的合并行为。取值的详细介绍可参见下文 [table_mode_value](#table_mode_value)。|
+| auto_increment_cache_size | 可选项，用于设置缓存的自增值个数。该参数默认值为 0，表示该项未进行配置，系统将采用租户级别的配置项（[auto_increment_cache_size](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/300.auto_increment_cache_size-global.md)）作为自增列的缓存大小设置。|
+| AVG_ROW_LENGTH [=] value        | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| CHECKSUM [=] {0 \| 1}           | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| CONNECTION [=] 'connect_string' | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| {DATA \| INDEX} DIRECTORY [=] 'absolute path to directory' | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| DELAY_KEY_WRITE [=] {0 \| 1} | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| ENCRYPTION [=] {'Y' \| 'N'}  | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| ENGINE [=] engine_name       | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| INSERT_METHOD [=] { NO \| FIRST \| LAST}  | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| MAX_ROWS [=] value                        | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| MIN_ROWS [=] value                        | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| PACK_KEYS [=] {0 \| 1 \| DEFAULT}         | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| PASSWORD [=] 'string'                     | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| STATS_AUTO_RECALC [=] {DEFAULT \| 0 \| 1} | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| STATS_PERSISTENT [=] {DEFAULT \| 0 \| 1}  | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| STATS_SAMPLE_PAGES [=] value              | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| UNION [=] (tbl_name[,tbl_name]...)        | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| WITH PARSER parser_name                   | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| COLUMN_FORMAT {FIXED \| DYNAMIC \| DEFAULT} | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+| STORAGE {DISK \| MEMORY}                    | 可选项，当前版本仅支持该关键字语法，功能不生效。|
+
+### reference_definition
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>在列定义后添加 <code>reference_definition</code> 语句的场景，仅支持相关语法，功能不生效。例如，<code>CREATE TABLE tb11(id INT PRIMARY KEY, sid INT REFERENCES tb11(id) MATCH FULL ON DELETE SET NULL);</code> 该语句虽然能够成功运行，但 <code>MATCH FULL</code> 以及外键约束的行为（在本例中指的是 <code>ON DELETE SET NULL</code>）实际上并不会生效。有外键添加需求时，请在指定 <code>Foreign Key</code> 的子句中使用。这种行为和 MySQL 5.7 兼容。</p>
+</main>
+
+* `REFERENCES tbl_name (key_part,...)`：指定外键关联到的主表和列。
+
+  * `tbl_name`：被引用表的名称，即外键关联到的主表表名。
+  * `key_part`：被引用表中的列名，即外键关联到的主表的列。多数情况下，这是主键或唯一键的列。
+
+* `match_action`：指定在外键约束检查时使用的匹配方法，简单、完全或部分。
+
+  * `MATCH SIMPLE`：默认值，如果外键中任何列是 `NULL`，则外键约束不进行检查。
+  * `MATCH FULL`：在引用的外键列被考虑为匹配时，所有的外键列都必须是非 `NULL` 值。
+  * `MATCH PARTIAL`：允许外键是部分 `NULL`，而且部分匹配也被考虑为满足外键约束。
+
+* `opt_reference_option_list`：定义了当删除或更新主表中的值时，外键表将如何响应。包含以下选项：
+
+  * `ON DELETE`：定义了当主表中的行被删除时应该执行的操作。
+  * `ON UPDATE`：定义了当主表中的行被更新时应该执行的操作。
+
+  这些选项后面可以跟如下动作：
+
+  * `RESTRICT`：阻止删除或更新主表中的行。
+  * `CASCADE`：当主表中的行被删除或更新时，相应的删除或更新外键表中的行。
+  * `SET NULL`：将外键中相应的列设置为 `NULL`（如果列允许 `NULL` 值）。
+  * `NO ACTION`：与 `RESTRICT` 类似。
+  * `SET DEFAULT`：将外键中相应的列设置为其默认值（如果列有默认值）。
+
+### table_mode_value
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>在以下列出的 <code>TABLE_MODE</code> 模式中，除了 <code>NORMAL</code> 模式之外，所有模式都代表 <code>QUEUING</code> 表。这种 <code>QUEUING</code> 表是最基本的表类型，并且随后列出的几种模式（除了 NORMAL 模式）代表了使用更加积极的合并策略。</p>
+</main>
+
+* `NORMAL`：默认值，表示正常。在该模式下，数据转储后触发合并的概率极低。
+* `QUEUING`：在该模式下，数据转储后触发合并的概率低。
+* `MODERATE`：表示适度。在该模式下，数据转储后触发合并的概率为中等。
+* `SUPER`：表示超级。在该模式下，数据转储后触发合并的概率高。
+* `EXTREME`：表示极端。在该模式下，转储后触发合并的概率较高。
+
+更多有关合并的信息，请参见 [自适应合并](../../../../200.system-management/500.manage-data-storage/200.merge-management/320.adaptive-compavtion.md)。
+
+## 示例
+
+* 创建数据库表。
+
+  ```sql
+  obclient> CREATE TABLE tbl1 (c1 INT PRIMARY KEY, c2 VARCHAR(50));
+  Query OK, 0 rows affected
+  ```
+
+* 创建带索引的表。
+
+  ```sql
+  obclient> CREATE TABLE tbl2 (c1 INT PRIMARY KEY, c2 INT, c3 INT, INDEX i1 (c2));
+  Query OK, 0 rows affected
+  ```
+
+* 创建带有函数索引的表 `tbl3`。
+
+  ```shell
+  obclient> CREATE TABLE tbl3 (c1 INT, c2 INT, INDEX i1 ((c1+1)), UNIQUE KEY ((c1+c2)));
+  Query OK, 0 rows affected
+
+  obclient> SHOW CREATE TABLE tbl3;
+  +-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Table | Create Table                                                                                                                                                                                                                                                                                                                                                                     |
+  +-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | tbl3    | CREATE TABLE `tbl3` (
+  `c1` int(11) DEFAULT NULL,
+  `c2` int(11) DEFAULT NULL,
+  UNIQUE KEY `functional_index` ((`c1` + `c2`)) BLOCK_SIZE 16384 LOCAL,
+  KEY `i1` ((`c1` + 1)) BLOCK_SIZE 16384 LOCAL
+  ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 2 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+  +-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  ```
+
+* 创建 Hash 分区，分区数为 `8` 的表。
+
+  ```sql
+  obclient> CREATE TABLE tbl4 (c1 INT PRIMARY KEY, c2 INT) PARTITION BY HASH(c1) PARTITIONS 8;
+  Query OK, 0 rows affected
+  ```
+
+* 创建一级分区为 Range 分区，二级分区为 Key 分区的表。
+
+  ```sql
+  obclient> CREATE TABLE tbl5 (c1 INT, c2 INT, c3 INT) PARTITION BY RANGE(c1)
+       SUBPARTITION BY KEY(c2, c3) SUBPARTITIONS 5
+       (PARTITION p0 VALUES LESS THAN(0), PARTITION p1 VALUES LESS THAN(100));
+  Query OK, 0 rows affected
+  ```
+
+* 创建一列为 `gbk`, 一列为 `utf8` 的表。
+
+  ```sql
+  obclient> CREATE TABLE tbl6 (c1 VARCHAR(10),
+                   c2 VARCHAR(10) CHARSET GBK COLLATE gbk_bin)
+               DEFAULT CHARSET utf8 COLLATE utf8mb4_general_ci;
+  Query OK, 0 rows affected
+  ```
+
+* 开启 Encoding 并使用 `zstd` 压缩，宏块保留空间为 `5%`。
+
+  ```sql
+  obclient> CREATE TABLE tbl7 (c1 INT, c2 INT, c3 VARCHAR(64))
+        COMPRESSION 'zstd_1.0'
+        ROW_FORMAT DYNAMIC
+        PCTFREE 5;
+  Query OK, 0 rows affected
+  ```
+
+* 创建表 `tbl8`，并设置并行度为 `3`。
+
+  ```sql
+  obclient> CREATE TABLE tbl8(c1 INT PRIMARY KEY, c2 INT) PARALLEL 3;
+  Query OK, 0 rows affected
+  ```
+
+* 使用自增列作为分区键。
+
+  ```sql
+  obclient> CREATE TABLE tbl9(inv_id BIGINT NOT NULL AUTO_INCREMENT,c1 BIGINT,
+  PRIMARY KEY (inv_id) ) PARTITION BY HASH(inv_id) PARTITIONS 8;
+  Query OK, 0 rows affected
+  ```
+
+* 为表 `ref_t2` 指定外键，当 `UPDATE` 操作影响与子表相匹配行的父表中键值时，执行 `SET NULL` 操作。
+
+  ```shell
+  obclient> CREATE TABLE ref_t1(c1 INT PRIMARY KEY, C2 INT);
+  Query OK, 0 rows affected
+
+  obclient> CREATE TABLE ref_t2(c1 INT PRIMARY KEY, C2 INT,FOREIGN KEY(c2) REFERENCES ref_t1(c1) ON UPDATE SET NULL);
+  Query OK, 0 rows affected
+  ```
+
+* 创建带 `CHECK` 约束的表 `tbl10`，并查看约束信息。
+
+  ```sql
+  obclient> CREATE TABLE tbl10 (col1 INT, col2 INT, col3 INT, CONSTRAINT equal_check1 CHECK(col1 = col3 * 2));
+  Query OK, 0 rows affected
+
+  obclient> SHOW CREATE TABLE tbl10;
+  +-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Table | Create Table                                                                                                                                                                                                                                                                                                                                               |
+  +-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | tbl10  | CREATE TABLE `tbl10` (
+    `col1` int(11) DEFAULT NULL,
+    `col2` int(11) DEFAULT NULL,
+    `col3` int(11) DEFAULT NULL,
+    CONSTRAINT `equal_check1` CHECK ((`col1` = (`col3` * 2)))
+  ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+  +-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1 row in set
+  ```
+
+* 依照表 `tbl10` 创建表 `tbl11`，并查看表信息。
+
+  ```sql
+  obclient> CREATE TABLE tbl11 LIKE tbl10;
+  Query OK, 0 rows affected
+
+  obclient> SHOW CREATE TABLE tbl11;
+  +-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Table | Create Table                                                                                                                                                                                                                                                                                                                                                                |
+  +-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | tbl11  | CREATE TABLE `tbl11` (
+    `col1` int(11) DEFAULT NULL,
+    `col2` int(11) DEFAULT NULL,
+    `col3` int(11) DEFAULT NULL,
+    CONSTRAINT `tbl11_OBCHECK_1650793233327894` CHECK ((`col1` = (`col3` * 2)))
+  ) DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0 |
+  +-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  1 row in set
+  ```
+
+* 创建 `cluster` 级别的复制表 `dup_t1`。
+
+  1. 登录到 sys 租户，创建一个 Unit。
+
+     ```shell
+     obclient> CREATE RESOURCE UNIT IF NOT EXISTS 2c5g MAX_CPU 2, MEMORY_SIZE '5G';
+     Query OK, 0 rows affected
+     ```
+
+  2. 创建一个 Unit Num 为 2 的资源池。
+
+     ```shell
+     obclient> CREATE RESOURCE POOL tenant_pool UNIT = '2c5g', UNIT_NUM = 2, ZONE_LIST = ('z1', 'z2', 'z3');
+     Query OK, 0 rows affected
+     ```
+
+  3. 创建用户租户 `obmysql` 并指定 Locality 分布。
+
+     ```shell
+     obclient> CREATE TENANT obmysql resource_pool_list=('tenant_pool'), LOCALITY = "F@z1, F@z2, R@z3", PRIMARY_ZONE = "z1" SET ob_tcp_invited_nodes='%';
+     Query OK, 0 rows affected
+     ```
+
+  4. 登录到步骤 3 所创建的 `obmysql` 用户租户，创建一个复制表。
+
+     ```shell
+     obclient> USE test;
+     Database changed
+     obclient> CREATE TABLE dup_t1(c1 INT) DUPLICATE_SCOPE = 'cluster';
+     Query OK, 0 rows affected
+     ```
+
+  5. （可选）查看广播日志流信息，复制表会创建在该日志流上。
+
+     ```shell
+     obclient> SELECT * FROM oceanbase.DBA_OB_LS WHERE FLAG LIKE "%DUPLICATE%";
+     +-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+-----------+
+     | LS_ID | STATUS | PRIMARY_ZONE | UNIT_GROUP_ID | LS_GROUP_ID | CREATE_SCN          | DROP_SCN | SYNC_SCN            | READABLE_SCN        | FLAG      | UNIT_LIST |
+     +-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+-----------+
+     |  1003 | NORMAL | z1;z2        |             0 |           0 | 1683267390195713284 |     NULL | 1683337744205408139 | 1683337744205408139 | DUPLICATE |           |
+     +-------+--------+--------------+---------------+-------------+---------------------+----------+---------------------+---------------------+-----------+-----------+
+     1 row in set
+     ```
+
+  6. （可选）在 sys 租户下查看复制表的副本分布，`REPLICA_TYPE` 字段为副本类型。
+
+     ```shell
+     obclient> SELECT TENANT_ID, DATABASE_NAME, TABLE_NAME, TABLE_ID, TABLE_TYPE, PARTITION_NAME, SUBPARTITION_NAME, INDEX_NAME, DATA_TABLE_ID, TABLET_ID, LS_ID, ZONE, SVR_IP, SVR_PORT, ROLE, REPLICA_TYPE, DUPLICATE_SCOPE FROM oceanbase.CDB_OB_TABLE_LOCATIONS WHERE TABLE_NAME = "dup_t1";
+     +-----------+---------------+------------+----------+------------+----------------+-------------------+------------+---------------+-----------+-------+------+----------------+----------+----------+--------------+-----------------+
+     | TENANT_ID | DATABASE_NAME | TABLE_NAME | TABLE_ID | TABLE_TYPE | PARTITION_NAME | SUBPARTITION_NAME | INDEX_NAME | DATA_TABLE_ID | TABLET_ID | LS_ID | ZONE | SVR_IP         | SVR_PORT | ROLE     | REPLICA_TYPE | DUPLICATE_SCOPE |
+     +-----------+---------------+------------+----------+------------+----------------+-------------------+------------+---------------+-----------+-------+------+----------------+----------+----------+--------------+-----------------+
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z1   | 11.xxx.xxx.xxx |    36125 | LEADER   | FULL         | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z1   | 11.xxx.xxx.xxx  |    36124 | FOLLOWER | READONLY     | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z2   | 11.xxx.xxx.xxx |    36127 | FOLLOWER | FULL         | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z2   | 11.xxx.xxx.xxx |    36126 | FOLLOWER | READONLY     | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z3   | 11.xxx.xxx.xxx |    36128 | FOLLOWER | READONLY     | CLUSTER         |
+     |      1002 | test          | dup_t1     |   500002 | USER TABLE | NULL           | NULL              | NULL       |          NULL |    200001 |  1003 | z3   | 11.xxx.xxx.xxx  |    36129 | FOLLOWER | READONLY     | CLUSTER         |
+     +-----------+---------------+------------+----------+------------+----------------+-------------------+------------+---------------+-----------+-------+------+----------------+----------+----------+--------------+-----------------+
+     6 rows in set
+     ```
+
+  7. 像普通表一样插入和读写复制表的数据。对于一个读请求，如果使用了 Proxy，读请求可能会路由到任意一个 OBServer 节点；如果直连 OBServer 节点，只要本地副本可读，就会在直连的 OBServer 节点上执行读请求。
+
+     ```shell
+     obclient> INSERT INTO dup_t1 VALUES(1);
+     Query OK, 1 row affected
+
+     obclient> SELECT * FROM dup_t1;
+     +------+
+     | c1   |
+     +------+
+     |    1 |
+     +------+
+     1 row in set
+     ```
+
+* 创建表 `tbl1`，它有一个整数类型的列 `col1`，并且指定该操作应用 5 个并行度来完成，指定了新表 `tbl1` 的数据内容将来源于表 `tbl2` 的查询结果。
+
+  ```sql
+  CREATE /*+ parallel(5) */ TABLE tbl1 (col1 INT) AS SELECT col1 FROM tbl2;
+  ```

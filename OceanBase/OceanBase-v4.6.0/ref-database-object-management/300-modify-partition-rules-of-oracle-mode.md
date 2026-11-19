@@ -1,0 +1,274 @@
+---
+title: "修改分区规则"
+book: "数据库对象管理"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005683125.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 修改分区规则
+
+表创建成功后，您可以根据业务需要，修改表的分区方式、分区类型和分区键。
+
+## 修改分区方式
+
+OceanBase 数据库的 Oracle 模式支持修改表的分区方式，分区方式转换的支持情况如下表所示。
+
+| 分区方式 | 非分区 | 一级分区 | 二级分区 |
+|---------|--------|---------|----------|
+| 非分区   | -     | 支持     | 支持     |
+| 一级分区 | 不支持 | -        | 不支持   |
+| 二级分区 | 不支持 | 不支持   | -        |
+
+### 非分区表转化为一级分区表
+
+您可以通过 `ALTER TABLE` 语句将非分区表转化为任意分区类型的一级分区表，SQL 语法格式如下：
+
+```sql
+ALTER TABLE table_name MODIFY PARTITION BY partition_option;
+
+partition_option:
+    range_partition_option
+    | list_partition_option
+    | hash_partition_option
+
+range_partition_option：
+    RANGE (column_name)
+        (PARTITION partition_name VALUES LESS THAN(expr)
+         [, PARTITION partition_name VALUES LESS THAN (expr) ...]
+         [, PARTITION partition_name VALUES LESS THAN (MAXVALUE)]
+         )
+
+list_partition_option：
+    LIST (expr(column_name) | column_name) 
+        (PARTITION partition_name VALUES ( v01 [, v0N])
+         [, PARTITION partition_name VALUES ( vN1 [, vNN]) ...]
+         [, PARTITION partition_name VALUES (DEFAULT)]
+         )
+
+hash_partition_option：
+    HASH (expr(column_name) | column_name) PARTITIONS partition_count
+```
+
+**参数说明：**
+
+* `table_name`：待修改的非分区表的表名。
+* `column_name`：指定待分区的列的列名。
+* `partition_count`：指定分区个数。
+
+有关修改表语法的详细参数说明信息，参见 [ALTER TABLE](../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1000.alter-table-of-oracle-mode.md)。
+
+**示例如下：**
+
+创建非分区表 `tbl1` 后，转换为 Hash 类型的一级分区表。
+
+1. 创建非分区表 `tbl1`。
+
+   ```shell
+   obclient> CREATE TABLE tbl1(col1 INT, col2 DATE, PRIMARY KEY(col1, col2));
+   ```
+
+2. 将非分区表 `tbl1` 转化为一级分区表。
+
+   ```shell
+   obclient> ALTER TABLE tbl1 MODIFY PARTITION BY HASH(col1) PARTITIONS 4;
+   ```
+
+### 非分区表转化为二级分区表
+
+您可以将非分区表转换为任意分区类型的模板化或非模板化二级分区表。
+
+**将非分区表转换为模板化二级分区表的 SQL 语法如下：**
+
+```sql
+ALTER TABLE table_name MODIFY PARTITION BY partition_option;
+
+partition_option:
+    RANGE(column_name) subpartition_option (range_partition_option)
+    | LIST(expr(column_name) | column_name) subpartition_option (list_partition_option)
+    | HASH(expr(column_name) | column_name) {(hash_partition_option)
+                                             | PARTITIONS partition_count}
+
+subpartition_option:
+    SUBPARTITION BY 
+        RANGE(column_name) SUBPARTITION TEMPLATE(range_subpartition_option)
+        | LIST(expr(column_name) | column_name) SUBPARTITION TEMPLATE(list_subpartition_option)
+        | HASH(expr(column_name) | column_name) {SUBPARTITION TEMPLATE (hash_subpartition_option)
+                                                | SUBPARTITIONS subpartition_count}
+
+range_partition_option:
+    PARTITION partition_name VALUES LESS THAN(expr)
+    [, PARTITION partition_name VALUES LESS THAN(expr) ...]
+    [, PARTITION partition_name VALUES LESS THAN(MAXVALUE)]
+
+range_subpartition_option:
+    SUBPARTITION subpartition_name VALUES LESS THAN(expr)
+    [, SUBPARTITION subpartition_name VALUES LESS THAN(expr) ...]
+    [, SUBPARTITION subpartition_name VALUES LESS THAN(MAXVALUE)]
+
+list_partition_option:
+    PARTITION partition_name VALUES( v01 [, v0N])
+    [, PARTITION partition_name VALUES( vN1 [, vNN]) ...]
+    [, PARTITION partition_name VALUES(DEFAULT)]
+
+list_subpartition_option:
+    SUBPARTITION subpartition_name VALUES(expr)
+    [, SUBPARTITION subpartition_name VALUES(expr) ...]
+
+hash_partition_option:
+    PARTITION partition_name
+    [, PARTITION partition_name ...]
+
+hash_subpartition_option:
+    SUBPARTITION subpartition_name
+    [, SUBPARTITION subpartition_name ...]
+```
+
+**将非分区表转化为非模板化二级分区表的 SQL 语法如下：**
+
+```sql
+ALTER TABLE table_name MODIFY PARTITION BY partition_option;
+
+partition_option:
+    RANGE(column_name) subpartition_option 
+        {range_partition_option (subpartition_option_list)
+         [, range_partition_option (subpartition_option_list) ...]
+         }
+    | LIST(expr(column_name) | column_name) subpartition_option 
+        {list_partition_option (subpartition_option_list)
+         [, list_partition_option (subpartition_option_list) ...]
+         }
+    | HASH(expr(column_name) | column_name) subpartition_option
+        {hash_partition_option (subpartition_option_list)
+         [, hash_partition_option (subpartition_option_list) ...]
+         }
+
+subpartition_option:
+    SUBPARTITION BY
+        RANGE(column_name)
+        | LIST(expr(column_name) | column_name)
+        | HASH(expr(column_name) | column_name)
+
+range_partition_option:
+    PARTITION partition_name VALUES LESS THAN(expr)
+
+list_partition_option:
+    PARTITION partition_name VALUES(expr)
+
+hash_partition_option:
+    PARTITION partition_name
+
+subpartition_option_list:
+    range_subpartition_option
+    | list_subpartition_option
+    | hash_subpartition_option
+
+range_subpartition_option:
+    SUBPARTITION subpartition_name VALUES LESS THAN(expr)
+    [, SUBPARTITION subpartition_name VALUES LESS THAN(expr) ...]
+
+list_subpartition_option:
+    SUBPARTITION subpartition_name VALUES(expr)
+    [, SUBPARTITION subpartition_name VALUES(expr) ...]
+
+hash_subpartition_option:
+    SUBPARTITION subpartition_name
+    [, SUBPARTITION subpartition_name ...]
+```
+
+有关修改表语法的详细参数说明信息，参见 [ALTER TABLE](../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1000.alter-table-of-oracle-mode.md)。
+
+**示例如下：**
+
+创建非分区表 `tbl2` 后，转换为 Hash + Range 分区的模板化二级分区表。
+
+1. 创建非分区表 `tbl2`。
+
+    ```shell
+    obclient> CREATE TABLE tbl2(col1 INT, col2 DATE, PRIMARY KEY(col1, col2));
+    ```
+
+2. 将非分区表 `tbl2` 转化为 Hash+ Range 类型的模板化二级分区表。
+
+    ```shell
+    obclient> ALTER TABLE tbl2
+        MODIFY PARTITION BY HASH(col1)
+        SUBPARTITION BY RANGE(col2)
+        SUBPARTITION TEMPLATE(
+            SUBPARTITION p1 VALUES LESS THAN ('10-OCT-2016'),
+            SUBPARTITION p2 VALUES LESS THAN ('30-MAR-2116')
+            )
+        PARTITIONS 2;
+    ```
+
+## 修改分区类型
+
+OceanBase 数据库 Oracle 模式可以通过 `ALTER TABLE` 命令修改分区属性，实现 Range 分区表与 Interval 分区表之间的相互转换。
+
+### 使用限制
+
+* 非分区表无法转换为 Interval 分区表。
+* Range 分区中值包含 `MAXVALUE` 时，不能转换为 Interval 分区。
+* 暂时不支持改变建表时定义的 Interval 间隔（步长）。
+
+### 语法
+
+```sql
+ALTER TABLE table_name SET INTERVAL(expr);
+```
+
+### 参数解释
+
+|             参数               | 参数说明 |
+|-------------------------------|----------|
+| table_name                    | 表示要创建的表名称。|
+| table_definition              | 表示表的列定义。|
+
+### 示例
+
+* Range 分区转换为 Interval 分区。
+
+  1. 创建 Range 分区表 `test_tbl1`。
+
+      ```shell
+      obclient> CREATE TABLE test_tbl1 (col1 VARCHAR2(30), col2 DATE NOT NULL)
+          PARTITION BY RANGE (col2)
+          (
+            PARTITION p0 VALUES LESS THAN(TO_DATE('2025-01-01', 'yyyy-mm-dd'))
+          );
+      ```
+
+  2. 转换表 `test_tbl1` 分区为 Interval 分区，分区步长为一个月。
+
+      ```shell
+      obclient> ALTER TABLE test_tbl1 SET INTERVAL(NUMTOYMINTERVAL(1, 'month'));
+      ```
+
+* Interval 分区转换为 Range 分区。
+
+  1. 创建 Interval 分区表 `test_tbl2`，分区步长为一个月。
+
+      ```shell
+      obclient> CREATE TABLE test_tbl2(col1 VARCHAR2(30), col2 DATE NOT NULL)
+          PARTITION BY RANGE (col2) INTERVAL(NUMTOYMINTERVAL(1, 'month'))
+          (
+            PARTITION p0 VALUES LESS THAN(TO_DATE('2025-01-01', 'yyyy-mm-dd'))
+          );
+      ```
+
+  2. 转换表 `test_tbl2` 分区为 Range 分区。
+
+      ```shell
+      obclient> ALTER TABLE test_tbl2 SET INTERVAL();
+      ```
+
+## 修改分区键
+
+OceanBase 数据库的 Oracle 模式暂不支持修改分区表的分区键。
+
+## 相关文档
+
+[ALTER TABLE](../../../500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1000.alter-table-of-oracle-mode.md)

@@ -1,0 +1,77 @@
+---
+title: collation_database
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502505.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# collation_database
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该变量从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`collation_database` 用于指定创建数据库时的默认字符集和字符序。
+
+<main id="notice">
+  <h4>功能适用性</h4>
+  <p>该变量仅适用于 OceanBase 数据库 MySQL 模式。</p>
+</main>
+
+## 权限要求
+
+* 查询变量
+
+  * Global 级别
+
+    `sys` 租户和所有用户租户均可以使用 `SHOW VARIABLES` 语句或视图 `information_schema.GLOBAL_VARIABLES`（MySQL 模式）查看 Global 系统变量的值。
+
+  * Session 级别
+
+    `sys` 租户和所有用户租户均可以使用 `SHOW VARIABLES` 语句或视图 `information_schema.SESSION_VARIABLES`（MySQL 模式）查看 Session 系统变量的值。
+
+* 修改变量
+
+  * Global 生效
+
+    * `sys` 租户可以直接修改 Global 系统变量的值。
+
+    * MySQL 用户租户需要拥有 `SUPER` 或 `ALTER SYSTEM` 权限才能修改 Global 系统变量的值。
+
+  * Session 生效
+
+    `sys` 租户和所有用户租户均可以直接修改本租户的 Session 系统变量的值。
+
+## 属性说明
+
+| **属性** |    **描述**   |
+|----------|---------------|
+| 参数类型    |  String       |
+| 默认值      | utf8mb4_general_ci     |
+| 取值范围    | <ul><li>utf8mb4_general_ci   </li><li> utf8mb4_bin   </li><li> utf8mb4_unicode_ci   </li><li> gbk_bin   </li><li> gbk_chinese_ci   </li><li> gb18030_bin   </li><li> gb18030_chinese_ci   </li><li> utf16_general_ci   </li><li> utf16_bin   </li><li> utf16_unicode_ci   </li><li> binary </li></ul>    |
+| 生效范围    | <ul><li> Global   </li><li> Session </li></ul>   |
+| 是否可修改  | 是，支持通过 `SET` 或 `ALTER SESSION SET` 语句修改。|
+| 是否可以为空  | 是         |
+
+## 配置示例
+
+指定创建数据库时的默认字符集和字符序为 `utf8mb4_general_ci`。
+
+* Global 生效
+
+    ```shell
+    obclient> SET GLOBAL collation_database='utf8mb4_general_ci';
+    ```
+
+* Session 生效
+
+    ```shell
+    obclient> SET collation_database='utf8mb4_general_ci';
+    ```

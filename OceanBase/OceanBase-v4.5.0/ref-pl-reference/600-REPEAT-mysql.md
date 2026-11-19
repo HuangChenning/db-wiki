@@ -1,0 +1,67 @@
+---
+title: REPEAT
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478419.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# REPEAT
+
+`REPEAT` 语句用于重复执行语句，直到条件为 True 时退出循环。
+
+## 语法
+
+```sql
+[begin_label:] REPEAT
+    statement_list
+UNTIL search_condition
+END REPEAT [end_label]
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| begin_label | 可选，循环开始处的标签名称。 |
+| statement_list | 要重复执行的语句列表。每个语句以分号（;）结尾。 |
+| search_condition | 条件表达式，在每次循环迭代结束时计算。如果结果为 True，则退出循环；如果为 False，则继续下一次迭代。 |
+| end_label | 可选，循环结束处的标签名称，必须与 `begin_label` 相同。 |
+
+`REPEAT` 语句中的 `statement_list` 一直重复执行，直到 `search_condition` 表达式为 True。因此，`REPEAT` 至少进入循环一次。`statement_list` 由一个或多个语句组成，每个语句以分号（;）结尾。可以使用 `label` 标记 `REPEAT` 语句。
+
+## 示例
+
+使用 REPEAT 循环执行语句直到条件满足。
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE PROCEDURE rep_proc(p1 INT)
+    BEGIN
+        SET @x = 0;
+        REPEAT
+            SET @x = @x + 1;
+        UNTIL @x > p1 END REPEAT;
+    END //
+
+obclient> DELIMITER ;
+
+obclient> CALL rep_proc(100);
+
+obclient> SELECT @x;
+```
+
+查询结果如下：
+
+```sql
++------+
+| @x   |
++------+
+|  101 |
++------+
+1 row in set
+```

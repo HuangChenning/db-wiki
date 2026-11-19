@@ -1,0 +1,119 @@
+---
+title: oceanbase.CDB_OB_BACKUP_SET_FILES
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501280.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_BACKUP_SET_FILES
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示备份集的文件状态。
+
+## 字段说明
+
+| 字段名称 | 类型 | 是否可以为 NULL | 描述 |
+| --- | --- | --- | --- |
+| TENANT_ID | bigint(20) | NO | 租户 ID |
+| BACKUP_SET_ID | bigint(20) | NO | 备份集 ID |
+| DEST_ID | bigint(20) | NO | 备份路径 ID |
+| INCARNATION | bigint(20) | NO | 表示 Flashback Database 后的第几次分身 |
+| BACKUP_TYPE | varchar(1) | NO | 备份类型：<ul><li>`FULL`：表示全量备份 </li> <li>`INC`：表示增量备份</li></ul> |
+| PREV_FULL_BACKUP_SET_ID | bigint(20) | NO | 当前备份集依赖的上一个全量备份的 BACKUP_SET_ID  |
+| PREV_INC_BACKUP_SET_ID | bigint(20) | NO | 当前备份集依赖的上一个增量备份的 BACKUP_SET_ID  |
+| START_TIMESTAMP | timestamp(6) | NO | 备份集备份开始时间戳 |
+| END_TIMESTAMP | varchar(26) | NO | 备份集备份结束时间戳 |
+| STATUS | varchar(64) | NO | 备份集状态：<ul><li>`SUCCESS`：表示备份成功 </li><li>`FAILED`：表示备份失败</li></ul>  |
+| FILE_STATUS | varchar(64) | NO | 备份集的文件状态：<ul><li>COPYING：表示文件正在备份中</li><li>AVAILABLE：表示该备份为有效的备份</li><li>DELETING：表示文件正在删除</li><li>EXPIRED：表示备份文件已失效</li><li>INCOMPLETE：表示备份文件有缺失</li><li>BROKEN：表示备份的文件不完整，不可使用</li><li>DELETED：表示备份文件已删除</li></ul> |
+| ELAPSED_SECONDES | decimal(22,0) | NO | 备份的耗时 |
+| PLUS_ARCHIVELOG | varchar(4096) | NO | 是否带补齐日志 |
+| START_REPLAY_SCN | bigint(20) unsigned | NO | 备份集依赖日志回放 SCN |
+| START_REPLAY_SCN_DISPLAY | varchar(26) | NO | 备份集依赖日志回放时间戳位点 |
+| MIN_RESTORE_SCN | bigint(20) unsigned | NO | 备份集最新可恢复 SCN |
+| MIN_RESTORE_SCN_DISPLAY | varchar(26) | NO | 备份集最小可恢复时间戳位点 |
+| INPUT_BYTES | bigint(20) | YES | 输入字节数 |
+| OUTPUT_BYTES | bigint(20) | YES | 输出字节数 |
+| OUTPUT_RATE_BYTES | decimal(28,4) | NO | 每秒输出字节数 |
+| EXTRA_META_BYTES | bigint(20) | YES | 额外字节数 |
+| TABLET_COUNT | bigint(20) | YES | 备份 TABLET 总量 |
+| FINISH_TABLET_COUNT | bigint(20) | YES | 完成备份 TABLET 总量 |
+| MACRO_BLOCK_COUNT | bigint(20) | YES | 备份宏块总量 |
+| FINISH_MACRO_BLOCK_COUNT | bigint(20) | YES | 完成备份宏块总量 |
+| FILE_COUNT | bigint(20) | YES | 备份文件个数 |
+| META_TURN_ID | bigint(20) | YES | 备份 META 的轮次 |
+| DATA_TURN_ID | bigint(20) | YES | 备份数据的轮次 |
+| RESULT | bigint(20) | NO | 备份错误码结果 |
+| COMMENT | varchar(4096) | YES | 备份错误码描述 |
+| ENCRYPTION_MODE | varchar(64) | YES | 加密模式：<ul><li>None：表示不加密</li><li>Password：表示只使用密码保护</li><li>Password Encryption ：表示加密，并且使用密码保护</li><li>Transparent Encryption：表示使用 TDE 加密</li><li>Dual mode Encryption ：表示使用 TDE 加密以及密码保护</li></ul></br>目前仅支持 None 和 Password 两种模式 |
+| PASSWD | varchar(128) | YES | 密码 |
+| TENANT_COMPATIBLE | varchar(4096) | NO | 租户版本号 |
+| BACKUP_COMPATIBLE | bigint(20) | NO | 备份集版本号 |
+| PATH | varchar(4096) | YES | 备份路径 |
+| CLUSTER_VERSION| varchar(4096)| NO | 集群版本号|
+| CONSISTENT_SCN                | bigint(20) unsigned | NO         | 备份一致性位点      |
+| MINOR_TURN_ID                 | bigint(20)          | NO         | 转储数据备份结束的轮次      |
+| MAJOR_TURN_ID                 | bigint(20)          | NO         | 基线数据备份结束的轮次      |
+
+## 查询示例
+
+系统租户查看租户 ID 为 1002 的租户的备份集的文件状态。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OB_BACKUP_SET_FILES WHERE TENANT_ID = 1002\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+               TENANT_ID: 1002
+           BACKUP_SET_ID: 1
+                 DEST_ID: 1002
+             INCARNATION: 1
+             BACKUP_TYPE: FULL
+ PREV_FULL_BACKUP_SET_ID: 0
+  PREV_INC_BACKUP_SET_ID: 0
+         START_TIMESTAMP: 2025-01-07 14:02:11.456564
+           END_TIMESTAMP: 2025-01-07 14:04:31.155906
+                  STATUS: SUCCESS
+             FILE_STATUS: AVAILABLE
+        ELAPSED_SECONDES: 140
+         PLUS_ARCHIVELOG: OFF
+        START_REPLAY_SCN: 1736228322307513000
+START_REPLAY_SCN_DISPLAY: 2025-01-07 13:38:42.307513
+         MIN_RESTORE_SCN: 1736229871129903000
+ MIN_RESTORE_SCN_DISPLAY: 2025-01-07 14:04:31.129903000
+             INPUT_BYTES: 217101469
+            OUTPUT_BYTES: 22114592
+       OUTPUT_RATE_BYTES: 158301.3326
+        EXTRA_META_BYTES: 0
+            TABLET_COUNT: 680
+     FINISH_TABLET_COUNT: 680
+       MACRO_BLOCK_COUNT: 104
+FINISH_MACRO_BLOCK_COUNT: 103
+              FILE_COUNT: 0
+            META_TURN_ID: 1
+            DATA_TURN_ID: 0
+                  RESULT: 0
+                 COMMENT:
+         ENCRYPTION_MODE: NONE
+                  PASSWD:
+       TENANT_COMPATIBLE: 4.2.5.2
+       BACKUP_COMPATIBLE: 3
+                    PATH: file:///home/admin/oceanbase/backupdata
+         CLUSTER_VERSION: 4.2.5.2
+          CONSISTENT_SCN: 1736229758690261000
+           MINOR_TURN_ID: 1
+           MAJOR_TURN_ID: 1
+1 row in set
+```

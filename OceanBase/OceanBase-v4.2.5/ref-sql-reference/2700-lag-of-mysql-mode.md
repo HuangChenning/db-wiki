@@ -1,0 +1,65 @@
+---
+title: LAG
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504365.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# LAG
+
+## 声明
+
+```sql
+LAG { ( value_expr [, offset [, default]]) [ { RESPECT | IGNORE } NULLS ] | ( value_expr [ { RESPECT | IGNORE } NULLS ] [, offset [, default]] )} OVER ([ query_partition_clause ] order_by_clause)
+```
+
+## 说明
+
+在一次查询中取出当前行的同一个字段的后面第 `offset` 行的数据，这种操作可以使用相同表的自连接来实现，但 `LAG()` 窗口函数有更高的效率。
+
+## 参数
+
+各参数含义如下表所示。
+
+|                参数                |                                      含义                                       |
+|----------------------------------|-------------------------------------------------------------------------------|
+| `value_expr`                     | 表示要进行比对的字段                                                                    |
+| `offset`                         | 表示 `value_expr` 的偏移量                                                          |
+| `default`                        | 表示默认返回值。 缺省值为 `NULL`，表示如果在没有显式设置 `default` 值的情况下，返回值为 `NULL`。 |
+| `[ { RESPECT | IGNORE } NULLS ]` | 表示是否考虑 `NULL` 值。 缺省值为 `RESPECT NULLS`，表示考虑 `NULL` 值。          |
+| `order_by_clause`                | 指示数据应该在一个列上排序之后才能有前多少行后多少行的概念。                                                |
+| `query_partition_clause`         | 用于指示查询的分区，如果缺省，则表示使用全局数据。                                                     |
+
+## 示例
+
+```sql
+obclient> CREATE TABLE employees(LAST_NAME CHAR(10), SALARY DECIMAL, JOB_ID CHAR(32));
+Query OK, 0 rows affected
+
+obclient> INSERT INTO employees VALUES('JIM', 2000, 'CLEANER');
+Query OK, 1 row affected
+
+obclient> INSERT INTO employees VALUES('MIKE', 12000, 'ENGINEERING');
+Query OK, 1 row affected
+
+obclient> INSERT INTO employees VALUES('LILY', 13000, 'ENGINEERING');
+Query OK, 1 row affected
+
+obclient> INSERT INTO employees VALUES('TOM', 11000, 'ENGINEERING');
+Query OK, 1 row affected
+
+obclient> SELECT LAST_NAME, LEAD(SALARY) OVER(ORDER BY SALARY) LEAD, LAG(SALARY) OVER(ORDER BY SALARY) LAG FROM employees;
++-----------+-------+-------+
+| LAST_NAME | LEAD  | LAG   |
++-----------+-------+-------+
+| JIM       | 11000 |  NULL |
+| TOM       | 12000 |  2000 |
+| MIKE      | 13000 | 11000 |
+| LILY      |  NULL | 12000 |
++-----------+-------+-------+
+4 rows in set
+```

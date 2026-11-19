@@ -1,0 +1,174 @@
+---
+title: "修改资源池属性"
+book: "管理数据库"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682463.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 修改资源池属性
+
+修改资源池属性，即是调整资源池配置的 `UNIT`、`UNIT_NUM`、`ZONE_LIST` 等参数信息。本文介绍如何修改资源池属性。
+
+资源池属性可以通过 `ALTER RESOURCE POOL` 语句进行修改。
+
+修改租户资源池属性是实现租户扩容或缩容的另一种方式。例如，调大 `UNIT_NUM` 可以增加每个 Zone 中节点数量达到扩容的目的。
+
+## 操作步骤
+
+1. 使用 root 用户登录到集群的 sys 租户。
+
+    ```shell
+    obclient -h172.30.xx.xx -P2883 -uroot@sys#cluster -p**** -A
+    ```
+
+2. 进入 `oceanbase` 数据库。
+
+    ```shell
+    obclient(root@sys)[(none)]> USE oceanbase;
+    ```
+
+3. 通过 `DBA_OB_RESOURCE_POOLS` 视图，获取资源池的配置信息。
+
+    以查询资源池 `mq_pool_02` 的配置信息为例：
+
+    ```shell
+    obclient(root@sys)[oceanbase]> SELECT * FROM DBA_OB_RESOURCE_POOLS WHERE NAME = 'mq_pool_02';
+    ```
+
+    查询结果如下：
+
+    ```shell
+    +------------------+------------+-----------+----------------------------+----------------------------+------------+----------------+-------------+--------------+
+    | RESOURCE_POOL_ID | NAME       | TENANT_ID | CREATE_TIME                | MODIFY_TIME                | UNIT_COUNT | UNIT_CONFIG_ID | ZONE_LIST   | REPLICA_TYPE |
+    +------------------+------------+-----------+----------------------------+----------------------------+------------+----------------+-------------+--------------+
+    |             1026 | mq_pool_02 |      NULL | 2023-01-10 23:54:24.177685 | 2023-01-10 23:54:24.177685 |          1 |           1020 | zone1;zone2 | FULL         |
+    +------------------+------------+-----------+----------------------------+----------------------------+------------+----------------+-------------+--------------+
+    1 row in set
+    ```
+
+    `DBA_OB_RESOURCE_POOLS` 视图的详细说明，参见 [DBA_OB_RESOURCE_POOLS](../../../700.reference/700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/21000.o-dba_ob_resource_pools-of-sys-tenant.md)。
+
+4. 通过 `ALTER RESOURCE POOL` 语句，修改资源池配置。
+
+    <main id="notice" type='notice'>
+     <h4>注意</h4>
+     <p><ul><li>单条语句只能修改一个属性，如果需要同时修改 <code>UNIT</code>、<code>UNIT_NUM</code>、<code>ZONE_LIST</code> 中两条及以上的属性，需要分多条语句执行。</li><li> 修改 <code>ZONE_LIST</code> 时，每次仅支持添加或删除一个 Zone。</li></ul></p>
+    </main>
+
+    语法如下：
+
+    ```sql
+    ALTER RESOURCE POOL pool_name
+        UNIT [=] unit_name,
+        UNIT_NUM [=] unit_num,
+        ZONE_LIST [=] ('zone' [, 'zone' ...]);
+    ```
+
+    参数说明：
+
+    * `pool_name`：资源池名称。
+    * `UNIT`：该资源池的资源规格。
+    * `UNIT_NUM`：资源单元个数。增加 Unit 数量时，`UNIT_NUM` 的值不能大于每个 Zone 内 OBServer 的个数。
+
+      <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>当前版本支持异构 Zone 模式，在修改 <code>UNIT_NUM</code> 时：
+      <ul><li>同构 Zone 模式下，如果该资源池已经被租户使用，无法通过<code>ALTER RESOURCE POOL</code> 语句进行修改，需要使用 <code>ALTER RESOURCE TENANT</code> 语句进行修改。</li>
+      <li>异构 Zone 模式下，即使资源池已经被租户使用，也可以通过 <code>ALTER RESOURCE POOL</code> 语句进行修改，但修改时，要求一个租户下多个资源池最多只能有两种不同的 <code>UNIT_NUM</code>。<p>例如，一租户有 3 个资源池 <code>pool1</code>、<code>pool2</code>、<code>pool3</code>，其 <code>unit_num</code> 分别为 2、4、4，如果将 <code>pool3</code> 的 <code>unit_num</code> 修改为 1，则系统会报 <code>More than two distinct unit_num in a single tenant not allowed</code>的错误。</p></li>
+      </ul></p>
+      </main>
+
+
+      `ALTER RESOURCE POOL` 语句的详细说明，参见 [ALTER RESOURCE POOL](../../../700.reference/500.sql-reference/100.sql-syntax/100.system-tenants/300.alter-resource-pool.md)。
+
+      `ALTER RESOURCE TENANT` 语句的详细说明，参见 [ALTER RESOURCE TENANT](../../../700.reference/500.sql-reference/100.sql-syntax/100.system-tenants/300.alter-resource-tenant.md)。
+
+    * `ZONE_LIST`：资源池的 Zone 分布。
+
+    示例：
+
+    :::tab
+    tab 同构 Zone 模式
+
+    * 资源池未被分配给租户
+
+      修改资源池 `mq_pool_02` 的资源规格为 `'S2_unit_config'`，资源单元个数为 3，`ZONE_LIST` 为 `'zone1','zone2','zone3'`。
+
+      ```shell
+      obclient(root@sys)[oceanbase]> ALTER RESOURCE POOL mq_pool_02 UNIT='S2_unit_config';
+      ```
+
+      ```shell
+      obclient(root@sys)[oceanbase]> ALTER RESOURCE POOL mq_pool_02 UNIT_NUM=3;
+      ```
+
+      ```shell
+      obclient(root@sys)[oceanbase]> ALTER RESOURCE POOL mq_pool_02 ZONE_LIST=('zone1','zone2','zone3');
+      ```
+
+    * 资源池已被分配给租户
+
+      同构 Zone 模式下，资源池已分配给租户后，修改租户的资源池配置时，`UNIT_NUM` 需要通过 `ALTER RESOURCE TENANT` 语句进行修改。
+
+      修改资源池 `mq_pool_02` 的资源规格为 `'S2_unit_config'`，资源单元个数为 3，ZONE_LIST 为 `'zone1','zone2','zone3'`。
+    
+      ```shell
+      obclient(root@sys)[oceanbase]> ALTER RESOURCE POOL mq_pool_02 UNIT='S2_unit_config';
+      ```
+
+      ```shell
+      obclient(root@sys)[oceanbase]> ALTER RESOURCE TENANT mq_t2 UNIT_NUM=3;
+      ```
+
+      ```shell
+      obclient(root@sys)[oceanbase]> ALTER RESOURCE POOL mq_pool_02 ZONE_LIST=('zone1','zone2','zone3');
+      ```
+
+    tab 异构 Zone 模式
+
+    <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>通常情况下，对于已有租户或者升级上来的租户，默认均为同构 Zone 模式，如果需要开启异构 Zone 模式，需要将租户级配置项 <code>zone_deploy_mode</code> 的值修改为 <code>hetero</code>（异构 Zone 模式）。修改后，不支持再改回 <code>homo</code>（同构 Zone 模式）。</p>
+    </main>
+
+    分别修改资源池 `mq_pool_02` 的资源规格为 `'S2_unit_config'`，资源单元个数为 3，`ZONE_LIST` 为 `'zone1','zone2','zone3'`。
+
+    ```shell
+    obclient(root@sys)[oceanbase]> ALTER RESOURCE POOL mq_pool_02 UNIT='S2_unit_config';
+    ```
+
+    ```shell
+    obclient(root@sys)[oceanbase]> ALTER RESOURCE POOL mq_pool_02 UNIT_NUM=3;
+    ```
+
+    ```shell
+    obclient(root@sys)[oceanbase]> ALTER RESOURCE TENANT mq_t2 UNIT_NUM=3;
+    ```
+
+    ```shell
+    obclient(root@sys)[oceanbase]> ALTER RESOURCE POOL mq_pool_02 ZONE_LIST=('zone1','zone2','zone3');
+    ```
+    :::
+
+5. 查看 `DBA_OB_RESOURCE_POOLS` 视图，确认资源池配置修改结果。
+
+    结果如下，可以看到 `UNIT_COUNT`、`UNIT_CONFIG_ID`、`ZONE_LIST` 参数已经更新。
+
+    ```shell
+    obclient(root@sys)[oceanbase]> SELECT * FROM DBA_OB_RESOURCE_POOLS WHERE NAME = 'mq_pool_02';
+    ```
+
+    查询结果如下：
+
+    ```shell
+    +------------------+------------+-----------+----------------------------+----------------------------+------------+----------------+-------------------+--------------+
+    | RESOURCE_POOL_ID | NAME       | TENANT_ID | CREATE_TIME                | MODIFY_TIME                | UNIT_COUNT | UNIT_CONFIG_ID | ZONE_LIST         | REPLICA_TYPE |
+    +------------------+------------+-----------+----------------------------+----------------------------+------------+----------------+-------------------+--------------+
+    |             1026 | mq_pool_02 |      NULL | 2023-01-10 23:54:24.177685 | 2023-01-10 23:56:04.961771 |          2 |           1021 | zone1;zone2;zone3 | FULL         |
+    +------------------+------------+-----------+----------------------------+----------------------------+------------+----------------+-------------------+--------------+
+    1 row in set
+    ```

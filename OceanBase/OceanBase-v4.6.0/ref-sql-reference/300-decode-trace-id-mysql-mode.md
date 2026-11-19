@@ -1,0 +1,39 @@
+---
+title: DECODE_TRACE_ID
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687863.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DECODE_TRACE_ID
+
+## 声明
+
+```sql
+DECODE_TRACE_ID()
+```
+
+## 说明
+
+`DECODE_TRACE_ID()` 函数用于解析 trace_id，返回 SQL 请求来源服务器的 IP 和 PORT。您也可以通过视图 [GV$OB_SQL_AUDIT](../../../../../../../700.reference/700.system-views/400.system-view-of-mysql-mode/300.performance-view-of-mysql-mode/3500.gv-ob_sql_audit-of-mysql-mode.md) 查看相关信息。
+
+## 示例
+
+```sql
+obclient [(none)]> SELECT DECODE_TRACE_ID(LAST_TRACE_ID());
+```
+
+返回结果如下：
+
+```shell
++----------------------------------+
+| DECODE_TRACE_ID(LAST_TRACE_ID()) |
++----------------------------------+
+| xxx.xx.xxx.xx1:2882              |
++----------------------------------+
+1 row in set
+```

@@ -1,0 +1,62 @@
+---
+title: oceanbase.DBA_OB_BALANCE_JOB_HISTORY
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501204.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_BALANCE_JOB_HISTORY
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.2.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `DBA_OB_BALANCE_JOB_HISTORY` 展示本租户下所有已执行的负载均衡工作的历史。系统租户下其查询结果为空。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| -------- | -------- | --------------- | ------- |
+| JOB_ID                  | bigint(20)   | NO  | 负载均衡工作 ID |
+| CREATE_TIME             | timestamp(6) | NO  | Job 创建时间 |
+| FINISH_TIME             | timestamp(6) | NO  | Job 完成时间，包括成功、取消时间 |
+| BALANCE_STRATEGY        | varchar(64)  | NO  | 均衡策略名称 <ul><li>`LS balance by migrate`：迁移均衡  </li><li>`LS balance by alter`：修改日志流属性均衡 </li><li>`LS balance by expand`：扩容均衡 </li><li>`LS balance by shrink`：缩容均衡 </li><li>`partition balance`：分区均衡 </li></ul>|
+| JOB_TYPE                | varchar(64)  | NO  | 任务类型 <ul><li>`LS_BALANCE`：日志流均衡  </li><li>`PARTITION_BALANCE`：分区均衡 </li></ul>|
+| TARGET_UNIT_NUM         | bigint(20)   | NO  | 目标变更的每个 Zone 的 Unit 数量 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段值从 V4.2.5 BP5 版本开始变更为始终为 <code>NULL</code>。</p></main> |
+| TARGET_PRIMARY_ZONE_NUM | bigint(20)   | NO  | 目标变更的 Primary  Zone 数量 |
+| STATUS                  | varchar(64)  | NO  | 任务状态：<ul><li>`COMPLETED`：任务执行成功 </li><li>`CANCELED`：任务取消 </li></ul>|
+| COMMENT                 | longtext     | YES | 注释信息 |
+| MAX_END_TIME            | timestamp(6) | YES | 负载均衡任务的最大结束时间 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.x 版本，该字段从 V4.2.4 版本开始引入。对于 V4.3.x 版本，该视图从 V4.3.4 版本开始引入。</p></main>     |
+| ZONE_UNIT_NUM_LIST      | varchar(4096) | NO   | 租户各个 Zone 的 Unit 数量 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP5 版本开始引入。</p></main> |
+| PARAMETER_LIST          | longtext      | NO   | 均衡相关的配置项参数 <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP5 版本开始引入。</p></main> |
+
+## 相关视图或文档
+
+* 查看所有租户日志流级别的负载均衡工作（Job）：
+
+  * [CDB_OB_BALANCE_JOBS](7400.o-cdb_ob_balance_jobs-of-sys-tenant.md)
+  * [CDB_OB_BALANCE_JOB_HISTORY](7300.o-cdb_ob_balance_job_history-of-sys-tenant.md)
+
+* 查看所有租户日志流级别的负载均衡任务（Task）：
+
+  * [CDB_OB_BALANCE_TASKS](7600.o-cdb_ob_balance_tasks-of-sys-tenant.md)
+  * [CDB_OB_BALANCE_TASK_HISTORY](7500.o-cdb_ob_balance_task_history-of-sys-tenant.md)
+
+* 查看所有租户 Tablet 级别的负载均衡任务（Task）：
+
+  * [CDB_OB_TRANSFER_TASKS](11600.o-cdb_ob_transfer_tasks-of-sys-tenant.md)
+  * [CDB_OB_TRANSFER_TASK_HISTORY](11500.o-cdb_ob_transfer_task_history-of-sys-tenant.md)
+
+* 查看所有租户的 Transfer Partition 任务（Task）：
+
+  * [CDB_OB_TRANSFER_PARTITION_TASKS](11300.o-cdb_ob_transfer_partition_tasks-of-sys-tenant.md)
+  * [CDB_OB_TRANSFER_PARTITION_TASK_HISTORY](11400.o-cdb_ob_transfer_partition_tasks_history-of-sys-tenant.md)
+
+* 有关数据负载均衡的相关操作，参见 [数据负载均衡](../../../../600.manage/300.replica-management/500.load-balancing-manage/100.load-balancing-overview.md) 章节。

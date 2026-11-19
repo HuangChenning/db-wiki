@@ -1,0 +1,16 @@
+---
+title: "性能调优概述"
+book: "管理数据库"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000006077023.html"
+tags:
+  - oceanbase
+  - standalone
+  - manage
+---
+
+# 性能调优概述
+
+衡量数据库系统性能的最重要指标是 QPS/TPS（Query Per Second/Transaction Per Second）和 RT（Response Time）。前者指一秒内完成的请求数量，后者指一个请求完成的时间。QPS/TPS 的提升能够充分利用单台服务器的资源，提升性价比，同时也能够降低数据库服务器的 TCO（Total Cost of Ownership）。RT 的降低能够提升上游应用系统的 QPS、提高响应速度和用户体验，也能进一步提升数据库系统的 QPS/TPS。
+
+所谓性能调优，就是指提升 QPS/TPS 和降低 RT 的技术。性能调优往往分为三步：找到优化的方向 -\> 找到瓶颈 -\> 找到优化方案。性能调优是一个体系性工作，涉及到硬件、操作系统和软件等技术栈，需要熟练的掌握内核原理和调优工具。

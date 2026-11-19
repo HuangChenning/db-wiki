@@ -1,0 +1,54 @@
+---
+title: "引用序列"
+book: "数据库对象管理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000006077728.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-database-object-management
+---
+
+# 引用序列
+
+创建序列后，可以引用序列。
+
+使用序列时，必须在 `CURRVAL` 和 `NEXTVAL` 前带上序列的名称，并用句点（.）引用。
+
+例如，序列的名称为 `SEQ_FOO`，则可以通过 `SEQ_FOO.CURRVAL` 获取 `SEQ_FOO` 序列的当前值。同样，可以通过 `SEQ_FOO.NEXTVAL` 获取 `SEQ_FOO` 序列的下一个自增值。
+
+序列的 `CURRVAL` 和 `NEXTVAL` 的值可以用于以下位置：
+
+- 顶层 `SELECT` 语句的选择列表中。
+
+- `INSERT` 语句中的 `VALUE` 子句中。
+
+- `UPDATE` 语句中的 `SET` 子句中。
+
+例如：
+
+``` sql
+obclient> SELECT SEQUENCE_NAME.NEXTVAL FROM DUAL;      /*每执行一次 Sequence 号就会增加*/
+
+obclient> SELECT SEQUENCE_NAME.CURRVAL FROM DUAL;     /*执行多少次 Sequence 号都不会变化*/
+```
+
+第一次引用 `NEXTVAL` 将返回序列的初始值，后续对 `NEXTVAL` 的引用将按照上一次序列的返回值加上序列定义的步长后返回一个新值。任何时候对 `CURRVAL` 的引用，都将返回当前序列的值，即最后一次对 `NEXTVAL` 引用时返回的值。
+
+在会话中引用序列的 `CURRVAL` 伪列前，都应首先应用序列的 `NEXTVAL` 伪列来初始化本次会话的序列值。
+
+创建序列时，可以定义其初始值以及其值之间的增量。对 `NEXTVAL` 的第一次引用将返回序列的初始值。对 `NEXTVAL` 的后续引用将会使序列值按照定义的增量递增，并返回新值。任何对 `CURRVAL` 的引用总是返回该序列的当前值，即最后一次对 `NEXTVAL` 引用时返回的值。
+
+为防止其他的 Sequence 缓存过期问题，OceanBase 数据库从 V4.4.1 版本开始引入 `ALTER SYSTEM FLUSH SEQUENCE CACHE` 语句，用于主动清除 Sequence 缓存，以便发生问题后能快速恢复。有关清除 Sequence 缓存的详细信息，参见 [ALTER SYSTEM FLUSH SEQUENCE CACHE](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286519)。
+
+## 相关文档
+
+更多序列相关的操作，参见以下文档：
+
+- [创建序列](100-create-a-sequence-of-mysql-mode.md)
+
+- [查看序列](200-view-a-sequence-of-mysql-mode.md)
+
+- [修改序列](400-modify-a-sequence-of-mysql-mode.md)
+
+- [删除序列](500-delete-a-squence-of-mysql-mode.md)

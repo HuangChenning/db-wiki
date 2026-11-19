@@ -1,0 +1,25 @@
+---
+title: cpu_count
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702089.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# cpu_count
+
+cpu_count 
+==============================
+
+`cpu_count` 用于设置系统 CPU 总数。如果设置为 0，系统将自动检测 CPU 数量。
+
+
+|      **属性**      |                                                                                 **描述**                                                                                 |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 参数类型             | 整型                                                                                  |
+| 默认值              | 0|
+| 取值范围             | \[0, +∞)                                                                            |
+| 是否重启 OBServer 节点生效 | 否 <main id="notice" type='explain'><h4>说明</h4><p>集群下的其他配置可能会影响该配置项的生效方式。建议在该配置项配置后，通过 <code>SELECT</code> 语句，在  <code>GV$OB_SERVERS</code> 内部表中查看 <code>CPU_CAPACITY</code> 字段实际生效的值。若未动态生效，需要重启整个集群。</p></main> |

@@ -1,0 +1,41 @@
+---
+title: DROP_AI_MODEL_ENDPOINT
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686368.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DROP_AI_MODEL_ENDPOINT
+
+`DROP_AI_MODEL_ENDPOINT` 过程用于删除 AI 模型对象的访问端点。
+
+## 语法
+
+```sql
+PROCEDURE drop_ai_model_endpoint(
+    IN name VARCHAR(128));
+```
+
+## 参数说明
+
+| 参数 | 描述 | 类型 | 取值范围 | 是否可空 |
+|------|------|------|----------|----------|
+| name | AI 模型对象的访问端点的名称。 | VARCHAR(128) |  | No |
+
+## 示例
+
+删除 AI 模型对象的访问端点。
+
+```sql
+CALL DBMS_AI_SERVICE.DROP_AI_MODEL_ENDPOINT ('my_model_endpoint1');
+```
+
+## 相关文档
+
+* [DBMS_AI_SERVICE 子程序概览](100.dbms-ai-service-overview-mysql.md)
+* [CREATE_AI_MODEL_ENDPOINT](400.create-ai-model-endpoint-mysql.md)
+* [ALTER_AI_MODEL_ENDPOINT](500.alter-ai-model-endpoint-mysql.md)

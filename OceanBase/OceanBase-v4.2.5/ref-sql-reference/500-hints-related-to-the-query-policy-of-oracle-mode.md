@@ -1,0 +1,194 @@
+---
+title: "与查询策略相关的 Hint"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504816.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 与查询策略相关的 Hint
+
+与查询策略相关的 Hint 包括 USE_HASH_AGGREGATION Hint、NO_USE_HASH_AGGREGATION Hint、USE_LATE_MATERIALIZATION Hint、NO_USE_LATE_MATERIALIZATION Hint、USE_NL_MATERIALIZATION Hint、NO_USE_NL_MATERIALIZATION Hint、PUSH_SUBQ、NO_PUSH_SUBQ。
+
+## USE_HASH_AGGREGATION Hint
+
+`USE_HASH_AGGREGATION` Hint 指示优化器在生成计划时强制使用 HASH 聚合算法运行该 SQL 语句。
+
+`USE_HASH_AGGREGATION` Hint 的语法如下：
+
+```sql
+/*+ USE_HASH_AGGREGATION*/
+```
+
+`USE_HASH_AGGREGATION` Hint 的示例如下：
+
+```sql
+SELECT /*+ USE_HASH_AGGREGATION */ e.department_id, sum(e.salary)
+FROM employees e
+WHERE e.department_id = 1001;
+GROUP BY e.department_id;
+```
+
+## NO_USE_HASH_AGGREGATION Hint
+
+`NO_USE_HASH_AGGREGATION` Hint 指示优化器在执行 SQL 语句时避免使用 HASH 聚合算法运行该语句。
+
+`NO_USE_HASH_AGGREGATION` Hint 的语法如下：
+
+```sql
+/*+ NO_USE_HASH_AGGREGATION*/
+```
+
+`NO_USE_HASH_AGGREGATION` Hint 的示例如下：
+
+```sql
+SELECT /*+ NO_USE_HASH_AGGREGATION */ e.department_id, sum(e.salary)
+FROM employees e
+WHERE e.department_id = 1001;
+GROUP BY e.department_id;
+```
+
+## USE_LATE_MATERIALIZATION Hint
+
+`USE_LATE_MATERIALIZATION` Hint 指示优化器延迟物化视图。
+
+`USE_LATE_MATERIALIZATION` Hint 的语法如下：
+
+```sql
+/*+ USE_LATE_MATERIALIZATION*/
+```
+
+`USE_LATE_MATERIALIZATION` Hint 的示例如下：
+
+```sql
+SELECT /*+ USE_LATE_MATERIALIZATION*/ e.department_id, sum(e.salary)
+FROM employees e
+WHERE e.department_id = 1001;
+GROUP BY e.department_id;
+```
+
+## NO_USE_LATE_MATERIALIZATION Hint
+
+`NO_USE_LATE_MATERIALIZATION` Hint 指示优化器禁止延迟物化视图。
+
+`NO_USE_LATE_MATERIALIZATION` Hint 的语法如下：
+
+```sql
+/*+ NO_USE_LATE_MATERIALIZATION*/
+```
+
+`NO_USE_LATE_MATERIALIZATION` Hint 的示例如下：
+
+```sql
+SELECT /*+ NO_USE_LATE_MATERIALIZATION*/ e.department_id, sum(e.salary)
+FROM employees e
+WHERE e.department_id = 1001;
+GROUP BY e.department_id;
+```
+
+## USE_NL_MATERIALIZATION Hint
+
+`USE_NL_MATERIALIZATION` Hint 强制指示优化器指定表为内部表（子树）时生成一个物化算子来缓存数据。
+
+`USE_NL_MATERIALIZATION` Hint 的语法如下：
+
+```sql
+/*+ USE_NL_MATERIALIZATION ( [ @queryblock ] tablespec [ tablespec ]... ) */
+```
+
+`USE_NL_MATERIALIZATION` Hint 的示例如下：
+
+```sql
+SELECT /*+ USE_NL_MATERIALIZATION(departments) */ *
+FROM employees, departments
+WHERE employees.department_id = departments.department_id;
+```
+
+## NO_USE_NL_MATERIALIZATION Hint
+
+`NO_USE_NL_MATERIALIZATION` Hint 强制指示优化器在指定表为内部表（子树）时避免生成一个物化算子来缓存数据。
+
+`NO_USE_NL_MATERIALIZATION` Hint 的语法如下：
+
+```sql
+/*+ NO_USE_NL_MATERIALIZATION ( [ @queryblock ] tablespec [ tablespec ]... ) */
+```
+
+`NO_USE_NL_MATERIALIZATION` Hint 的示例如下：
+
+```sql
+SELECT /*+ NO_USE_NL_MATERIALIZATION(departments) */ *
+FROM employees, departments
+WHERE employees.department_id = departments.department_id;
+```
+
+## PUSH_SUBQ Hint
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>对于 OceanBase 数据库 V4.3.5 版本，从 V4.3.5 BP2 版本开始支持 <code>PUSH_SUBQ</code> Hint。</li><li>对于 OceanBase 数据库 V4.2.5 版本，从 V4.2.5 BP4 版本开始支持 <code>PUSH_SUBQ</code> Hint。</li></ul></p>
+</main>
+
+`PUSH_SUBQ` Hint 用于指示优化器尽早执行未改写成连接的子查询，通常这些子查询如果不被改写成连接的话，会被放在执行计划的所有表连接计算之后。如果子查询计算成本低且能过滤大量数据，提前执行可能提升计划性能。但是要注意，如果子查询被改写成连接（`/+unnest/`），这个提示无效。适用场景如下：
+
+* 子查询的执行开销较小，但能快速过滤大量数据。
+* 需要尽早利用子查询的结果缩小数据范围。
+
+**语法如下：**
+
+```sql
+/*+ PUSH_SUBQ[(@qb_name)] */
+```
+
+参数解释：
+
+* `@qb_name`：可选参数，指定子查询的别名（详细介绍信息，可参见上文 **QB_NAME 参数**），用于明确提示作用的对象。如果省略，则默认对 Hint 所处的子查询生效。
+
+**示例如下：**
+
+在查询中使用 `PUSH_SUBQ` Hint 提示优化器尽早执行子查询，以提前过滤 `tbl1` 表的数据。
+
+```sql
+SELECT /*+ PUSH_SUBQ(@"SEL$2") */ *
+FROM tbl1, tbl2
+WHERE tbl1.col1 = (SELECT MAX(tbl3.col1)
+                   FROM tbl3
+                   WHERE tbl3.col2 = tbl2.col2);
+```
+
+## NO_PUSH_SUBQ Hint
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>对于 OceanBase 数据库 V4.3.5 版本，从 V4.3.5 BP2 版本开始支持 <code>NO_PUSH_SUBQ</code> Hint。</li><li>对于 OceanBase 数据库 V4.2.5 版本，从 V4.2.5 BP4 版本开始支持 <code>NO_PUSH_SUBQ</code> Hint。</li></ul></p>
+</main>
+
+`NO_PUSH_SUBQ` Hint 是 `PUSH_SUBQ` 的反向操作，用于优化器将未改写成连接的子查询放在最后执行。适用于子查询成本高或无法显著减少行数的情况。适用场景如下：
+
+* 子查询的执行开销较大，或其结果对数据量的影响较小。
+* 需要将子查询的执行延迟到其他过滤条件生效后再执行，以减少其输入数据量。
+
+**语法如下：**
+
+```sql
+/*+ NO_PUSH_SUBQ[(@qb_name)] */
+```
+
+参数解释：
+
+* `@qb_name`：可选参数，指定子查询的别名。
+
+**示例如下：**
+
+在查询中使用 `NO_PUSH_SUBQ` Hint 提示优化器将子查询推迟到最后执行。
+
+```sql
+SELECT /*+ NO_PUSH_SUBQ */ *
+FROM tbl1, tbl2
+WHERE tbl1.col1 = (SELECT MAX(tbl3.col1)
+                   FROM tbl3
+                   WHERE tbl3.col2 = tbl2.col2);
+```

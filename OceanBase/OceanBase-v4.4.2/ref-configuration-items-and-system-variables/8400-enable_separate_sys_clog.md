@@ -1,0 +1,30 @@
+---
+title: enable_separate_sys_clog
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286107.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# enable_separate_sys_clog
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>由于该配置项对应功能并未生效过，从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`enable_separate_sys_clog` 用于设置是否把系统事务日志与用户事务日志分开存储。
+
+## 属性说明
+
+|      **属性**    |       **描述**  |
+|------------------|-----------------|
+| 参数类型             | Bool      |
+| 默认值               | False     |
+| 取值范围             | <ul><li>True：分开存储</li><li>False：不分开存储</li></ul> |
+| 是否重启 OBServer 节点生效    | 否     |

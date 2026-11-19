@@ -1,0 +1,71 @@
+---
+title: SHOW FUNCTION STATUS
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478373.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# SHOW FUNCTION STATUS
+
+`SHOW FUNCTION STATUS` 语句显示有关存储函数的信息，包括数据库、名称、类型、创建者、创建和修改日期以及字符集等。
+
+## 语法
+
+```sql
+SHOW FUNCTION STATUS
+[LIKE 'pattern' | WHERE expr]
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| LIKE 'pattern' | 可选，指定要匹配的函数名称模式。可以使用 `%` 和 `_` 通配符。 |
+| WHERE expr | 可选，使用 WHERE 子句指定条件来选择行。 |
+
+要使用此语句，您必须是 `DEFINER` 所定义的用户，并具有 `SHOW_ROUTINE` 权限，具有全局级别的 `SELECT` 权限，或者对该例程具有 `CREATE ROUTINE`、`ALTER ROUTINE` 或 `EXECUTE` 权限。
+
+`SHOW FUNCTION STATUS` 输出如下信息：
+
+* `Db`：存储函数所在数据库名称。
+* `Name`：存储函数的名称。
+* `Type`：存储程序的类型，值为 `FUNCTION`。
+* `Definer`：创建者。
+* `Modified`：修改时间。
+* `Created`：创建时间。
+* `Security_type`：SQL 安全类型。
+* `Comment`：注释。
+* `character_set_client`：创建存储函数时 `character_set_client` 系统变量在当前会话的值。
+* `collation_connection`：创建存储函数时 `collation_connection` 系统变量在当前会话的值。
+* `Database Collation`：与存储函数相关联的数据库的排序规则。
+
+存储函数的信息也可从 `INFORMATION_SCHEMA PARAMETERS` 和 `INFORMATION_SCHEMA ROUTINES` 表中获得。详细信息请参见 [INFORMATION_SCHEMA PARAMETERS](../800.information-schema-dictionary-view-mysql/100.information-schema-parameters-mysql.md) 和 [INFORMATION_SCHEMA ROUTINES](../800.information-schema-dictionary-view-mysql/200.information-schema-routines-mysql.md)。
+
+## 示例
+
+查看所有存储函数的状态。
+
+```sql
+obclient> SHOW FUNCTION STATUS;
+```
+
+查看匹配特定模式的存储函数：
+
+```sql
+obclient> SHOW FUNCTION STATUS LIKE 'func%';
+```
+
+查询结果如下：
+
+```sql
++------+-------+----------+---------------+---------------------+---------------------+---------------+-------+--------------------+----------------------+--------------------+
+| Db   | Name  | Type     | Definer       | Modified            | Created             | Security_type | Comment | character_set_client | collation_connection | Database Collation |
++------+-------+----------+---------------+---------------------+---------------------+---------------+-------+--------------------+----------------------+--------------------+
+| test | func1 | FUNCTION | 'root'@'%'    | 2022-05-26 18:07:51 | 2022-05-26 18:07:51 | DEFINER       | NULL   | utf8mb4            | utf8mb4_general_ci   | utf8mb4_general_ci |
++------+-------+----------+---------------+---------------------+---------------------+---------------+-------+--------------------+----------------------+--------------------+
+1 row in set
+```

@@ -1,0 +1,56 @@
+---
+title: CREATE_SNAPSHOT
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286720.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CREATE_SNAPSHOT
+
+`CREATE_SNAPSHOT` 过程用于触发一个集群的快照生成。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该系统包仅支持在 sys 租户执行。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT(
+    flush_level  VARCHAR(64) DEFAULT 'TYPICAL'
+);
+```
+
+## 参数说明
+
+| **参数** | **说明** |
+| --- | --- |
+| flush_level | 指定快照类型。目前只支持定期快照 TYPICAL，用于收集大部分统计数据。 |
+
+## 使用说明
+
+用户在手动创建快照后，会将定时器重新计时。例如，在默认的 INTERVAL 为 1 小时的情况下：
+
+```shell
+12:21 定时器触发创建快照
+13:21 定时器触发创建下一个快照
+13:45 用户手动创建快照
+14:45 定时器触发创建下一个快照
+```
+
+## 示例
+
+手动创建一个新的集群快照，并定期进行收集数据。
+
+```shell
+obclient(root@sys)[(none)]> CALL DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT(flush_level => 'TYPICAL');
+```
+
+## 相关文档
+
+有关 WR 中更多快照内容的介绍，请参见[设置快照策略](../../../../../700.reference/1000.performance-tuning-guide/400.performance-diagnosis/450.wr-management/200.manage-wr.md)

@@ -1,0 +1,65 @@
+---
+title: DROP_SNAPSHOT_RANGE
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286719.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DROP_SNAPSHOT_RANGE
+
+`DROP_SNAPSHOT_RANGE` 过程用于删除一个范围内的快照。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该系统包仅支持在 sys 租户执行。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_WORKLOAD_REPOSITORY.DROP_SNAPSHOT_RANGE(
+    low_snap_id    INT,
+    high_snap_id   INT
+);
+```
+
+## 参数说明
+
+| **参数** | **说明** |
+| --- | --- |
+| low_snap_id | 要删除的低快照 ID。 |
+| high_snap_id | 要删除的高快照 ID。 |
+
+## 示例
+
+* 删除快照 ID 为 '123'，'456' 范围内的快照。
+
+  ```shell
+  obclient(root@sys)[(none)]> CALL DBMS_WORKLOAD_REPOSITORY.DROP_SNAPSHOT_RANGE('123','456');
+  ```
+
+* 查看 SNAP_ID 是否删除成功。
+
+  ```shell
+  obclient(root@sys)[(none)]> select count(1),min(snap_id), max(snap_id) from oceanbase.DBA_WR_SNAPSHOT;
+  ```
+  
+  返回结果为：
+
+  ```shell
+  +----------+--------------+--------------+
+  | count(1) | min(snap_id) | max(snap_id) |
+  +----------+--------------+--------------+
+  |        1 |           -1 |           -1 |
+  +----------+--------------+--------------+
+  ```
+  
+  显示快照 ID 范围内的快照已被删除。
+
+## 相关文档
+
+有关 WR 中更多快照内容的介绍，请参见[设置快照策略](../../../../../700.reference/1000.performance-tuning-guide/400.performance-diagnosis/450.wr-management/200.manage-wr.md)

@@ -1,0 +1,64 @@
+---
+title: oceanbase.DBA_OB_TRANSFER_PARTITION_TASK_HISTORY
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684682.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_TRANSFER_PARTITION_TASK_HISTORY
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.2.1 BP2 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `DBA_OB_TRANSFER_PARTITION_TASK_HISTORY` 展示了本租户已执行的 Transfer Partition 任务历史。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| TASK_ID          | bigint(20)   | NO   |  Transfer Partition 任务的唯一标识   |
+| CREATE_TIME      | timestamp(6) | NO   |  创建时间   |
+| FINISH_TIME      | timestamp(6) | NO   |  任务完成时间，包括成功、取消   |
+| TABLE_ID         | bigint(20)   | NO   |  Transfer 的分区所在的表 ID   |
+| OBJECT_ID        | bigint(20)   | NO   |  Transfer 的分区的 `OBJECT_ID`   |
+| DEST_LS          | bigint(20)   | NO   |  目的端日志流   |
+| BALANCE_JOB_ID   | bigint(20)   | NO   |  任务执行时关联的负载均衡工作 ID   |
+| TRANSFER_TASK_ID | bigint(20)   | NO   |  任务执行时关联的 Transfer 任务 ID   |
+| STATUS           | varchar(64)  | NO   |  任务状态：<ul><li>COMPLETED：任务执行成功</li><li>FAILED：任务失败</li></ul>   |
+| COMMENT          | longtext     | YES  |  注释信息   |
+
+## 查询示例
+
+```shell
+obclient> SELECT * FROM oceanbase.DBA_OB_TRANSFER_PARTITION_TASK_HISTORY;
+```
+
+查询结果如下：
+
+```shell
++---------+----------------------------+----------------------------+----------+-----------+---------+----------------+------------------+-----------+---------------------------------+
+| TASK_ID | CREATE_TIME                | FINISH_TIME                | TABLE_ID | OBJECT_ID | DEST_LS | BALANCE_JOB_ID | TRANSFER_TASK_ID | STATUS    | COMMENT                         |
++---------+----------------------------+----------------------------+----------+-----------+---------+----------------+------------------+-----------+---------------------------------+
+|       1 | 2023-11-29 16:50:55.155765 | 2023-11-29 16:51:34.000000 |   500012 |    500014 |    1003 |          26506 |                2 | COMPLETED | Partition transfer to dest LS   |
+|       2 | 2023-11-29 16:55:25.391784 | 2023-11-29 16:55:28.000000 |   500012 |    500014 |    1003 |             -1 |               -1 | FAILED    | Partition is already in dest LS |
+|       3 | 2023-11-30 14:28:20.647541 | 2023-11-30 14:28:57.000000 |   500012 |    500014 |    1003 |         416470 |                6 | COMPLETED | Partition transfer to dest LS   |
+|       4 | 2023-12-01 11:21:11.357272 | 2023-12-01 11:21:55.000000 |   500012 |    500014 |    1003 |         737367 |               10 | COMPLETED | Partition transfer to dest LS   |
++---------+----------------------------+----------------------------+----------+-----------+---------+----------------+------------------+-----------+---------------------------------+
+4 rows in set
+```
+
+## 相关视图或文档
+
+* 查看本租户当前正在处理的 Transfer Partition 任务：[oceanbase.DBA_OB_TRANSFER_PARTITION_TASKS](12400.o-dba_ob_transfer_partition_tasks-of-mysql-mode.md)
+
+* 有关 Transfer Partition 的详细操作，参见 [Transfer Partition](../../../../600.manage/350.load-balancing-manage/200.transfer-partition-management.md)。
+
+* 有关数据负载均衡的更多操作，参见 [数据负载均衡](../../../../600.manage/350.load-balancing-manage/100.load-balancing-overview.md) 章节。

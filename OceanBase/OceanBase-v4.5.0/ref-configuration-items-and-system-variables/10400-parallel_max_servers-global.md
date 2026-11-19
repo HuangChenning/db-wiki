@@ -1,0 +1,30 @@
+---
+title: parallel_max_servers
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478620.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# parallel_max_servers
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该变量在当前版本中已不再使用。请使用 <a href="10600.parallel_servers_target-global.md">parallel_servers_target</a> 变量控制并行执行的资源使用量。</p>
+</main>
+
+## 功能描述
+
+`parallel_max_servers` 用于设置每台 Server 上并行执行（Parallel eXecution，PX）线程池中的最大线程数。
+
+## 属性说明
+
+| **属性**  |   **描述**    |
+|---------|-------------|
+| 参数类型    | Int         |
+| 默认值     | 0           |
+| 取值范围    | \[0, 1800\] |
+| 生效范围    | Global      |

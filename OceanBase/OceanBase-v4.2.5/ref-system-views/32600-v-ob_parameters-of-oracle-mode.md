@@ -1,0 +1,72 @@
+---
+title: "V$OB_PARAMETERS"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500624.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_PARAMETERS
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `V$OB_PARAMETERS` 用于展示本 OBServer 节点上的配置项（包含名称以 "_" 开头的隐藏配置项）信息。
+
+## 字段说明
+
+|    字段名称    |       类型        | 是否可以为 NULL |                                描述                                 |
+|------------|-----------------|------------|---------------------------------------------------------------------------------------------------|
+| SVR_IP     | VARCHAR2(46)    | NO         | 服务器 IP 地址                                                         |
+| SVR_PORT   | NUMBER(38)      | NO         | 服务器端口号                                                            |
+| ZONE       | VARCHAR2(128)   | NO         | ZONE 名称                                                             |
+| SCOPE      | VARCHAR2(64)    | NO         | <ul><li>`CLUSTER` 集群级配置项 </li><li> `TENANT` 租户级配置项 </li></ul> |
+| TENANT_ID  | NUMBER(38)      | YES        | 租户 ID：<ul><li>`NULL` 不属于任何租户</li><li>有效值：租户ID </li></ul>    |
+| NAME       | VARCHAR2(128)   | NO         | 配置项名称                                                             |
+| DATA_TYPE  | VARCHAR2(128)   | YES        | 配置项值类型                                                            |
+| VALUE      | VARCHAR2(65536) | NO         | 配置项值                                                              |
+| INFO       | VARCHAR2(4096)  | NO         | 配置项说明                                                             |
+| SECTION    | VARCHAR2(128)   | NO         | 配置项所属的模块                                                          |
+| EDIT_LEVEL | VARCHAR2(128)   | NO         | 配置项修改生效方式：<ul><li>`READONLY`：只读，不可修改   </li><li> `STATIC_EFFECTIVE`：修改后需要重启生效   </li><li> `DYNAMIC_EFFECTIVE`：修改后可动态生效 </li></ul>   |
+| DEFAULT_VALUE | VARCHAR2(65536) | NO   | 配置项的默认值<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.2 版本开始引入。</p></main>       |
+| ISDEFAULT     | VARCHAR2(3)     | NO   | 当前值是否为默认值：<ul><li>NO：表示当前值不是默认值</li><li>YES：表示当前值为默认值</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.2 版本开始引入。</p></main> |
+
+## 查询示例
+
+查询本 OBServer 节点上的配置项信息，展示第 1 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM SYS.V$OB_PARAMETERS WHERE ROWNUM < 2\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+       SVR_IP: xx.xx.xx.xx
+     SVR_PORT: 28825
+         ZONE: zone1
+        SCOPE: CLUSTER
+    TENANT_ID: NULL
+         NAME: _restore_io_max_retry_count
+    DATA_TYPE: NULL
+        VALUE: 3
+         INFO: the maximum number of retry attempts for restoring when encountering I/O errors.Range: [0,64] in integer
+      SECTION: OBSERVER
+   EDIT_LEVEL: DYNAMIC_EFFECTIVE
+DEFAULT_VALUE: 3
+    ISDEFAULT: YES
+1 row in set (0.049 sec)
+```
+
+## 相关视图或文档
+
+* [GV$OB_PARAMETERS](2200.gv-ob_parameters-of-oracle-mode.md)
+* [配置项概述](../../../../700.reference/800.configuration-items-and-system-variables/000.configuration-items-and-system-variables-overview.md)

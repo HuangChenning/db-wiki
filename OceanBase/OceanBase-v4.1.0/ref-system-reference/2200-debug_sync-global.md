@@ -1,0 +1,27 @@
+---
+title: debug_sync
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002186426.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# debug_sync
+
+debug_sync 用于在 debug 时设置同步点，与 MySQL 兼容。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>只有 debug_sync_timeout 配置项的值不为 0 时，该变量的设置才有效。</p>
+  </main>
+
+| **属性** |   **描述**   |
+|--------|------------|
+| 参数类型   | varchar    |
+| 默认值    | 空字符串       |
+| 取值范围   | 无          |
+| 生效范围   | SESSION    |
+| 是否可见   | 否，所有租户均不可见 |

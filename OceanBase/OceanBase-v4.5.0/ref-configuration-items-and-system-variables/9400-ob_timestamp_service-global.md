@@ -1,0 +1,30 @@
+---
+title: ob_timestamp_service
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478737.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# ob_timestamp_service
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>在 V4.x 版本中，系统统一使用 GTS，不需要再指定全局时间戳服务，该变量从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`ob_timestamp_service` 用于指定使用何种时间戳服务。
+
+## 属性说明
+
+| **属性**  |           **描述**                         |
+|---------|----------------------------------------------|
+| 参数类型    | Enum                         |
+| 默认值     | GTS                            |
+| 取值范围    | <ul><li>LTS：事务执行过程中使用服务器本地的时间戳做为事务的快照，不支持跨分区的访问 </li><li>GTS：事务执行过程中从 GTS 服务获取全局时间戳做为事务的快照以及事务的提交版本号，使用上没有限制 </li><li>（暂不支持）HA_GTS </li></ul>   |
+| 生效范围    | Global            |

@@ -1,0 +1,72 @@
+---
+title: "V$OB_TABLET_COMPACTION_PROGRESS"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501401.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_TABLET_COMPACTION_PROGRESS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示所有租户在当前节点上 Tablet 级 Compaction 的进度信息。
+
+## 字段说明
+
+|             字段名称             |      类型      | 是否可以为 NULL |                                            描述                                            |
+|------------------------------|--------------|------------|--------|
+| SVR_IP                       | varchar(46)  | NO         | 服务器 IP 地址                                                                                |
+| SVR_PORT                     | bigint(20)   | NO         | 服务器端口号|
+| TENANT_ID                    | bigint(20)   | NO         | 租户 ID |
+| TYPE                         | varchar(64)  | NO         | Compaction 的类型： <ul><li>`MDS_TABLE_MERGE`：将系统的元数据按照 SSTable 的格式持久化到磁盘里。</li> <li>`MAJOR_MERGE`：租户级合并</li> <li>`MEDIUM_MERGE`：分区级合并</li> <li>`MINI_MERGE`：Mini Compaction，将 MemTable 转变成 Mini SSTable。</li> <li>`MINOR_MERGE`：Minor Compaction，多个 Mini SSTable 合成一个新的 Mini SSTable 或者多个 Mini SSTable 与一个 Minor SSTable 合成一个新的 Minor SSTable。</li> <li>`META_MAJOR_MERGE`：一种特殊的 Compaction 类型，是将某个指定时间点之前的数据合成一个 Meta Major SSTable，其数据格式与 Major SSTable 一样，不包含多版本数据和未提交事务数据。</li></ul>    |
+| TABLE_ID                     | bigint(20)   | NO         | 主表 ID |
+| LS_ID                        | bigint(20)   | NO         | 日志流 ID|
+| TABLET_ID                    | bigint(20)   | NO         | 数据分片 ID                                                                                  |
+| COMPACTION_SCN                      | bigint(20) unsigned   | NO         | 合并版本信息|
+| TASK_ID                      | varchar(64)  | NO         | 执行的 Trace                                                                                |
+| STATUS                       | varchar(15)  | NO         | 任务状态  |
+| DATA_SIZE                    | bigint(20)   | NO         | 需要 Compaction 的总数据量，单位为字节  |
+| UNFINISHED_DATA_SIZE         | bigint(20)   | NO         | 未完成 Compaction 的数据量，单位为字节   |
+| PROGRESSIVE_COMPACTION_ROUND | bigint(20)   | NO         | 渐近合并轮次|
+| CREATE_TIME                  | timestamp(6) | NO         | 任务创建时间|
+| START_TIME                   | timestamp(6) | NO         | 开始时间  |
+| ESTIMATED_FINISH_TIME        | timestamp(6) | NO         | 预计完成时间|
+
+## 查询示例
+
+系统租户下查询租户 ID 为 1002 的租户在当前节点上 Compaction 类型为 `MINI_MERGE` 的进度信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.V$OB_TABLET_COMPACTION_PROGRESS WHERE TENANT_ID=1002 AND TYPE='MINI_MERGE'\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+                      SVR_IP: xx.xx.xx.xx
+                    SVR_PORT: 2401
+                   TENANT_ID: 1002
+                        TYPE: MINI_MERGE
+                       LS_ID: 1001
+                   TABLET_ID: 1152921504606847235
+              COMPACTION_SCN: 1680514780195130031
+                     TASK_ID: Y9610BA2DA3E-0005F7FD6E1FE0FF-0-0
+                      STATUS: NODE_RUNNING
+                   DATA_SIZE: 31890729
+        UNFINISHED_DATA_SIZE: 3351030
+PROGRESSIVE_COMPACTION_ROUND: 1
+                 CREATE_TIME: 2023-04-03 17:49:17.278506
+                  START_TIME: 2023-04-03 17:51:57.953999
+       ESTIMATED_FINISH_TIME: 2023-04-03 23:32:25.969930
+1 row in set
+```

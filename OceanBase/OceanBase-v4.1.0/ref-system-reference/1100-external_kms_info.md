@@ -1,0 +1,41 @@
+---
+title: external_kms_info
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700956.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# external_kms_info
+
+external_kms_info 
+======================================
+
+external_kms_info 用于存储一些密钥管理信息。
+
+
+|      **属性**      | **描述** |
+|------------------|--------|
+| 参数类型             | 字符串类型  |
+| 默认值              | 空值     |
+| 取值范围             | NULL   |
+| 是否重启 OBServer 节点生效 | 否      |
+
+
+
+使用外部密钥管理中心时，`external_kms_info` 将存储一些密钥管理信息。具体格式如下：
+
+```json
+{
+    "KMS_HOST": "TEST_SERVER",                     // kms 地址
+    "ROOT_CERT": "TEST_CERT",                       // 证书公钥
+    "PRIVATE_KEY": "TEST_PKEY",                     // 证书私钥
+    "PRIVATE_KEY_PHRASE": "TEST_PHRASE",   // 证书私钥口令
+    "SCENE": "HK",                                           // 场景，取值包括 HK, ANT, HK_SM 和 ANT_SM
+    "KEY_NAME": "TEST_NAME",                       // 密钥名称
+    "CALLER": "TEST_CALLER"                         // 应用名称
+}
+```

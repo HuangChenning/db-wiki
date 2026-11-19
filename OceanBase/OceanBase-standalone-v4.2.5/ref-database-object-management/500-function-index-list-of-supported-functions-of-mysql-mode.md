@@ -1,0 +1,99 @@
+---
+title: "函数索引支持的系统函数列表"
+book: "数据库对象管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000003150318.html"
+tags:
+  - oceanbase
+  - standalone
+  - ref-database-object-management
+---
+
+# 函数索引支持的系统函数列表
+
+本节主要列出了可以或满足条件可以用于函数索引的系统函数。
+
+## 对参数类型无要求的系统函数
+
+下表中函数的表达式可以用于函数索引：
+
+|  |  |  |  |
+|----|----|----|----|
+| ACOS | ADDTIME | ASCII | ATAN |
+| ATAN2 | BIT_COUNT | BIT_LENGTH | CEIL |
+| CEILING | CHAR | CHAR_LENGTH | CHARSET |
+| COALESCE | COLLATION | CONCAT_WS | CONVERT |
+| CONVERT_TZ | COS | CRC32 | DATE_FORMAT |
+| DECODE | DEGREES | ELT | ENCODE |
+| EXP | EXPORT_SET | FIELD | FIND_IN_SET |
+| FLOOR | FORMAT | FORMAT_BYTES | FORMAT_PICO_TIME |
+| FROM_BASE64 | FROM_DAYS | GEOMCOLLECTION | GET_FORMAT |
+| GREATEST | HEX | HOUR | IFNULL |
+| INET6_ATON | INET6_NTOA | INET_ATON | INSERT |
+| INSTR | INSTRC | INTERVAL | IP2INT |
+| IS_IPV4 | IS_IPV4_COMPAT | IS_IPV4_MAPPED | IS_IPV6 |
+| IS_UUID | LEAST | LEFT | LENGTH |
+| LENGTHC | LINESTRING | LN | LOCATE |
+| LOG | LOG10 | LOG2 | LOWER |
+| LPAD | LTRIM | MAKEDATE | MAKETIME |
+| MID | MINUTE | MONTH | MULTIPOINT |
+| MULTILINESTRING | MULTIPOLYGON | NVL | NULLIF |
+| ORD | PERIOD_ADD | PERIOD_DIFF | PI |
+| POINT | POLYGON | POSITION | POWER |
+| RADIANS | REPLACE | REPEAT | REVERSE |
+| RIGHT | ROUND | RPAD | RTRIM |
+| SECOND | SEC_TO_TIME | SHA | SHA2 |
+| SIN | SOUNDEX | SPACE | ST_AREA |
+| ST_ASBINARY | ST_ASWKB | ST_ASWKT | ST_ASTEXT |
+| ST_BUFFER | ST_BUFFER_STRATEGY | ST_CONTAINS | ST_DISTANCE |
+| ST_DISTANCE_SPHERE | ST_INTERSECTS | ST_ISVALID | ST_LATITUDE |
+| ST_LONGITUDE | ST_TRANSFORM | ST_WITHIN | ST_X |
+| ST_Y | STRCMP | STR_TO_DATE | SUBSTR |
+| SUBSTRING_INDEX | SUBTIME | SYSDATE | SYSTEM_USER |
+| TAN | TIME | TIME_FORMAT | TIME_TO_SEC |
+| TIMEDIFF | TO_BASE64 | TO_SECONDS | TRIM |
+| TRUNCATE | UNCOMPRESS | UNCOMPRESSED_LENGTH | UNHEX |
+| UPPER | UUID_TO_BIN | VALIDATE_PASSWORD_STRENGTH |  |
+
+## 有参数类型有要求的系统函数
+
+以下系统函数在参数为 TIME 类型时，禁止用于函数索引。例如：对于 `DATE` 函数，禁止第一个参数为 TIME 时用于函数索引；对于 `DATEDIFF` 函数禁止任意参数为 TIME 类型时用于函数索引。
+
+|               |           |              |               |
+|---------------|-----------|--------------|---------------|
+| ADDDATE       | DAY       | DAYNAME      | DAYOFMONTH    |
+| DAYOFWEEK     | DAYOFYEAR | DATEDIFF     | DATE          |
+| DATE_SUB      | LAST_DAY  | MONTH        | MONTHNAME     |
+| QUARTER       | TIMESTAMP | TIMESTAMPADD | TIMESTAMPDIFF |
+| TIMESTAMP_NVL | TO_DAYS   | WEEK         | WEEKDAY       |
+| WEEKOFYEAR    | YEAR      | YEARWEEK     |               |
+
+## Json 相关的系统函数
+
+以下 Json 函数的表达式允许用于函数索引。
+
+|                   |                     |                   |                   |
+|-------------------|---------------------|-------------------|-------------------|
+| 1 MEMBER OF       | JSON_ARRAY          | JSON_ARRAY_APPEND | JSON_ARRAY_INSERT |
+| JSON_CONTAINS     | JSON_CONTAINS_PATH  | JSON_DEPTH        | JSON_EXTRACT      |
+| JSON_INSERT       | JSON_KEYS           | JSON_LENGTH       | JSON_MERGE        |
+| JSON_MERGE_PATCH  | JSON_MERGE_PRESERVE | JSON_OBJECT       | JSON_OVERLAPS     |
+| JSON_PRETTY       | JSON_QUERY          | JSON_QUOTE        | JSON_REMOVE       |
+| JSON_REPLACE      | JSON_SEARCH         | JSON_SET          | JSON_STORAGE_FREE |
+| JSON_STORAGE_SIZE | JSON_TYPE           | JSON_UNQUOTE      | JSON_VALID        |
+| JSON_VALUE        | \-                  | \-                | \-                |
+
+此外，以下函数当前仅限用于谓词中。
+
+|            |             |
+|------------|-------------|
+| JSON_EQUAL | JSON_EXISTS |
+
+## CAST 表达式
+
+CAST 表达式较特殊，当其目标类型或源类型为时间类型时，禁止作为函数索引，具体场景如下表所示。
+
+| 源类型 | 目标类型 | 说明 |
+|----|----|----|
+| TIME | DATETIME / TIMESTAMP / DATE | 禁止作为函数索引 |
+| datetime/TIMESTAMP/DATE | TIMESTAMP WITH TIME ZONE / TIMESTAMP WITH LOCAL TIME ZONE | 禁止作为函数索引 |

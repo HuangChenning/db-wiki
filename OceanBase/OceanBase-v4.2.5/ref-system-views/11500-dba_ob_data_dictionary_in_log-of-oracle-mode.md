@@ -1,0 +1,53 @@
+---
+title: DBA_OB_DATA_DICTIONARY_IN_LOG
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501039.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_DATA_DICTIONARY_IN_LOG
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.2.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+记录数据字典在系统日志流中的位置范围，方便 CDC 消费数据字典。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| SNAPSHOT_SCN | NUMBER(38) | NO | 数据字典生成时对应租户的 SNAPSHOT SCN |
+| REPORT_TIME | TIMESTAMP(6) WITH LOCAL TIME ZONE | NO |  数据字典生成完成，汇报到内部表的时间  （单位为微秒） |
+| START_LSN | NUMBER(38) | NO | 数据字典在租户一号日志流持久化的第一个日志的 LSN |
+| END_LSN | NUMBER(38) | NO | 数据字典在租户一号日志流持久化的最后一个日志的 LSN |
+
+## 查询示例
+
+查看本租户数据字典在系统日志流中的位置范围。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_OB_DATA_DICTIONARY_IN_LOG;
+```
+
+查询结果如下：
+
+```shell
++---------------------+------------------------------+-----------+----------+
+| SNAPSHOT_SCN        | REPORT_TIME                  | START_LSN | END_LSN  |
++---------------------+------------------------------+-----------+----------+
+| 1722408697334096435 | 31-JUL-24 02.51.37.373029 PM |  13706567 | 13706567 |
++---------------------+------------------------------+-----------+----------+
+1 row in set
+```
+
+## 相关视图或文档
+
+[dump_data_dictionary_to_log_interval](../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2300.dump_data_dictionary_to_log_interval.md)

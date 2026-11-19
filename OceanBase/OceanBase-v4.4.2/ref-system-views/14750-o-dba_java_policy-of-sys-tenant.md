@@ -1,0 +1,42 @@
+---
+title: oceanbase.DBA_JAVA_POLICY
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005967887.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_JAVA_POLICY
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该视图从 V4.4.2 BP1 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `DBA_JAVA_POLICY` 用于向 DBA 展示当前 Java UDF 权限配置详情。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| KIND        | varchar(8)    | NO   |  权限种类    |
+| GRANTEE     | varchar(128)  | NO   |  被赋权的 username    |
+| TYPE_SCHEMA | varchar(128)  | NO   |  权限类型所在的 schema    |
+| TYPE_NAME   | varchar(4096) | YES  |  权限类型名    |
+| NAME        | varchar(4096) | YES  |  权限名    |
+| ACTION      | varchar(4096) | YES  |  具体权限    |
+| ENABLED     | varchar(8)    | NO   |  当前权限是否生效    |
+| SEQ         | bigint(20)    | NO   |   对应 `java_policy` 中的 `key`   |
+
+## 查询示例
+
+查看当前 Java UDF 权限配置详情。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_JAVA_POLICY;
+```

@@ -1,0 +1,27 @@
+---
+title: sys_bkgd_migration_change_member_list_timeout
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702099.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# sys_bkgd_migration_change_member_list_timeout
+
+`sys_bkgd_migration_change_member_list_timeout` 用于设置副本迁移时变更 Paxos 成员组操作的超时时间。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始默认值由 1h 调整为 20s。</p>
+</main>
+
+
+|      **属性**      |    **描述**    |
+|------------------|--------------|
+| 参数类型             | 时间类型         |
+| 默认值              | 20s           |
+| 取值范围             | \[0s, 24 h\] |
+| 是否重启 OBServer 节点生效 | 否            |

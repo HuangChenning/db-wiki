@@ -1,0 +1,212 @@
+---
+title: CREATE TABLEGROUP
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479620.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE TABLEGROUP
+
+## 描述
+
+该语句用来创建表组。
+
+表组主要用于创建一组具有相同分布特征的表，具有相同分布特征的表在进行连接操作时，可以在本地进行，避免跨节点的数据请求。
+
+创建表组需要当前用户拥有全局 `CREATE`（`*.*`）权限。
+
+## 语法
+
+```sql
+CREATE TABLEGROUP [ IF NOT EXISTS ] tablegroup_name [tablegroup_option_list];
+
+tablegroup_option_list:
+    tablegroup_option [, tablegroup_option ...]
+
+tablegroup_option:
+    SHARDING = 'NONE' | 'PARTITION' | 'ADAPTIVE'
+```
+
+## 参数解释
+
+|           **参数**           |    **描述**    |
+|----------------------------|---------------------------------|
+| tablegroup_name            | 表组名称，最长 64 个字符，字符只能有大小写英文字母，数字和下划线，而且必须以字母或下划线开头，并且不能使用 OceanBase 数据库的关键字。如果要创建的表组名称已存在，并且没有指定 `IF NOT EXISTS`，则会出现错误。    |
+| IF NOT EXISTS              | 如果要创建的表组名称已存在，并且指定了 `IF NOT EXISTS`，则不会报错，也不会创建新的表组。    |
+| SHARDING                   | 表组的属性。如果不指定 `SHARDING` 属性，则默认创建 `ADAPTIVE` 的表组。`SHARDING` 取值如下：<ul><li>`NONE`：对加入表组的表没有限制。</li><li>`PARTITION`：加入表组的表对应的一级分区，需要与表组中所有表的一级分区的分区方式一致，包括分区类型、分区个数和分区值。</li><li>`ADAPTIVE`：加入表组的表对应的一级分区和二级分区，需要与表组中所有表的一级分区和二级分区的分区方式一致，包括分区类型、分区个数和分区值。加入表组中的表必须只能为同一类分区表（一级分区表或者二级分区表）</li></ul>相同的分区方式包括：<ul><li>分区类型相同（例如都是 Hash+Range 分区）。</li><li>如果是 Hash 分区，要求引用的列数相同，并且分区个数相同。</li><li>如果是 Range 分区，要求引用的列数相同，并且分区数相同，Range 分割点相同。</li></ul>对于二级分区，根据其分区类型，要求和上述一致。    |
+
+
+## 示例
+
+* 创建名为 `myTableGroup1` 的表组，并将非分区表 `myt1` 和 `myt2` 加入到表组中。
+
+  ```shell
+  obclient> CREATE TABLEGROUP myTableGroup1;
+  obclient> CREATE TABLE myt1 (c1 INT, c2 INT ) TABLEGROUP = myTableGroup1;
+  obclient> CREATE TABLE myt2 (c1 INT, c2 INT ) TABLEGROUP = myTableGroup1;
+  ```
+
+* 创建名为 `order_tg_none` 的表组，其 `SHARDING` 属性为 `NONE`，并将非分区表 `user_table` 、一级分区表 `order_table`、二级分区表 `order_item_table` 加入到表组中。
+
+  ```shell
+  obclient> CREATE TABLEGROUP order_tg_none SHARDING = 'NONE';
+  obclient> CREATE TABLE user_table (col INT) TABLEGROUP = order_tg_none;
+  obclient> CREATE TABLE order_table (col1 BIGINT PRIMARY KEY,col2 VARCHAR(50)) TABLEGROUP = order_tg_none
+      PARTITION BY LIST(col1)
+        (PARTITION p0 VALUES IN (1, 2, 3),
+         PARTITION p1 VALUES IN (5, 6),
+         PARTITION p2 VALUES IN (DEFAULT)
+         );
+  obclient> CREATE TABLE order_item_table(col1 INT,col2 varchar(50)) TABLEGROUP = order_tg_none
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST COLUMNS(col2)
+     (PARTITION p0 VALUES in (01)
+        (SUBPARTITION mp0 VALUES in ('01'),
+         SUBPARTITION mp1 VALUES in ('02'),
+         SUBPARTITION mp2 VALUES in ('03')),
+      PARTITION p1 VALUES in (02)
+        (SUBPARTITION mp3 VALUES in ('01'),
+         SUBPARTITION mp4 VALUES in ('02'),
+         SUBPARTITION mp5 VALUES in ('03'))
+       );
+  ```
+
+* 创建名为 `product_tg_partition` 的表组，其 `SHARDING` 属性为 `PARTITION`，并将分区表 `product_table` 和分区表 `category_table` 加入到表组中，两者的分区方式一致。
+
+  ```shell
+  obclient> CREATE TABLEGROUP product_tg_partition SHARDING = 'PARTITION';
+  obclient> CREATE TABLE product_table (col1 BIGINT PRIMARY KEY,col2 VARCHAR(50)) TABLEGROUP = product_tg_partition
+      PARTITION BY LIST(col1)
+        (PARTITION p0 VALUES IN (1, 2, 3),
+         PARTITION p1 VALUES IN (5, 6),
+         PARTITION p2 VALUES IN (DEFAULT)
+        );
+  obclient> CREATE TABLE category_table (col1 BIGINT PRIMARY KEY,col2 VARCHAR(50)) TABLEGROUP = product_tg_partition
+    PARTITION BY LIST(col1)
+      (PARTITION p0 VALUES IN (1, 2, 3),
+       PARTITION p1 VALUES IN (5, 6),
+       PARTITION p2 VALUES IN (DEFAULT)
+       );
+  ```
+
+* 创建名为 `mixed_tg_partition` 的表组，其 `SHARDING` 属性为 `PARTITION`，非分区表 `user_table_np` 和分区表 `order_table_p` 不能同时加入到该表组中。
+
+  ```shell
+  obclient> CREATE TABLEGROUP mixed_tg_partition SHARDING = 'PARTITION';
+  obclient> CREATE TABLE user_table_np (col INT) TABLEGROUP = mixed_tg_partition;
+  obclient> CREATE TABLE order_table_p (col1 BIGINT PRIMARY KEY,col2 VARCHAR(50)) TABLEGROUP = mixed_tg_partition
+      PARTITION BY LIST(col1)
+        (PARTITION p0 VALUES IN (1, 2, 3),
+         PARTITION p1 VALUES IN (5, 6),
+         PARTITION p2 VALUES IN (DEFAULT)
+         );
+  ERROR 4179 (HY000): not all tables are non-partitioned or partitioned, add table to tablegroup not allowed
+  ```
+
+* 创建名为 `product_tg_partition2` 的表组，其 `SHARDING` 属性为 `PARTITION`，分区表 `product_table2` 和分区表 `category_table2` 的分区值不一致，不能同时加入到表组中。
+
+  ```shell
+  obclient> CREATE TABLEGROUP product_tg_partition2 SHARDING = 'PARTITION';
+  obclient> CREATE TABLE product_table2 (col1 BIGINT PRIMARY KEY,col2 VARCHAR(50)) TABLEGROUP = product_tg_partition2
+      PARTITION BY LIST(col1)
+        (PARTITION p0 VALUES IN (1, 2, 3),
+         PARTITION p1 VALUES IN (5, 6),
+         PARTITION p2 VALUES IN (DEFAULT)
+         );
+  obclient> CREATE TABLE category_table2 (col1 BIGINT PRIMARY KEY,col2 VARCHAR(50)) TABLEGROUP = product_tg_partition2
+      PARTITION BY LIST(col1)
+        (PARTITION p0 VALUES IN (1, 2, 3),
+         PARTITION p1 VALUES IN (5, 7),
+         PARTITION p2 VALUES IN (DEFAULT)
+         );
+  ERROR 4179 (HY000): list_part partition value not equal, add table to tablegroup not allowed
+  ```
+
+* 创建名为 `order_tg_adaptive` 的表组，其 `SHARDING` 属性为 `ADAPTIVE`，并将分区表 `order_detail_table` 和分区表 `order_item_detail_table` 加入到表组中，两者的分区方式一致。
+
+  ```shell
+  obclient> CREATE TABLEGROUP order_tg_adaptive SHARDING = 'ADAPTIVE';
+  obclient> CREATE TABLE order_detail_table(col1 INT,col2 VARCHAR(50)) TABLEGROUP = order_tg_adaptive
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST COLUMNS(col2)
+        (PARTITION p0 VALUES in (01)
+           (SUBPARTITION mp0 VALUES in ('01'),
+            SUBPARTITION mp1 VALUES in ('02'),
+            SUBPARTITION mp2 VALUES in ('03')),
+         PARTITION p1 VALUES in (02)
+           (SUBPARTITION mp3 VALUES in ('01'),
+            SUBPARTITION mp4 VALUES in ('02'),
+            SUBPARTITION mp5 VALUES in ('03'))
+        );
+  obclient> CREATE TABLE order_item_detail_table(col1 INT,col2 VARCHAR(50)) TABLEGROUP = order_tg_adaptive
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST COLUMNS(col2)
+        (PARTITION p0 VALUES in (01)
+           (SUBPARTITION mp0 VALUES in ('01'),
+            SUBPARTITION mp1 VALUES in ('02'),
+            SUBPARTITION mp2 VALUES in ('03')),
+         PARTITION p1 VALUES in (02)
+           (SUBPARTITION mp3 VALUES in ('01'),
+            SUBPARTITION mp4 VALUES in ('02'),
+            SUBPARTITION mp5 VALUES in ('03'))
+         );
+  ```
+
+* 创建名为 `mixed_tg_adaptive` 的表组，其 `SHARDING` 属性为 `ADAPTIVE`，非分区表 `user_table_np2` 和分区表 `order_detail_table2` 不能同时加入到表组中。
+
+  ```shell
+  obclient> CREATE TABLEGROUP mixed_tg_adaptive SHARDING = 'ADAPTIVE';
+  obclient> CREATE TABLE user_table_np2 (col int) TABLEGROUP = mixed_tg_adaptive;
+  obclient> CREATE TABLE order_detail_table2(col1 INT,col2 VARCHAR(50)) TABLEGROUP = mixed_tg_adaptive
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST COLUMNS(col2)
+        (PARTITION p0 VALUES in (01)
+           (SUBPARTITION mp0 VALUES in ('01'),
+            SUBPARTITION mp1 VALUES in ('02'),
+            SUBPARTITION mp2 VALUES in ('03')
+         ),
+        PARTITION p1 VALUES in (02)
+           (SUBPARTITION mp3 VALUES in ('01'),
+            SUBPARTITION mp4 VALUES in ('02'),
+            SUBPARTITION mp5 VALUES in ('03'))
+         );
+  ERROR 4179 (HY000): not all tables are non-partitioned or partitioned, add table to tablegroup not allowed
+  ```
+
+* 创建名为 `order_tg_adaptive2` 的表组，其 `SHARDING` 属性为 `ADAPTIVE`，由于分区表 `order_detail_table3` 和分区表 `order_item_detail_table2` 的一级分区的分区类型相同，二级分区分区类型不同（二级分区个数不同），所以不能同时加入到表组中。
+
+  ```shell
+  obclient> CREATE TABLEGROUP order_tg_adaptive2 SHARDING = 'ADAPTIVE';
+  obclient> CREATE TABLE order_detail_table3(col1 INT,col2 VARCHAR(50)) TABLEGROUP = order_tg_adaptive2
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST COLUMNS(col2)
+        (PARTITION p0 VALUES in (01)
+          (SUBPARTITION mp0 VALUES in ('01'),
+            SUBPARTITION mp1 VALUES in ('02'),
+            SUBPARTITION mp2 VALUES in ('03')
+            ),
+         PARTITION p1 VALUES in (02)
+            (SUBPARTITION mp3 VALUES in ('01'),
+             SUBPARTITION mp4 VALUES in ('02'),
+             SUBPARTITION mp5 VALUES in ('03'))
+        );
+  obclient> CREATE TABLE order_item_detail_table2(col1 INT,col2 VARCHAR(50)) TABLEGROUP = order_tg_adaptive2
+      PARTITION BY LIST(col1) SUBPARTITION BY LIST COLUMNS(col2)
+        (PARTITION p0 VALUES in (01)
+           (SUBPARTITION mp0 VALUES in ('01'),
+            SUBPARTITION mp1 VALUES in ('02')),
+         PARTITION p1 VALUES in (02)
+           (SUBPARTITION mp3 VALUES in ('01'),
+            SUBPARTITION mp4 VALUES in ('02'))
+         );
+  ERROR 4179 (HY000): subpartition num not matched, add table to tablegroup not allowed
+  ```
+
+## 相关文档
+
+* [ALTER TABLEGROUP](../600.sql-statement-of-mysql-mode/1700.alter-tablegroup-of-mysql-mode.md)
+
+* [DROP TABLEGROUP](../600.sql-statement-of-mysql-mode/3800.drop-tablegroup-of-mysql-mode.md)
+
+* [管理表组内的表](../../../../300.database-object-management/100.manage-object-of-mysql-mode/400.manage-table-groups-of-mysql-mode/600.manage-tables-within-a-table-group-of-mysql-mode.md)
+
+* [查看表组信息](../../../../300.database-object-management/100.manage-object-of-mysql-mode/400.manage-table-groups-of-mysql-mode/300.view-the-information-of-a-table-group-of-mysql-mode.md)

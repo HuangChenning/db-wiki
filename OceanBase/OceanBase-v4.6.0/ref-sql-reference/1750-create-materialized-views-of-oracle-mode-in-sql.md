@@ -1,0 +1,251 @@
+---
+title: CREATE MATERIALIZED VIEW
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687564.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE MATERIALIZED VIEW
+
+## 描述
+
+该语句用来创建物化视图。
+
+物化视图是一种特殊类型的数据库对象，它存储查询结果的副本，并定期刷新（也可以手动刷新）以保持数据的最新状态。物化视图可以包含聚合，连接和子查询等操作，并且可以被索引和分区，以进一步提高性能。
+
+## 权限要求
+
+创建物化视图需要有 `CREATE TABLE` 权限。更多有关 OceanBase 数据库权限的详细介绍，请参见 [Oracle 模式下的权限分类](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/000.permission-classification-of-oracle-mode.md)。
+
+## 语法
+
+```sql
+CREATE MATERIALIZED VIEW view_name [([column_list] [PRIMARY KEY(column_list)])]
+    [table_option_list]
+    [partition_option]
+    [mv_column_group_option]
+    [refresh_clause [query_rewrite_clause] [on_query_computation_clause]]
+    AS view_select_stmt;
+
+column_list:
+    column_name [, column_name ...]
+
+refresh_clause:
+    REFRESH [refresh_option [PARALLEL n] [nested_refresh_option]] [mv_refresh_on_clause]
+    | NEVER REFRESH
+
+refresh_option:
+    COMPLETE
+    | FAST
+    | FORCE
+
+nested_refresh_option:
+    INDIVIDUAL
+    | INCONSISTENT
+    | CONSISTENT
+
+mv_refresh_on_clause:
+    [ON DEMAND] [[START WITH expr] [NEXT expr]]
+
+query_rewrite_clause:
+    DISABLE QUERY REWRITE
+    | ENABLE QUERY REWRITE
+
+on_query_computation_clause:
+    DISABLE ON QUERY COMPUTATION
+    | ENABLE ON QUERY COMPUTATION
+
+mv_column_group_option:
+    WITH COLUMN GROUP(all columns)
+    | WITH COLUMN GROUP(each column)
+    | WITH COLUMN GROUP(all columns, each column)
+```
+
+## 参数说明
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>在创建物化视图的语句中，不能直接创建索引。要为物化视图创建索引，需要单独使用 <a href="1600.create-index-of-oracle-mode.md">CREATE INDEX</a> 语句。</p>
+</main>
+
+|       **参数**        |       **描述**           |
+|-----------------------|--------------------------|
+| view_name             | 指定待创建的物化视图的名称。|
+| column_list       | 可选项，指定物化视图的列列表。如果想要为视图列指定明确的名称，可以使用 column_list 子句，并在其中使用逗号分隔的列名。<main id="notice" type='explain'><h4>说明</h4><p><ul><li>视图必须具有唯一的列名，不得有重复，就像基表一样。缺省情况下，视图的列名将使用 <code>SELECT</code> 语句中检索的列名。</li><li>在 <code>column_list</code> 中指定的列名数量必须与 <code>SELECT</code> 语句中检索的列数相同。</li></ul></p></main>|
+| column_name           | 指定物化视图的列名称。缺省情况下，由 `SELECT` 语句检索的列名将用作视图列名。|
+| PRIMARY KEY           | 用于指定物化视图的主键。<main id="notice" type='notice'><h4>注意</h4><p><ul><li>如果未指定物化视图的列名称，那么在物化视图的主键中所使用的列名应与 <code>SELECT</code> 语句所检索的列名相同。</li><li>当为物化视图指定列名称时，列名称的列表末尾与 <code>PRIMARY KEY</code> 定义之间应以英文逗号进行分隔。</li></ul></p></main>|
+| table_option_list | 可选项，指定物化视图的表选项。与普通表一样，物化视图可以单独设置 Table Option，更多参数信息，请参见 [CREATE TABLE](2400.create-table-of-oracle-mode.md)。|
+| partition_option  | 可选项，指定物化视图的分区选项。与普通表一样，物化视图可以单独设置分区，更多参数信息，请参见 [CREATE TABLE](2400.create-table-of-oracle-mode.md)。|
+| mv_column_group_option      | 可选项，指定物化视图的存储格式。不指定时，默认创建行存格式的物化视图。详细介绍可参见下文 [mv_column_group_option](#mv_column_group_option)。|
+| refresh_clause        | 可选项，指定物化视图的刷新方式。详细介绍可参见下文 [refresh_clause](#refresh_clause)。|
+| mv_refresh_on_clause  | 可选项，指定物化视图的模式，即刷新时机。详细介绍可参见下文 [mv_refresh_on_clause](#mv_refresh_on_clause)。|
+| query_rewrite_clause  | 可选项，指定当前物化视图是否开启自动改写。详细介绍可参见下文 [query_rewrite_clause](#query_rewrite_clause)。|
+| on_query_computation_clause | 可选项，指定当前物化视图是否是实时物化视图。详细介绍可参见下文 [on_query_computation_clause](#on_query_computation_clause)。|
+| view_select_stmt      | 用于定义物化视图数据的查询（`SELECT`）语句。该语句用于从基表中检索数据，并将结果存储到物化视图中。`view_select_stmt` 的语法与常规 `SELECT` 语句相同，语法信息请参见 [SIMPLE SELECT](../200.dml-of-oracle-mode/500.select-of-oracle-mode/100.simple-select-of-oracle-mode.md)。 <main id="notice" type='explain'><h4>说明</h4><p><ul><li>OceanBase 数据库支持外表作为物化视图的基表来创建全量刷新物化视图。</li><li>OceanBase 数据库支持在创建物化视图时对基表添加 <code>AS OF PROCTIME()</code> 子句，若在创建物化视图基表位置之外的地方使用了 <code>AS OF PROCTIME()</code> 则会报错。<code>AS OF PROCTIME()</code> 用于指定增量刷新时跳过这张表的刷新，并且 <code>AS OF PROCTIME()</code> 的表可以不创建 mlog。</li><li>OceanBase 数据库支持普通视图声明为维度表（<code>AS OF PROCTIME()</code>）时，可以作为增量刷新物化视图的基表。</li></ul></p></main>|
+
+### mv_column_group_option
+
+* `WITH COLUMN GROUP(all columns)`：指定创建行存储格式的物化视图。
+* `WITH COLUMN GROUP(each column)`：指定创建列存储格式的物化视图。
+* `WITH COLUMN GROUP(all columns, each column)`：指定创建行存列存冗余格式的物化视图。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>您可以使用 <code>SHOW CREATE TABLE view_name;</code> 或者 <code>SHOW CREATE VIEW view_name;</code> 命令来查看物化视图的定义，确定物化视图的存储格式。</li><li>OceanBase 数据库 Oracle 模式也支持使用 <code>SELECT DBMS_METADATA.GET_DDL('MATERIALIZED_VIEW','view_name') FROM DUAL;</code> 查看物化视图的定义。</li></ul></p>
+</main>
+
+### refresh_clause
+
+* `REFRESH [refresh_option [PARALLEL n] [nested_refresh_option]] [mv_refresh_on_clause]`：用于指定物化视图刷新方式和刷新并行度。
+
+  * `refresh_option`：指定物化视图的刷新方式。可选项，如果不指定任何刷新方式默认是 `FORCE`。
+
+    * `COMPLETE`：表示进行全量刷新，即重新计算整个物化视图的数据，确保视图中的数据与源表完全一致。
+    * `FAST`：表示进行增量刷新，即只刷新与源表变化相关的数据，避免对整个视图进行完全计算。
+
+      <main id="notice" type='notice'>
+        <h4>注意</h4>
+        <p><ul><li>由于 <code>REFRESH FAST</code> 方法利用物化视图日志中的记录信息来确定需要增量刷新的内容，因此在使用增量刷新刷新物化视图时，需要在创建物化视图之前就创建基表的物化视图日志（mlog）。</li><li>增量刷新物化视图中使用的列都必须在 mlog 里。</li></ul>有关创建物化视图日志的信息，请参见 <a href="../../900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1751.create-materialized-views-log-of-oracle-mode-in-sql.md">创建物化视图日志</a>。</p>
+
+    * `FORCE`：默认值，表示进行混合刷新，首先尝试增量刷新，如果增量刷新失败，则执行全量刷新。
+    * `nested_refresh_option`：指定嵌套物化视图的刷新策略。可选项，如果不指定刷新策略时，默认为 `INDIVIDUAL`。取值如下：
+
+      * `INDIVIDUAL`：默认值，表示独立刷新。
+      * `INCONSISTENT`：表示级联非一致性刷。
+      * `CONSISTENT`：表示级联一致性刷新。
+
+      <main id="notice" type='explain'>
+        <h4>说明</h4>
+        <p>对于非嵌套物化视图来说，不存在级联刷新行为，无论指定为何种刷新策略均无意义，都默认独立刷新。指定的三种刷新策略只在后台任务生效，当手动使用 PL 包（<a href="../../../../../600.pl-reference/300.pl-oracle/1400.pl-system-package-oracle/9950.dbms-mview-oracle/300.refresh-oracle.md">DBMS_MVIEW.REFRESH</a>）调度刷新，按照指定的 PL 参数执行刷新。</p>
+      </main>
+
+  * `PARALLEL n`：指定刷新并行度，即物化视图刷新时的刷新并行度。`n` 取值为大于等于 0 的整数，为 0 时，表示刷新并行度使用系统变量 `mview_refresh_dop` 的取值。
+
+* `NEVER REFRESH`：指定物化视图不需要刷新。即表示物化视图只在创建时进行刷新，并在创建后不允许再次刷新。
+
+### mv_refresh_on_clause
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>除了使用 <code>mv_refresh_on_clause</code> 子句来定义刷新计划，您还可以通过调用 <code>dbms_mviews.refresh</code> 存储过程来手动刷新物化视图。</p>
+</main>
+
+* `ON DEMAND`：可选项，表示按需刷新物化视图。
+
+* `[[START WITH expr] [NEXT expr]]`：可选项，表示定义刷新间隔。
+
+  * `[START WITH expr]`：可选项，表示刷新计划开始的时间表达式。
+
+  * `[NEXT expr]`：可选项，表示下一次刷新的时间表达式。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p><ul><li>如果使用了 <code>NEXT</code> 子句，刷新计划的时间表达式必须设定在未来的时间点，否则会引发错误。</li><li>如果期望物化视图周期性自动调度刷新任务，请通过定义 <code>NEXT</code> 来设置调度周期。</li></ul></p>
+    </main>
+
+建议使用 `current_date` 表示当前时区时间，时间表达式示例如下：
+
+* 从当前时间（`current_date`）开始，每隔 10 秒刷新一次物化视图。
+
+  ```sql
+  START WITH current_date NEXT current_date + INTERVAL '10' SECOND
+  ```
+
+* 从当前时间（`current_date`）开始，每隔 10 小时刷新一次物化视图。
+
+  ```sql
+  START WITH current_date NEXT current_date + INTERVAL '10' HOUR
+  ```
+
+* 表示从当前时间（`current_date`）开始，每隔 1 天刷新一次物化视图。
+
+  ```sql
+  START WITH current_date NEXT current_date + 1
+  ```
+
+### query_rewrite_clause
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p><ul><li>本功能需要物化视图仅包含 <code>SELECT JOIN</code> 与 <code>WHERE</code> 子句，即 SPJ 查询。对于不满足条件的物化视图，不会报错，但不会被用于改写。</li><li>OceanBase 数据库 Oracle 模式下，创建支持改写的物化视图时必须指定刷新方式（<code>refresh_clause</code>）。</li></ul></p>
+</main>
+
+* `DISABLE QUERY REWRITE`：默认值，指定当前物化视图不开启自动改写。
+* `ENABLE QUERY REWRITE`：指定当前物化视图开启自动改写。
+
+更多物化视图改写的信息，参见 [物化视图查询改写](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/500.materialized-views-rewrite-of-oracle-mode.md)。
+
+### on_query_computation_clause
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>OceanBase 数据库 Oracle 模式下，创建实时物化视图必须指定刷新方式（<code>refresh_clause</code>）。</p>
+</main>
+
+* `DISABLE ON QUERY COMPUTATION`：默认值，指定创建普通物化视图。
+* `ENABLE ON QUERY COMPUTATION`：指定创建实时物化视图。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p><ul><li>使用 <code>MIN</code>/<code>MAX</code> 函数的物化视图不支持实时物化视图。</li><li>带有外连接的聚合物化视图不支持实时物化视图。</li><li>带有集合查询的物化视图不支持实时物化视图。</li><li>嵌套物化视图不支持创建为实时物化视图。</li></ul></p>
+  </main>
+
+更多实时物化视图的信息，参见 [创建物化视图](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/300.create-materialized-views-of-oracle-mode.md) 中 **创建实时物化视图** 章节。
+
+## 示例
+
+1. 创建表 `test_tbl1`。
+
+   ```sql
+   CREATE TABLE test_tbl1 (col1 NUMBER PRIMARY KEY, col2 VARCHAR2(20), col3 NUMBER, col4 NUMBER);
+   ```
+
+2. 创建名为 `mv_test_tbl1` 的物化视图。将物化视图按照 `col1` 列进行 Hash 分区，并分为 `8` 个分区；使用完全刷新方法来刷新物化视图，从当前日期开始刷新，并每隔 `1` 天刷新一次；将 `test_tbl1` 表中满足条件 `col3 &gt;= 30` 的记录作为基表进行查询，并将查询结果作为物化视图的数据。
+
+   ```sql
+   CREATE MATERIALIZED VIEW mv_test_tbl1
+     PARTITION BY HASH(col1) PARTITIONS 8
+     REFRESH COMPLETE START WITH current_date NEXT current_date + 1
+     AS SELECT col1, col2, col3
+       FROM test_tbl1
+       WHERE col3 >= 30;
+   ```
+
+3. 创建名为 `mv2_test_tbl1` 的物化视图，并指定主键。
+
+   ```sql
+   CREATE MATERIALIZED VIEW mv2_test_tbl1(c1, c2, c3, PRIMARY KEY(c1))
+         AS SELECT col1, col2, col3
+           FROM test_tbl1;
+   ```
+
+4. 创建列存格式的物化视图 `mv3_test_tbl1`。
+
+   ```sql
+   CREATE MATERIALIZED VIEW mv3_test_tbl1
+     WITH COLUMN GROUP(each column)
+     AS SELECT col1, col2, col3
+       FROM test_tbl1;
+   ```
+
+5. 查看物化视图 `mv3_test_tbl1` 定义。
+
+   ```sql
+   SELECT DBMS_METADATA.GET_DDL('MATERIALIZED_VIEW','MV3_TEST_TBL1') FROM DUAL;
+   ```
+
+## 相关文档
+
+* [物化视图概述](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/100.materialized-views-overview-of-oracle-mode.md)
+
+* [创建物化视图](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/300.create-materialized-views-of-oracle-mode.md)
+
+* [刷新物化视图](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/400.refresh-materialized-views-of-oracle-mode.md)
+
+* [查询物化视图](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/600.view-materialized-views-of-oracle-mode.md)
+
+* [删除物化视图](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode/200.manage-materialized-views-of-oracle-mode/700.delete-materialized-views-of-oracle-mode.md)

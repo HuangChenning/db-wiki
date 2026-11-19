@@ -1,0 +1,55 @@
+---
+title: open_cursors
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502066.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# open_cursors
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`open_cursors` 用于限制单个 Session 可以同时打开的游标数量。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户均可修改该配置项。
+
+## 属性说明
+
+|        属性        |     描述      |
+|------------------|-------------|
+| 参数类型             | Int          |
+| 默认值              | 50          |
+| 取值范围             | [0，65535] |
+| 是否可修改  | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。   |
+
+## 使用说明
+
+* 每个 Session 可以同时打开的游标数上限，当 Session 上同时打开的游标超过此限制时，报错 `ORA-01000: maximum open cursors exceeded.`。
+
+* 配置项 `open_cursors` 除了限制 Cursor 的数量，同时也限制 PS 句柄的数量。
+
+## 配置示例
+
+设置单个 Session 可以同时打开的游标数量为 `20`。示例如下：
+
+```shell
+obclient> ALTER SYSTEM SET open_cursors = 20;
+```

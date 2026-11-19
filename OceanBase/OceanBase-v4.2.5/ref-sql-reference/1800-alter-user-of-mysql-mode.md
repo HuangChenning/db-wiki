@@ -1,0 +1,106 @@
+---
+title: ALTER USER
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503272.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER USER
+
+## 描述
+
+该语句主要用于执行以下操作：
+
+* 修改 OceanBase 数据库用户的密码。
+
+* 锁定或者解锁用户，且被锁定的用户不允许登录数据库。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>除了修改当前用户的口令之外，必须拥有 <code>CREATE USER</code> 的权限，才可以执行本命令。</p>
+  </main>
+
+* 设置用户在登录时默认激活的角色。
+* 修改用户的资源选项。
+
+## 权限要求
+
+执行 `ALTER USER` 语句需要当前用户具备 `CREATE USER` 权限。有关 OceanBase 数据库权限的详细介绍，请参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 语法
+
+* 修改用户密码：
+
+  ```sql
+  ALTER USER 'user_name' IDENTIFIED BY 'password';
+  ```
+
+* 锁定用户：
+
+  ```sql
+  ALTER USER 'user_name' [ACCOUNT LOCK | ACCOUNT UNLOCK];
+  ```
+
+* 设置用户在登录时默认激活的角色：
+
+  ```sql
+  ALTER USER user_name DEFAULT ROLE {NONE | ALL | role_name [, role_name ...]};
+  ```
+
+* 修改用户的资源选项：
+
+  ```sql
+  ALTER USER user_name WITH  resource_option [resource_option];
+
+  resource_option:
+      MAX_CONNECTIONS_PER_HOUR integer
+      | MAX_USER_CONNECTIONS integer
+  ```
+
+## 参数解释
+
+|     **参数**   | **描述** |
+|----------------|----------|
+| user_name      | 指定用户名称。|
+| password       | 指定新密码。|
+| ACCOUNT LOCK   | 指定锁定用户。|
+| ACCOUNT UNLOCK | 指定解锁用户。|
+| NONE           | 指定停用用户被授予的所有角色。|
+| ALL            | 指定激活用户下所有的角色。|
+| role_name      | 指定角色的名称，激活多个角色时，角色名用英文逗号（`,`）隔开。|
+| resource_option | 指定用户的资源选项，指定多个资源选项时，使用英文空格隔开。<ul><li>`MAX_CONNECTIONS_PER_HOUR`：用于指定每小时允许的最大连接数，`integer` 是一个整数，表示允许的最大连接数。</li><li>`MAX_USER_CONNECTIONS`：用于指定每个用户允许的最大连接数，`integer` 是一个整数，表示允许的最大连接数。</li></ul>|
+
+## 示例
+
+* 执行以下命令将用户 `sqluser01` 的密码修改为 `******`。
+
+  ```sql
+  obclient> ALTER USER 'sqluser01' IDENTIFIED BY '******';
+  ```
+
+* 锁定用户 `obsqluser01`。
+
+  ```sql
+  obclient> ALTER USER 'obsqluser01' ACCOUNT LOCK;
+  ```
+
+* 解锁用户 `obsqluser01`。
+
+  ```sql
+  obclient> ALTER USER 'obsqluser01' ACCOUNT UNLOCK;
+  ```
+
+* 指定用户 `user001` 在登录时，默认激活用户被授予的 `role001` 和 `role002` 角色。
+
+  ```sql
+  ALTER USER user001 DEFAULT ROLE role001, role002;
+  ```
+
+## 相关文档
+
+* [激活角色](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/340.role-management-of-mysql-mode.md/500.activating-roles-of-mysql-mode.md)
+* [查看角色](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/340.role-management-of-mysql-mode.md/600.view-roles-of-mysql-mode.md)

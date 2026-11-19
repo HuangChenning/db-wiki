@@ -1,0 +1,30 @@
+---
+title: merger_warm_up_duration_time
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502166.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# merger_warm_up_duration_time
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于 V4.x 对存储架构进行了升级，同时该配置项对应的功能并未支持，该配置项从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`merger_warm_up_duration_time` 用于设置合并时，新版基线数据的预热时间。
+
+## 属性说明
+
+|      **属性**      |   **描述**    |
+|------------------|-------------|
+| 参数类型             | Time        |
+| 默认值              | 0s          |
+| 取值范围             | \[0s, 60m\] |
+| 是否重启 OBServer 节点生效 | 否           |

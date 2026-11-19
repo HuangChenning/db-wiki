@@ -1,0 +1,27 @@
+---
+title: internal_sql_execute_timeout
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700935.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# internal_sql_execute_timeout
+
+`internal_sql_execute_timeout` 用于设置系统内部 SQL 执行的超时时间。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V3.2.3 版本开始取值范围由 [1000us, 10min] 调整为 [1000us, 1h]。</p>
+</main>
+
+
+|      **属性**      |      **描述**       |
+|------------------|-------------------|
+| 参数类型             | 时间类型              |
+| 默认值              | 30s               |
+| 取值范围             | \[1000us, 1h] |
+| 是否重启 OBServer 节点生效 | 否                 |

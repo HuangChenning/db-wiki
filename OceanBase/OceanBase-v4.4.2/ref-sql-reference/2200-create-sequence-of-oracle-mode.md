@@ -1,0 +1,93 @@
+---
+title: CREATE SEQUENCE
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287859.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE SEQUENCE
+
+## 描述
+
+该语句用来创建序列。序列属于数据库对象，用户可以从序列中生成唯一整数。
+
+如果两个用户同时递增同一个序列，那么每个用户获取的序列号可能会有间隔，一个用户永远无法获得另一个用户所生成的序列号。序列号是独立于表生成的，因此可以对一个或多个表使用相同的序列。
+
+创建序列后，您可以在 SQL 语句中使用 `CURRVAL` 伪列返回序列当前值或使用 `NEXTVAL` 伪列返回递增的新值。详细信息，请参见 [序列伪列](../../../200.common-tenant-of-mysql-mode/800.overview-of-pseudo-columns-of-mysql-mode/300.sequence-pseudo-column-of-mysql-mode.md)。
+
+## 语法
+
+```sql
+CREATE [WITH HINT] SEQUENCE [ schema. ] sequence_name
+[ INCREMENT BY simple_num ]
+[ START WITH simple_num ]
+[ MAXVALUE simple_num | NOMAXVALUE ]
+[ MINVALUE simple_num | NOMINVALUE ]
+[ CYCLE | NOCYCLE ]
+[ CACHE simple_num | NOCACHE ]
+[ ORDER | NOORDER ]
+[ RESTART ]
+```
+
+## 参数说明
+
+|           字段           |  描述  |
+|------------------------|---------|
+| WITH HINT             | 可选，指定查询优化器使用的提示信息。 |
+| schema.               | 指定包含序列的 Schema。如果省略 Schema，则数据库会在用户当前所在的 Schema 中创建序列。         |
+| sequence_name         | 要创建的序列名称。 |
+| INCREMENT BY simple_num | 指定序列的自增步数。`simple_num` 可以是正数或负数，但不能为 0。如果指定为正数，则序列为升序；如果指定为负数，则序列为降序。不指定时缺省值为 1。 |
+| START WITH simple_num | 指定序列的起始值。`simple_num` 必须小于等于 `MAXVALUE`，且大于等于 `MINVALUE`。如果不指定，则升序时默认取值为最小值，降序时默认取值为最大值。 |
+| MAXVALUE simple_num   | 指定序列的最大值，`simple_num` 的取值范围是 \[-9223372036854775808，9223372036854775807\]。<br> **注意**  <ul><li> 同时指定 `MINVALUE` 和 `MAXVALUE` 时，`MINVALUE` 必须小于 `MAXVALUE`。</li><li>`MAXVALUE` 和 `MINVALUE` 之差必须大于等于 `INCREMENT BY` 中的 `simple_num`。</li></ul> |
+| NOMAXVALUE           | `NOMAXVALUE` 为默认值。如果指定为 `NOMAXVALUE`，则升序时最大值为 9223372036854775807，降序时最大值为 -1。 |
+| MINVALUE simple_num   | 指定序列的最小值，`simple_num` 的取值范围是 \[-9223372036854775808，9223372036854775807\]。   |
+| NOMINVALUE           | `NOMINVALUE` 为默认值。如果指定为 `NOMINVALUE`，则升序时最小值为 1，降序时最小值为 -9223372036854775808。  |
+| CYCLE                | 指定序列的值循环生成，即序列在达到其最大值或最小值后继续生成值。在升序达到最大值后，它会生成最小值。在降序序列达到其最小值后，它会生成其最大值。 <br>**注意**  <ul><li> 如果指定了 `CYCLE`，而且 `INCREMENT BY simple_num` 小于 0 时，必须指定 `MINVALUE`。</li><li>如果指定了 `CYCLE`，`CACHE` 的数量不能超过一个 `CYCLE`。</li></ul> |
+| NOCYCLE              | `NOCYCLE` 为默认值，指定序列在达到其最大值或最小值后无法生成更多值。  |
+| CACHE simple_num      | 指定在内存中预分配的自增值个数，`simple_num` 默认为 20。`CACHE simple_num` 的值必须大于 1，如果 `CACHE simple_num` 的值为 1，则等价于 `NOCACHE`。 |
+| NOCACHE              | 指定序列的值为未预先分配。如果同时省略 `CACHE` 和 `NOCACHE`，则数据库默认缓存 20 个序列号。 |
+| ORDER                | 指定序列的值按顺序生成。 |
+| NOORDER              | `NOORDER` 为默认值，即不保证序列的值按顺序生成。 |
+| RESTART              | 指定序列从最小值重新开始。如果指定了 `CYCLE`，则在达到最大值后会自动重新开始。 |
+
+## 示例
+
+在 Schema `test` 下创建一个序列 `seq1` 并指定自增步数为 2。如下示例中，对 `seq1.nextval` 的第一个引用返回 1，第二个引用返回 3。每个后续引用的返回值都比前一个大 2。
+
+```sql
+obclient> CREATE SEQUENCE test.seq1 START WITH 1 MINVALUE 1 MAXVALUE 10 INCREMENT BY 2 NOCYCLE NOORDER CACHE 30;
+```
+
+```sql
+obclient> SELECT seq1.nextval FROM DUAL;
+```
+
+预期返回结果：
+
+```sql
++--------+
+| nextval|
++--------+
+| 1      |
++--------+
+1 row in set
+```
+
+```sql
+obclient> SELECT seq1.nextval FROM DUAL;
+```
+
+预期返回结果：
+
+```sql
++--------+
+| nextval|
++--------+
+| 3      |
++--------+
+1 row in set
+```

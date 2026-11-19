@@ -1,0 +1,25 @@
+---
+title: rpc_timeout
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699357.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# rpc_timeout
+
+rpc_timeout 
+================================
+
+rpc_timeout 用于设置集群内部请求的超时时间。
+
+
+|      **属性**      |  **描述**  |
+|------------------|----------|
+| 参数类型             | 时间类型     |
+| 默认值              | 2s       |
+| 取值范围             | \[0, +∞) |
+| 是否重启 OBServer 节点生效 | 否        |

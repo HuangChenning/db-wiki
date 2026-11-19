@@ -1,0 +1,31 @@
+---
+title: DISABLE
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702632.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# DISABLE
+
+DISABLE 
+============================
+#docslug#/oceanbase-database/oceanbase-database/V4.0.0/DISABLE
+DISABLE 存储过程用于禁止对 PUT、PUT_LINE、NEW_LINE 和 GET_LINE 的调用，并清除缓冲区的所有剩余信息。
+
+与 ENABLE 程序一样，如果使用 OBClient 的 `SERVEROUTPUT` 选项，则无需调用此程序。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+语法 
+-----------
+
+```sql
+DBMS_OUTPUT.DISABLE;
+```

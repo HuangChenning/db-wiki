@@ -1,0 +1,431 @@
+---
+title: "与 Oracle 兼容性概述"
+book: "OceanBase 介绍"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001697203.html"
+tags:
+  - oceanbase
+  - distributed
+  - learn-more-about-oceanbase
+---
+
+# 与 Oracle 兼容性概述
+
+本节主要介绍 OceanBase 数据库的 Oracle 模式与原生 Oracle 数据库的兼容性对比信息。
+
+OceanBase 数据库在数据类型、SQL 功能和数据库对象等基本功能上与 Oracle 数据库兼容。在 PL 方面，已经基本能够兼容全部的研发功能。在数据库安全、备份恢复、高可用和优化器等高级特性上 OceanBase 数据库的兼容性也非常好，而且有些特性还要优于 Oracle 数据库。这意味着在从 Oracle 数据库迁移到 OceanBase 数据库的过程中，用户不需要消耗大量的时间去学习新知识，即可流畅地实现从 Oracle 数据库到 OceanBase 数据库的迁移。
+
+此外，由于 OceanBase 数据库与 Oracle 数据库在底层架构、产品形态等方面的不同，有一部分功能 OceanBase 数据库暂时不会进行兼容或者会与 Oracle 数据库的表现有所差异。本节主要从以下几个方面介绍 OceanBase 数据库与 Oracle 数据库的兼容性对比信息：
+
+* SQL 数据类型
+
+* 内建函数
+
+* SQL 语法
+
+* 过程性语言
+
+* 系统视图
+
+* 字符集
+
+* 字符序
+
+* 数据库对象管理
+
+* 安全特性
+
+* 备份恢复
+
+* SQL 引擎
+
+## SQL 数据类型
+
+OceanBase 数据库兼容大部分 Oracle 数据库中支持的数据类型，详细支持信息请参见 [SQL 数据类型](../400.compatibility-with-oracle/200.sql-data-type.md)。基于优化考虑，`LONG` 和 `LONG RAW` 数据类型过于老旧，OceanBase 数据库暂不计划支持这两种数据类型。
+
+## 内建函数
+
+OceanBase 数据库兼容大部分 Oracle 数据库中支持的内建函数，详细支持信息请参见 [内建函数](../400.compatibility-with-oracle/300.built-in-functions.md)。
+
+## SQL 语法
+
+OceanBase 数据库支持 Oracle 数据库中绝大部分的 SQL 语法，少数功能性缺失会报语法不支持的错误。
+
+:::tab
+tab 支持
+
+**SELECT**
+
+* 支持大部分查询功能，包括支持单、多表查询；支持子查询；支持内连接，半连接，外连接；支持分组、聚合；支持层次查询；常见的概率，线性回归等数据挖掘函数等。
+
+* 支持如下集合操作：`UNION`、`UNION ALL`、`INTERSECT`、`MINUS`。
+
+* 支持使用 `EXPLAIN` 语法查看执行计划。
+
+**INSERT**
+
+* 支持单行、多行插入数据，同时支持指定分区插入数据。
+
+* 支持 `INSERT INTO ... SELECT ...` 语句。
+
+* 支持单表和多表插入数据。
+
+**UPDATE**
+
+* 支持单列和多列的数据更新。
+
+* 支持使用子查询更新数据。
+
+* 支持集合更新数据。
+
+**DELETE**
+
+* 支持单表和多表的数据删除。
+
+**TRUNCATE**
+
+* 支持完全清空指定表的数据。
+
+**并行查询**
+
+* 支持类 Oracle 数据库的并行查询。
+
+  OceanBase 数据库中 DOP 需要手动通过 `hint/session` 变量指定。
+
+* 支持并行数据操作语言（DML）。
+
+**Hint**
+
+支持使用 Hint 语法。有关 Hint 的详细信息，请参见 [Hint](../../700.reference/400.development-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/300.basic-elements-of-oracle-mode/600.annotation-of-oracle-mode/400.hint-of-oracle-mode/100.hint-overview-of-oracle-mode.md)
+
+tab 不支持
+
+**并行查询**
+
+OceanBase 数据库中 DOP 需要手动通过 `hint/session` 变量指定，暂不支持 Auto DOP 功能。
+
+:::
+
+## 过程性语言
+
+OceanBase 数据库兼容了大部分 Oracle 数据库的 PL 功能。有关 PL 功能的详细信息，请参见 [PL 参考](../../700.reference/400.development-reference/300.pl-reference/100.what-is-pl/100.pl-introduction.md)。
+
+:::tab
+tab 支持
+
+OceanBase 数据库主要支持的 PL 功能如下：
+
+* 数据类型
+
+* 流程控制
+
+* 集合与记录
+
+* 静态 SQL
+
+* 动态 SQL
+
+* 子过程
+
+* 触发器
+
+* 异常处理
+
+* 程序包
+
+* 性能优化
+
+* 自定义数据类型
+
+* PL 系统包
+
+  包括 DBMS_CRYPTO、DBMS_DEBUG、DBMS_LOB、DBMS_LOCK、DBMS_METADATA、DBMS_OUTPUT、DBMS_RANDOM、DBMS_SQL、DBMS_XA、UTL_I18N、UTL_RAW 等。
+
+* PL 标签安全包
+
+  包括 SA_SYSDBA、SA_COMPONENTS、SA_LABEL_ADMIN、SA_POLICY_ADMIN、SA_USER_ADMIN、SA_SESSION 等。
+
+tab 不支持
+
+OceanBase 数据库暂不支持如下 PL 功能：
+
+* 条件编译
+* 多维度集合
+
+:::
+
+## 系统视图
+
+OceanBase 数据库兼容了部分 Oracle 数据库的系统视图，其中：
+
+* 兼容字典视图 195 个。
+
+* 兼容性能视图（以 v$ 开头）20 个。
+
+关于兼容的详细视图列表请参见 [系统视图](../400.compatibility-with-oracle/400.system-view.md)。
+
+更多有关系统视图的字段说明的信息，请参见 [系统视图](../../700.reference/500.system-reference/500.system-view-of-oracle-mode/100.overview-of-oracle-mode.md)。
+
+## 字符集
+
+OceanBase 数据库支持的字符集有：
+
+* utf8mb4
+* gbk
+* utf16
+* gb18030
+* latin1
+
+## 字符序
+
+OceanBase 数据库支持的排序方式有：
+
+* binary
+* utf8mb4_general_ci
+* utf8mb4_bin
+* gbk_chinese_ci
+* gbk_bin
+* utf16_general_ci
+* utf16_bin
+* utf8mb4_unicode_ci
+* utf16_unicode_ci
+* gb18030_chinese_ci
+* gb18030_bin
+* latin1_bin
+
+## 数据库对象管理
+
+:::tab
+tab 支持
+
+**表管理**
+
+* 创建表：支持创建表，建表时可以指定分区、约束等信息。有关创建表的详细信息，请参见 [CREATE TABLE](../../700.reference/400.development-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/2400.create-table-of-oracle-mode.md)。
+
+* 修改基表：支持通过 `ALTER TABLE` 语句添加、删除、修改列；添加、删除约束；添加、删除、修改分区。有关修改表的详细信息，请参见 [ALTER TABLE](../../700.reference/400.development-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/1000.alter-table-of-oracle-mode.md)
+
+* 删除基表：支持删除表，并级联约束。有关删除表的详细信息，请参见 [DROP TABLE](../../700.reference/400.development-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/900.sql-statement-of-oracle-mode/100.ddl-of-oracle-mode/3900.drop-table-of-oracle-mode.md)。
+
+**约束**
+
+* 支持 `CHECK`、`UNIQUE` 和 `NOT NULL` 约束。
+
+* 支持 `PRIMARY KEY` 约束。
+
+* 支持 `FOREIGN KEY` 约束。
+
+* 支持使用 `ALTER TABLE` 语句添加 `CHECK` 约束、`PRIMARY KEY` 约束、`FOREIGN KEY` 约束以及 `NOT NULL` 约束。
+
+**分区支持**
+
+* 支持一级分区、模板化和非模板化的二级分区。
+
+* 支持哈希（Hash）、范围（Range）、列表（List）和组合分区等分区形式。
+
+* 支持局部索引和全局索引。
+
+* 对于分区维护支持以下操作：
+
+  * 一级分区表支持添加一级分区、删除一级分区、Truncate 一级分区。
+
+  * 模板化二级分区表支持添加一级分区、删除一级分区；非模板化二级分区表支持添加一级分区、删除一级分区、Truncate 一级分区、添加二级分区、删除二级分区、Truncate 二级分区。
+
+更多有关分区的详细信息，请参见 [分区概述](../../700.reference/200.administrator-guide/400.replica-management/200.manage-partition-table/100.oracle-mode/100.partition-overview-of-oracle-mode.md)。
+
+**索引管理**
+
+* 仅支持 BTree 索引。
+
+* 支持创建和删除索引功能。
+
+**视图管理**
+
+* 支持创建简单或复杂视图功能。
+
+* 支持删除视图功能。
+
+* 支持使用 `SELECT` 语句查询视图功能。
+
+* 支持 DML 语句。
+
+**序列管理**
+
+* 支持创建序列功能。
+* 支持修改序列功能，包括序列的重置取值功能等。
+* 支持删除序列功能。
+
+**同义词**
+
+* 支持对表、视图、同义词和序列等对象创建同义词。
+* 支持创建公共同义词功能。
+
+**触发器管理**
+
+* 支持创建触发器功能。
+* 支持修改触发器功能。
+* 支持删除触发器功能。
+
+**数据库链接**
+
+* 支持 OceanBase 数据库到 OceanBase 数据库的读和写操作。
+* 支持 OceanBase 数据库到 Oracle 数据库的读和写操作。
+
+tab 不支持
+
+**约束**
+
+* 不支持 `UNIQUE` 约束的 `DISABLE` 操作。
+* 不支持添加外键约束的 `DISABLE` 和 `ENABLE` 操作。
+* 不支持级联中的 `SET NULL`。
+
+**分区支持**
+
+* 模板化二级分区表不支持添加二级分区、删除二级分区。
+
+更多有关分区的详细信息，请参见 [分区概述](../../700.reference/200.administrator-guide/400.replica-management/200.manage-partition-table/100.oracle-mode/100.partition-overview-of-oracle-mode.md)。
+
+**索引管理**
+
+* 不支持位图索引类型。
+* 不支持反向索引类型。
+
+**可更新视图**
+
+* 不支持 `WITH CHECK OPTION` 子句。
+
+:::
+
+## 安全特性
+
+:::tab
+tab 支持
+
+**权限管理**
+
+* 兼容 Oracle 数据库的大部分系统权限。有关 OceanBase 数据库 Oracle 模式支持的权限，请参见 [Oracle 模式下的权限分类](../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/100.permission-classification-of-oracle-mode.md)。
+
+* 支持常见的对象权限管理，例如，授权与移除权限。
+
+* 支持白名单策略，实现网络安全访问控制。
+
+* 支持系统预定义角色，用户自定义角色。
+
+**身份鉴别**
+
+* 兼容 Oracle 数据库的密码策略。
+
+* 支持用户的锁定和解锁功能。
+
+**透明加密**
+
+* 兼容 Oracle 数据库的 TDE 功能，数据在写入存储设备之前自动进行加密，读取时自动解密。
+
+**审计**
+
+* 支持 Oracle 数据库的标准审计。
+
+* 支持语句和对象审计类型。
+
+* 对象审计当前仅支持表、序列、函数和包对象。
+
+* 审计结果支持存放在文件或者内部表中。
+
+* 支持审计相关的各类系统视图。
+
+**标签安全**
+
+* 兼容 Oracle 数据库中的标签安全（Label Security）功能。
+
+* 支持 Level 维度。
+
+**传输链路加密 SSL**
+
+* 支持客户端与 OceanBase 数据库服务器的传输链路加密，以及 OceanBase 数据库节点之间的数据传输加密。
+
+* 除了支持 SSL 单向认证、X509 双向认证，还支持指定加密算法、指定发行方认证、指定 SSL 主题认证等特殊的双向认证。
+
+tab 不支持
+
+**审计**
+
+* 不支持统一审计和 FGA 细粒度审计。
+
+* 不支持权限审计和网络审计。
+
+* 不支持删除审计相关的各类视图。
+
+**标签安全**
+
+* 不支持 Compartment 和 Group 维度。
+
+:::
+
+## 备份恢复
+
+OceanBase 数据库也提供了备份恢复功能。更多有关 OceanBase 数据库物理备份恢复特性的信息，请参见 [备份恢复概述](../../700.reference/100.oceanbase-database-concepts/1000.high-data-reliability-and-availability/500.backup-and-recovery/100.backup-and-recovery-overview.md)。
+
+:::tab
+tab 支持
+
+* 支持阿里云 OSS、NFS 作为备份目的地。
+
+* 支持自动清理过期备份功能。
+
+* 支持租户级别的备份与恢复功能。
+
+tab 不支持
+
+* 不支持集群级别的备份与恢复功能。
+
+* 不支持指定路径的备份功能。
+
+* 不支持日志归档压缩功能。
+
+* 不支持手动清理备份功能。
+
+* 不支持备份的备份功能。
+
+* 不支持备份的数据校验功能。
+
+* 不支持租户内部部分数据库和表级别的备份恢复功能。
+
+:::
+
+## SQL 引擎
+
+OceanBase 数据库的 SQL 引擎兼容了 Oracle 数据库大部分的特性。更多有关 OceanBase 数据库 SQL 引擎的详细信息，请参见 [SQL 调优指南](../../700.reference/300.performance-tuning-guide/500.sql-optimization/100.sql-request-execution-process.md)。
+
+:::tab
+tab 支持
+
+* 支持查询改写功能。
+
+* 支持预编译语句功能。
+
+* 支持基于成本的优化器功能。
+
+* 支持执行计划生成与展示（`EXPLAIN`）功能。
+
+* 支持执行计划缓存功能。
+
+* 支持执行计划快速参数化功能。
+
+* 支持执行计划绑定功能。
+
+* 支持 Optimizer Hint 功能。
+
+* 支持自适应游标共享 ACS 功能。
+
+* 支持执行计划管理 SPM 功能。
+
+tab 不支持
+
+* 不支持估算器功能。
+
+* 不支持执行计划隔离功能。
+
+* 不支持表达式统计存储（ESS）功能。
+
+* 不支持近似查询处理功能。
+
+:::

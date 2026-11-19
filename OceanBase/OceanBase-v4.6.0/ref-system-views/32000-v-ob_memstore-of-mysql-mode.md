@@ -1,0 +1,59 @@
+---
+title: "V$OB_MEMSTORE"
+book: "系统视图"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684478.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_MEMSTORE
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>视图 <code>V$SERVER_MEMSTORE</code> 从 V4.0.0 版本开始更名为 <code>V$OB_MEMSTORE</code>，V4.0.0 及之后版本需要使用新视图名 <code>V$OB_MEMSTORE</code> 来查询，使用原视图名 <code>V$SERVER_MEMSTORE</code> 查询将会报错。</p>
+</main>
+
+## 功能描述
+
+展示当前 OBServer 节点上当前租户的 MemStore 统计信息。
+
+## 字段说明
+
+|    **字段名称**    |   **类型**    | **是否可以为 NULL** |              **描述**              |
+|----------------|-------------|----------------|----------------------------------|
+| SVR_IP         | varchar(46) | NO             | 服务器的 IP                          |
+| SVR_PORT       | bigint(20)  | NO             | 服务器端口                            |
+| TENANT_ID      | bigint(20)  | NO             | 租户 ID                            |
+| ACTIVE_SPAN    | bigint(20)  | NO             | 活跃 MemTable 占用内存的估计值（可能偏大），单位为字节 |
+| FREEZE_TRIGGER | bigint(20)  | NO             | 触发 MemTable 冻结的内存大小，单位为字节        |
+| FREEZE_CNT     | bigint(20)  | NO             | MemTable 的冻结次数                   |
+| MEMSTORE_USED  | bigint(20)  | NO             | MemTable 目前使用的总内存大小，单位为字节        |
+| MEMSTORE_LIMIT      | bigint(20)  | NO             | MemTable 的内存大小限制，单位：字节           |
+
+## 查询示例
+
+用户租户查询本租户当前节点上 MemTable 的内存使用状况。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.V$OB_MEMSTORE;
+```
+
+查询结果如下：
+
+```shell
++----------------+----------+-----------+-------------+----------------+------------+---------------+----------------+
+| SVR_IP         | SVR_PORT | TENANT_ID | ACTIVE_SPAN | FREEZE_TRIGGER | FREEZE_CNT | MEMSTORE_USED | MEMSTORE_LIMIT |
++----------------+----------+-----------+-------------+----------------+------------+---------------+----------------+
+| 172.xx.xxx.xxx |     2882 |      1002 |    62914560 |      603982068 |          0 |      62914560 |     2684354550 |
++----------------+----------+-----------+-------------+----------------+------------+---------------+----------------+
+1 row in set
+```
+
+## 相关视图
+
+* 展示所有节点上的 MemStore 统计信息：[GV$OB_MEMSTORE](1600.gv-ob_memstore-of-mysql-mode.md)
+
+* 展示当前节点上所有分区的 MemTable 的详细信息：[V$OB_MEMSTORE_INFO](32100.v-ob_memstore_info-of-mysql-mode.md)

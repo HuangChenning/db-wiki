@@ -1,0 +1,33 @@
+---
+title: ob_enable_trace_log
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502570.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# ob_enable_trace_log
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul>
+   <li>由于 V4.x 版本对系统架构进行了优化调整，该变量已不再适用于 V4.x 版本，从 V4.1.0 版本开始删除。</li>
+   <li>在 V4.x 版本中，可以通过变量 <a href="../400.session-system-variable/7400.ob_enable_show_trace-session.md">ob_enable_show_trace</a> 设置是否使用 Show Trace 日志。 </li>
+  </ul>
+</main>
+
+## 功能描述
+
+`ob_enable_trace_log` 用于设置是否使用 SQL Trace 日志。
+
+## 属性说明
+
+| **属性**   |      **描述**    |
+|------------|--------------------|
+| 参数类型    | Bool        |
+| 默认值      | 0                           |
+| 取值范围    | <ul><li>0：不使用</li>   <li> 1：使用</li></ul>      |
+| 生效范围    | <ul><li> Global</li>   <li> Session</li></ul>  |

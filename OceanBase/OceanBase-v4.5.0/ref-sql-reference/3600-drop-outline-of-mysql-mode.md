@@ -1,0 +1,49 @@
+---
+title: DROP OUTLINE
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479554.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP OUTLINE
+
+## 描述
+
+该语句用于删除 OceanBase 数据库中的 Outline。
+
+## 语法
+
+```sql
+DROP OUTLINE outline_name
+DROP OUTLINE database_name.outline_name
+```
+
+## 参数解释
+
+|      **参数**      |           **描述**           |
+|------------------|----------------------------|
+| outline_name     | 指定要删除的 Outline 名称。        |
+| database_name    | 指定 Outline 所属的数据库名称。可选参数。 |
+
+## 示例
+
+* 删除当前数据库中的 Outline `olt_1`。
+
+```sql
+obclient> DROP OUTLINE olt_1;
+```
+
+* 删除指定数据库中的 Outline。
+
+```sql
+obclient> DROP OUTLINE ol_db.olt_2;
+```
+
+## 相关文档
+
+* [CREATE OUTLINE](2300.create-outline-of-mysql-mode.md)
+* [ALTER OUTLINE](1300.alter-outline-of-mysql-mode.md)

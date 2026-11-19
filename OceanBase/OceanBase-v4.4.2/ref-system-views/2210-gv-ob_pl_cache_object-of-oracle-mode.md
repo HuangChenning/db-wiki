@@ -1,0 +1,104 @@
+---
+title: "GV$OB_PL_CACHE_OBJECT"
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283853.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$OB_PL_CACHE_OBJECT
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul><li>在 V4.3.x 版本中，该视图从 V4.3.1 版本开始引入。</li><li>在 V4.2.x 版本中，该视图从 V4.2.2 版本开始引入。</li></ul>
+</main>
+
+## 功能描述
+
+视图 `GV$OB_PL_CACHE_OBJECT` 展示当前租户下所有 Server 中 PL 相关的缓存对象的基础信息。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| ---- | ---- | ---- | ---- |
+| TENANT_ID         | NUMBER(38)         | NO   |  租户 ID：<ul><li>1：系统租户 ID  </li><li>其他值：用户租户或者 Meta 租户 ID </li></ul>   |
+| SVR_IP            | VARCHAR2(46)       | NO   |  缓存对象所在的节点地址   |
+| SVR_PORT          | NUMBER(38)         | NO   |  缓存对象所在的节点端口   |
+| CACHE_OBJECT_ID   | NUMBER(38)         | NO   |  lib cache分配的缓存对象id   |
+| PARAMETERIZE_TEXT | CLOB               | NO   |  <ul><li>匿名块和 PS 模式的 CALL 语句场景：表示参数化 SQL 文本  </li><li>Procedure/Function/Package 等场景：表示存储过程对象名称 </li></ul>    |
+| OBJECT_TEXT       | CLOB               | NO   |  查询语句文本，该字段仅在匿名块和 PS 模式的 CALL 语句场景下有效   |
+| FIRST_LOAD_TIME   | TIMESTAMP(6) WITH LOCAL TIME ZONE     | NO   |  第一次被加载时间，单位为微秒  |
+| LAST_ACTIVE_TIME  | TIMESTAMP(6) WITH LOCAL TIME ZONE     | NO   |  上一次缓存命中时间，单位为微秒   |
+| AVG_EXE_USEC      | NUMBER(38)         | NO   |  平均执行时间，单位为微秒   |
+| SLOWEST_EXE_TIME  | TIMESTAMP(6) WITH LOCAL TIME ZONE     | NO   |  最慢执行时间戳，单位为微秒   |
+| SLOWEST_EXE_USEC  | NUMBER(38)         | NO   |  最慢一次执行时间耗时，单位为微秒  |
+| HIT_COUNT         | NUMBER(38)         | NO   |  缓存命中次数   |
+| CACHE_OBJ_SIZE    | NUMBER(38)         | NO   |  缓存对象占用的内存大小   |
+| EXECUTIONS        | NUMBER(38)         | NO   |  存储过程成功执行的次数   |
+| ELAPSED_TIME      | NUMBER(38)         | NO   |  最近一次存储过程执行时间，单位为微秒   |
+| OBJECT_TYPE       | CLOB               | NO   |  缓存对象类型(如：Procedure、Function、Trigger 等)   |
+| OBJECT_ID         | NUMBER(38)         | NO   |  存储过程对象 ID(`routine_id`/`package_id`)   |
+| COMPILE_TIME      | NUMBER(38)         | NO   |  存储过程编译耗时，单位为微秒   |
+| SCHEMA_VERSION    | NUMBER(38)         | NO   |  Schema 版本号   |
+| PS_STMT_ID        | NUMBER(38)         | NO   |  请求对应的 Prepare ID：<ul><li>`-1`：表示 SQL 语句没有使用 PS 协议  </li><li>非 `-1`：表示 SQL 语句使用了 PS 协议，表示 PS 协议对该语句返回的唯一标志    |
+| DB_ID | NUMBER(38) | NO | 存储过程编译时使用的数据库 ID <main id="notice" type='explain'><h4>说明</h4><p><li>在 V4.4.x 版本中，该字段从 V4.4.0 版本引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.5 版本引入。</li></p></main>|
+| PL_CG_MEM_HOLD |NUMBER(38)| NO |PL CG 阶段 hold 的内存<main id="notice" type='explain'><h4>说明</h4><p><li>在 V4.4.x 版本中，该字段从 V4.4.0 版本引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.5 BP2 版本引入。</li>|
+| SYS_VARS |varchar(4096)| NO |展示当前 SESSION 上影响 plan 生成的系统变量<main id="notice" type='explain'><h4>说明</h4><p><li>在 V4.4.x 版本中，该字段从 V4.4.0 版本引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.5 BP2 版本引入。|
+|PARAM_INFOS|CLOB|NO|对匿名块和 call proc info 展示被参数化的类型信息<main id="notice" type='explain'><h4>说明</h4><p><li>在 V4.4.x 版本中，该字段从 V4.4.0 版本引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.5 BP2 版本引入。</li>|
+| SQL_ID | varchar(32) | NO   | 使用 db_name+routine_name MD5 生成的唯一 ID <main id="notice" type='explain'><h4>说明</h4><p><li>在 V4.4.x 版本中，该字段从 V4.4.0 版本引入。</li><li>在 V4.3.x 版本中，该字段从 V4.3.5 BP2 版本引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.5 BP4 版本引入。</li>|
+| OUTLINE_VERSION   | NUMBER(38)          | NO   |  限流 outline 的版本, 默认是 `0`  <main id="notice" type='explain'><h4>说明</h4><p><li>在 V4.4.x 版本中，该字段从 V4.4.0 版本引入。</li><li>在 V4.3.x 版本中，该字段从 V4.3.5 BP2 版本引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.5 BP4 版本引入。</li>  |
+| OUTLINE_ID        | NUMBER(38)          | NO   | 限流 outline 的 ID，默认是 `-1` <main id="notice" type='explain'><h4>说明</h4><p><li>在 V4.4.x 版本中，该字段从 V4.4.0 版本引入。</li><li>在 V4.3.x 版本中，该字段从 V4.3.5 BP2 版本引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.5 BP4 版本引入。</li>    |
+| CONCURRENT_DATA   | CLOB            | NO   | 限流内容，默认是 `/*+max_concurrent(-1)*/`，`-1` 表示不做限流 <main id="notice" type='explain'><h4>说明</h4><p><li>在 V4.4.x 版本中，该字段从 V4.4.0 版本引入。</li><li>在 V4.3.x 版本中，该字段从 V4.3.5 BP2 版本引入。</li><li>在 V4.2.x 版本中，该字段从 V4.2.5 BP4 版本引入。    |
+| CG_TIME |NUMBER(38)|NO|PL 编译时 code generate 占用的时间。<main id="notice" type='explain'><h4>说明</h4><p><li>在 V4.4.x 版本中，该字段从 V4.4.2 版本引入。|
+
+## 查询示例
+
+查询当前租户下所有 Server 中 PL 相关的缓存对象的基础信息。
+
+```shell
+obclient > SELECT * FROM SYS.GV$OB_PL_CACHE_OBJECT WHERE ROWNUM < = 1 \G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+        TENANT_ID: 1004
+           SVR_IP: 172.xx.xxx.xxx
+         SVR_PORT: 2882
+  CACHE_OBJECT_ID: 567
+PARAMETERIZE_TEXT: BEGIN DBMS_STATS.ASYNC_GATHER_STATS_JOB_PROC(?); END
+      OBJECT_TEXT: BEGIN DBMS_STATS.ASYNC_GATHER_STATS_JOB_PROC(?); END
+  FIRST_LOAD_TIME: 30-JUL-25 04.46.58.530625 PM
+ LAST_ACTIVE_TIME: 04-AUG-25 04.46.58.448349 PM
+     AVG_EXE_USEC: 18777
+ SLOWEST_EXE_TIME: 30-JUL-25 04.46.59.016867 PM
+ SLOWEST_EXE_USEC: 486909
+        HIT_COUNT: 480
+   CACHE_OBJ_SIZE: 15872
+       EXECUTIONS: 481
+     ELAPSED_TIME: 9032072
+      OBJECT_TYPE: ANONYMOUS
+        OBJECT_ID: 18446744073709551615
+     COMPILE_TIME: 76418
+   SCHEMA_VERSION: -1
+ PL_EVICT_VERSION: 1753864526437224
+       PS_STMT_ID: -1
+            DB_ID: 201006
+   PL_CG_MEM_HOLD: 345660
+         SYS_VARS: 4,BYTE,17180131328,
+      PARAM_INFOS: {1,0,0,-85,15,7,18446744073709551615}
+           SQL_ID: E6454891418256E7AEE67AC9BBB536B4
+  OUTLINE_VERSION: 0
+       OUTLINE_ID: -1
+  CONCURRENT_DATA: /*+max_concurrent(-1)*/
+          CG_TIME: 7608
+1 row in set (0.009 sec)
+```
+
+## 相关文档
+
+[V$OB_PL_CACHE_OBJECT](32610.v-ob_pl_cache_object-of-oracle-mode.md)

@@ -1,0 +1,121 @@
+---
+title: "AP 场景下的主键设计实践"
+book: OceanBase AP
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000006077319.html"
+tags:
+  - oceanbase
+  - standalone
+  - obap
+---
+
+# AP 场景下的主键设计实践
+
+主键设计是关系型数据库表设计中的核心部分，在 OceanBase 中主键不仅确保了数据的唯一性，由于数据是按主键排序，所以对于范围类的查询可以利用主键优化性能。不同的主键设计方案适用于不同的业务场景。
+
+## 无主键场景
+
+### 选择单表无主键列存表
+
+数据仓库或在线分析处理（OLAP）场景下，业务数据表中的数据量非常庞大，且大部分查询只涉及某些列，在业务没有特殊要求的情况下，如保证数据唯一性、避免数据重复写入或者需要进行事务性更新或插入操作等，创建无主键列存表会更高效：
+
+- 数据导入：由于 AP 场景下数据不需要按照主键来排序，大数据的导入性能相比于有主键表更快速。
+- 减少主键的管理成本。
+
+``` sql
+show parameters like "%store_format%";
+
+  CREATE TABLE customer (
+  user_id bigint NOT NULL,
+  login_time timestamp NOT NULL,
+  customer_name varchar(100) NOT NULL,    -- 假设客户名称最长为100个字符
+  phone_num bigint NOT NULL,               -- 电话号码作为 bigint 存储
+  city_name varchar(50) NOT NULL,          -- 假设城市名称最长为50个字符
+  sex int NOT NULL,                        -- 性别使用 int 存储（例如 0 表示女，1 表示男）
+  id_number varchar(18) NOT NULL,          -- 假设身份证号码最长为18个字符
+  home_address varchar(255) NOT NULL,      -- 假设家庭住址最长为255个字符
+  office_address varchar(255) NOT NULL,    -- 假设办公地址最长为255个字符
+  age int NOT NULL                         -- 年龄使用 int 存储
+);
+```
+
+## 有主键场景
+
+AP 场景默认使用 **堆表**，其特点是：
+
+- **数据存储：** 按插入顺序存储，无物理排序。
+
+- **主键作用：**
+
+  - 确保数据唯一性，必须包含能唯一标识记录的字段（如 user_id）。
+  - 支持 **分区键嵌入**，主键需包含所有分区键（如 user_id 和 age），确保数据均匀分布。
+  - 需配合索引或分区策略实现查询加速（如 `ORDER BY`）。
+
+示例：带主键的堆组织表设计
+
+``` sql
+CREATE TABLE customer (  
+    user_id BIGINT NOT NULL,  
+    login_time TIMESTAMP NOT NULL,  
+    customer_name VARCHAR(100) NOT NULL,  
+    phone_num BIGINT NOT NULL,  
+    city_name VARCHAR(50) NOT NULL,  
+    sex INT NOT NULL,  
+    id_number VARCHAR(18) NOT NULL,  
+    home_address VARCHAR(255) NOT NULL,  
+    office_address VARCHAR(255) NOT NULL,  
+    age INT NOT NULL,  
+    -- 主键包含所有分区键（user_id 和 age）  
+    PRIMARY KEY (user_id, age, login_time)  
+)  
+-- 主分区：按 user_id 哈希分布  
+PARTITION BY HASH(user_id)  
+PARTITIONS 128  
+SUBPARTITION BY RANGE(age)  
+SUBPARTITION TEMPLATE (  
+    -- 示例分区：按年龄段划分  
+    SUBPARTITION p_youth VALUES LESS THAN (25),      -- 年龄 <25  
+    SUBPARTITION p_adult VALUES LESS THAN (40),      -- 25 ≤ age <40  
+    SUBPARTITION p_middle_aged VALUES LESS THAN (60),-- 40 ≤ age <60  
+    SUBPARTITION p_senior VALUES LESS THAN (MAXVALUE) -- 60及以上  
+);  
+```
+
+## 加主键场景
+
+- **保证数据唯一性：** 当表中的数据需要确保每条记录的唯一性时，必须设计主键。
+- **提高查询效率：** 主键能够帮助优化器生成更高效的查询计划，尤其是当数据查询依赖于主键时，建议将查询一定会携带的字段作为主键字段，这样可以利用主键来提升查询性能。
+
+``` sql
+CREATE TABLE customer (
+    user_id BIGINT NOT NULL,
+    login_time TIMESTAMP NOT NULL,
+    customer_name VARCHAR(100) NOT NULL,
+    phone_num BIGINT NOT NULL,
+    city_name VARCHAR(50) NOT NULL,
+    sex INT NOT NULL,
+    id_number VARCHAR(18) NOT NULL,
+    home_address VARCHAR(255) NOT NULL,
+    office_address VARCHAR(255) NOT NULL,
+    age INT NOT NULL,
+    -- 主键包含所有分区键（user_id 和 age）
+    PRIMARY KEY (user_id, age, login_time)
+)
+-- 主分区：按 user_id 哈希分布
+PARTITION BY HASH(user_id)
+PARTITIONS 128
+SUBPARTITION BY RANGE(age)
+SUBPARTITION TEMPLATE (
+    -- 示例分区：按年龄段划分
+    SUBPARTITION p_youth VALUES LESS THAN (25),      -- 年龄 <25
+    SUBPARTITION p_adult VALUES LESS THAN (40),      -- 25 ≤ age <40
+    SUBPARTITION p_middle_aged VALUES LESS THAN (60),-- 40 ≤ age <60
+    SUBPARTITION p_senior VALUES LESS THAN (MAXVALUE)-- 60及以上
+);
+```
+
+## 相关文档
+
+- [创建表（MySQL 模式）](../ref-database-object-management/200-create-a-table-for-mysql-tenant-of-mysql-mode.md)
+- [更改表（MySQL 模式）](../ref-database-object-management/600-change-table-of-mysql-mode.md)
+- [主键操作（MySQL 模式）](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286544)

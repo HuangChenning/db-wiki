@@ -1,0 +1,46 @@
+---
+title: DROP TRIGGER
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684885.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DROP TRIGGER
+
+`DROP TRIGGER` 语句用于删除触发器。
+
+## 语法
+
+```sql
+DROP TRIGGER [IF EXISTS] [schema_name.]trigger_name
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| IF EXISTS | 可选，如果触发器不存在，则不报错，只生成告警。 |
+| schema_name | 可选，触发器所在的数据库名称。如果省略，则从默认数据库中删除触发器。 |
+| trigger_name | 要删除的触发器名称。 |
+
+`DROP TRIGGER` 要求与触发器关联的表具有 `TRIGGER` 权限。
+
+如果删除表，也会删除表的触发器。
+
+## 示例
+
+删除触发器。
+
+```sql
+obclient> DROP TRIGGER IF EXISTS test_trg;
+```
+
+删除指定数据库中的触发器：
+
+```sql
+obclient> DROP TRIGGER IF EXISTS test_db.before_employee_insert;
+```

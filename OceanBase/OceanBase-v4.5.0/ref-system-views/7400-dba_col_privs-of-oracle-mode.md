@@ -1,0 +1,43 @@
+---
+title: DBA_COL_PRIVS
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004477156.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_COL_PRIVS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+描述数据库中的所有列对象授予。
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>Oceanbase 数据库的 Oracle 模式目前不支持列权限功能。</p>
+</main>
+
+## 字段说明
+
+|  **字段名称**   |    **类型**     | **是否可以为 NULL** |    **描述**     |
+|-------------|---------------|----------------|---------------|
+| GRANTEE     | VARCHAR2(128) | NO             | 被授予访问权限的用户的名称 |
+| OWNER       | VARCHAR2(128) | NO             | 对象的所有者        |
+| TABLE_NAME  | VARCHAR2(256) | NO             | 对象的名称         |
+| COLUMN_NAME | VARCHAR2(128) | NO             | 列的名称          |
+| GRANTOR     | VARCHAR2(128) | NO             | 执行授权的用户的名称    |
+| PRIVILEGE   | VARCHAR2(40)  | NO             | 列上的权限         |
+| GRANTABLE   | VARCHAR2(3)   | NO             | 指示是否使用授予选项    |
+
+## 相关视图
+
+* [USER_COL_PRIV](25600.user_col_privs-of-oracle-mode.md)
+* [ALL_COL_PRIVS](500.all_col_privs-of-oracle-mode.md)

@@ -1,0 +1,22 @@
+---
+title: balancer_tolerance_percentage
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702080.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# balancer_tolerance_percentage
+
+balancer_tolerance_percentage 用于设置负载均衡策略中，租户内多个 UNIT 间磁盘不均衡程度的宽容度，如果在均值 + 或 - 宽容度范围之内，不会触发执行均衡动作。
+
+
+|      **属性**      |  **描述**   |
+|------------------|-----------|
+| 参数类型             | 整型        |
+| 默认值              | 10        |
+| 取值范围             | \[1, 99\] |
+| 是否重启 OBServer 节点生效 | 否         |

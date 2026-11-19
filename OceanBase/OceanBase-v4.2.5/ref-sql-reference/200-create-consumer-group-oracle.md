@@ -1,0 +1,49 @@
+---
+title: CREATE_CONSUMER_GROUP
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503700.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE_CONSUMER_GROUP
+
+`CREATE_CONSUMER_GROUP` 过程用于创建定义资源用户组。
+
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+  
+## 语法 
+
+```sql
+DBMS_RESOURCE_MANAGER.CREATE_CONSUMER_GROUP (
+    consumer_group  IN VARCHAR2,
+    comment         IN VARCHAR2 DEFAULT NULL);
+```
+
+
+## 参数说明 
+
+|       参数      |    说明     |
+|----------------|-----------|
+| consumer_group | 资源用户组的名称。 |
+| comment        | 用户注释。     |
+
+## 示例 
+
+```shell
+obclient> BEGIN
+  DBMS_RESOURCE_MANAGER.CREATE_CONSUMER_GROUP('group1','事务处理组');
+END ;
+```
+
+```shell
+obclient> BEGIN DBMS_RESOURCE_MANAGER.CREATE_CONSUMER_GROUP('group2','日常运维组');
+END ;
+```

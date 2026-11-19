@@ -1,0 +1,40 @@
+---
+title: DROP OUTLINE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503321.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP OUTLINE
+
+## 描述
+
+该语句用于删除 OceanBase 数据库中的 Outline。
+
+## 权限要求
+
+执行 `DROP OUTLINE` 语句需要当前用户具备 `DROP` 管理权限。有关 OceanBase 数据库权限的详细介绍，请参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 语法
+
+```sql
+DROP OUTLINE outline_name;
+```
+
+## 参数解释
+
+|    **参数**    |       **描述**       |
+|--------------|--------------------|
+| outline_name | 指定要删除的 Outline 名称。 |
+
+## 示例
+
+删除 Outline `ol_1`。
+
+```sql
+DROP OUTLINE ol_1;      
+```

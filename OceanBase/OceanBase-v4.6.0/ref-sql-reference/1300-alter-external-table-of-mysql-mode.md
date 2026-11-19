@@ -1,0 +1,37 @@
+---
+title: ALTER EXTERNAL TABLE
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686141.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER EXTERNAL TABLE
+
+## 描述
+
+该语句用来手动更新外表的文件。单个文件的表数据可以自动更新，如果外表数据来自于文件列表则不能自动更新，需要进行手动刷新。
+
+## 语法
+
+```sql
+ALTER EXTERNAL TABLE table_name REFRESH
+```
+
+## 参数说明
+
+`table_name` 指定要刷新的外表名称。
+
+## 示例
+
+```sql
+-- 要成功执行此语句，您要确保对应的外表存在。
+obclient> ALTER EXTERNAL TABLE lineitem REFRESH;
+```
+
+## 相关文档
+
+[CREATE EXTERNAL TABLE](../600.sql-statement-of-mysql-mode/2200.create-external-table-of-mysql-mode.md)

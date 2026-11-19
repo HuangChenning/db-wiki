@@ -1,0 +1,61 @@
+---
+title: NEWPARSER
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354593.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# NEWPARSER
+
+`NEWPARSER` 函数用于分配并初始化一个新的 XML 解析器实例，并返回一个 `PARSER` 句柄，供后续 `PARSECLOB`、`GETDOCUMENT` 等子程序使用。通常作为 XML 解析流程的第一步调用。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该子程序从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_XMLPARSER.NEWPARSER;
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| 无 | 无。 |
+
+## 返回值
+
+新创建的 `DBMS_XMLPARSER.PARSER` 类型的解析器句柄。
+
+## 使用说明
+
+每个解析流程应单独调用一次 `NEWPARSER`。使用完毕后须调用 `FREEPARSER` 释放资源，避免句柄泄漏。
+
+## 示例
+
+该示例通过 `DBMS_XMLPARSER` 系统包创建一个 XML 解析器实例：
+
+```sql
+-- 声明解析器句柄变量
+DECLARE
+  p DBMS_XMLPARSER.PARSER;
+BEGIN
+  -- 创建解析器实例
+  p := DBMS_XMLPARSER.NEWPARSER;
+  -- 释放解析器句柄
+  DBMS_XMLPARSER.FREEPARSER(p);
+END;
+/
+```

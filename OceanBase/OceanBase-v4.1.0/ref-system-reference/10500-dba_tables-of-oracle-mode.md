@@ -1,0 +1,113 @@
+---
+title: DBA_TABLES
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700745.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# DBA_TABLES
+
+## 功能
+
+展示数据库中的所有表。
+
+## 相关视图
+
+* ALL_TABLES
+
+* USER_TABLES
+
+## 字段说明
+
+|           字段名称            |       类型       | 是否可以为 NULL |                                                               描述                                                                |
+|---------------------------|----------------|------------|---------------------------------------------------------------------------------------------------------------------------------|
+| OWNER                     | VARCHAR2(128)  | NO         | 表的拥有者                                                                                                                           |
+| TABLE_NAME                | VARCHAR2(128)  | NO         | 表名                                                                                                                              |
+| TABLESPACE_NAME           | VARCHAR2(30)   | NO         | 包含该表的表空间名字                                                                                                                      |
+| CLUSTER_NAME              | VARCHAR2(128)  | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| IOT_NAME                  | VARCHAR2(128)  | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| STATUS                    | VARCHAR2(8)    | NO         | 表状态： <li> VALID   <li> UNUSABLE    |
+| PCT_FREE                  | NUMBER         | NO         | 块的最小空闲空间比例                                                                                                                      |
+| PCT_USED                  | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| INI_TRANS                 | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| MAX_TRANS                 | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| INITIAL_EXTENT            | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| NEXT_EXTENT               | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| MIN_EXTENTS               | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| MAX_EXTENTS               | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| PCT_INCREASE              | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| FREELISTS                 | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| FREELIST_GROUPS           | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| LOGGING                   | VARCHAR2(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| BACKED_UP                 | VARCHAR2(1)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| NUM_ROWS                  | NUMBER         | NO         | 表行数                                                                                                                             |
+| BLOCKS                    | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| EMPTY_BLOCKS              | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| AVG_SPACE                 | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| CHAIN_CNT                 | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| AVG_ROW_LEN               | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| AVG_SPACE_FREELIST_BLOCKS | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| NUM_FREELIST_BLOCKS       | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| DEGREE                    | VARCHAR2(10)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| INSTANCES                 | VARCHAR2(10)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| CACHE                     | VARCHAR2(5)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| TABLE_LOCK                | VARCHAR2(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| SAMPLE_SIZE               | NUMBER         | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| LAST_ANALYZED             | DATE           | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| PARTITIONED               | VARCHAR2(3)    | NO         | 指定表是否是分区： <ul><li> YES </li>  <li> NO  </li> </ul>     |
+| IOT_TYPE                  | VARCHAR2(12)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| TEMPORARY                 | VARCHAR2(1)    | NO         | 指定表是否是临时表                                                                                                                       |
+| SECONDARY                 | VARCHAR2(1)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| NESTED                    | VARCHAR2(3)    | NO         | 指定表是否是嵌套表： <ul><li> YES </li>   <li> NO </li>  </ul>    |
+| BUFFER_POOL               | VARCHAR2(7)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| FLASH_CACHE               | VARCHAR2(7)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| CELL_FLASH_CACHE          | VARCHAR2(7)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| ROW_MOVEMENT              | VARCHAR2(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| GLOBAL_STATS              | VARCHAR2(3)    | NO         | 目前暂不支持该字段，当前该字段默认为  NULL                                                                                                        |
+| USER_STATS                | VARCHAR2(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| DURATION                  | VARCHAR2(15)   | NO         | 指示临时表的持续时间                                                                                                                      |
+| SKIP_CORRUPT              | VARCHAR2(8)    | NO         | 目前暂不支持该字段，当前该字段默认为  NULL                                                                                                        |
+| MONITORING                | VARCHAR2(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| CLUSTER_OWNER             | VARCHAR2(128)  | NO         | 目前暂不支持该字段，当前该字段默认为  NULL                                                                                                        |
+| DEPENDENCIES              | VARCHAR2(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| COMPRESSION               | VARCHAR2(8)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| COMPRESS_FOR              | VARCHAR2(30)   | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| DROPPED                   | VARCHAR2(3)    | NO         | 表示被删除表是否在回收站里                                                                                                                   |
+| READ_ONLY                 | VARCHAR2(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| SEGMENT_CREATED           | VARCHAR2(3)    | NO         | 目前暂不支持该字段，当前该字段默认为 NULL                                                                                                         |
+| RESULT_CACHE              | VARCHAR2(7)    | NO         | 目前暂不支持该字段，当前该字段默认为  NULL                                                                                                        |
+| CLUSTERING                | VARCHAR2(3)    | NO         | 表是否有属性聚类子句： <ul><li>YES </li>  <li>NO  </li>  </ul>                         |
+| ACTIVITY_TRACKING         | VARCHAR2(23)   | NO         | 指示是否在表上启用热图跟踪   |
+| DML_TIMESTAMP             | VARCHAR2(25)   | NO         | 自动数据优化的修改时间、创建时间                                                                                                                               |
+| HAS_IDENTITY              | VARCHAR2(3)    | NO         | 指示表是否有标识列：<ul><li>YES </li> <li>NO </li> </ul> |
+| CONTAINER_DATA            | VARCHAR2(3)    | NO         | 指示表是否包含特定于容器的数据。取值：<ul><li>YES </li> <li>NO </li> </ul>  |
+| INMEMORY                  | VARCHAR2(8)    | NO         | 兼容 Oracle 字段，值为 NULL，不具备实际含义 |
+| INMEMORY_PRIORITY         | VARCHAR2(8)    | NO         | 兼容 Oracle 字段，值为 NULL，不具备实际含义|
+| INMEMORY_DISTRIBUTE       | VARCHAR2(15)   | NO         | 兼容 Oracle 字段，值为 NULL，不具备实际含义|
+| INMEMORY_COMPRESSION      | VARCHAR2(17)   | NO         | 兼容 Oracle 字段，值为 NULL，不具备实际含义 |
+| INMEMORY_DUPLICATE        | VARCHAR2(13)   | NO         | 兼容 Oracle 字段，值为 NULL，不具备实际含义 |
+| DEFAULT_COLLATION         | VARCHAR2(100)  | NO         | 表的默认排序规则                                                                                                                                |
+| DUPLICATED                | VARCHAR2(1)    | NO         | 指示表是否在此分片上重复：<ul><li>YES </li> <li>NO </li> </ul> |
+| SHARDED                   | VARCHAR2(1)    | NO         | 指示表是否分片：<ul><li>YES </li> <li>NO </li> </ul>   |
+| EXTERNALLY_SHARDED        | VARCHAR2(1)    | NO         | 指示表是否是否外部分片：<ul><li>YES </li> <li>NO </li> </ul>   |
+| EXTERNALLY_DUPLICATED     | VARCHAR2(1)    | NO         | 指示表是否在外部重复：<ul><li>YES </li> <li>NO </li> </ul>    |
+| EXTERNAL                  | VARCHAR2(3)    | NO         | 指示表是否为外部表：<ul><li>YES </li> <li>NO </li> </ul>   |
+| HYBRID                    | VARCHAR2(3)    | NO         | 指示表是否为混合分区表：<ul><li>YES </li> <li>NO </li> </ul><br>混合分区表可以包含存储在段中的分区和存储在外部的分区的混合   |
+| CELLMEMORY                | VARCHAR2(24)   | NO         | 兼容 Oracle 字段，值为 NULL，不具备实际含义  |
+| CONTAINERS_DEFAULT        | VARCHAR2(3)    | NO         | 指示默认情况下是否启用表 CONTAINERS()：<ul><li>YES </li> <li>NO </li> </ul> |
+| CONTAINER_MAP             | VARCHAR2(3)    | NO         | 指示是否启用表以与数据库 container_map 属性一起使用：<ul><li>YES </li> <li>NO </li> </ul>  |
+| EXTENDED_DATA_LINK        | VARCHAR2(3)    | NO         | 指示是否启用表以从根获取扩展数据链接：<ul><li>YES </li> <li>NO </li> </ul>  |
+| EXTENDED_DATA_LINK_MAP    | VARCHAR2(3)    | NO         | 仅限内部使用   |
+| INMEMORY_SERVICE      | VARCHAR2(12)     | NO         | 兼容 Oracle 字段，值为 NULL，不具备实际含义 |
+| INMEMORY_SERVICE_NAME | VARCHAR2(1000)   | NO         | 兼容 Oracle 字段，值为 NULL，不具备实际含义      |
+| CONTAINER_MAP_OBJECT      | VARCHAR2(3)    | NO         | 指示是否将表用作数据库 container_map 属性的值：<ul><li>YES </li> <li>NO </li> </ul> |
+| MEMOPTIMIZE_READ          | VARCHAR2(8)    | NO         | 指示表是否启用了基于快速键的访问：<li>ENABLED<li>DISABLED   |
+| MEMOPTIMIZE_WRITE         | VARCHAR2(8)    | NO         | 仅限内部使用   |
+| HAS_SENSITIVE_COLUMN      | VARCHAR2(3)    | NO         | 指示表是否有一个或多个敏感列：<ul><li>YES </li> <li>NO </li> </ul>  |
+| ADMIT_NULL                | VARCHAR2(3)    | NO         | 指示表是否接受空 CON_ID 数据：<ul><li>YES </li> <li>NO </li> </ul>  |
+| DATA_LINK_DML_ENABLED     | VARCHAR2(3)    | NO         | 指示数据链接表上是否允许 DML：<ul><li>YES </li> <li>NO </li> </ul> |
+| LOGICAL_REPLICATION       | VARCHAR2(8)    | NO         | 指示表是否启用逻辑复制：<ul><li>ENABLED</li><li>DISABLED</li></ul><br>如果启用了数据库范围的列数据补充日志记录，则忽略此设置    |

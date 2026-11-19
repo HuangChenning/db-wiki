@@ -1,0 +1,52 @@
+---
+title: "GV$OB_PLAN_CACHE_PLAN_EXPLAIN"
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001701951.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# GV$OB_PLAN_CACHE_PLAN_EXPLAIN
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `GV$OB_PLAN_CACHE_PLAN_EXPLAIN` 用于展示缓存在全部的 OBServer 节点中的计划缓存中的物理执行计划。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该视图仅支持 GET 操作，查询时需要指定 IP、PORT、TENANT_ID、PLAN_ID 字段。</p>
+  </main>
+
+## 字段说明
+
+|   **字段名称**   |     **类型**     | **是否可以为 NULL** |      **描述**      |
+|--------------|----------------|----------------|------------------|
+| TENANT_ID    | NUMBER(38)     | NO             | 租户 ID            |
+| SVR_IP       | VARCHAR2(46)   | NO             | 服务器 IP 地址        |
+| SVR_PORT     | NUMBER(38)     | NO             | 服务器端口号           |
+| PLAN_ID      | NUMBER(38)     | NO             | 计划的 ID           |
+| PLAN_DEPTH   | NUMBER(38)     | NO             | Operator 在展示时的深度 |
+| PLAN_LINE_ID | NUMBER(38)     | NO             | Operator 的编号     |
+| OPERATOR     | VARCHAR2(128)  | NO             | Operator 的名称     |
+| NAME         | VARCHAR2(256)  | NO             | 表的名称             |
+| ROWS         | NUMBER(38)     | NO             | 预估的结果行数          |
+| COST         | NUMBER(38)     | NO             | 预估的代价            |
+| PROPERTY     | VARCHAR2(4096) | NO             | 对应 Operator 的信息  |
+
+## 查询示例
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.GV$OB_PLAN_CACHE_PLAN_EXPLAIN;
+```
+
+## 相关视图或文档
+
+[V$OB_PLAN_CACHE_PLAN_EXPLAIN](5800.v-plan_cache_plan_explain-of-oracle-mode.md)

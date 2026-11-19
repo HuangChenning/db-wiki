@@ -1,0 +1,459 @@
+---
+title: "SpringJPA 连接 OceanBase 数据库"
+book: "应用开发"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001697278.html"
+tags:
+  - oceanbase
+  - distributed
+  - develop
+---
+
+# SpringJPA 连接 OceanBase 数据库
+
+本文介绍 SpringJPA 连接示例，并测试几个常用功能，与 Oracle 进行简单的性能对比。
+
+## 配置依赖
+
+```java
+<dependency>
+   <groupId>mysql</groupId>
+   <artifactId>mysql-connector-java</artifactId>
+   <version>8.0.25</version>
+</dependency>
+<dependency>
+   <groupId>org.springframework.data</groupId>
+   <artifactId>spring-data-jpa</artifactId>
+   <version>1.10.1.RELEASE</version>
+</dependency>
+
+
+<!--spring其他依赖，此处省略。。。。。。。。。-->
+```
+
+## 配置文件
+
+### applicationContext.xml 文件
+
+内容如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context-4.2.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+         http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+         http://www.springframework.org/schema/mvc
+         http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+         http://www.springframework.org/schema/data/jpa
+         http://www.springframework.org/schema/data/jpa/spring-jpa.xsd"
+        >
+
+    <!-- 开启IOC注解扫描 -->
+    <context:component-scan base-package="com.bjyada.demo" />
+    <!-- 开启MVC注解扫描 -->
+    <mvc:annotation-driven />
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <!-- 连接信息 -->
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+
+        <!-- Connection Pooling Info -->
+        <property name="maxActive" value="${dbcp.maxActive}"/>
+        <property name="maxIdle" value="${dbcp.maxIdle}"/>
+        <property name="defaultAutoCommit" value="true"/>
+        <!-- 连接Idle一个小时后超时 -->
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+        <property name="minEvictableIdleTimeMillis" value="3600000"/>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+            <list>
+                <!-- 外部 -->
+                <!--<value>file:${user.dir}/dbcp.properties</value>-->
+                <!-- 内部 -->
+                <value>classpath*:dbcp.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Jpa Entity Manager 配置 -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter"/>
+        <property name="packagesToScan" value="com.bjyada.demo.entity"/>
+        <property name="persistenceUnitName" value="primary"/>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+                <!-- 将update改为none，禁止Hibernate每次启动都创建表
+                自动创建|更新|验证数据库表结构
+                validate    加载hibernate时，验证创建数据库表结构
+                create    每次加载hibernate，重新创建数据库表结构
+                create-drop    加载hibernate时创建，退出是删除表结构
+                update      加载hibernate自动更新数据库结构-->
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.temp.use_jdbc_metadata_defaults">false</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="database" value="${database.dialect}"/>
+    </bean>
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+
+    <!-- 启用 annotation事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <!-- 配置Spring Data JPA扫描目录 -->
+    <jpa:repositories base-package="com.bjyada.demo" />
+    <bean class="com.bjyada.demo.ExceptionHandler"></bean>
+</beans>
+```
+
+### dbcp.properties 文件
+
+内容如下：
+
+```xml
+#OceanBase 数据库
+jdbc.driver=com.mysql.cj.jdbc.Driver
+jdbc.url=jdbc:mysql://10.100.xxx.xxx:18815/test
+jdbc.username=admin
+jdbc.password=******
+database.dialect=MYSQL
+dbcp.maxIdle=5
+dbcp.maxActive=40
+useUnicode=true&characterEncoding=utf-8
+```
+
+### pom.xml 文件
+
+内容如下：
+
+```xml
+  <dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <version>****</version>
+  </dependency>
+  <dependency>
+   <groupId>mysql</groupId>
+   <artifactId>mysql-connector-java</artifactId>
+   <version>8.0.25</version>
+  </dependency>
+  <!-- 其余部分略 -->
+```
+
+### application.properties 文件
+
+内容如下(仅数据源和 jpa 部分配置) ：
+
+```java
+spring.datasource.url=jdbc:mysql://10.100.xxx.xxx:18815/test
+spring.datasource.username=admin@oracle
+spring.datasource.password=******
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect= org.hibernate.dialect.Oracle12cDialect
+```
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>在 Oracle 模式下需要配置 <code>spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.Oracle12cDialect</code>，如果是在 MySQL 模式下，该值应更改为 <code>org.hibernate.dialect.MySQL5Dialect</code>，或者不配置本行。</p>
+  </main>
+
+## 测试准备
+
+### 实体类
+
+相关代码如下：
+
+```java
+public class User implements Serializable {
+    private Integer id;
+    private String username;
+    //先注释一些字段，以便验证使用框架建表后，自动根据实体类新增属性修改表
+    //private Date birthday;
+    //private String sex;
+    //private String address;
+    //。。。。。。构造器、get、set方法此处省略。。。。。。。。
+}
+```
+
+### 数据库访问接口
+
+```java
+public interface UserDao extends JpaRepository<User,Serializable>{
+    User findById(Integer id);
+}
+```
+
+## 示例代码
+
+### 自动建表
+
+测试方法：
+
+```java
+@Test
+    public void testInsert(){
+        User user = new User();
+        user.setId(1);
+        user.setUsername("测试数据");
+        userDao.save(user);
+    }
+```
+
+执行结果：
+
+```shell
+obclient> drop table user;
+Query OK, 0 rows affected
+obclient› select * from user;
++----+-------------+
+| id | username    |
++----+-------------+
+| 1  | 测试数据     |
++----+-------------+
+1 row in set
+```
+
+### 修改表（增加字段）
+
+打开 User 类注释掉的属性，并执行如下方法：
+
+```unknow
+@Test
+    public void testAlert(){
+        User user = new User();
+        user.setId(1);
+        user.setUsername("测试数据");
+        user.setAddress("北京");
+        user.setSex("男");
+        user.setBirthday(new Date());
+        userDao.save(user);
+    }
+```
+
+执行结果：
+
+```shell
+obclient› select * from user;
++----+-------------+
+| id | username    |
++----+-------------+
+| 1 | 测试数据     |
++----+-------------+
+1 row in set
+
+obclient› select * from user;
++----+-------------+---------+----------------------+------+
+| id | username    | address | birthday             | sex  |
++----+-------------+---------+----------------------+------+
+| 1  | 测试数据     | NULL    | NULL                 | NULL  |
+| 2  | 测试数据     | 北京     | 2020-09-18 18:23:55  | 男    |
++----+-------------+---------+----------------------+------+
+```
+
+经测试，OceanBase 对于 SpringJPA 的 Alert Table 功能支持良好。
+
+### 持久化数据
+
+测试方法：
+
+```unknow
+@Test
+    public void testInsert(){
+        List<User> list = new ArrayList<User>();
+        list.add(new User(3,"asd", new Date(), "男", "漳州"));
+        list.add(new User(4,"qwe", new Date(), "女", "杭州"));
+        list.add(new User(5,"zxc", new Date(), "男", "上海"));
+        list.add(new User(6,"xcv", new Date(), "女", "杭州"));
+        list.add(new User(7,"sdf", new Date(), "男", "杭州"));
+        list.add(new User(8,"wer", new Date(), "女", "杭州"));
+        list.add(new User(9,"ert", new Date(), "男", "漳州"));
+        list.add(new User(10,"rty", new Date(), "女", "上海"));
+        list.add(new User(11,"tyu", new Date(), "男", "杭州"));
+
+        list.forEach(s -> userDao.save(s));
+    }
+```
+
+执行结果：
+
+```shell
++----+----------+---------+---------------------+-----+
+| id | username | address | birthday            | sex |
++----+----------+---------+---------------------+-----+
+| 1  | 测试数据  | NULL    | NULL                | NULL|
+| 2  | 测试数据  | 北京    | 2020-09-18 18:23:55 | 男  |
+| 3  | asd      | 漳州    | 2020-09-18 18:31:35 | 男  |
+| 4  | qwe      | 杭州    | 2020-09-18 18:31:35 | 女  |
+| 5  | zxc      | 上海    | 2020-09-18 18:31:35 | 男  |
+| 6  | xcv      | 杭州    | 2020-09-18 18:31:35 | 女  |
+| 7  | sdf      | 杭州    | 2020-09-18 18:31:35 | 男  |
+| 8  | wer      | 杭州    | 2020-09-18 18:31:35 | 女  |
+| 9  | ert      | 漳州    | 2020-09-18 18:31:35 | 男  |
+| 10 | rty      | 上海    | 2020-09-18 18:31:35 | 女  |
+| 11 | tyu      | 杭州    | 2020-09-18 18:31:35 | 男  |
++----+----------+---------+---------------------+-----+
+```
+
+经测试，OceanBase 对于 SpringJPA 的 Insert 功能支持良好。
+
+### 根据主键查询
+
+测试方法：
+
+```unknow
+@Test
+    public void testFindOne(){
+        Table_Test one = table_testDao.findOne("aaa");
+        System.out.println(one);
+    }
+```
+
+执行结果：
+
+```shell
+   @Test
+   public void test2(){
+           Table_Test one = table_testDao. findOne(id: "aaa");
+           System.out.println(one);
+}
+
+✔️ Tests passed: 1 of 1 test - 87 ms
+Table_Test {char_test='aaa', varchar2_test='aaa', nchar_ test=' aaa'
+Process finished with exit code 0
+```
+
+经测试，OceanBase 对于 SpringJPA 的 findOne 功能支持良好。
+
+### 根据主键或对象删除记录
+
+测试方法：
+
+```unknow
+@Test
+    public void testDelete(){
+        table_testDao.delete("9998");
+    }
+
+    @Test
+    public void test6(){
+        Table_Test a = new Table_Test();
+        a.setChar_test("9997");
+        table_testDao.delete(a);
+    }
+```
+
+执行结果：
+
+```shell
+| 9996   | aaa      | aaa    | 21-SEP-20  | 010203  |
+| 9999   | NULL     | NULL   | NULL       | NULL    |
+```
+
+经测试，OceanBase 对于 SpringJPA 的 delete 功能支持良好。
+
+### 修改记录
+
+测试方法：
+
+```unknow
+@Test
+    public void testChange(){
+        Table_Test one = table_testDao.findOne("9996");
+        System.out.println("修改前："+one);
+        one.setVarchar2_test("已修改");
+        one.setNchar_test("已修改");
+        table_testDao.save(one);
+        one = table_testDao.findOne("9996");
+        System.out.println("修改后："+one);
+    }
+```
+
+执行结果：
+
+```shell
+   @Test
+  public void test3(){}
+      Table_Test one = table_testDao. findone(id: "9996");
+      System.out.println（"修改前："+one）：
+      one.setVarchar2_test（"已修改"）：
+      one.setNchar_tes（"已修改"）；
+      table_testbao, save(one) ;
+      one = table_testDao. findOne( id: "9996");
+      System.out.println（"修改后: "+one);
+}
+
+✔️ Tests passed: 1 of 1 test - 187 ms
+修改前: Table_Test{char_test='9996', varchar2_test='aaa', nchar_test='aaa
+修改后: Table_Test{char_test='9996', varchar2_test='已修改', nchar_test='已修改'
+Process finished with exit code 0
+```
+
+经测试，OceanBase 对于 SpringJPA 的修改数据功能支持良好。
+
+### 全表查询
+
+测试方法:
+
+```unknow
+@Test
+    public void testFindAll(){
+        List<User> all = userDao.findAll();
+        all.forEach(System.out::println);
+    }
+```
+
+执行结果：
+
+```shell
+@Test
+public void testFindAll(){
+     List<User> all = userDao.findAllO;
+     all.forEach(System.out::println);
+｝
+✔️ Tests passed: 1 of 1 test - 235 ms
+INFO: HHH000232: Schema update complete
+User{id=1, username='测试数据', birthday=null, sex='null', address='null'｝
+User{id=2, username='测试数据', birthday=2020-09-18 18:23:55.0, sex='男, 'address='北京'｝
+User{id=3, username='asd', birthday=2020-09-18 18:31:35.0, sex='男', address='漳州'｝
+User{id=4, username='qwe', birthday=2020-09-18 18:31:35.0, sex='女', address='杭州'｝
+User{id=5, username='zxc', birthday=2020-09-18 18:31:35.0, sex='男', address='上海"｝
+User{id=6, username='xcv', birthday=2020-09-18 18:31:35.0, sex='女', address='杭州'｝
+User{id=7, username='sdf', birthday=2020-09-18 18:31:35.0, sex='男, address='杭州'｝
+Useriid=8, username='wer', birthday=2020-09-18 18:31:35.0, sex='女', address='杭州'｝
+User{id=9, username='ert', birthday=2020-09-18 18:31:35.0,sex='男, address='漳州'｝
+User{id=10, username='rty', birthday=2020-09-18 18:31:35.0, sex='男'， address='上海'｝
+User{id=11, username='tyu', birthday=2020-09-18 18:31:35.0, sex='男', address='杭州'}
+```
+
+经测试，OceanBase 对于 SpringJPA 的 FindAll 功能支持良好。

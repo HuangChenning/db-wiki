@@ -1,0 +1,36 @@
+---
+title: IS_IPV6
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287603.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# IS_IPV6
+
+## 声明
+
+```sql
+IS_IPV6(expr)
+```
+
+## 说明
+
+如果参数 `expr` 是有效的 IPv6 地址字符串，则返回 1，否则返回 0。此函数不会将 IPv4 地址视为有效的 IPv6 地址。
+
+对于指定的参数，如果 `IS_IPV6()` 返回 1，则 `INET6_ATON()` 返回非 `NULL`。
+
+## 示例
+
+```sql
+obclient> SELECT IS_IPV6('10.x.x.x'), IS_IPV6('::1');
++---------------------+----------------+
+| IS_IPV6('10.x.x.x') | IS_IPV6('::1') |
++---------------------+----------------+
+|                   0 |              1 |
++---------------------+----------------+
+1 row in set
+```

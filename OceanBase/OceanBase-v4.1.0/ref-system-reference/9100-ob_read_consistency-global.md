@@ -1,0 +1,23 @@
+---
+title: ob_read_consistency
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002186413.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ob_read_consistency
+
+`ob_read_consistency` 用于设置读一致性级别。
+
+|  **属性**  |             **描述**              |
+|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 参数类型     | enum                            |
+| 默认值      | STRONG                          |
+| 取值范围     | <li> 0：空字符串   <li> 1：FROZEN   <li> 2：WEAK   <li> 3：STRONG    |
+| 生效范围     | <li> Global   <li> Session            |
+| 是否参与序列化  | 是                               |
+| 是否影响计划生成 | 是                               |

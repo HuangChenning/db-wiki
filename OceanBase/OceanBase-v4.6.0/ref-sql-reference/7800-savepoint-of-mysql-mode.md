@@ -1,0 +1,174 @@
+---
+title: SAVEPOINT
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686127.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SAVEPOINT
+
+`SAVEPOINT` 相关语句用于创建事务中的保存点，实现事务内的部分回滚。
+
+## 语法
+
+创建保存点：
+
+```sql
+SAVEPOINT savepoint_name
+```
+
+回滚到保存点：
+
+```sql
+ROLLBACK [WORK] TO [SAVEPOINT] savepoint_name
+```
+
+删除保存点：
+
+```sql
+RELEASE SAVEPOINT savepoint_name
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| savepoint_name | 指定保存点的名称。指定的保存点在事务范围内唯一，同名的保存点会覆盖前一个保存点。创建保存点后，可以将事务回滚到指定保存点，也可以使用 `ROLLBACK` 语句回滚整个事务。 |
+| WORK | 可选关键字，不影响语义。 |
+
+## 示例
+
+创建保存点并在事务中使用：
+
+```sql
+obclient> CREATE TABLE account_table(id INT PRIMARY KEY, account_name VARCHAR(50), balance DECIMAL(10,2));
+
+obclient> START TRANSACTION;
+
+obclient> INSERT INTO account_table VALUES (1, 'Account1', 1000.00);
+
+obclient> SAVEPOINT sp1;
+
+obclient> UPDATE account_table SET balance = balance - 100 WHERE id = 1;
+
+obclient> SAVEPOINT sp2;
+
+obclient> UPDATE account_table SET balance = balance - 50 WHERE id = 1;
+
+obclient> SELECT * FROM account_table WHERE id = 1;
+```
+
+查询结果如下：
+
+```sql
++----+-------------+---------+
+| id | account_name| balance |
++----+-------------+---------+
+|  1 | Account1    |  850.00 |
++----+-------------+---------+
+1 row in set
+```
+
+回滚到保存点 `sp2`，撤销最后一次修改：
+
+```sql
+obclient> ROLLBACK TO SAVEPOINT sp2;
+
+obclient> SELECT * FROM account_table WHERE id = 1;
+```
+
+查询结果如下：
+
+```sql
++----+-------------+---------+
+| id | account_name| balance |
++----+-------------+---------+
+|  1 | Account1    |  900.00 |
++----+-------------+---------+
+1 row in set
+```
+
+回滚到保存点 `sp1`，撤销所有修改：
+
+```sql
+obclient> ROLLBACK TO SAVEPOINT sp1;
+
+obclient> SELECT * FROM account_table WHERE id = 1;
+```
+
+查询结果如下：
+
+```sql
++----+-------------+---------+
+| id | account_name| balance |
++----+-------------+---------+
+|  1 | Account1    | 1000.00 |
++----+-------------+---------+
+1 row in set
+```
+
+删除保存点：
+
+```sql
+obclient> SAVEPOINT sp3;
+
+obclient> UPDATE account_table SET balance = balance - 200 WHERE id = 1;
+
+obclient> RELEASE SAVEPOINT sp3;
+
+obclient> COMMIT;
+```
+
+删除保存点会同时删除后续保存点：
+
+```sql
+obclient> CREATE TABLE test_table(id INT PRIMARY KEY, name VARCHAR(50));
+
+obclient> BEGIN;
+
+obclient> INSERT INTO test_table VALUES(1, 'Alice');
+
+obclient> SAVEPOINT sp1;
+
+obclient> INSERT INTO test_table VALUES(2, 'Bob');
+
+obclient> SAVEPOINT sp2;
+
+obclient> INSERT INTO test_table VALUES(3, 'Charlie');
+
+obclient> SAVEPOINT sp3;
+
+obclient> SELECT * FROM test_table;
+```
+
+查询结果如下：
+
+```sql
++----+---------+
+| id | name    |
++----+---------+
+|  1 | Alice   |
+|  2 | Bob     |
+|  3 | Charlie |
++----+---------+
+3 rows in set
+
+obclient> RELEASE SAVEPOINT sp1;
+
+obclient> ROLLBACK TO SAVEPOINT sp2;
+-- ERROR 1305 (42000): savepoint does not exist
+```
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <ul>
+  <li>保存点在事务范围内唯一，同名的保存点会覆盖前一个保存点。</li>
+  <li>回滚到某个保存点后，该保存点之后创建的所有保存点会被自动删除。</li>
+  <li>使用 `RELEASE SAVEPOINT` 可以显式删除保存点，但不会回滚任何修改。</li>
+  <li>删除保存点将删除此保存点以后的所有保存点。</li>
+  </ul>
+</main>

@@ -1,0 +1,63 @@
+---
+title: DROP USER
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287813.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP USER
+
+## 描述
+
+该语句用于删除一个 OceanBase 数据库用户。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <ul>
+    <li>必须拥有 <code>CREATE USER</code> 的系统权限，才可以使用 <code>DROP USER</code> 命令。</li>
+    <li><code>CASCADE</code> 会指定在删除用户前，删除该用户拥有的所有对象，包括权限、数据库、表等。</li>
+    </ul>
+  </main>
+
+## 语法
+
+```sql
+DROP USER user_name [, user_name ...] [CASCADE]
+```
+
+## 参数解释
+
+| 参数 | 描述 |
+|------|------|
+| user_name | 指定要删除的用户名：<ul><li>格式可以是 `username` 或 `username@hostname`</li><li>可以指定多个用户，用逗号分隔</li></ul> |
+| CASCADE | 可选参数，指定是否级联删除用户拥有的所有对象：<ul><li>如果指定，会删除用户拥有的所有对象（表、视图等）</li><li>如果不指定，当用户拥有对象时会报错</li></ul> |
+
+## 示例
+
+1. 删除单个用户：
+
+   ```sql
+   obclient> DROP USER user1;
+   ```
+
+2. 删除指定主机的用户：
+
+   ```sql
+   obclient> DROP USER 'user1'@'localhost';
+   ```
+
+3. 删除多个用户：
+
+   ```sql
+   obclient> DROP USER user1, user2@'%', 'user3'@'localhost';
+   ```
+
+4. 删除用户并级联删除其对象：
+
+   ```sql
+   obclient> DROP USER user1 CASCADE;
+   ```

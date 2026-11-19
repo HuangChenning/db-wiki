@@ -1,0 +1,64 @@
+---
+title: "GV$OB_PARAMETERS"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501621.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$OB_PARAMETERS
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `GV$OB_PARAMETERS` 用于展示租户所在的所有 OBServer 节点上的配置项（包含名称以 "_" 开头的隐藏配置项）信息。
+
+## 字段说明
+
+|    字段名称    |       类型       | 是否可以为 NULL |                                描述                                 |
+|------------|----------------|------------|---------------------------------------------------------------------------------------------------|
+| SVR_IP     | varchar(46)    | NO         | 服务器 IP 地址                                                         |
+| SVR_PORT   | bigint(20)     | NO         | 服务器端口号                                                            |
+| ZONE       | varchar(128)   | NO         | ZONE 名称                                                             |
+| SCOPE      | varchar(64)    | NO         | <ul><li>`CLUSTER` 集群级配置项   </li><li> `TENANT` 租户级配置项</li></ul>    |
+| TENANT_ID  | bigint(20)     | YES        | 租户 ID：<ul><li>`NULL` 不属于任何租户 </li><li>有效值：租户 ID</li></ul> |
+| NAME       | varchar(128)   | NO         | 配置项名称                                                             |
+| DATA_TYPE  | varchar(128)   | YES        | 配置项值类型                                                            |
+| VALUE      | varchar(65536) | NO         | 配置项值                                                              |
+| INFO       | varchar(4096)  | NO         | 配置项说明                                                             |
+| SECTION    | varchar(128)   | NO         | 配置项所属的模块                                                          |
+| EDIT_LEVEL | varchar(128)   | NO         | 配置项修改生效方式：<ul><li>`READONLY`：只读，不可修改   </li><li> `STATIC_EFFECTIVE`：修改后需要重启生效   </li><li> `DYNAMIC_EFFECTIVE`：修改后可动态生效 </li></ul>   |
+| DEFAULT_VALUE | varchar(65536) | NO   | 配置项的默认值<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.2 版本开始引入。</p></main>      |
+| ISDEFAULT     | varchar(3)     | NO   | 当前值是否为默认值：<ul><li>NO：表示当前值不是默认值</li><li>YES：表示当前值为默认值</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.2 版本开始引入。</p></main>     |
+
+## 查询示例
+
+查询所有 OBServer 节点上的配置项信息，展示第 2 条记录。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.GV$OB_PARAMETERS limit 2;
+```
+
+查询结果如下：
+
+```shell
++----------------+----------+-------+---------+-----------+---------------------------------------+-----------+-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+-------------------+---------------+-----------+
+| SVR_IP         | SVR_PORT | ZONE  | SCOPE   | TENANT_ID | NAME                                  | DATA_TYPE | VALUE | INFO                                                                                                                                                                                                 | SECTION  | EDIT_LEVEL        | DEFAULT_VALUE | ISDEFAULT |
++----------------+----------+-------+---------+-----------+---------------------------------------+-----------+-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+-------------------+---------------+-----------+
+| xx.xx.xx.xx |    28824 | zone1 | CLUSTER |      NULL | strict_check_os_params                | NULL      | False | A switch that determines whether to enable strict OS parameter check mode, defaulting to true and can be set to false to bypass strict checks.Value: True: allowed; False: allowed but not suggested | OBSERVER | STATIC_EFFECTIVE  | False         | YES       |
+| xx.xx.xx.xx |    28824 | zone1 | CLUSTER |      NULL | _ha_diagnose_history_recycle_interval | NULL      | 7d    | The recycle interval time of diagnostic history data. Range: [2m, 180d]                                                                                                                              | OBSERVER | DYNAMIC_EFFECTIVE | 7d            | YES       |
++----------------+----------+-------+---------+-----------+---------------------------------------+-----------+-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+-------------------+---------------+-----------+
+2 rows in set (0.053 sec)
+```
+
+## 相关视图或文档
+
+* [V$OB_PARAMETERS](../../300.system-view-of-sys-tenant/300.performance-view-of-sys-tenant/32500.v-ob_parameters-of-sys-tenant.md)
+* [配置项概述](../../../../700.reference/800.configuration-items-and-system-variables/000.configuration-items-and-system-variables-overview.md)

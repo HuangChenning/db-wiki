@@ -1,0 +1,30 @@
+---
+title: "DBMS_BALANCE 概述"
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479808.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DBMS_BALANCE 概述
+
+`DBMS_BALANCE` 系统包用于提供分区均衡相关的方法。
+
+## DBMS_BALANCE 权限说明
+
+拥有执行 PL SQL 权限的用户租户可以使用该功能。sys 租户调用报错 `OB_OP_NOT_ALLOW`。
+
+## DBMS_BALANCE 子程序概览
+
+下表列出了 OceanBase 数据库所支持的 `DBMS_BALANCE` 子程序及对应描述。
+
+| 子程序 | 描述 |
+| --- | --- |
+|[TRIGGER_PARTITION_BALANCE](200.trigger-partition-balance-mysql.md)|用于手动触发分区均衡。|
+|[SET_BALANCE_WEIGHT](150.set-balance-weight-mysql.md)              |用于手动设置分区权重。|
+|[CLEAR_BALANCE_WEIGHT](160.clear-balance-weight-mysql.md)          |用于手动清除分区权重。|
+| [SET_TABLEGROUP_BALANCE_WEIGHT](300.set-tablegroup-balance-weight-of-mysql-mode.md) | 用于设置 `SHARDING NONE` 类型表组的负载均衡权重。|
+| [CLEAR_TABLEGROUP_BALANCE_WEIGHT](400.clear-tablegroup-balance-weight-of-mysql-mode.md) | 用于删除 `SHARDING NONE` 类型表组的负载均衡权重。|

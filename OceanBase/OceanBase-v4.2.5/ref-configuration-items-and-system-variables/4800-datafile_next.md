@@ -1,0 +1,67 @@
+---
+title: datafile_next
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502172.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# datafile_next
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul><li>对于 V4.2.x 版本，该配置项从 V4.2.0 版本开始引入。</li>
+  <li>对于 V3.x 版本，该配置项从 V3.1.4 版本开始引入。</li></ul>
+</main>
+
+## 功能描述
+
+`datafile_next` 用于设置磁盘文件自动扩容的增长步长。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|  属性  |  描述  |
+| ------ | ----- |
+| 参数类型      | Capacity |
+| 默认值        | 0，表示不启动增长。 |
+| 取值范围      | [0M, +∞) |
+| 是否可修改    | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。 |
+
+## 使用说明
+
+`datafile_next` 默认值为 0，表示不启动磁盘文件的自动增长，若需要开启自动增长，则需要设置新值：
+
+* 当 `datafile_next` 设置小于 1G 时，取值 min (1G, datafile_maxsize * 10%)
+* 当 `datafile_next` 设置大于 1G 时，取值 min ( datafile_next, 磁盘剩余空间)
+
+## 配置示例
+
+设置磁盘文件自动扩容的增长步长为 10G。
+
+```shell
+obclient> ALTER SYSTEM SET datafile_next = '10G';
+```
+
+## 相关文档
+
+* [datafile_maxsize](4700.datafile_maxsize.md)
+
+* [datafile_size](4900.datafile_size.md)
+
+* [datafile_disk_percentage](4600.datafile_disk_percentage.md)
+
+* [配置磁盘数据文件](../../../../700.reference/200.system-management/1000.disk-data-file-management/100.disk-data-file-dynamic-expansion.md)

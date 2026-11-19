@@ -1,0 +1,41 @@
+---
+title: NVL
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287614.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# NVL
+
+## 声明
+
+```sql
+NVL(str1,replace_with)
+```
+
+## 说明
+
+将 `NULL` 值替换为指定值，如果 `str1` 为 `NULL`，则返回 `replace_with` 指定的值。其中 `str1` 一般是一个列名。`replace_with` 可以是直接值（即硬编码）、对其他列的引用或者表达式。
+
+这种自动替换 `NULL` 值的能力可以提供更为完善的输出。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.4.2 BP4 版本开始，<code>NVL</code> 采用短路求值：仅当 <code>str1</code> 为 <code>NULL</code> 时才计算 <code>replace_with</code>。例如 <code>NVL(1, 1/0)</code> 返回 <code>1</code>，不会因 <code>1/0</code> 报错。</p>
+</main>
+
+## 示例
+
+```sql
+obclient> SELECT NVL(NULL, 0), NVL(NULL, 'a');
++--------------+----------------+
+| NVL(NULL, 0) | NVL(NULL, 'a') |
++--------------+----------------+
+|            0 | a              |
++--------------+----------------+
+1 row in set
+```

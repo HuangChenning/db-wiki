@@ -1,0 +1,38 @@
+---
+title: REMOVE_RULE
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702510.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# REMOVE_RULE
+
+`REMOVE_RULE` 过程用于删除自定义改写规则。
+
+## 语法
+
+```sql
+PROCEDURE REMOVE_RULE (
+    rule_name          VARCHAR(256));
+```
+
+## 参数说明
+
+| 参数 | 描述 |
+| --- | --- |
+| rule_name | 规则名称。 |
+
+## 示例
+
+```shell
+obclient> CALL DBMS_UDR.REMOVE_RULE('rule1');
+Query OK, 0 rows affected 
+
+obclient> SELECT DB_NAME, RULE_NAME, PATTERN, REPLACEMENT, NORMALIZED_PATTERN, STATUS, PATTERN_DIGEST 
+    FROM oceanbase.DBA_OB_USER_DEFINED_RULES;
+Empty set 
+```

@@ -1,0 +1,135 @@
+---
+title: CREATE OUTLINE
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287850.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE OUTLINE
+
+## 描述
+
+该语句用来创建 Outline。可以通过两种方式创建 Outline，一种是通过 `SQL_TEXT`（用户执行的带参数的原始语句），另一种是通过 `SQL_ID` 创建。
+
+## 使用限制及注意事项
+
+## 注意事项
+
+* 当 `SQL_ID` 相同时，使用 `SQL_TEXT` 方式创建的 Outline 会覆盖 `SQL_ID` 方式创建的 Outline，`SQL_TEXT` 方式创建的优先级更高。此外，OceanBase 数据库通过 `SQL_ID` 区分不同的 SQL，而 `SQL_ID` 是通过 `SQL_TEXT` 参数化后取 `MD5` 加密得到的，相同的 SQL 文本即使多一个换行或制表符，`MD5` 得到的 `SQL_ID` 都会不同。在实际生产系统中，推荐通过 `SQL_ID` 进行 Outline 绑定。
+* V4.4.2 BP3 之前版本创建 Outline 需要进入对应的用户下执行。
+* V4.4.2 BP3 版本开始支持指定库级和组户级 Outline。
+* `MAP` 中含 `db.table` 形式必须显式指定 `SCOPE = TENANT`，否则创建报错。
+* 同一 `BINDING_RULE` 内每个库名 `pattern` 与表名 `pattern` 各最多一个变量，复杂表达式请拆成多条 Outline。
+* 变量必须先定义后引用，同名变量定义只能出现一次。
+* 不支持 `db.*`，请使用 `'db_${D:[0-9]+}'.'${T:.*}'` 等价表达。
+* 正则采用 POSIX 扩展语法，不支持反向引用、零宽断言等复杂特性。
+* 仅 `SCOPE = DATABASE` 且无 `MAP` 的 Outline 行为完全不变，等价于历史精确 Outline。
+* `MAX_CONCURRENT` 限流类 Outline 暂不支持 `BINDING_RULE`。
+* 不支持跨租户 Outline 绑定。
+
+## 语法
+
+```sql
+sql_text_stmt:
+    CREATE [OR REPLACE] OUTLINE outline_name ON stmt
+        [TO target_stmt
+        | BINDING_RULE (binding_item)];
+
+binding_item:
+    SCOPE = {DATABASE | TENANT}
+    | MAP = {real_name TO 'pattern', ...}
+
+sql_id_stmt:
+    CREATE [OR REPLACE] OUTLINE outline_name ON 'sql_id' USING HINT hint;
+```
+
+## 参数解释
+
+| **参数**       |  **描述**     |
+|----------------|--------------------|
+| sql_text_stmt  | 表示使用 `SQL_TEXT` 创建 Outline 的语句。|
+| sql_id_stmt    | 表示使用 `SQL_ID` 创建 Outline 的语句。|
+| OR REPLACE     | 可选项，指定 `OR REPLACE` 后，如果要创建的 Outline 已存在，则会替换原有的 Outline。|
+| outline_name   | 指定要创建的 Outline 名称。|
+| stmt           | 一般为一个带有 Hint 和原始参数的 DML 语句。|
+| TO target_stmt | 可选项，如果不指定 `TO target_stmt`，则表示如果数据库接受的 SQL 参数化后与 `stmt` 去掉 `hint` 参数化文本相同，则将该 SQL 绑定 `stmt` 中 `hint` 生成执行计划；如果期望对含有 `hint` 的语句进行固定计划，则需要 `TO target_stmt` 来指明原始的 SQL。 <main id="notice" type='notice'><h4>注意</h4><p>在使用 <code>target_stmt</code> 时，严格要求 <code>stmt</code> 与 <code>target_stmt</code> 在去掉 Hint 后完全匹配。</p></main>|
+| BINDING_RULE (binding_item) | 可选项，用于指定该 Outline 生效级别。详细介绍，参见下文 [binding_item](#binding_item)。<main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，从 V4.4.2 BP3 版本开始引入 <code>BINDING_RULE</code> 子句。</p></main>|
+| sql_id         | 如果 `sql_id` 对应的 SQL 语句已经有 Hint，则创建 Outline 指定的 Hint 会覆盖原始语句中所有 Hint。  |
+| hint           | 指定 Outline 的 Hint，格式为 `/*+ xxx */`。有关 Hint 语法的详细信息，参见 [Optimizer Hint](../../../../../1000.performance-tuning-guide/500.sql-optimization/400.sql-optimization/700.manage-execution-plans/100.optimizer-hint.md)。|
+
+### binding_item
+
+* `SCOPE = {DATABASE | TENANT}`：
+
+  * `SCOPE = DATABASE`：默认值，表示仅当前库生效。
+  * `SCOPE = TENANT`：表示当前租户下所有库生效。
+
+* `MAP = {real_name TO 'pattern', ...}`：对左侧真实表名/`db.table` 应用右侧 `pattern`。`pattern` 中可写 `${变量名}` 或 `${变量名:正则}`。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p><ul>
+      <li>当 <code>MAP</code> 左侧为 <code>db.table</code> 形式时，右侧 <code>pattern</code> 必须拆成两组引号：<code>'db_pattern'.'table_pattern'</code>。</li>
+      <li>同一 <code>BINDING_RULE</code> 内，变量必须先定义后引用，同名变量在所有引用处取值必须一致。</li>
+    </ul></p>
+  </main>
+
+## 示例
+
+1. 创建测试表 `employees`。
+
+    ```shell
+    obclient> CREATE TABLE employees (
+       emp_id INT,
+       dept_id INT,
+       salary INT,
+       emp_name VARCHAR(50));
+   ```
+
+2. 向表 `employees` 插入数据。
+
+    ```shell
+    obclient> INSERT INTO employees VALUES
+       (1001, 10, 10000, 'John'),
+       (1002, 10, 12000, 'Mike'),
+       (1003, 20, 15000, 'Sarah');
+    ```
+
+3. 在表 `employees` 的 `dept_id` 列上创建索引 `idx_dept_id`。
+
+    ```shell
+    obclient> CREATE INDEX idx_dept_id ON employees(dept_id);
+    ```
+
+4. 使用 `SQL_TEXT` 创建 `outline1`。
+
+    ```shell
+    obclient> CREATE OUTLINE outline1
+        ON SELECT/*+ index(employees idx_dept_id)*/ * FROM employees WHERE dept_id = 10;
+    ```
+
+5. 使用 `SQL_ID` 创建 `outline2`。
+
+    1. 首先查看要绑定 Outline 的 SQL 的 `SQL_ID`。
+
+        ```shell
+        obclient> SELECT sql_id, trace_id, client_ip, user_name, query_sql
+           FROM sys.V$OB_SQL_AUDIT
+           WHERE query_sql LIKE '%employees%';
+        ```
+
+    2. 使用查到的 `SQL_ID` 创建 Outline。
+
+        ```shell
+        obclient> CREATE OUTLINE outline2
+            ON '549D27D6DD54688A9B25FD82D5650B96'
+            USING HINT /*+ index(employees idx_dept_id)*/;
+        ```
+
+## 相关文档
+
+[计划绑定](../../../../../1000.performance-tuning-guide/500.sql-optimization/400.sql-optimization/700.manage-execution-plans/200.plan-binding.md)

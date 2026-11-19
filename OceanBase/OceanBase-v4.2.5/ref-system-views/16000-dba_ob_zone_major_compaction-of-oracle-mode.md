@@ -1,0 +1,74 @@
+---
+title: DBA_OB_ZONE_MAJOR_COMPACTION
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500781.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_ZONE_MAJOR_COMPACTION
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户各个 Zone 的合并信息。
+
+## 字段说明
+
+|       字段名称        |      类型      | 是否可以为 NULL |         描述         |
+|-------------------|--------------|------------|----------------------------------------------|
+| ZONE              | VARCHAR2(128) | NO         | Zone 名称            |
+| BROADCAST_SCN     | NUMBER(38)   | NO         | 广播的合并版本号           |
+| LAST_SCN          | NUMBER(38)   | NO         | 上一次合并的版本号          |
+| LAST_FINISH_TIME  | NUMBER(38)   | NO         | 上一次合并结束时间          |
+| START_TIME        | NUMBER(38)   | NO         | 合并开始时间             |
+| STATUS            | VARCHAR2(10)  | NO         | <ul><li> `IDLE`：没有在合并中  </li><li>`COMPACTING`：正在合并中 </li></ul>    |
+
+## 查询示例
+
+用户租户查询本租户各个 Zone 的合并信息。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_OB_ZONE_MAJOR_COMPACTION;
+```
+
+查询结果如下所示：
+
+```shell
++-------+---------------------+---------------------+------------------+------------------+--------+
+| ZONE  | BROADCAST_SCN       | LAST_SCN            | LAST_FINISH_TIME | START_TIME       | STATUS |
++-------+---------------------+---------------------+------------------+------------------+--------+
+| zone1 | 1736474754113143000 | 1736474754113143000 | 1736474917120680 | 1736474754176065 | IDLE   |
++-------+---------------------+---------------------+------------------+------------------+--------+
+1 row in set
+```
+
+## 相关视图或文档
+
+* 查看本租户的合并全局信息：[DBA_OB_MAJOR_COMPACTION](13400.dba_ob_major_compaction-of-oracle-mode.md)
+
+* 查看 Tablet 级的合并的详细历史信息：
+
+  * [GV$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-oracle-mode/3500.gv-ob_tablet_compaction_history-of-oracle-mode.md)
+  * [V$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-oracle-mode/33900.v-ob_tablet_compaction_history-of-oracle-mode.md)
+
+* 合并相关的操作，参见以下文档：
+
+  * [自动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/200.automatic-merge-triggering.md)
+
+  * [定时触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/300.scheduled-trigger-merge.md)
+
+  * [自适应合并](../../../200.system-management/500.manage-data-storage/200.merge-management/320.adaptive-compavtion.md)
+
+  * [手动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/400.manually-trigger-a-merge.md)
+
+  * [手动控制合并](../../../200.system-management/500.manage-data-storage/200.merge-management/500.manually-control-a-merge.md)
+
+  * [查看合并信息](../../../200.system-management/500.manage-data-storage/200.merge-management/500.view-merge-process.md)

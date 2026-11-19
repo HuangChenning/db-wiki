@@ -1,0 +1,125 @@
+---
+title: oceanbase.CDB_OB_LS_REPLICA_TASK_HISTORY
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284371.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_LS_REPLICA_TASK_HISTORY
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul><li>在 V4.3.x 版本中，该视图从 V4.3.3 版本开始引入。</li><li>在 V4.2.x 版本中，该视图从 V4.2.3 版本开始引入。</li></ul>
+</main>
+
+## 功能描述
+
+视图 `CDB_OB_LS_REPLICA_TASK_HISTORY` 用于展示所有租户容灾任务的执行历史。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| TENANT_ID                    | &#124;bigint(20) | NO | 租户 ID |
+| LS_ID | bigint(20) | NO | 日志流 ID |
+| TASK_TYPE | varchar(64) | NO | 任务类型，取值如下：<ul><li>`MIGRATE REPLICA`：迁移副本</li><li>`ADD REPLICA`：增加副本</li><li>`TYPE TRANSFORM`：副本类型转换</li><li>`REMOVE PAXOS REPLICA`：删除 Paxos 成员副本</li><li>`REMOVE NON PAXOS REPLICA`：删除非 Paxos 成员副本</li><li>`MODIFY PAXOS REPLICA NUMBER`：修改法定副本数</li></ul>|
+| TASK_ID | varchar(200) | NO | 任务 ID |
+| TASK_STATUS | varchar(2048) | YES | 任务状态，取值如下：<ul><li>`COMPLETED`：任务完成</li><li>`CANCELED`：任务取消</li></ul>|
+| PRIORITY | varchar(5) | NO | 任务优先级，可取值：<ul><li>`LOW`：低优先级的任务</li><li>`HIGH`：高优先级的任务</li></ul>|
+| TARGET_REPLICA_SVR_IP | varchar(46) | YES | 目标副本所在机器 IP |
+| TARGET_REPLICA_SVR_PORT | bigint(20) | YES | 目标副本所在机器 PORT |
+| TARGET_PAXOS_REPLICA_NUMBER | bigint(20) | YES | 日志流目标法定 Paxos 副本数量 |
+| TARGET_REPLICA_TYPE | varchar(16) | YES | 目标副本类型 |
+| SOURCE_REPLICA_SVR_IP | varchar(46) | YES | 源端副本所在机器 IP |
+| SOURCE_REPLICA_SVR_PORT | bigint(20) | YES | 源端副本所在机器 PORT |
+| SOURCE_PAXOS_REPLICA_NUMBER | bigint(20) | YES | 日志流原法定 Paxos 副本数量 |
+| SOURCE_REPLICA_TYPE | varchar(16) | YES | 源端副本类型 |
+| DATA_SOURCE_SVR_IP | varchar(46) | YES | 数据源 IP |
+| DATA_SOURCE_SVR_PORT | bigint(20) | YES | 数据源 PORT |
+| IS_MANUAL | varchar(6) | NO | 容灾任务来源，可取值：<ul><li>`TRUE`：表示手动运维命令触发的容灾任务</li><li>`FALSE`：默认值，表示 RS 层容灾自动生成的容灾任务</li></ul>|
+| TASK_EXEC_SVR_IP | varchar(46) | YES | 任务执行机器 IP |
+| TASK_EXEC_SVR_PORT | bigint(20) | YES | 任务执行机器 PORT |
+| CREATE_TIME | datetime | NO | 任务生成时间 |
+| START_TIME | datetime | NO | 任务调度时间 |
+| MODIFY_TIME | datetime | NO | 任务状态更新时间 |
+| FINISH_TIME | datetime | NO | 任务结束时间 |
+| EXECUTE_RESULT | varchar(2048) | YES | 任务执行结果 |
+| COMMENT | varchar(2048) | YES | 任务生成原因备注 |
+| CONFIG_VERSION         | varchar(128)   | YES                | 记录容灾任务执行时 clog 层的 config_version 信息 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.4.0 版本引入。</p></main>  |
+
+## 查询示例
+
+查询容灾任务执行历史。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OB_LS_REPLICA_TASK_HISTORY LIMIT 2\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+                  TENANT_ID: 1003
+                      LS_ID: 1
+                  TASK_TYPE: ADD REPLICA
+                    TASK_ID: YB42AC1E87D7-000639016D9D80C8-0-0
+                TASK_STATUS: FAILED
+                   PRIORITY: HIGH
+      TARGET_REPLICA_SVR_IP: 172.xx.xxx.243
+    TARGET_REPLICA_SVR_PORT: 2882
+TARGET_PAXOS_REPLICA_NUMBER: 3
+        TARGET_REPLICA_TYPE: FULL
+      SOURCE_REPLICA_SVR_IP: 172.xx.xxx.254
+    SOURCE_REPLICA_SVR_PORT: 2882
+SOURCE_PAXOS_REPLICA_NUMBER: 2
+        SOURCE_REPLICA_TYPE: FULL
+         DATA_SOURCE_SVR_IP: 0.0.0.0
+       DATA_SOURCE_SVR_PORT: 0
+                  IS_MANUAL: FALSE
+           TASK_EXEC_SVR_IP: 172.xx.xxx.243
+         TASK_EXEC_SVR_PORT: 2882
+                CREATE_TIME: 2025-07-10 11:03:55
+                 START_TIME: 2025-07-10 11:03:55
+                MODIFY_TIME: 2025-07-10 11:03:55
+                FINISH_TIME: 2025-07-10 11:03:54
+             EXECUTE_RESULT: ret:-4766, OB_LS_WAITING_SAFE_DESTROY; elapsed:14686; comment:[storage] fail to send execution rpc;
+                    COMMENT: add paxos replica according to locality
+             CONFIG_VERSION:
+*************************** 2. row ***************************
+                  TENANT_ID: 1003
+                      LS_ID: 1
+                  TASK_TYPE: ADD REPLICA
+                    TASK_ID: YB42AC1E87D7-000639016D9D80D6-0-0
+                TASK_STATUS: COMPLETED
+                   PRIORITY: HIGH
+      TARGET_REPLICA_SVR_IP: 172.xx.xxx.243
+    TARGET_REPLICA_SVR_PORT: 2882
+TARGET_PAXOS_REPLICA_NUMBER: 3
+        TARGET_REPLICA_TYPE: FULL
+      SOURCE_REPLICA_SVR_IP: 172.xx.xxx.254
+    SOURCE_REPLICA_SVR_PORT: 2882
+SOURCE_PAXOS_REPLICA_NUMBER: 2
+        SOURCE_REPLICA_TYPE: FULL
+         DATA_SOURCE_SVR_IP: 0.0.0.0
+       DATA_SOURCE_SVR_PORT: 0
+                  IS_MANUAL: FALSE
+           TASK_EXEC_SVR_IP: 172.xx.xxx.243
+         TASK_EXEC_SVR_PORT: 2882
+                CREATE_TIME: 2025-07-10 11:04:25
+                 START_TIME: 2025-07-10 11:04:05
+                MODIFY_TIME: 2025-07-10 11:04:25
+                FINISH_TIME: 2025-07-10 11:04:25
+             EXECUTE_RESULT: ret:0, OB_SUCCESS; elapsed:20052991;
+                    COMMENT: add paxos replica according to locality
+             CONFIG_VERSION:
+2 rows in set
+```
+
+## 相关视图或文档
+
+* 查看当前租户容灾任务的执行历史：[DBA_OB_LS_REPLICA_TASK_HISTORY](20450.o-dba_ob_ls_replica_task_history-of-sys-tenant.md)
+* 查看所有租户正在运行中的 Replica 级别的容灾任务：[CDB_OB_LS_REPLICA_TASKS](9900.o-cdb_ob_ls_replica_tasks-of-sys-tenant.md)

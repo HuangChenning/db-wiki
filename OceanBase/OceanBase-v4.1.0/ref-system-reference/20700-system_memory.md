@@ -1,0 +1,31 @@
+---
+title: system_memory
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702104.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# system_memory
+
+system_memory 
+==================================
+
+`system_memory` 用于设置系统预留给租户 ID 为 `500` 的租户的内存容量。
+
+
+|      **属性**      |  **描述**   |
+|------------------|-----------|
+| 参数类型             | 容量单位      |
+| 默认值              | 0M  <main id="notice" type='explain'><h4>说明</h4><p>取值为 0 表示系统会自动根据当前系统的内存情况来调整内存使用策略。</p></main>   |
+| 取值范围             | \[0M, +∞) |
+| 是否重启 OBServer 节点生效 | 否         |
+
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>系统预留内存不能分配给普通租户使用。</p>
+  </main>

@@ -1,0 +1,30 @@
+---
+title: switchover_process_thread_count
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685712.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# switchover_process_thread_count
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>在 V4.x 版本中，由于 Switchover 的逻辑适配日志流的变化，不再需要独立的工作线程，该配置项从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`switchover_process_thread_count` 用于设置主备库切换相关线程池的大小。
+
+## 属性说明
+
+|      **属性**      |   **描述**    |
+|------------------|-------------|
+| 参数类型             | Int         |
+| 默认值              | 4           |
+| 取值范围             | \[1, 1000\] |
+| 是否重启 OBServer 节点生效 | 否           |

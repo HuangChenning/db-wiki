@@ -1,0 +1,85 @@
+---
+title: enable_transfer
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502034.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# enable_transfer
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.2.1 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`enable_transfer` 用于控制是否允许在租户内进行 Transfer。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户均可修改该配置项。
+
+## 属性说明
+
+| **属性** | **描述** |
+| -------- | -------- |
+| 参数类型             | Bool |
+| 默认值               | True |
+| 取值范围             |<ul><li> True：开启 </li><li>False：关闭 </li></ul>|
+| 是否可修改           | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。 |
+
+## 使用说明
+
+* 根据负载均衡算法动态调整租户日志流数量，自动进行租户下的 Leader 均衡和分区均衡的命令如下：
+
+  ```shell
+  obclient> ALTER SYSTEM SET enable_rebalance=true;
+
+  obclient> ALTER SYSTEM SET enable_transfer=true;
+  ```
+
+* 只在现有日志流基础上进行日志流均衡，不产生 Transfer 和日志流数量动态变化的命令如下：
+
+  ```shell
+  obclient> ALTER SYSTEM SET enable_rebalance=true;
+
+  obclient> ALTER SYSTEM SET enable_transfer=false;
+  ```
+
+* 不允许任何负载均衡相关运维命令及操作的命令如下：
+
+  ```shell
+  obclient> ALTER SYSTEM SET enable_rebalance=false;
+  ```
+
+## 配置示例
+
+* 关闭所有租户的 Transfer 功能
+
+  ```shell
+  obclient> ALTER SYSTEM SET enable_transfer = false TENANT = all_user;
+  ```
+
+* 开启某个租户（MySQL 租户）的 Transfer 功能
+
+  ```shell
+  obclient> ALTER SYSTEM SET enable_transfer = true TENANT='MySQL';
+  ```
+
+## 相关文档
+
+* [数据负载均衡](../../../../600.manage/300.replica-management/500.load-balancing-manage/100.load-balancing-overview.md)
+* [Transfer Partition](../../../../600.manage/300.replica-management/500.load-balancing-manage/200.transfer-partition-management.md)
+* [取消 Transfer Partition](../../../../600.manage/300.replica-management/500.load-balancing-manage/300.cancel-transfer-partition-task.md)

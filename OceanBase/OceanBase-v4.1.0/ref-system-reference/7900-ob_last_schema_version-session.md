@@ -1,0 +1,23 @@
+---
+title: ob_last_schema_version
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002183536.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# ob_last_schema_version
+
+ob_last_schema_version 用于设置该 Session 中最新使用的 Schema 版本号。
+
+当 Proxy 的同一个连接对应到多个 Server 时，需要使用该系统变量进行 Schema 同步，故该变量只在 Session 级别生效。
+
+| **属性** |           **描述**           |
+|--------|----------------------------|
+| 参数类型   | int                        |
+| 默认值    | 0                          |
+| 取值范围   | \[0, 9223372036854775807\] |
+| 生效范围   | SESSION                    |

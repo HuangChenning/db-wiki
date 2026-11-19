@@ -1,0 +1,279 @@
+---
+title: "全文查询"
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686050.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 全文查询
+
+全文查询是指在文本数据中进行全文搜索或检索的操作。它用于查找包含特定关键词、短语或文本表达式的文本内容。全文查询能够更全面地搜索整个文本，并返回与搜索条件匹配的结果。
+
+## 语法
+
+使用以下语法进行全文索引查询时，可以根据指定的列和关键字或短语来执行全文搜索，并可以选择使用特定的搜索修饰符来调整搜索模式（即搜索条件或规则）。
+
+```sql
+MATCH (column_name [, column_name ...]) AGAINST (expr [search_modifier])
+
+search_modifier:
+    IN NATURAL LANGUAGE MODE
+    | IN BOOLEAN MODE
+    | IN MATCH PHRASE MODE
+```
+
+**相关参数说明如下：**
+
+* `column_name`：指定要进行全文搜索的列。如果要列出多个列，列之间需要使用英文逗号分隔。
+
+* `expr`：指定要搜索的关键字或短语。
+
+* `search_modifier`：可选项，用来指定搜索模式。取值和适用场景详见下表：
+
+  |         搜索模式          | 参数说明 | 适用场景 |
+  |--------------------------|----------|---------|
+  | IN NATURAL LANGUAGE MODE | 默认值，用于指定使用自然语言搜索模式进行搜索。| 自然语言，topk 场景，进行模糊匹配，输出相关性，其中单词会根据表设置的分词器默认分词。|
+  | IN BOOLEAN MODE <main id="notice" type='explain'><h4>说明</h4><p>对于 OceanBase 数据库 V4.3.5 版本，从 V4.3.5 BP1 版本开始支持 <code>IN BOOLEAN MODE</code>。</p></main>| 用于指定使用布尔模式进行搜索。当前版本支持的布尔运算符以及运算嵌套，具体如下：<ul><li>`+`：表示 `AND`，交集。</li><li>`-`：表示非，差集。</li><li>无操作符号：单独使用时表示 `OR`，并集，如 `A B` 表示 `A OR B`。和符号混用会让存在的句子相关性变高，但会失去 `OR` 的语意，如 `+A B` 时，表示必须有 A，并计算句子中 A 和 B 的相关性。</li><li>`()`：表示运算嵌套。外层无符号时，有 `OR` 的语意，如 `+A (嵌套子句)`，表示必须有 A 或者有嵌套子句。</li></ul>| 过滤语意，精确匹配，根据用户输出语法过滤，可选择输出相关性，其中每个词只会根据空格和 `+`、`-`、`()` 分词。|
+  | IN MATCH PHRASE MODE <main id="notice" type='explain'><h4>说明</h4><p>OceanBase 数据库从 V4.4.0 版本开始支持 <code>IN MATCH PHRASE MODE</code>。</p></main>| 用于指定使用 Phrase Query（短语查询）。| 短语匹配，完全不分词，查询结果一定完全匹配。|
+
+  **示例如下：**
+
+  1. 输出句子必须包含 computer。
+
+      ```sql
+      obclient> SELECT * FROM my_table WHERE MATCH (doc) AGAINST ("+computer" IN BOOLEAN MODE);
+      ```
+
+  2. 输出句子必须包含 computer，且一定不包含 weather。
+
+      ```sql
+      obclient> SELECT * FROM my_table WHERE MATCH (doc) AGAINST ("+computer -weather" IN BOOLEAN MODE);
+      ```
+
+  3. 输出句子必须包含 computer，有 oceanbase 更匹配。
+
+      ```sql
+      obclient> SELECT * FROM my_table WHERE MATCH (doc) AGAINST ("+computer oceanbase" IN BOOLEAN MODE);
+      ```
+
+  4. 使用短语匹配模式进行查询。
+
+     * `MATCH AGAINST` 作为 `SELECT` 字段进行查询。
+
+       ```sql
+       obclient> SELECT id, MATCH (title, body) AGAINST ('some words' IN MATCH PHRASE MODE) AS score
+           FROM test;
+       ```
+
+     * `MATCH AGAINST` 作为 `WHERE` 字段进行查询。
+
+       ```sql
+       obclient> SELECT * FROM test WHERE MATCH (title, body) AGAINST ('some words' IN MATCH PHRASE MODE);
+       ```
+
+更多 `MATCH AGAINST` 表达式的介绍，参见 [MATCH AGAINST](../400.functions-of-mysql-mode/1000.other-functions-of-mysql-mode/2250.match-against-of-mysql-mode.md)。
+
+### 向量化查询
+
+对于包含全文索引的查询，支持选择向量化或非向量化，可以使用 `/*+ opt_param('rowsets_enabled', '[true | false]')*/` Hint 开启/关闭向量化。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>未指定 Hint 时，是否开启向量化受向量化引擎系统参数配置影响，默认为开启。</p>
+</main>
+
+**示例如下：**
+
+* 开启向量化查询。
+
+  ```sql
+  obclient> SELECT /*+ opt_param('rowsets_enabled', 'true') */ title, body
+      FROM articles
+      WHERE MATCH(title, body) AGAINST('tutorial');
+  ```
+
+* 关闭向量化查询。
+
+  ```sql
+  obclient> SELECT /*+ opt_param('rowsets_enabled', 'false') */ title, body
+      FROM articles
+      WHERE MATCH(title, body) AGAINST('tutorial');
+  ```
+
+### 示例
+
+1. 创建表 `tbl1`，同时创建全文索引 `full_idx1_tbl1`。
+
+    ```sql
+    obclient> CREATE TABLE tbl1(col1 INT PRIMARY KEY, col2 VARCHAR(100), col3 TEXT, FULLTEXT INDEX full_idx1_tbl1(col2, col3));
+    ```
+
+2. 向表 `tbl1` 中添加测试数据。
+
+    ```sql
+    obclient> INSERT INTO tbl1 (col1, col2, col3) VALUES (1, 'Hello World', 'This is a test'),
+        (2, 'OceanBase', 'OceanBase Database is a native, enterprise-level distributed database developed independently by the OceanBase team'),
+        (3, 'Database Management', 'Learn about SQL and database administration'),
+        (4, 'Full Text Searching', 'Master the art of full text searching');
+    ```
+
+    返回结果如下：
+
+    ```shell
+    Query OK, 4 rows affected
+    Records: 4  Duplicates: 0  Warnings: 0
+    ```
+
+3. 通过在 `MATCH` 子句指定对表 `tbl1` 中的 `col2` 列和 `col3` 列进行搜索，搜索的关键字是 'OceanBase'。同时，采用了搜索修饰符 `IN NATURAL LANGUAGE MODE`，表示使用自然语言搜索模式进行搜索。
+
+    ```sql
+    obclient> SELECT * FROM tbl1
+        WHERE MATCH (col2, col3) AGAINST ('OceanBase' IN NATURAL LANGUAGE MODE);
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+-----------+---------------------------------------------------------------------------------------------------------------------+
+    | col1 | col2      | col3                                                                                                                |
+    +------+-----------+---------------------------------------------------------------------------------------------------------------------+
+    |    2 | OceanBase | OceanBase Database is a native, enterprise-level distributed database developed independently by the OceanBase team |
+    +------+-----------+---------------------------------------------------------------------------------------------------------------------+
+    1 row in set
+    ```
+
+## ES 全文查询
+
+OceanBase 数据库从 V4.4.1 版本开始支持 ES 全文查询的 SQL 语法，包括 `MATCH()` 语句和 `SCORE()` 语句：
+
+* `MATCH()` 语句会作为 `WHERE` 后的字段，表示过滤语义，需要搭配 `SCORE()` 语句一起使用。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>当前 <code>WHERE</code> 中 <code>MATCH()</code> 语句不能超过一个，且不能与 <code>MATCH() AGAINST()</code> 混合使用。</p>
+  </main>
+
+* `SCORE()` 语句表示相应 `MATCH()` 语句的相关性。`SCORE()` 语句作为 `MATCH()` 语法的搭配使用，单独出现无意义。
+
+ES 全文查询 SQL 语法格式如下：
+
+```sql
+SELECT [select_expr_list ,] SCORE()
+FROM table_name
+WHERE
+    MATCH(
+        A_COLUNM^x, B_COLUNM^y ...,
+        'expr',
+        '[parameters]'
+        )
+... ;
+
+parameters:
+    operator=or;
+    minimum_should_match=int_value;
+    boost=number_value;
+    score_norm=min-max;
+    type={most_fields | best_fields}
+```
+
+**相关参数说明如下：**
+
+* `A_COLUNM^x, B_COLUNM^y ...`：表示列名与权重，权重取值为正数。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>在 <code>MATCH()</code> 中的每个列都要创建全文索引，而不是列的联合索引。有关创建全文索引的介绍信息，参见 <a href="../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md">创建索引</a>。</p>
+  </main>
+
+* `expr`：表示查询语句，会分成若干 token，每个 token 内可含权重。权重为正数，默认值为 1。
+* `parameters`：可选项，表示键对值列表。不指定额外参数时，也需要保留一对空引号 `''`。目前提供可使用参数如下：
+
+  * `operator`：表示参数 `expr` 的聚合算法，取值如下：
+
+    * `or`：表示为存在一个 token 即可输出。如果指定了 `minimum_should_match` 参数，返回结果信息参见下面 `minimum_should_match` 参数的解释。
+
+  * `minimum_should_match`：取值为正整数，表示在参数 `operator` 为 `or` 的情况下，token 组中必须匹配的最小关键词数量。
+  * `boost`：取值为正数，表示 `MATCH` 级别权重，会与相关性相乘。默认值为 1。
+  * `score_norm`：表示算分时，一个 `MATCH` 的归一化算法。可选 `min-max`，默认不进行归一化。
+  * `type`：表示 `MATCH` 中多列时的相关性计算方式，取值如下：
+
+    * `most_fields`：表示对各列的相关性求和。
+    * `best_fields`：表示对各列的相关性取最大值。
+
+**示例如下：**
+
+1. 在表 `tbl1` 的列 `col2` 上创建全文索引。
+
+    ```shell
+    obclient> CREATE FULLTEXT INDEX ft_idx_tbl1_col2 ON tbl1(col2);
+    ```
+
+2. 在表 `tbl1` 的列 `col3` 上创建全文索引。
+
+    ```shell
+    obclient> CREATE FULLTEXT INDEX ft_idx_tbl1_col3 ON tbl1(col3);
+    ```
+
+3. 从表 `tbl1` 中筛选同时包含 "OceanBase" 和 "Database" 的行（至少匹配 2 个关键词，`minimum_should_match=2`），按字段 `col2`（权重 2）和 `col3`（权重 1）进行全文搜索，并返回匹配评分（归一化到 0-1 范围）。
+
+    ```shell
+    obclient> SELECT *, SCORE() AS relevance_score
+        FROM tbl1
+        WHERE
+            MATCH(col2^2, col3^1,
+                  'OceanBase Database',
+                  'operator=or;
+                  minimum_should_match=2;
+                  boost=1;
+                  score_norm=min-max;
+                  type=most_fields'
+                );
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+-----------+---------------------------------------------------------------------------------------------------------------------+--------------------+
+    | col1 | col2      | col3                                                                                                                | relevance_score    |
+    +------+-----------+---------------------------------------------------------------------------------------------------------------------+--------------------+
+    |    2 | OceanBase | OceanBase Database is a native, enterprise-level distributed database developed independently by the OceanBase team | 0.6079027355623101 |
+    +------+-----------+---------------------------------------------------------------------------------------------------------------------+--------------------+
+    1 row in set
+    ```
+
+4. 从表 `tbl1` 中筛选包含 "OceanBase" 或 "Database" 的行（至少匹配 1 个关键词，`minimum_should_match=1`），按字段 `col2`（权重 2）和 `col3`（权重 1）进行全文搜索，并返回匹配评分（归一化到 0-1 范围）。
+
+    ```shell
+    obclient> SELECT *, SCORE() AS relevance_score
+        FROM tbl1
+        WHERE
+            MATCH(col2^2, col3^1,
+                  'OceanBase Database',
+                  'operator=or;
+                  minimum_should_match=1;
+                  boost=1;
+                  score_norm=min-max;
+                  type=most_fields'
+                );
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+---------------------+---------------------------------------------------------------------------------------------------------------------+--------------------+
+    | col1 | col2                | col3                                                                                                                | relevance_score    |
+    +------+---------------------+---------------------------------------------------------------------------------------------------------------------+--------------------+
+    |    2 | OceanBase           | OceanBase Database is a native, enterprise-level distributed database developed independently by the OceanBase team | 0.4208104883442219 |
+    |    3 | Database Management | Learn about SQL and database administration                                                                         | 0.2876526910145043 |
+    +------+---------------------+---------------------------------------------------------------------------------------------------------------------+--------------------+
+    2 rows in set
+    ```
+
+## 相关文档
+
+* [创建索引](../../../../300.database-object-management/100.manage-object-of-mysql-mode/500.manage-indexes-of-mysql-mode/200.create-an-index-of-mysql-mode.md)
+* [全文索引](../../../../100.oceanbase-database-concepts/400.database-objects/200.database-objects-of-mysql-mode/300.index-of-mysql-mode/320.full-text-indexes-of-mysql-mode-in-concepts.md)

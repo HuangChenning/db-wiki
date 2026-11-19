@@ -1,0 +1,100 @@
+---
+title: INDEX_VECTOR_MEMORY_ADVISOR
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479892.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# INDEX_VECTOR_MEMORY_ADVISOR
+
+`INDEX_VECTOR_MEMORY_ADVISOR` 函数用于估算未建表的向量索引内存使用情况。
+
+## 语法
+
+```sql
+FUNCTION INDEX_VECTOR_MEMORY_ADVISOR (
+    IN     IDX_TYPE          VARCHAR(65535),
+    IN     NUM_VECTORS       BIGINT UNSIGNED,
+    IN     DIM_COUNT         INT UNSIGNED,
+    IN     DIM_TYPE          VARCHAR(65535) DEFAULT 'FLOAT32',
+    IN     IDX_PARAMETERS    LONGTEXT DEFAULT NULL,
+    IN     MAX_TABLET_VECTORS BIGINT UNSIGNED DEFAULT 0)
+```
+
+## 参数说明
+
+| 参数 | 描述 |
+| --- | --- |
+| idx_type | 索引类型：<ul><li>稠密索引支持 `HNSW`/`HNSW_SQ`/`HNSW_BQ`/`IVF_FLAT`/`IVF_PQ`，大小写不敏感。</li><li>稀疏索引支持 `SINDI`，大小写不敏感。</li></ul> |
+| num_vectors | 向量数据量。 |
+| dim_count | 向量维度。 |
+| dim_type | 向量元素的数据类型。默认且仅支持为 `FLOAT32`，大小写不敏感。 |
+| idx_parameters | 索引参数。即建表时所用的向量索引参数字符串，如 `distance=l2, type=hnsw, lib=vsag`。更多参数请参见[向量索引内存管理](../../../../../640.ob-vector-search/200.ob-vector-index/200.ob-vector-index-memory-management.md)。 |
+| max_tablet_vectors | 分区表中最大分区的向量数据量。默认为 `0`，表示最大分区向量数据量等于向量总数据量。使用分区表可以在总数据量相同的情况下降低最低内存需求。 |
+
+返回值为字符串格式的描述内存估算结果的一句话。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>在 OceanBase 中，创建 HNSW_BQ 索引时，系统会根据内存情况自动选择并行或串行方式为分区表创建索引。<code>INDEX_VECTOR_MEMORY_ADVISOR</code> 函数返回的建议值是串行创建索引时的最大内存需求值。如果内存仅满足这个值，可能会因为无法并行创建索引而延长索引创建时间。</p>
+</main>
+
+为确保向量索引重建的成功执行，建议的内存预留值应大于索引构建完成后向量索引实际占用的内存值。建议的内存值与最大分区向量数量存在关联：
+
+* 对于 HNSW 和 HNSW_SQ 索引，返回建议的内存值。
+* 对于 HNSW_BQ 索引，返回建议的内存值和索引创建完成后的实际内存占用值。
+* 对于 IVF 和 IVF_PQ 索引，返回建议的内存值和索引创建完成后的实际内存占用值。
+
+## 示例
+
+查询 HNSW 索引的建议内存值：
+
+```sql
+SELECT dbms_vector.index_vector_memory_advisor('HNSW',1000000,768,'FLOAT32','M=10,DISTANCE=L2');
++------------------------------------------------------------------------------------------+
+| dbms_vector.index_vector_memory_advisor('HNSW',1000000,768,'FLOAT32','M=10,DISTANCE=L2') |
++------------------------------------------------------------------------------------------+
+| Suggested minimum vector memory is 7.2 GB                                                |
++------------------------------------------------------------------------------------------+
+1 row in set
+```
+
+查询 HNSW_BQ 索引的建议内存值和索引创建完成后的实际内存占用值：
+
+```sql
+SELECT dbms_vector.index_vector_memory_advisor('HNSW_BQ',1000000,768,'FLOAT32','M=10,DISTANCE=L2');
++---------------------------------------------------------------------------------------------------------+
+| dbms_vector.index_vector_memory_advisor('HNSW_BQ',1000000,768,'FLOAT32','M=10,DISTANCE=L2')             |
++---------------------------------------------------------------------------------------------------------+
+| Suggested minimum vector memory is 4.1 GB, memory consumption when providing search service is 347.5 MB |
++---------------------------------------------------------------------------------------------------------+
+1 row in set
+```
+
+查询 IVF 索引的建议内存值和索引创建完成后的实际内存占用值：
+
+```sql
+SELECT dbms_vector.index_vector_memory_advisor('IVF_FLAT',1000000,768,'FLOAT32','SAMPLE_PER_NLIST=1024,DISTANCE=L2');
++---------------------------------------------------------------------------------------------------------------+
+| dbms_vector.index_vector_memory_advisor('IVF_FLAT',1000000,768,'FLOAT32','SAMPLE_PER_NLIST=1024,DISTANCE=L2') |
++---------------------------------------------------------------------------------------------------------------+
+| Suggested minimum vector memory is 452.7 MB, memory consumption when providing search service is 384.0 KB     |
++---------------------------------------------------------------------------------------------------------------+
+1 row in set
+```
+
+查询 SINDI 索引的建议内存值和索引创建完成后的实际内存占用值：
+
+```sql
+SELECT dbms_vector.index_vector_memory_advisor('SINDI',10000,3,'FLOAT32','TYPE=SINDI,LIB=VSAG,DISTANCE=INNER_PRODUCT');
++-----------------------------------------------------------------------------------------------------------------+
+| dbms_vector.index_vector_memory_advisor('SINDI',10000,3,'FLOAT32','TYPE=SINDI,LIB=VSAG,DISTANCE=INNER_PRODUCT') |
++-----------------------------------------------------------------------------------------------------------------+
+| Suggested minimum vector memory is 73.6 MB                                                                      |
++-----------------------------------------------------------------------------------------------------------------+
+1 row in set
+```

@@ -1,0 +1,182 @@
+---
+title: CREATE VIEW
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504120.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE VIEW
+
+## 描述
+
+该语句用于创建视图。
+
+## 使用限制及注意事项
+
+* 如果指定了 `OR REPLACE` 子句，该语句能够替换已有的视图。
+
+* 视图在数据库中实际上并不是以表的形式存在，视图是作为在 `CREATE VIEW` 语句中指定的 `SELECT` 语句的结果而派生出来的，每次使用时视图就会派生。
+
+* 如果 `FROM` 子句中引用了两个或多个表或视图，则称该视图为连接视图（Join View）。一个可更新的连接视图，也称为可修改的连接视图，涉及两个或多个基表或视图，并允许 DML 操作。可更新的视图不受限于 `WITH READ ONLY` 子句。
+
+* 要实现可更新，视图必须满足多个条件。例如，其中一条通用规则就是对于连接视图的 `INSERT`、`UPDATE` 或 `DELETE` 操作一次只能修改一个基表。
+
+## 权限要求
+
+执行 `CREATE VIEW` 语句，需要当前用户拥有 `CREATE VIEW` 权限。有关 OceanBase 数据库权限的详细介绍，请参见 [Oracle 模式下的权限分类](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/000.permission-classification-of-oracle-mode.md)。
+
+## 语法
+
+```sql
+CREATE [OR REPLACE] [{NO FORCE} | FORCE] VIEW view_name [(column_name_list)]
+    AS select_stmt
+    [view_check_option];
+
+column_name_list:
+    column_name [, column_name ...]
+
+view_check_option:
+    WITH READ ONLY
+    | WITH CHECK OPTION
+```
+
+## 参数解释
+
+|        参数       |              描述              |
+|-------------------|--------------------------------|
+| OR REPLACE        | 可选项，表示如果要创建的视图名称已存在，则使用新的定义重新创建视图。|
+| {NO FORCE} \| FORCE | 可选项，控制视图的创建是否强制执行。<ul><li>`NO FORCE`：默认值，表示只在基表存在且视图所在 Schema 所有者具有权限时才创建视图。</li><li>`FORCE`：表示不考虑该视图是否存在基表或存在引用的对象类型，以及视图所在 Schema 的所有者是否具有权限，强制创建视图。</li></ul>|
+| view_name         | 视图名称。|
+| column_name_list  | 可选项，指定视图的列名列表。如果未指定列名列表，由 `SELECT` 语句检索的列名将用作视图列名。`SELECT` 语句检索的列可以是对表列的简单引用，也可以是使用函数、常量值、运算符等的表达式。视图列名有以下限制：<ul><li>必须具有唯一的列名，不得有重复。</li><li>`column_name_list` 中的名称数目必须等于 `SELECT` 语句检索的列数。</li></ul>|
+| select_stmt       | 用于定义视图的查询（`SELECT`）语句。它给出了视图的定义，可以从基表或其他视图进行选择。有关查询语句的具体结构和选项信息，参见 [SELECT 语句](../200.dml-of-oracle-mode/500.select-of-oracle-mode/100.simple-select-of-oracle-mode.md)。|
+| view_check_option | 可选项，用于指定视图的附加属性，详细介绍可参见下文 [view_check_option](#view_check_option)。|
+
+### view_check_option
+
+* `WITH READ ONLY`：是在创建或替换视图时的一个选项，用于指定该视图只能用于读取数据，而不能用于 DML 操作（`INSERT`、`UPDATE`、`DELETE`），即禁止通过视图进行插入、更新或删除操作。
+
+* `WITH CHECK OPTION`：是一种用于创建视图的语法，它用于确保插入或更新的数据满足视图的定义条件。即允许通过视图进行 DML 操作，但要求操作后的数据必须满足视图的定义条件。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>Oracle 模式下的 <code>WITH CHECK OPTION</code> 语法不支持指定为 <code>LOCAL</code> 或 <code>CASCADED</code>，默认为 <code>CASCADED</code>。</p>
+    </main>
+
+    对于 V4.2.5 版本，从 V4.2.5 BP7 版本开始支持视图过滤条件（`where_clause`）包含子查询时指定 `WITH CHECK OPTION` 子句。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>当过滤条件中使用 <code>WITH CHECK OPTION</code> 子句时，视图定义中暂不支持使用 <code>JOIN</code> 操作。</p>
+    </main>
+
+## 示例
+
+创建测试表 `tbl1` 和 `tbl2`。
+
+```shell
+obclient> CREATE TABLE tbl1 (col1 INT, col2 VARCHAR(50));
+```
+
+```shell
+obclient> CREATE TABLE tbl2 (col1 INT, col2 INT);
+```
+
+* 选择表 `tbl1` 中的 `col1`、`col2` 列来创建视图 `v1_t1`。
+
+    ```shell
+    obclient> CREATE OR REPLACE FORCE VIEW v1_t1(vcol1, vcol2)
+        AS SELECT col1, col2
+           FROM tbl1;
+    ```
+
+* 基于表 `tbl2` 的 `col1`、`col2` 列来创建视图 `v2_t2`，`v2_t2` 中包含满足 `tbl2.col2 > 1` 的全部数据。
+
+    ```shell
+    obclient> CREATE VIEW v2_t2
+        AS SELECT *
+           FROM tbl2
+           WHERE tbl2.col2 > 1 WITH CHECK OPTION;
+    ```
+
+* 基于表 `tbl2` 的 `col1`、`col2` 列来创建视图 `v3_t3`，并同时为视图 `v3_t3` 添加注释。
+
+  1. 创建视图 `v3_t3`。
+
+      ```shell
+      obclient> CREATE VIEW v3_t3
+          AS SELECT
+              col1,   --test.col1
+              col2    --test.col2
+          FROM tbl2;
+      ```
+
+  2. 通过 `SHOW CREATE VIEW` 或 `DBMS_METADATA.GET_DDL` 查询视图注释。
+
+     * 通过 `SHOW CREATE VIEW` 查询视图注释。
+
+         ```shell
+         obclient> SHOW CREATE VIEW v3_t3;
+         ```
+
+        返回结果如下：
+
+        ```shell
+        +-------+------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+
+        | VIEW  | CREATE VIEW                                                                                                                              | CHARACTER_SET_CLIENT | COLLATION_CONNECTION |
+        +-------+------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+
+        | V3_T3 | CREATE VIEW "V3_T3" ("COL1", "COL2")  AS SELECT
+                    col1,   --test.col1
+                    col2    --test.col2
+                FROM tbl2 | utf8mb4              | utf8mb4_bin          |
+        +-------+------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+
+        1 row in set
+        ```
+
+     * 通过 `DBMS_METADATA.GET_DDL` 查询视图注释。
+
+         ```shell
+         obclient> SELECT DBMS_METADATA.GET_DDL('VIEW', 'V3_T3', 'SYS') FROM DUAL;
+         ```
+
+        返回结果如下：
+
+        ```shell
+        +-------+------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+
+        | VIEW  | CREATE VIEW                                                                                                                              | CHARACTER_SET_CLIENT | COLLATION_CONNECTION |
+        +-------+------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+
+        | V3_T3 | CREATE VIEW "V3_T3" ("COL1", "COL2")  AS SELECT
+                    col1,   --test.col1
+                    col2    --test.col2
+                FROM tbl2 | utf8mb4              | utf8mb4_bin          |
+        +-------+------------------------------------------------------------------------------------------------------------------------------------------+----------------------+----------------------+
+        1 row in set (0.028 sec)
+
+        obclient(SYS@oracle001)[SYS]> SELECT DBMS_METADATA.GET_DDL('VIEW', 'V3_T3', 'SYS') FROM DUAL;
+        +------------------------------------------------------------------------------------------------------------------------------------------+
+        | DBMS_METADATA.GET_DDL('VIEW','V3_T3','SYS')                                                                                              |
+        +------------------------------------------------------------------------------------------------------------------------------------------+
+        | CREATE VIEW "V3_T3" ("COL1", "COL2")  AS SELECT
+                    col1,   --test.col1
+                    col2    --test.col2
+                FROM tbl2 |
+        +------------------------------------------------------------------------------------------------------------------------------------------+
+        1 row in set
+        ```
+
+* 在过滤条件子查询后指定 `WITH CHECK OPTION` 子句。
+
+    ```shell
+    obclient> CREATE OR REPLACE VIEW v4_t1
+        AS SELECT *
+        FROM tbl1 t1
+        WHERE EXISTS (SELECT 1 FROM tbl2 t2 WHERE t2.col1 = t1.col1) WITH CHECK OPTION;
+    ```
+
+## 相关文档
+
+* [管理视图](../../../../../300.database-object-management/200.manage-object-of-oracle-mode/500.manage-views-of-oracle-mode.md)
+* [DROP VIEW](4300.drop-view-of-oracle-mode.md)

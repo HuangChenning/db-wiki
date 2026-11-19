@@ -1,0 +1,265 @@
+---
+title: EXPLAIN
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699869.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# EXPLAIN
+
+## 描述
+
+该语句用于解释 SQL 语句的执行计划，可以是 `SELECT`、`DELETE`、`INSERT`、`REPLACE` 或 `UPDATE` 语句。
+
+`EXPLAIN` 与 `DESCRIBE`、`DESC` 互为同义词。
+
+## 语法
+
+```sql
+/*获取表或列的信息*/
+{EXPLAIN | DESCRIBE | DESC} table_name [column_name];
+
+/*获取 SQL 计划信息*/
+{EXPLAIN | DESCRIBE | DESC} [explain_type] dml_statement;
+
+explain_type：
+    BASIC 
+  | OUTLINE
+  | EXTENDED
+  | EXTENDED_NOADDR
+  | PARTITIONS 
+  | FORMAT = {TRADITIONAL| JSON}
+
+dml_statement:
+    SELECT statement 
+  | DELETE statement 
+  | INSERT statement 
+  | UPDATE statement 
+  | MERGE statement
+```
+
+## 参数解释
+
+|         参数          |                                                                                                                   描述                                                                                                                   |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| table_name          | 指定表名。                                                                                                                                                                                                                                  |
+| column_name         | 指定表的列名。                                                                                                                                                                                                                                |
+| explain_type        | 指定解释类型。                                                                                                                                                                                                                                |
+| BASIC               | 指定输出计划的基础信息，例如算子 ID、算子名称、所引用的表名。                                                                                                                                                                                                       |
+| OUTLINE             | 指定输出的计划信息包含 Outline 信息。                                                                                                                                                                                                                |
+| EXTENDED            | `EXPLAIN` 产生附加信息，包括每个算子的输入列和输出列、访问表的分区信息、当前使用的filter信息。如果当前算子使用了索引，显示所使用的索引列及抽取的 Query Range。                                                                                                                                          |
+| EXTENDED_NOADDR     | 以简约的方式展示附加信息。                                                                                                                                                                                                                          |
+| PARTITIONS          | 显示分区相关信息。                                                                                                                                                                                                                              |
+| TRADITIONAL \| JSON | 指定 `EXPALIN` 的输出格式。 <ul><li> `TRADITIONAL`：表格输出格式。   </li><li> `JSON`：使用 `KEY:VALUE` 输出格式，`JSON` 显示为`JSON` 字符串，包括 `EXTENDED` 和 `PARTITIONS` 信息。</li></ul>     |
+| dml_statement       | DML 声明。                                                                                                                                                                                                                                |
+
+## 示例
+
+创建示例表 `t101` 和 `t102`。
+
+```sql
+  obclient> CREATE TABLE t101(c1 INT,c2 INT);
+  Query OK, 0 rows affected
+
+  obclient> CREATE TABLE t102(c1 INT,c2 INT);
+  Query OK, 0 rows affected
+```
+
+* 获取表 `t101` 的信息。
+
+  ```sql
+  obclient> EXPLAIN t101;
+  +-------+------------+------+-----+---------+-------+
+  | FIELD | TYPE       | NULL | KEY | DEFAULT | EXTRA |
+  +-------+------------+------+-----+---------+-------+
+  | C1    | NUMBER(38) | YES  | NULL | NULL    | NULL |
+  | C2    | NUMBER(38) | YES  | NULL | NULL    | NULL |
+  +-------+------------+------+-----+---------+-------+
+  2 rows in set
+  ```
+
+* 获取表 `t102` 的列 `c2` 的信息。
+
+  ```sql
+  obclient> EXPLAIN t102 c2;
+  +-------+------------+------+-----+---------+-------+
+  | FIELD | TYPE       | NULL | KEY | DEFAULT | EXTRA |
+  +-------+------------+------+-----+---------+-------+
+  | C2    | NUMBER(38) | YES  | NULL | NULL    | NULL |
+  +-------+------------+------+-----+---------+-------+
+
+  1 row in set
+  ```
+
+* 省略 `explain_type`，返回 `SELECT` 语句的执行计划信息。
+
+  ```sql
+  obclient> EXPLAIN SELECT * FROM t101,t102 WHERE t101.c2=t102.c2 AND t102.c1 > 4;
+  +------------------------------------------------------------------------------------+
+  | Query Plan                                                                         |
+  +------------------------------------------------------------------------------------+
+  | =================================================                                  |
+  | |ID|OPERATOR         |NAME|EST.ROWS|EST.TIME(us)|                                  |
+  | -------------------------------------------------                                  |
+  | |0 |HASH JOIN        |    |1       |8           |                                  |
+  | |1 |├─TABLE FULL SCAN|T102|1       |4           |                                  |
+  | |2 |└─TABLE FULL SCAN|T101|1       |4           |                                  |
+  | =================================================                                  |
+  | Outputs & filters:                                                                 |
+  | -------------------------------------                                              |
+  |   0 - output([T101.C1], [T101.C2], [T102.C1], [T102.C2]), filter(nil), rowset=16   |
+  |       equal_conds([T101.C2 = T102.C2]), other_conds(nil)                           |
+  |   1 - output([T102.C2], [T102.C1]), filter([T102.C1 > 4]), rowset=16               |
+  |       access([T102.C2], [T102.C1]), partitions(p0)                                 |
+  |       is_index_back=false, is_global_index=false, filter_before_indexback[false],  |
+  |       range_key([T102.__pk_increment]), range(MIN ; MAX)always true                |
+  |   2 - output([T101.C2], [T101.C1]), filter(nil), rowset=16                         |
+  |       access([T101.C2], [T101.C1]), partitions(p0)                                 |
+  |       is_index_back=false, is_global_index=false,                                  |
+  |       range_key([T101.__pk_increment]), range(MIN ; MAX)always true                |
+  +------------------------------------------------------------------------------------+
+  ```
+
+* 通过 `EXTENDED_NOADDR` 关键字输出附加信息。
+
+  ```sql
+  obclient> EXPLAIN EXTENDED_NOADDR SELECT * FROM t101,t102 WHERE t101.c2=t102.c2 AND t102.c1 > 4;
+  +------------------------------------------------------------------------------------+
+  | Query Plan                                                                         |
+  +------------------------------------------------------------------------------------+
+  | =================================================                                  |
+  | |ID|OPERATOR         |NAME|EST.ROWS|EST.TIME(us)|                                  |
+  | -------------------------------------------------                                  |
+  | |0 |HASH JOIN        |    |1       |8           |                                  |
+  | |1 |├─TABLE FULL SCAN|T102|1       |4           |                                  |
+  | |2 |└─TABLE FULL SCAN|T101|1       |4           |                                  |
+  | =================================================                                  |
+  | Outputs & filters:                                                                 |
+  | -------------------------------------                                              |
+  |   0 - output([T101.C1], [T101.C2], [T102.C1], [T102.C2]), filter(nil), rowset=16   |
+  |       equal_conds([T101.C2 = T102.C2]), other_conds(nil)                           |
+  |   1 - output([T102.C2], [T102.C1]), filter([T102.C1 > 4]), rowset=16               |
+  |       access([T102.C2], [T102.C1]), partitions(p0)                                 |
+  |       is_index_back=false, is_global_index=false, filter_before_indexback[false],  |
+  |       range_key([T102.__pk_increment]), range(MIN ; MAX)always true                |
+  |   2 - output([T101.C2], [T101.C1]), filter(nil), rowset=16                         |
+  |       access([T101.C2], [T101.C1]), partitions(p0)                                 |
+  |       is_index_back=false, is_global_index=false,                                  |
+  |       range_key([T101.__pk_increment]), range(MIN ; MAX)always true                |
+  | Used Hint:                                                                         |
+  | -------------------------------------                                              |
+  |   /*+                                                                              |
+  |                                                                                    |
+  |   */                                                                               |
+  | Qb name trace:                                                                     |
+  | -------------------------------------                                              |
+  |   stmt_id:0, stmt_type:T_EXPLAIN                                                   |
+  |   stmt_id:1, SEL$1                                                                 |
+  | Outline Data:                                                                      |
+  | -------------------------------------                                              |
+  |   /*+                                                                              |
+  |       BEGIN_OUTLINE_DATA                                                           |
+  |       LEADING(@"SEL$1" ("SYS"."T102"@"SEL$1" "SYS"."T101"@"SEL$1"))                |
+  |       USE_HASH(@"SEL$1" "SYS"."T101"@"SEL$1")                                      |
+  |       FULL(@"SEL$1" "SYS"."T102"@"SEL$1")                                          |
+  |       FULL(@"SEL$1" "SYS"."T101"@"SEL$1")                                          |
+  |       OPTIMIZER_FEATURES_ENABLE('4.0.0.0')                                         |
+  |       END_OUTLINE_DATA                                                             |
+  |   */                                                                               |
+  | Optimization Info:                                                                 |
+  | -------------------------------------                                              |
+  |   T102:                                                                            |
+  |       table_rows:1                                                                 |
+  |       physical_range_rows:1                                                        |
+  |       logical_range_rows:1                                                         |
+  |       index_back_rows:0                                                            |
+  |       output_rows:0                                                                |
+  |       table_dop:1                                                                  |
+  |       dop_method:Table DOP                                                         |
+  |       avaiable_index_name:[T102]                                                   |
+  |       stats version:0                                                              |
+  |       dynamic sampling level:1                                                     |
+  |   T101:                                                                            |
+  |       table_rows:1                                                                 |
+  |       physical_range_rows:1                                                        |
+  |       logical_range_rows:1                                                         |
+  |       index_back_rows:0                                                            |
+  |       output_rows:1                                                                |
+  |       table_dop:1                                                                  |
+  |       dop_method:Table DOP                                                         |
+  |       avaiable_index_name:[T101]                                                   |
+  |       stats version:0                                                              |
+  |       dynamic sampling level:1                                                     |
+  |   Plan Type:                                                                       |
+  |       LOCAL                                                                        |
+  |   Note:                                                                            |
+  |       Degree of Parallelisim is 1 because of table property                        |
+  +------------------------------------------------------------------------------------+
+  ```
+
+* 展示 `TRADITIONAL` 格式的 `INSERT` 语句执行计划。
+
+  ```sql
+  obclient> EXPLAIN FORMAT=TRADITIONAL INSERT INTO T101 VALUES(1,1);
+  +----------------------------------------------------------------------------------------------------------------------------------------+
+  | Query Plan                                                                                                                             |
+  +----------------------------------------------------------------------------------------------------------------------------------------+
+  | ==================================================                                                                                     |
+  | |ID|OPERATOR          |NAME|EST.ROWS|EST.TIME(us)|                                                                                     |
+  | --------------------------------------------------                                                                                     |
+  | |0 |DISTRIBUTED INSERT|    |1       |13          |                                                                                     |
+  | |1 |└─EXPRESSION      |    |1       |1           |                                                                                     |
+  | ==================================================                                                                                     |
+  | Outputs & filters:                                                                                                                     |
+  | -------------------------------------                                                                                                  |
+  |   0 - output(nil), filter(nil)                                                                                                         |
+  |       columns([{T101: ({T101: (T101.__pk_increment, T101.C1, T101.C2)})}]),                                                            |
+  |       column_values([T_HIDDEN_PK], [column_conv(NUMBER,PS:(-1,0),NULL,__values.C1)], [column_conv(NUMBER,PS:(-1,0),NULL,__values.C2)]) |
+  |   1 - output([__values.C1], [__values.C2]), filter(nil)                                                                                |
+  |       values({1, 1})                                                                                                                   |
+  +----------------------------------------------------------------------------------------------------------------------------------------+
+  ```
+
+* 展示 `JSON` 格式的 `SELECT` 语句执行计划。
+
+  ```sql
+  obclient> EXPLAIN FORMAT=JSON SELECT * FROM t101,t102 WHERE t101.c2=t102.c2 AND t102.c1 > 4;
+  +------------------------------------------------------------------+
+  | Query Plan                                                       |
+  +------------------------------------------------------------------+
+  | {                                                                |
+  |   "ID":0,                                                        |
+  |   "OPERATOR":"HASH JOIN ",                                       |
+  |   "NAME":"",                                                     |
+  |   "EST.ROWS":1,                                                  |
+  |   "EST.TIME(us)":8,                                              |
+  |   "output":"output([T101.C1], [T101.C2], [T102.C1], [T102.C2])", |
+  |   "CHILD_1": {                                                   |
+  |     "ID":1,                                                      |
+  |     "OPERATOR":"TABLE FULL SCAN",                                |
+  |     "NAME":"T102",                                               |
+  |     "EST.ROWS":1,                                                |
+  |     "EST.TIME(us)":4,                                            |
+  |     "output":"output([T102.C2], [T102.C1])"                      |
+  |   },                                                             |
+  |   "CHILD_2": {                                                   |
+  |     "ID":2,                                                      |
+  |     "OPERATOR":"TABLE FULL SCAN",                                |
+  |     "NAME":"T101",                                               |
+  |     "EST.ROWS":1,                                                |
+  |     "EST.TIME(us)":4,                                            |
+  |     "output":"output([T101.C2], [T101.C1])"                      |
+  |   }                                                              |
+  | }                                                                |
+  +------------------------------------------------------------------+
+  ```
+
+## 相关文档
+
+* [SQL 执行计划简介](../../../../../300.performance-tuning-guide/500.sql-optimization/200.sql-execution-plan/100.introduction-to-sql-execution-plans.md)
+* [SQL 执行计划](../../../../../100.oceanbase-database-concepts/700.user-interface-and-query-language/100.SQL/400.sql-execution-plan.md)
+* [执行计划](../../../../../../600.manage/700.monitor/200.monitor-items-introduction/300.sql-monitor/300.execution-plan.md)

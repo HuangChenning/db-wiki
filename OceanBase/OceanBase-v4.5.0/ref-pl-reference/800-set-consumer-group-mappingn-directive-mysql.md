@@ -1,0 +1,91 @@
+---
+title: "系统包"
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479874.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# 系统包
+
+基于会话登录和运行时属性，`SET_CONSUMER_GROUP_MAPPING` 过程用于添加、删除或修改会话与资源组的映射关系，实现资源的精细化管控。
+
+## 语法
+
+```sql
+DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+    attribute        IN VARCHAR2,
+    value            IN VARCHAR2,
+    consumer_group   IN VARCHAR2 DEFAULT NULL
+);
+```
+
+## 参数说明
+
+|       参数      |      说明          |
+|----------------|---------------------|
+| attribute      | 要添加或修改的映射属性。当前版本仅支持 `USER`（即数据库的用户名）、`COLUMN` 属性值和 `FUNCTION`。由于 OceanBase 数据库后台执行的诸如合并转储、备份恢复和数据补全等任务，由于其宏观上不属于 User 范畴而且在执行任务的时候很可能挤占其他用户和任务的 CPU、IO 资源。因此，针对 OceanBase 数据库不同后台任务可以指定 `FUNCTION` 映射关系，后台任务的资源可以被限制在其对应的资源组内。  |
+| value          | 要匹配的属性值，包括绝对映射和正则表达式。  |
+| consumer_group | 映射的使用组的名称，如果为 `NULL` 则删除映射。  |
+
+## 使用说明
+
+- 如果指定属性和值不存在映射，则将创建指定使用组的映射。
+- 如果指定属性和值的映射已经存在，则映射的使用组将更新为指定的使用组。
+- 如果 `consumer_group` 参数为 `NULL`，则来自指定属性和值的任何映射都将被删除。
+
+下表为 OceanBase 数据库中预定义的 `FUNCTION` 资源组映射规则，您可以使用 `DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING` 过程来
+修改或删除这些映射规则。
+
+- **USER**：将指定用户的所有会话映射到目标资源组。
+- **COLUMN**：可针对特定表字段的值（如 `t2.c3 = 3 for user1`）进行资源组映射，实现更细粒度的资源隔离。
+- **FUNCTION**：可针对 OceanBase 后台任务（如合并、备份、统计信息收集等）进行资源组映射。下表为内置 FUNCTION 类型及说明：
+
+| 属性名称 | 取值 | 说明 |
+| --- | --- | --- |
+| FUNCTION | COMPACTION_HIGH | Mini Merge 和 DDL KV Merge 任务 |
+| FUNCTION | COMPACTION_MID | Minor Merge 任务 |
+| FUNCTION | COMPACTION_LOW | Major Merge 任务 |
+| FUNCTION | HA_HIGH | 复制、Rebuild、恢复任务 |
+| FUNCTION | HA_MID | 迁移任务 |
+| FUNCTION | HA_LOW | 备份、备份清理等任务 |
+| FUNCTION | DDL | 唯一索引校验、删列和补数据操作 |
+| FUNCTION | DDL_HIGH | DDL MemTable 的转储操作 |
+| FUNCTION | CLOG_HIGH | clog 日志提交任务 |
+| FUNCTION | OPT_STATS | 统计信息收集任务 |
+| FUNCTION | MVIEW | 物化视图增量刷新、MLOG Purge 的 IO、CPU 资源使用操作 |
+
+## 示例
+
+### 1. 按用户映射
+
+```sql
+CALL DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+  attribute      => 'USER',
+  value          => 'user1',
+  consumer_group => 'group1'
+);
+```
+
+### 2. 按表字段条件映射
+
+```sql
+CALL DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+  attribute      => 'COLUMN',
+  value          => 't2.c3 = 3 for user1',
+  consumer_group => 'group1'
+);
+```
+
+### 3. 按后台任务类型映射
+
+```sql
+CALL DBMS_RESOURCE_MANAGER.SET_CONSUMER_GROUP_MAPPING(
+  attribute      => 'FUNCTION',
+  value          => 'COMPACTION_HIGH',
+  consumer_group => 'group2'
+);
+```

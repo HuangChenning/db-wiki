@@ -1,0 +1,27 @@
+---
+title: cte_max_recursion_depth
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002186400.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# cte_max_recursion_depth
+
+`cte_max_recursion_depth` 用于设置公共表表达式（CTE）的最大递归深度。服务器会终止执行任何超过此 CTE 值的操作。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.1.0 版本开始引入，且仅 MySQL 模式下支持。</p>
+</main>
+
+| **属性**      |      **描述**                            |
+|---------------|------------------------------------------|
+| 参数类型      | uint                                      |
+| 默认值        | 1000                                      |
+| 取值范围      | \[0, 4294967295]                         |
+| 生效范围      | <ul><li>Global</il><li>Session</il></ul>  |
+|是否参与序列化 |否                                          |

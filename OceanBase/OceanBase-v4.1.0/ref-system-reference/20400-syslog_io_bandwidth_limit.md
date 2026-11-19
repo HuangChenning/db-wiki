@@ -1,0 +1,22 @@
+---
+title: syslog_io_bandwidth_limit
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702102.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# syslog_io_bandwidth_limit
+
+syslog_io_bandwidth_limit 用于设置系统日志所能占用的磁盘 IO 带宽上限，超过带宽上限容量的系统日志将被丢弃。
+
+
+|      **属性**      | **描述** |
+|------------------|--------|
+| 参数类型             | 容量单位   |
+| 默认值              | 30MB   |
+| 取值范围             | NULL   |
+| 是否重启 OBServer 节点生效 | 否      |

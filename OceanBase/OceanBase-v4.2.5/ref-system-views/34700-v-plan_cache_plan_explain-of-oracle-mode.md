@@ -1,0 +1,65 @@
+---
+title: "V$OB_PLAN_CACHE_PLAN_EXPLAIN"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500728.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$OB_PLAN_CACHE_PLAN_EXPLAIN
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `V$OB_PLAN_CACHE_PLAN_EXPLAIN` 用于展示缓存在当前 OBServer 节点的计划缓存中的物理执行计划。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该视图仅支持 Get 操作，查询时需要指定 <code>TENANT_ID</code>、<code>PLAN_ID</code> 字段。</p>
+  </main>
+
+## 字段说明
+
+|   **字段名称**   |     **类型**     | **是否可以为 NULL** |      **描述**      |
+|--------------|----------------|----------------|------------------|
+| TENANT_ID    | NUMBER(38)     | NO             | 租户 ID            |
+| SVR_IP       | VARCHAR2(46)   | NO             | 服务器 IP 地址        |
+| SVR_PORT     | NUMBER(38)     | NO             | 服务器端口号           |
+| PLAN_ID      | NUMBER(38)     | NO             | 计划的 ID           |
+| PLAN_DEPTH   | NUMBER(38)     | NO             | Operator 在展示时的深度 |
+| PLAN_LINE_ID | NUMBER(38)     | NO             | Operator 的编号     |
+| OPERATOR     | VARCHAR2(128)  | NO             | Operator 的名称     |
+| NAME         | VARCHAR2(256)  | NO             | 表的名称             |
+| ROWS         | NUMBER(38)     | NO             | 预估的结果行数          |
+| COST         | NUMBER(38)     | NO             | 预估的代价            |
+| PROPERTY     | VARCHAR2(4096) | NO             | 对应 Operator 的信息  |
+
+## 查询示例
+
+查询缓存在当前 OBServer 节点的计划缓存中的物理执行计划。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.V$OB_PLAN_CACHE_PLAN_EXPLAIN WHERE ROWNUM <= 1;
+```
+
+查询结果如下：
+
+```shell
++-----------+----------------+----------+---------+------------+--------------+-----------+------+------+------+----------+
+| TENANT_ID | SVR_IP         | SVR_PORT | PLAN_ID | PLAN_DEPTH | PLAN_LINE_ID | OPERATOR  | NAME | ROWS | COST | PROPERTY |
++-----------+----------------+----------+---------+------------+--------------+-----------+------+------+------+----------+
+|      1004 |   xx.xx.xx.xx  |     2882 |    2012 |          0 |            0 | PHY_LIMIT | NULL |    1 |  105 | NULL     |
++-----------+----------------+----------+---------+------------+--------------+-----------+------+------+------+----------+
+1 row in set (0.008 sec)
+```
+
+## 相关视图或文档
+
+[GV$OB_PLAN_CACHE_PLAN_EXPLAIN](4200.gv-plan_cache_plan_explain-of-oracle-mode.md)

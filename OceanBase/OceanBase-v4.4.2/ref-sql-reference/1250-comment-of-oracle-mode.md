@@ -1,0 +1,103 @@
+---
+title: COMMENT
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287857.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# COMMENT
+
+## 描述
+
+该语句将有关表或表列、视图或视图列的注释添加到数据字典中。
+
+## 权限要求
+
+执行 `COMMENT` 语句需要当前用户拥有 `COMMENT ANY TABLE` 权限。有关 OceanBase 数据库权限的详细介绍，请参见 [Oracle 模式下的权限分类](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/000.permission-classification-of-oracle-mode.md)。
+
+## 语法
+
+```sql
+-- 为表或视图添加注释
+COMMENT ON TABLE
+    [schema.]{table_name | view_name} IS 'string';
+
+-- 为表或视图的列添加注释
+COMMENT ON COLUMN
+    [schema.]{table_name. | view_name.}column_name IS 'string';
+```
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul>
+    <li>可以通过视图 <code>ALL_TAB_COMMENTS</code>、<code>DBA_TAB_COMMENTS</code> 或 <code>USER_TAB_COMMENTS</code> 查询表和视图的注释。</li>
+    <li>可以通过视图 <code>ALL_COL_COMMENTS</code>、<code>DBA_COL_COMMENTS</code> 或 <code>USER_COL_COMMENTS</code> 查询表和视图所有列的注释。</li>
+    <li>注释字符串最大长度为 4000 个字符，超过会报错</li>
+    <li>支持中英文、特殊字符（如 <code>@#$%^&*()_+-=[]{}|;:'",.<>/?</code> 等）</li>
+    <li>可以使用空字符串 <code>''</code> 来删除注释</li>
+  </ul>
+</main>
+
+## 参数解释
+
+|     参数    |   描述  |
+|-------------|--------|
+| schema      | 指定 Schema。如果省略 `schema.`，则 OceanBase 数据库默认表等要添加注释的对象在当前的 Schema 中。|
+| table_name  | 指定表名。|
+| view_name   | 指定视图名。|
+| column_name | 指定列名。|
+| string      | 指定注释的文本。如果将 `string` 设置为空字符串（`''`），则表示从数据库中删除注释。|
+
+## 示例
+
+* 给表 `employees` 添加注释。
+
+  ```shell
+  --假设表 employees 存在
+  obclient> COMMENT ON TABLE employees IS 'Comment of the employees';
+  ```
+
+* 给表 `employees` 的 `emp_name` 列添加注释。
+
+  ```shell
+  --假设表 employees 存在且 emp_name 列存在
+  obclient> COMMENT ON COLUMN employees.emp_name IS 'Name of person in table employees';
+  ```
+
+* 从数据库中删除表 `employees` 的 `emp_name` 列上的注释。
+
+  ```shell
+  --假设表 employees 存在且 emp_name 列存在
+  obclient> COMMENT ON COLUMN employees.emp_name IS '';
+  ```
+
+* 给视图 `view1` 添加注释。
+
+  ```shell
+  --假设视图 view1 存在
+  obclient> COMMENT ON TABLE view1 IS 'Comment of the view1';
+  ```
+
+* 给视图 `view1` 的 `name` 列添加注释。
+
+  ```shell
+  --假设视图 view1 存在且 name 列存在
+  obclient> COMMENT ON COLUMN view1.name IS 'Name of person in view view1';
+  ```
+
+* 从数据库中删除视图 `view1` 的 `name` 列上的注释。
+
+  ```shell
+  --假设视图 view1 存在且 name 列存在
+  obclient> COMMENT ON COLUMN view1.name IS '';
+  ```
+
+## 相关文档
+
+* [ALL_COL_COMMENTS](../../../../../700.system-views/500.system-view-of-oracle-mode/200.dictionary-view-of-oracle-mode/400.all_col_comments-of-oracle-mode.md)
+
+* [ALL_TAB_COMMENTS](../../../../../700.system-views/500.system-view-of-oracle-mode/200.dictionary-view-of-oracle-mode/4900.all_tab_comments-of-oracle-mode.md)

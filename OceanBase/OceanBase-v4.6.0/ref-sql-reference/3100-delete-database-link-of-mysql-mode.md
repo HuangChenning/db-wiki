@@ -1,0 +1,37 @@
+---
+title: DROP DATABASE LINK
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686168.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP DATABASE LINK
+
+## 描述
+
+该语句用于删除已创建的数据库链接（即 `dblink`）。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p> 要删除已创建的数据库链接，您必须具有 <code>DROP DATABASE LINK</code> 系统权限。 </p>
+</main>
+
+## 语法
+
+```sql
+DROP DATABASE LINK [IF EXISTS] dblink_name
+```
+
+## 参数说明
+
+`dblink_name` 为要删除的数据库链接的名称。
+
+## 示例
+
+```sql
+obclient> DROP DATABASE LINK IF EXISTS ob_dblink;
+```

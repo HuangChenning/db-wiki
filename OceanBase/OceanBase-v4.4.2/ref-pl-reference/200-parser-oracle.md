@@ -1,0 +1,70 @@
+---
+title: PARSER
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354592.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# PARSER
+
+`PARSER` 是一种解析器句柄类型，用于在变量或参数中持有解析器实例。该实例需通过 `NEWPARSER` 创建，并由 `FREEPARSER` 释放，同时作为 `PARSECLOB` 和 `GETDOCUMENT` 等子程序之间的传递载体。该句柄本身为不透明类型。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该类型从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+parser DBMS_XMLPARSER.PARSER;
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| parser | 解析器句柄。 |
+
+## 返回值
+
+解析器句柄。
+
+## 使用说明
+
+`DBMS_XMLPARSER.PARSER` 是用于在 PL 变量中声明解析器句柄的专用类型，无法直接构造，需通过 `NEWPARSER` 子程序生成。
+
+## 相关子程序
+
+| **子程序** | **说明** |
+|------------|----------|
+| [NEWPARSER](../19750.dbms-xmlparser-oracle/300.newparser-oracle.md) | 创建解析器实例。该子程序需要传入 `DBMS_XMLPARSER.PARSER` 类型的解析器句柄作为输入参数。 |
+| [PARSECLOB](../19750.dbms-xmlparser-oracle/400.parseclob-oracle.md) | 在解析器上解析 `CLOB`。该子程序需要传入 `DBMS_XMLPARSER.PARSER` 类型的解析器句柄和 `CLOB` 类型的 XML 文本作为输入参数。 |
+| [GETDOCUMENT](../19750.dbms-xmlparser-oracle/500.getdocument-oracle.md) | 取得 DOM 文档句柄。该子程序需要传入 `DBMS_XMLPARSER.PARSER` 类型的解析器句柄作为输入参数。 |
+| [FREEPARSER](../19750.dbms-xmlparser-oracle/600.freeparser-oracle.md) | 释放解析器。该子程序需要传入 `DBMS_XMLPARSER.PARSER` 类型的解析器句柄作为输入参数。 |
+
+## 示例
+
+该示例通过 `DBMS_XMLPARSER` 系统包创建一个 XML 解析器实例，最后释放解析器句柄：
+
+```sql
+-- 声明解析器句柄变量
+DECLARE
+  p DBMS_XMLPARSER.PARSER;
+BEGIN
+  -- 创建解析器实例
+  p := DBMS_XMLPARSER.NEWPARSER;
+  -- 释放解析器句柄
+  DBMS_XMLPARSER.FREEPARSER(p);
+END;
+/
+```

@@ -1,0 +1,327 @@
+---
+title: "添加分区"
+book: "数据库对象管理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283582.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 添加分区
+
+创建分区表后，您可以为分区表添加分区。
+
+## 分区表对添加分区操作的支持情况
+
+OceanBase 数据库的 MySQL 模式中，一级分区表和二级分区表对添加分区操作的具体支持情况如下表所示。
+
+|   分区表   |      分区类型      | 添加一级分区 | 添加二级分区 |
+|-----------|--------------------|-------------|-------------|
+| 一级分区表 | <ul><li>Range</li><li>Range Columns</li><li>List</li><li>List Columns</li></ul> | 支持 | - |
+| 一级分区表 | <ul><li>Hash</li><li>Key</li></ul>| 不支持 | - |
+| 二级分区表 | <ul><li>Range + Range</li><li>Range + Range Columns</li><li>Range + List</li><li>Range + List Columns</li></ul> | 支持 | 支持 |
+| 二级分区表 | <ul><li>Range + Hash</li><li>Range + Key</li></ul> | 支持 | 不支持 |
+| 二级分区表 | <ul><li>Range Columns + Range</li><li>Range Columns + Range Columns</li><li>Range Columns + List</li><li>Range Columns + List Columns</li></ul> | 支持 | 支持 |
+| 二级分区表 | <ul><li>Range Columns + Hash</li><li>Range Columns + Key</li></ul> | 支持 | 不支持 |
+| 二级分区表 | <ul><li>List + Range</li><li>List + Range Columns</li><li>List + List</li><li>List + List Columns</li></ul> | 支持     | 支持 |
+| 二级分区表 | <ul><li>List + Hash</li><li>List + Key</li></ul> | 支持     | 不支持 |
+| 二级分区表 | <ul><li>List Columns + Range</li><li>List Columns + Range Columns</li><li>List Columns + List</li><li>List Columns + List Columns</li></ul> | 支持 | 支持 |
+| 二级分区表 | <ul><li>List Columns + Hash</li><li>List Columns + Key</li></ul> | 支持 | 不支持 |
+| 二级分区表 | <ul><li>Hash + Range</li><li>Hash + Range Columns</li><li>Hash + List</li><li>Hash + List Columns</li></ul> | 不支持 | 支持 |
+| 二级分区表 | <ul><li>Hash + Hash</li><li>Hash + Key</li></ul> | 不支持 | 不支持 |
+| 二级分区表 | <ul><li>Key + Range</li><li>Key + Range Columns</li><li>Key + List</li><li>Key + List Columns</li></ul> | 不支持 | 支持 |
+| 二级分区表 | <ul><li>Key + Hash</li><li>Key + Key</li></ul> | 不支持 | 不支持 |
+
+## 添加一级分区
+
+您可以向一级分区表、模板化二级分区表和非模板化二级分区表中添加一级分区。
+
+### 向一级分区表和模板化二级分区表中添加一级分区
+
+向一级分区表和模板化二级分区表中添加一级分区的 SQL 语法如下：
+
+```sql
+ALTER TABLE table_name ADD PARTITION (partition_option);
+
+partition_option:
+  {PARTITION partition_name VALUES LESS THAN range_partition_expr
+     [,PARTITION partition_name VALUES LESS THAN range_partition_expr]... }
+ |{PARTITION partition_name VALUES IN list_partition_expr
+     [,PARTITION partition_name VALUES IN list_partition_expr]...}
+```
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>
+    <ul>
+        <li>对于 Range/Range Columns 分区，只能在最大的分区之后添加一个分区，不可以在中间或者开始的地方添加。如果当前的分区中有 <code>MAXVALUE</code> 的分区，则不能继续添加分区。</li>
+        <li>List/List Columns 分区添加一级分区时，要求添加的分区不与之前的分区冲突即可。如果一个 List/List Columns 分区有默认分区即 <code>Default Partition</code>，则不能添加任何分区。</li>
+        <li>向 Range/Range Columns/List/List Columns 分区中添加一级分区不会影响全局索引和局部索引的使用。</li>
+        <li>对于模板化二级分区表，添加一级分区时只需要指定一级分区的定义即可，对应二级分区的定义会⾃动按照模板填充。
+            <ul>
+                <li>对于 V4.4.2 版本，从 V4.4.2 BP2 版本开始支持对模板化二级分区表添加一级分区时，为添加的一级分区指定对应的二级分区定义，实现模板化与自定义二级分区的混合使用。</li>
+            </ul>
+        </li>
+    </ul>
+  </p>
+</main>
+
+部分示例如下：
+
+* 创建 Range 分区表 `tbl1_r`，并添加分区 `M202106`。
+
+  ```sql
+  obclient> CREATE TABLE tbl1_r (id INT NOT NULL,value varchar(50),time TIMESTAMP NOT NULL)
+         PARTITION BY RANGE(UNIX_TIMESTAMP(time)) 
+          (PARTITION M202101 VALUES LESS THAN(UNIX_TIMESTAMP('2021/02/01')),
+           PARTITION M202102 VALUES LESS THAN(UNIX_TIMESTAMP('2021/03/01')),
+           PARTITION M202103 VALUES LESS THAN(UNIX_TIMESTAMP('2021/04/01')),
+           PARTITION M202104 VALUES LESS THAN(UNIX_TIMESTAMP('2021/05/01')),
+           PARTITION M202105 VALUES LESS THAN(UNIX_TIMESTAMP('2021/06/01'))
+          );
+  Query OK, 0 rows affected
+  
+  obclient> ALTER TABLE tbl1_r ADD PARTITION 
+         (PARTITION M202106 VALUES LESS THAN(UNIX_TIMESTAMP('2021/07/01')));
+  Query OK, 0 rows affected
+  ```
+
+* 创建 List 分区表 `tbl1_l`，并添加分区 `p2` 和 `p3`。
+
+  ```sql
+  obclient> CREATE TABLE tbl1_l (col1 INT PRIMARY KEY,col2 VARCHAR(50))
+         PARTITION BY LIST(col1) 
+          (PARTITION p0 VALUES IN (1,2,3),
+           PARTITION p1  VALUES IN (5,6)
+          );
+  Query OK, 0 rows affected
+  
+  obclient> ALTER TABLE tbl1_l ADD PARTITION 
+         (PARTITION p2 VALUES IN (7,8),
+          PARTITION p3  VALUES IN (DEFAULT)
+         );
+  Query OK, 0 rows affected
+  ```
+
+* 向 Range Columns + Range Columns 分区的模板化分区表 `t_m_rcrc` 中添加一级分区 `p3` 和 `p4`。
+
+  ```sql
+  obclient> CREATE TABLE t_m_rcrc(col1 INT,col2 INT) 
+         PARTITION BY RANGE COLUMNS(col1)
+         SUBPARTITION BY RANGE COLUMNS(col2)
+         SUBPARTITION TEMPLATE 
+          (SUBPARTITION mp0 VALUES LESS THAN(1000),
+           SUBPARTITION mp1 VALUES LESS THAN(2000),
+           SUBPARTITION mp2 VALUES LESS THAN(3000)
+          )
+          (PARTITION p0 VALUES LESS THAN(100),
+           PARTITION p1 VALUES LESS THAN(200),
+           PARTITION p2 VALUES LESS THAN(300)
+          ); 
+  Query OK, 0 rows affected
+  
+  obclient> ALTER TABLE t_m_rcrc ADD PARTITION
+         (PARTITION p3 VALUES LESS THAN(400),
+          PARTITION p4 VALUES LESS THAN(500)
+         ); 
+  Query OK, 0 rows affected
+  ```
+
+* 创建 Range + Range 分区的模板化分区表，然后再在添加一级分区时带自定义二级分区。
+
+  1. 创建纯模板化表 `st_rr`。
+
+      ```shell
+      obclient> CREATE TABLE st_rr (col1 INT, col2 INT)
+          PARTITION BY RANGE(col1)
+          SUBPARTITION BY RANGE(col2)
+          SUBPARTITION TEMPLATE
+              (SUBPARTITION mp1 VALUES LESS THAN(100),
+              SUBPARTITION mp2 VALUES LESS THAN(200),
+              SUBPARTITION mp3 VALUES LESS THAN(300)
+              )
+              (PARTITION p0 VALUES LESS THAN(2020),
+              PARTITION p1 VALUES LESS THAN(2021),
+              PARTITION p2 VALUES LESS THAN(2022)
+              );
+      ```
+
+  2. 向表 `st_rr` 中添加一级分区，并指定二级分区。
+
+      ```shell
+      obclient> ALTER TABLE st_rr
+          ADD PARTITION
+              (PARTITION p3 VALUES LESS THAN(2026)
+                  (SUBPARTITION p3sp0 VALUES LESS THAN(300),
+                  SUBPARTITION p3sp1 VALUES LESS THAN(600))
+              );
+      ```
+
+  3. 查看表 `st_rr` 定义。
+
+      ```shell
+      obclient> SHOW CREATE TABLE st_rr;
+      ```
+
+      返回结果如下：
+
+      ```shell
+      +-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+      | Table | Create Table                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+      +-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+      | st_rr | CREATE TABLE `st_rr` (
+      `col1` int(11) DEFAULT NULL,
+      `col2` int(11) DEFAULT NULL
+      ) ORGANIZATION INDEX DEFAULT CHARSET = utf8mb4 ROW_FORMAT = DYNAMIC COMPRESSION = 'zstd_1.3.8' REPLICA_NUM = 1 BLOCK_SIZE = 16384 USE_BLOOM_FILTER = FALSE ENABLE_MACRO_BLOCK_BLOOM_FILTER = FALSE TABLET_SIZE = 134217728 PCTFREE = 0
+      partition by range(`col1`) subpartition by range(`col2`) subpartition template (
+      subpartition `mp1` values less than (100),
+      subpartition `mp2` values less than (200),
+      subpartition `mp3` values less than (300))
+      (partition `p0` values less than (2020),
+      partition `p1` values less than (2021),
+      partition `p2` values less than (2022),
+      partition `p3` values less than (2026) (
+      subpartition `p3sp0` values less than (300),
+      subpartition `p3sp1` values less than (600))) |
+      +-------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+      1 row in set
+      ```
+
+### 向非模板化二级分区表中添加一级分区
+
+向非模板化二级分区表中添加一级分区的 SQL 语法如下：
+
+```sql
+ALTER TABLE table_name ADD PARTITION (partition_option);
+
+partition_option:
+  {PARTITION partition_name VALUES LESS THAN range_partition_expr (subpartition_option)
+     [,PARTITION partition_name VALUES LESS THAN range_partition_expr (subpartition_option)]... }
+ |{PARTITION partition_name VALUES IN list_partition_expr (subpartition_option)
+     [,PARTITION partition_name VALUES IN list_partition_expr (subpartition_option)]...}
+
+subpartition_option：
+  {SUBPARTITION subpartition_name VALUES LESS THAN range_partition_expr, ...}
+ |{SUBPARTITION subpartition_name VALUES IN list_partition_expr, ....}
+ |{SUBPARTITION subpartition_name, ....}
+```
+
+<main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>对于非模板化二级分区表，添加一级分区时，需要同时指定一级分区的定义和该一级分区下的二级分区定义。</p>
+</main>
+
+以向 Range + Range 非模板化分区表 `t_f_rclc` 中添加一级分区 `p2` 为例，示例如下：
+
+```sql
+obclient> CREATE TABLE t_f_rclc (col1 INT,col2 INT) 
+       PARTITION BY RANGE COLUMNS(col1)
+       SUBPARTITION BY LIST COLUMNS(col2)
+       (PARTITION p0 VALUES LESS THAN(100)
+         (SUBPARTITION sp0 VALUES IN(1,3),
+          SUBPARTITION sp1 VALUES IN(4,6),
+          SUBPARTITION sp2 VALUES IN(7,9)),
+        PARTITION p1 VALUES LESS THAN(200)
+         (SUBPARTITION sp3 VALUES IN(1,3),
+          SUBPARTITION sp4 VALUES IN(4,6),
+          SUBPARTITION sp5 VALUES IN(7,9))
+       ); 
+
+obclient> ALTER TABLE t_f_rclc ADD PARTITION
+       (PARTITION p2 VALUES LESS THAN(300)
+         (SUBPARTITION sp6 VALUES IN(1,3),
+          SUBPARTITION sp7 VALUES IN(4,6),
+          SUBPARTITION sp8 VALUES IN(7,9))
+       ); 
+Query OK, 0 rows affected
+```
+
+## 添加二级分区
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p><ul><li>不支持二级分区类型是 Hash 或 Key 类型的场景新增二级分区。</li><li>添加的二级分区不能与表内现有的一级或二级分区重名。</li><li>添加 Range 二级分区时，Range 上界要大于当前一级分区下最大分区的上界；添加多个 Range 二级分区时，上界要递增排列，即上界大的 Range 分区写在后面。</li><li>添加 List 二级分区时，不能与当前一级分区下现有的二级分区值重复。</li><li>添加多个二级分区的操作是原子的，要么都成功，要么都失败。</li></ul></p>
+</main>
+
+### 语法
+
+```sql
+ALTER TABLE table_name MODIFY PARTITION partition_name
+    ADD SUBPARTITION (subpartition_option);
+
+subpartition_option:
+    {SUBPARTITION subpartition_name VALUES LESS THAN range_partition_expr
+        [, SUBPARTITION subpartition_name VALUES LESS THAN range_partition_expr] ...}
+    | {SUBPARTITION subpartition_name VALUES IN list_partition_expr
+        [, SUBPARTITION subpartition_name VALUES IN list_partition_expr] ...}
+```
+
+### 参数解释
+
+|         参数         |   说明    |
+|----------------------|----------|
+| table_name           | 指定表名。|
+| partition_name       | 指定待添加的二级分区所属的一级分区名称。|
+| subpartition_name    | 指定待添加的二级分区的名称。|
+| subpartition_option  | 表示新增的二级分区定义。|
+| range_partition_expr | 表示 Range/Range Columns 分区表达式。|
+| list_partition_expr  | 表示 List/List Columns 分区表达式。|
+
+### 示例
+
+* 向 Range + Range 模板化分区表中添加二级分区表。
+
+  1. 创建 Range + Range 分区的模板化二级分区表 `tbl1_m_rr`。
+
+      ```sql
+      CREATE TABLE tbl1_m_rr (col1 INT, col2 INT, col3 INT)
+          PARTITION BY RANGE(col1)
+             SUBPARTITION BY RANGE(col2)
+             SUBPARTITION TEMPLATE
+             (SUBPARTITION p0 VALUES LESS THAN (1000),
+              SUBPARTITION p1 VALUES LESS THAN (2000))
+          (PARTITION p0 VALUES LESS THAN (100),
+           PARTITION p1 VALUES LESS THAN (200));
+      ```
+
+  2. 向表 `tbl1_m_rr` 一级分区 `p1` 中添加二级分区 `p1sp2`。
+
+      ```sql
+      ALTER TABLE tbl1_m_rr MODIFY PARTITION p1
+          ADD SUBPARTITION (SUBPARTITION p1sp2 VALUES LESS THAN (3000));
+      ```
+
+* 向 Range + Range 非模板化分区表中添加二级分区表。
+
+  1. 创建 Range + Range 分区的非模板化二级分区表 `tbl2_f_rr`。
+
+      ```sql
+      CREATE TABLE tbl2_f_rr(col1 INT, col2 INT)
+          PARTITION BY RANGE(col1)
+              SUBPARTITION BY RANGE(col2)
+          (PARTITION p0 VALUES LESS THAN(100)
+             (SUBPARTITION sp0 VALUES LESS THAN(2020),
+              SUBPARTITION sp1 VALUES LESS THAN(2021)
+              ),
+           PARTITION p1 VALUES LESS THAN(200)
+             (SUBPARTITION sp2 VALUES LESS THAN(2020),
+              SUBPARTITION sp3 VALUES LESS THAN(2021),
+              SUBPARTITION sp4 VALUES LESS THAN(2022)
+              )
+           );
+      ```
+
+  2. 向表 `tbl2_f_rr` 一级分区 `p1` 中添加二级分区 `sp5` 和 `sp6`。
+
+      ```sql
+      ALTER TABLE tbl2_f_rr MODIFY PARTITION p1
+          ADD SUBPARTITION
+             (SUBPARTITION sp5 VALUES LESS THAN(2023),
+              SUBPARTITION sp6 VALUES LESS THAN(2024));
+      ```
+
+## 相关文档
+
+[ALTER TABLE](../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/1600.alter-table-of-mysql-mode.md)

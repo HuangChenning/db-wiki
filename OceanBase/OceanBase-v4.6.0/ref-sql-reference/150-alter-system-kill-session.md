@@ -1,0 +1,60 @@
+---
+title: ALTER SYSTEM KILL SESSION
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005687584.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER SYSTEM KILL SESSION
+
+## 描述
+
+该语句用于终止一个会话。该语句需要用户具备 `ALTER SYSTEM` 权限才能执行。
+
+## 语法
+
+```sql
+ALTER SYSTEM KILL SESSION 'session_id' [IMMEDIATE]
+```
+
+## 参数解释
+
+| 参数 | 描述 |
+|------|------|
+| session_id | 指定要终止的会话 ID。可以通过执行 `SHOW PROCESSLIST` 或 `SHOW FULL PROCESSLIST` 查看 `Id` 列，或查询 `GV$SESSION` 视图获取 |
+| IMMEDIATE | 可选参数，指定是否立即终止会话。如果指定，会尝试立即终止会话，否则会等待当前事务完成。 |
+
+## 示例
+
+如下示例为创建用户 `kill_user` 并赋予权限，使用该用户登录数据库并查询已连接的 Session 的 ID，再终止该 Session。
+
+```sql
+obclient [SYS]> CREATE USER kill_user IDENTIFIED BY killuser123;
+obclient [SYS]> GRANT CREATE SESSION TO kill_user;
+obclient [SYS]> GRANT ALTER SYSTEM TO kill_user;
+
+obclient [KILL_USER]> SHOW PROCESSLIST;
++------------+-----------+----------------------+-----------+---------+------+--------+------------------+
+| ID         | USER      | HOST                 | DB        | COMMAND | TIME | STATE  | INFO             |
++------------+-----------+----------------------+-----------+---------+------+--------+------------------+
+| 3221487726 | KILL_USER | 100.xx.xxx.xxx:34803 | KILL_USER | Query   |    0 | ACTIVE | SHOW PROCESSLIST |
+| 3221487722 | SYS       | 100.xx.xxx.xxx:40025 | SYS       | Sleep   |   93 | SLEEP  | NULL             |
++------------+-----------+----------------------+-----------+---------+------+--------+------------------+
+1 row in set
+
+obclient [KILL_USER]> ALTER SYSTEM KILL SESSION '3221487726';
+```
+
+## 注意事项
+
+- 终止会话可能会导致未提交的事务回滚
+- 终止系统会话可能会影响数据库稳定性，请谨慎操作
+- 需要 ALTER SYSTEM 权限才能执行此命令
+
+## 相关文档
+
+更多有关查询当前数据库中会话的数量和会话的 ID，详细信息，请参见 [查看租户会话](../../../../../1200.database-proxy/1500.view-tenant-sessions.md)。

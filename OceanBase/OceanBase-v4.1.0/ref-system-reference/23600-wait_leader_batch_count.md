@@ -1,0 +1,29 @@
+---
+title: wait_leader_batch_count
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002173615.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# wait_leader_batch_count
+
+wait_leader_batch_count 
+============================================
+
+`wait_leader_batch_count` 用于设置 RootService 每次发送切主命令的最大分区个数。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始弃用。</p>
+</main>
+
+|      **属性**      |    **描述**     |
+|------------------|---------------|
+| 参数类型             | 整型            |
+| 默认值              | 1024          |
+| 取值范围             | \[128, 5000\] |
+| 是否重启 OBServer 节点生效 | 否             |

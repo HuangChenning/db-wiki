@@ -1,0 +1,53 @@
+---
+title: vector_index_optimize_duty_time
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478820.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# vector_index_optimize_duty_time
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>对于 V4.5.x 版本，该配置项从 V4.5.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+配置项 `vector_index_optimize_duty_time` 用于设置租户的单个节点内向量索引自动分区重建任务的执行周期。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户都可修改该配置项。
+
+## 属性说明
+
+| **属性** | **描述** |
+| --- | --- |
+| 参数类型 | string |
+| 默认值 | '[00:00:00, 24:00:00]'|
+| 取值范围 |'[00:00:00, 24:00:00]' |
+| 是否可修改 | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否 |
+
+## 查询示例
+
+设置租户的单个节点内，向量索引自动分区重建任务的执行周期为 23:00:00~24:00:00。
+
+```shell
+obclient> ALTER SYSTEM SET vector_index_optimize_duty_time ='[23:00:00, 24:00:00]';
+```
+
+## 相关文档
+
+* [向量索引性能优化](../../../../640.ob-vector-search/200.ob-vector-index/700.vector-index-performance-tuning.md)

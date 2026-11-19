@@ -1,0 +1,68 @@
+---
+title: RENAME TABLE
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699566.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# RENAME TABLE
+
+## 描述
+
+该语句用来对一个或多个表进行重命名。
+
+该操作需要拥有原表的 `ALTER` 和 `DROP` 权限以及新表的 `CREATE` 和 `INSERT` 权限。
+
+## 使用限制及注意事项
+
+* 表重命名过程中，系统会自动锁定这个过程，并且阻止任何其他线程对这些表的读取操作，直到重命名完成。
+* 如果目标表上存在持续的活跃事务，重命名操作将会等待。在所有活跃事务都提交或回滚之前，表的重命名处理无法进行。
+* 如果此语句用于对多个表进行重命名，则重命名操作从左到右进行。
+* 在执行 `RENAME TABLE` 时，不能有被锁定的表，也不能有处于活性状态的事务。
+* `RENAME TABLE` 可以用于视图，但不支持移动到其他数据库中。
+
+## 语法
+
+```sql
+RENAME TABLE table_name TO [new_database_name.]new_table_name 
+[, table_name2 TO [new_database_name.]new_table_name2   ...];
+```
+
+## 参数解释
+
+|                               **参数**                                |                                  **描述**                                   |
+|---------------------------------------------------------------------|---------------------------------------------------------------------------|
+| table_name                                                          | 原表名。                                                                      |
+| new_table_name                                                      | 新表名。                                                                      |
+| table_name  TO \[new_database_name.\]new_table_name | 多个表重命名时，使用逗号（,）分隔。 您可以指定 `new_database_name` 将表移动到其他数据库中。 |
+
+## 示例
+
+1. 创建表 `t1` 和 `t2`。
+
+   ```sql
+   obclient> CREATE TABLE t1(c1 INT);
+   obclient> CREATE TABLE t2(c1 INT);
+   ```
+
+2. 将表 `t1` 重命名为 `t11`。
+
+   ```sql
+   obclient> RENAME TABLE t1 TO t11;
+   ```
+
+3. 将表 `t11` 重命名为 `t111`，表 `t2` 重命名为 `t22`。
+
+   ```sql
+   obclient> RENAME TABLE t11 TO t111, t2 TO t22;
+   ```
+
+4. 将表 `t22` 移动到 `mysql` 数据库中。
+
+   ```sql
+   obclient> RENAME TABLE t22 TO mysql.t22;
+   ```

@@ -1,0 +1,36 @@
+---
+title: DROP OUTLINE
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702347.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# DROP OUTLINE
+
+## 描述
+
+该语句用于删除 OceanBase 数据库中的 Outline。
+
+## 语法
+
+```sql
+DROP OUTLINE outline_name；  
+```
+
+## 参数解释
+
+|    **参数**    |       **描述**       |
+|--------------|--------------------|
+| outline_name | 指定要删除的 Outline 名称。 |
+
+## 示例
+
+删除 Outline `ol_1`。
+
+```sql
+DROP OUTLINE ol_1;      
+```

@@ -1,0 +1,30 @@
+---
+title: balance_blacklist_retry_interval
+book: "配置项和系统变量"
+version: V4.3.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002015856.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# balance_blacklist_retry_interval
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于 V4.x 版本对存储架构进行了升级，该配置项不再适用，从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`balance_blacklist_retry_interval` 用于设置副本迁移等后台任务被放入黑名单后的重试时间间隔。
+
+## 属性说明
+
+|      **属性**      |    **描述**    |
+|------------------|--------------|
+| 参数类型             | Time        |
+| 默认值              | 30m，表示 30 分钟 |
+| 取值范围             | \[0s, 180m\] |
+| 是否重启 OBServer 节点生效 | 否            |

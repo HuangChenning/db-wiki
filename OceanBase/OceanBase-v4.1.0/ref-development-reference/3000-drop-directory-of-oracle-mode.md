@@ -1,0 +1,41 @@
+---
+title: DROP DIRECTORY
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000001964966.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# DROP DIRECTORY
+
+## 描述
+
+该语句用来删除路径对象。
+
+## 权限要求
+
+执行 `DROP DIRECTORY` 语句需要当前用户拥有 `DROP ANY DIRECTORY` 权限。有关 OceanBase 数据库权限的详细介绍，请参见 [Oracle 模式下的权限分类](../../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/300.permission-of-oracle-mode/100.permission-classification-of-oracle-mode.md)。
+
+## 语法
+
+```sql
+DROP DIRECTORY directory_name;
+```
+
+## 参数解释
+
+|       参数       |                            描述                            |
+|----------------|----------------------------------------------------------|
+| directory_name | 指定要删除的路径对象。 删除路径对象时，不会删除系统中相关联的共享文件系统路径。 |
+
+## 示例
+
+删除一个路径对象 `sql_file_dir`。
+
+```sql
+obclient> DROP DIRECTORY sql_file_dir;
+Query OK, 1 row affected
+```

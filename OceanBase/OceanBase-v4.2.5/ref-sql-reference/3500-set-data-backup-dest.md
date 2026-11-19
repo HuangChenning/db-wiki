@@ -1,0 +1,354 @@
+---
+title: SET DATA_BACKUP_DEST
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503153.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SET DATA_BACKUP_DEST
+
+## 描述
+
+`ALTER SYSTEM SET DATA_BACKUP_DEST` 语句用于为用户租户配置备份目的端，即数据备份的备份路径及源端配置。
+
+## 使用限制及注意事项
+
+* 系统租户和 Meta 租户不支持备份恢复，不需要配置备份目的端。
+
+* 目前，OceanBase 数据库支持的备份介质为 NFS、阿里云 OSS、Azure Blob（在 V4.2.5 版本中，从 V4.2.5 BP6 版本开始支持）、AWS S3 以及兼容 S3 协议的对象存储，例如：华为 OBS、Google GCS、腾讯云 COS。部分备份介质可能需要满足一些基本要求才能使用，有关各备份介质的具体要求，参见 [物理备份与恢复概述](../../../../../600.manage/600.backup-and-recovery/100.overview-of-physical-backup-and-recovery.md) 中的 **备份介质要求**。
+
+## 权限要求
+
+需要由 `sys` 租户的 `root` 用户（`root@sys`） 或各租户的管理员用户执行。其中：
+
+* MySQL 模式的默认管理员用户为 `root` 用户。
+* Oracle 模式的默认管理员用户为 `SYS` 用户。
+
+## 语法
+
+```sql
+ALTER SYSTEM SET DATA_BACKUP_DEST = 'data_backup_path' [TENANT = tenant_name];
+```
+
+## 参数说明
+
+| 参数                   | 描述                                                                                                                                      |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| data_backup_path      | 指定数据备份的备份路径及源端配置。有关该参数的详细说明，参见下方 [data_backup_path](#data_backup_path)。         |
+| tenant_name           | 系统租户指定待配置备份目的端的租户名。<main id="notice" type='notice'> <h4>注意</h4><p>仅系统租户在执行此命令时需要通过 <code>TENANT = tenant_name</code> 子句指定待操作的租户，用户租户只能对本租户执行此命令，故不能指定 <code>TENANT = tenant_name</code> 子句。</p></main>                        |
+
+### data_backup_path
+
+用于指定数据备份的备份路径及源端配置。下面分别对不同类型的介质的 `data_backup_path` 格式进行说明。
+
+#### NFS
+
+```sql
+ALTER SYSTEM SET DATA_BACKUP_DEST = 'file://your-nfs-server/your-backup-path[?{zone=zone_name | idc=idc_name | region=region_name}]';
+```
+
+其中：
+
+* `file://your-nfs-server/your-backup-path`：OceanBase 数据库可以访问的 NFS 服务器的路径，用于存储数据备份。
+
+* `zone`、`idc`、`region`：指定备份路径的源端，即指定可以访问该路径的节点范围以及访问优先级，可选参数，与备份路径之间使用英文问号（?）分隔。支持选择 `zone`、`idc` 或 `region` 三个不同层级的配置，只能同时选择一个层级或者不设置，默认不设置。
+
+  <main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.2.5 版本，从 V4.2.5 BP2 版本开始支持设置备份路径的源端。</p>
+  </main>
+
+  * 指定备份路径的 `zone`、`idc` 或 `region` 配置时，要求 Root Service 的 Leader 节点在指定的 `zone`、`idc` 或 `region` 中，否则，备份任务将无法成功向目标备份路径写入备份元数据，最终导致备份任务执行失败。建议备份路径源端设置包含 Primary Zone 范围。
+
+  * 如果需要设置 Region 层级或 IDC 层级，需要先通过 `ALTER SYSTEM MODIFY ZONE zone_name SET REGION=region_name;` 或 `ALTER SYSTEM MODIFY ZONE zone_name SET IDC=idc_name;` 语句设置 Region 信息或 IDC 信息。推荐设置 IDC 层级的源端配置，利用有较多网络带宽资源的 IDC 来执行备份任务的同时，备份任务有更多的可选节点范围，同时用户也不需要关注集群中 IDC 内 Zone 的变化情况。
+
+  * 设置时，如果设置的 `zone`、`idc` 或 `region` 不存在，将会报错提示源端信息不存在（错误码 `-9133`）。
+
+  * 如果需要设置多个 Zone、多个 IDC 或多个 Region，多个值之间使用英文逗号（,）和英文分号（;）分隔。其中：
+
+    * 英文逗号（,）表示在选择执行备份任务节点时，左右两边的 Zone/IDC/Region 内的节点具有相同的优先级。
+    * 英文分号（;）表示左边 Zone/IDC/Region 内的节点优先级比右边的高，即优先选择左边的 Zone/IDC/Region 内的节点执行备份任务。
+
+    例如，如果设置为 `zone=z1,z2;z3` 表示指定 `z1`、`z2`、`z3` 作为备份的源端，`z1`、`z2` 在同一优先级，且 `z1`、`z2` 的优先级高于 `z3`。
+
+  * 在备份路径上设置备份源端后，如果集群的 Zone、IDC 或 Region 出现变更，例如，名称变更、删除 Zone/IDC/Region 等，可能会导致无法正常执行备份操作，最终备份任务失败。
+
+#### 对象存储
+
+```sql
+# 阿里云 OSS
+ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://your-bucket-name/your-archive-path?host=oss-your-region.aliyuncs.com&access_id=your-access-id&access_key=your-access-key[&delete_mode={delete | tagging}][&checksum_type={md5 | no_checksum}][&enable_worm={true | false}][&{zone=zone_name | idc=idc_name | region=region_name}]';
+
+# AWS S3
+ALTER SYSTEM SET DATA_BACKUP_DEST = 's3://your-bucket-name/your-archive-path?host=s3.your-region.amazonaws.com&access_id=your-access-id&access_key=your-access-key&s3_region=your-s3-region[&delete_mode={delete | tagging}][&checksum_type={md5 | crc32}][&{zone=zone_name | idc=idc_name | region=region_name}]';
+
+# 兼容 S3 协议的对象存储
+ALTER SYSTEM SET DATA_BACKUP_DEST = 's3://your-bucket-name/your-archive-path?host=your-service.com&access_id=your-access-id&access_key=your-access-key[&addressing_model={virtual_hosted_style | path_style}][&checksum_type=md5][&{zone=zone_name | idc=idc_name | region=region_name}]';
+
+# Azure Blob
+ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://your-bucket-name/your-archive-path?host=oss-your-region.aliyuncs.com&access_id=your-access-id&access_key=your-access-key[&delete_mode={delete | tagging}][&checksum_type={md5 | no_checksum}][&{zone=zone_name | idc=idc_name | region=region_name}]';
+```
+
+相关参数说明如下：
+
+<main id="notice" type='notice'>
+<h4>注意</h4>
+<p>使用对象存储作为备份介质时，对象存储路径的各项参数由 <code>&</code> 符号进行分隔，请确保您输入的参数值中仅包含英文字母大小写、数字、<code>/-_$+=</code> 以及通配符。如果您输入了上述以外的其他字符，可能会导致设置失败。</p>
+</main>
+
+* `host`：对象存储服务的访问域名。
+
+  对于 Azure Blob 对象存储，其 `host` 参数对应的值可通过容器属性或存储账户的连接串拼接得到，并且要求 `host` 参数的前缀必须指定为 `http://` 或 `https://`。同时，由于 Azure Blob 默认开启了安全传输，默认是通过 `https://` 来访问，如果需要通过 `http://` 来访问，需要关闭 Azure Blob 的安全传输选项。关闭 Azure Blob 安全传输选项的详细操作，参见 [Azure Blob 官网文档](https://learn.microsoft.com/en-us/azure/storage/common/storage-require-secure-transfer?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json)。
+
+* `access_id=your-access-id`：对象存储的访问秘钥 ID。
+
+* `access_key=your-access-key`：对象存储的访问密钥。
+
+* `delete_mode`：在备份路径后配置备份文件的清理模式，OSS、AWS S3、COS（以 S3 协议访问）、Azure Blob 的可选参数，与其他参数之间通过 `&` 符号连接。该参数当前支持以下两种取值：
+
+  * `delete`：该模式下，对于满足清理要求的备份文件，系统会直接将其删除。
+
+    配置为该模式后，当您通过自动方式清理备份文件时，对于满足清理要求的备份文件，系统会直接将其删除。
+
+  * `tagging`：该模式下，对于满足清理要求的备份文件，系统会为其设置 Tag，备份文件仍然保留。
+
+    配置为该模式后，当您通过自动方式清理备份文件时，对于满足清理要求的备份文件，系统会给这些文件设置标签，标签的 `key` 为 `"delete_mode"`，`value` 为 `"tagging"`，以便后续用户可以通过设置的标签在对象存储上对这些文件的生命周期进行管理。
+
+* `checksum_type`：指定备份数据的校验算法，用于校验备份数据的完整性。如果未显式指定，所有对象存储默认均使用 MD5 校验算法。根据不同的对象存储，该参数支持的取值如下：
+
+  * `md5`：使用 MD5 算法校验备份数据的完整性。
+
+    <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>MD5 校验对于 <code>GetObject</code> 接口不生效。</p>
+    </main>
+
+  * `no_checksum`：不校验备份数据的完整性。仅 OSS、Azure Blob 支持该取值。对于通过 S3 协议接入的对象存储，包括 AWS S3、OBS、GCS、COS 等，由于受到 S3 SDK 的限制，不支持该取值。
+  * `crc32`：使用 CRC32 算法校验备份数据的完整性。仅 AWS S3 支持该取值。
+
+* `enable_worm`：可选参数，当备份目的端为阿里云 OSS 且目的端 Bucket 配置了合规保留策略（WORM）时，需将该参数设置为 `True`。
+
+  OSS 的保留策略具有 WORM（Write Once Read Many）特性，满足用户以不可删除、不可篡改的方式保存和使用数据。当用户为 Bucket 配置保留策略并锁定策略后，在保留策略指定的 Object 的保留时间到期前，仅支持在该 Bucket 中上传和读取 Object。待 Object 的保留时间到期后，才可以修改或删除该 Object。
+
+  <main id="notice" type='notice'>
+  <h4>注意</h4>
+  <ul><li>在 V4.2.5 版本中，从 V4.2.5 BP7 版本开始支持指定 <code>enable_worm</code> 参数。</li>
+  <li>由于 OceanBase 数据库当前不会替代您设置合规保留策略，请在设置备份路径前确保 OSS Bucket 已正确设置保留策略（WORM 策略）并锁定。</li>
+  <li>如果待设置的路径对应的 Bucket 设置并锁定了保留策略，而在配置备份目的端时未指定 <code>enable_worm=true</code>，则语句执行后，系统将会报错，提示需要设置<code>enable_worm=true</code>。</li>
+  <li><code>enable_worm</code> 参数一旦设置后，后续不支持变更。</li>
+  <li>设置备份路径后，如果用户为该路径对应的 Bucket 设置并锁定了 WORM 策略，则备份任务可能会因无法修改或删除目标路径下的文件而报 <code>-9140</code> 的错误（错误码可通过视图 <code>CDB_OB_BACKUP_DELETE_JOB_HISTORY</code>（sys 租户）或 <code>DBA_OB_BACKUP_DELETE_JOB_HISTORY</code>（用户租户）进行查看），提示 <code>the object is locked by worm</code>。当发现备份任务因 WORM 策略导致执行失败后，需要用户重新配置新的备份路径，并且指定<code>enable_worm=true</code>。</li>
+  <li>使用配置了 WORM 策略的 Bucket 作为备份路径时，推荐备份的清理模式使用 <code>tagging</code> 模式。</li></ul>
+  </main>
+
+  `enable_worm` 参数支持的取值如下：
+
+  * `true`：是，表示 OceanBase 数据库会按照 WORM 规范对该路径执行写入及删除操作。值设置为 `true` 时，要求同时显式配置 `checksum_type=md5`。
+
+  * `false`：否。未显式指定该参数时，其默认值为 `false`。
+
+* `s3_region`：Amazon S3 存储桶所在的区域。备份介质为 AWS S3 时，必须指定的参数。
+
+* `addressing_model`：设置访问对象存储的 URL 格式，通过 S3 兼容协议访问的对象存储（OBS、GCS、COS 等）的可选参数，与其他参数之间通过 `&` 符号连接。该参数当前支持以下两种取值：
+
+  * `virtual_hosted_style`：默认值，表示以 Virtual-hosted-style 访问对象存储。
+  * `path_style`：表示以 Path-style 访问对象存储。
+
+  例如，用户租户设置本租户使用 OBS 作为备份介质，并以 Virtual-hosted-style 格式访问 OBS，示例语句如下：
+
+  ```shell
+  ALTER SYSTEM SET DATA_BACKUP_DEST='s3://oceanbase-test-bucket/backup/data?host=obs.****.myhuaweicloud.com&access_id=****&access_key=****&addressing_model=virtual_hosted_style';
+  ```
+
+* `zone`、`idc`、`region`：指定备份路径的源端，即指定可以访问该路径的节点范围以及访问优先级，可选参数，与其他参数之间通过 `&` 符号连接。支持选择 `zone`、`idc` 或 `region` 三个不同层级的配置，只能同时选择一个层级或者不设置，默认不设置。
+
+  <main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.2.5 版本，从 V4.2.5 BP2 版本开始支持设置备份路径的源端。</p>
+  </main>
+
+  * 指定备份路径的 `zone`、`idc` 或 `region` 配置时，要求 Root Service 的 Leader 节点在指定的 `zone`、`idc` 或 `region` 中，否则，备份任务将无法成功向目标备份路径写入备份元数据，最终导致备份任务执行失败。建议备份路径源端设置包含 Primary Zone 范围。
+
+  * 如果需要设置 Region 层级或 IDC 层级，需要先通过 `ALTER SYSTEM MODIFY ZONE zone_name SET REGION=region_name;` 或 `ALTER SYSTEM MODIFY ZONE zone_name SET IDC=idc_name;` 语句设置 Region 信息或 IDC 信息。推荐设置 IDC 层级的源端配置，利用有较多网络带宽资源的 IDC 来执行备份任务的同时，备份任务有更多的可选节点范围，同时用户也不需要关注集群中 IDC 内 Zone 的变化情况。
+
+  * 设置时，如果设置的 `zone`、`idc` 或 `region` 不存在，将会报错提示源端信息不存在（错误码 `-9133`）。
+
+  * 如果需要设置多个 Zone、多个 IDC 或多个 Region，多个值之间使用英文逗号（,）和英文分号（;）分隔。其中：
+
+    * 英文逗号（,）表示在选择执行备份任务节点时，左右两边的 Zone/IDC/Region 内的节点具有相同的优先级。
+    * 英文分号（;）表示左边 Zone/IDC/Region 内的节点优先级比右边的高，即优先选择左边的 Zone/IDC/Region 内的节点执行备份任务。
+
+    例如，如果设置为 `zone=z1,z2;z3` 表示指定 `z1`、`z2`、`z3` 作为备份的源端，`z1`、`z2` 在同一优先级，且 `z1`、`z2` 的优先级高于 `z3`。
+
+  * 在备份路径上设置备份源端后，如果集群的 Zone、IDC 或 Region 出现变更，例如，名称变更、删除 Zone/IDC/Region 等，可能会导致无法正常执行备份操作，最终备份任务失败。
+
+## 示例
+
+* 系统租户
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 NFS。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'file:///data/nfs/backup/data' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 NFS，指定可以访问当前备份路径的 Zone 为 z1、z2、z3，同时 Root Service 在选择执行备份任务节点时，优先选择具有较高优先级的 z1、z2 内的节点。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'file:///data/nfs/backup/data?zone=z1,z2;z3' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 OSS，备份文件的清理模式为 `delete`，使用 MD5 算法校验备份数据的完整性。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://oceanbase-test-bucket/backup/?host=***.aliyun-inc.com&access_id=***&access_key=***&delete_mode=delete&checksum_type=md5' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 OSS，备份文件的清理模式为 `delete`，不校验备份数据的完整性。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://oceanbase-test-bucket/backup/?host=xxx.aliyun-inc.com&access_id=xxx&access_key=xxx&delete_mode=delete&checksum_type=no_checksum' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 OSS，配置备份文件的清理模式为 `delete`，并指定可以访问当前备份路径的 Zone 为 z1、z2、z3，同时 Root Service 在选择执行备份任务节点时，优先选择具有较高优先级的 z1、z2 内的节点。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://oceanbase-test-bucket/backup/?host=***.aliyun-inc.com&access_id=***&access_key=***&delete_mode=delete&zone=z1,z2;z3' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 OSS，备份文件的清理模式为 `tagging`，并使用 MD5 算法校验归档文件的完整性。该路径配置了 `enable_worm=true` 时，系统将按照 WORM 的规范对该路径执行写入和删除操作。
+
+    <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>OceanBase 数据库当前不会替代您设置合规保留策略，请在设置备份路径前确保 OSS Bucket 已正确设置保留策略（WORM 策略）并锁定。</p>
+    </main>
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://oceanbase-test-bucket/backup/?host=xxx.aliyun-inc.com&access_id=xxx&access_key=xxx&delete_mode=tagging&checksum_type=md5&enable_worm=true' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 AWS S3，备份文件的清理模式为 `tagging`，使用 CRC32 算法校验备份数据的完整性。
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='s3://oceanbase-test-bucket/backup/data?host=s3.<region>.amazonaws.com&access_id=****&access_key=****&s3_region=****&delete_mode=tagging&checksum_type=crc32' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 OBS，通过 S3 协议访问。
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='s3://oceanbase-test-bucket/backup/data?host=obs.****.myhuaweicloud.com&access_id=****&access_key=****' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 GCS，通过 S3 协议访问。
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='s3://oceanbase-test-bucket/backup/data?host=https://storage.googleapis.com&access_id=****&access_key=****' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 COS，备份文件的清理模式为 `delete`，通过 S3 协议访问。
+
+    <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>使用 COS 作为备份介质时，需要先设置集群级配置项 <a href="../../../../800.configuration-items-and-system-variables/100.system-configuration-items/300.cluster-level-configuration-items/16720.ob_storage_s3_url_encode_type.md">ob_storage_s3_url_encode_type</a>，详细操作可参见 <a href="../../../../../600.manage/600.backup-and-recovery/400.data-backup/100.preparation-before-data-backup.md">备份前准备</a>。</p>
+    </main>
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='s3://oceanbase-test/backup/data?host=cos.ap-***.myqcloud.com&access_id=***&access_key=***&delete_mode=delete' TENANT = mysql_tenant;
+    ```
+
+  * 系统租户为租户 `mysql_tenant` 配置备份路径，备份介质为 Azure Blob，配置清理模式为 `delete`，同时指定校验算法为 `md5`。
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='azblob://oceanbase-test-bucket/backup/data?host=http://****.blob.core.windows.net&access_id=****&access_key=****&delete_mode=delete&checksum_type=md5' TENANT = mysql_tenant;
+    ```
+
+* 用户租户
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 NFS。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'file:///data/nfs/backup/data';
+    ```
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 NFS，指定可以访问当前备份路径的 region 为 `region1`。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'file:///data/nfs/backup/data?region=region1';
+    ```
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 OSS，备份文件的清理模式为 `delete`，使用 MD5 算法校验备份数据的完整性。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://oceanbase-test-bucket/backup/?host=***.aliyun-inc.com&access_id=***&access_key=***&delete_mode=delete&checksum_type=md5';
+    ```
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 OSS，备份文件的清理模式为 `delete`，不校验备份数据的完整性。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://oceanbase-test-bucket/backup/?host=xxx.aliyun-inc.com&access_id=xxx&access_key=xxx&delete_mode=delete&checksum_type=no_checksum';
+    ```
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 OSS，配置备份文件的清理模式为 `delete`，并指定可以访问当前备份路径的 idc 为 `idc2`。
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://oceanbase-test-bucket/backup/?host=***.aliyun-inc.com&access_id=***&access_key=***&delete_mode=delete&idc=idc2';
+    ```
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 OSS，备份文件的清理模式为 `tagging`，并使用 MD5 算法校验归档文件的完整性。该路径配置了 `enable_worm=true` 时，系统将按照 WORM 的规范对该路径执行写入和删除操作。
+
+    <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>OceanBase 数据库当前不会替代您设置合规保留策略，请在设置备份路径前确保 OSS Bucket 已正确设置保留策略（WORM 策略）并锁定。</p>
+    </main>
+
+    ```shell
+    obclient [oceanbase]> ALTER SYSTEM SET DATA_BACKUP_DEST = 'oss://oceanbase-test-bucket/backup/?host=xxx.aliyun-inc.com&access_id=xxx&access_key=xxx&delete_mode=tagging&checksum_type=md5&enable_worm=true';
+    ```
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 AWS S3，备份文件的清理模式为 `tagging`，使用 CRC32 算法校验备份数据的完整性。
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='s3://oceanbase-test-bucket/backup/data?host=s3.<region>.amazonaws.com&access_id=****&access_key=****&s3_region=****&delete_mode=tagging&checksum_type=crc32';
+    ```
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 OBS，通过 S3 协议访问。
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='s3://oceanbase-test-bucket/backup/data?host=obs.****.myhuaweicloud.com&access_id=****&access_key=****';
+    ```
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 GCS，通过 S3 协议访问。
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='s3://oceanbase-test-bucket/backup/data?host=https://storage.googleapis.com&access_id=****&access_key=****';
+    ```
+
+  * 租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 COS，备份文件的清理模式为 `delete`，通过 S3 协议访问。
+
+    <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>使用 COS 作为备份介质时，需要先设置集群级配置项 <a href="../../../../800.configuration-items-and-system-variables/100.system-configuration-items/300.cluster-level-configuration-items/16720.ob_storage_s3_url_encode_type.md">ob_storage_s3_url_encode_type</a>，详细操作可参见 <a href="../../../../../600.manage/600.backup-and-recovery/400.data-backup/100.preparation-before-data-backup.md">备份前准备</a>。</p>
+    </main>
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='s3://oceanbase-test/backup/data?host=cos.ap-***.myqcloud.com&access_id=***&access_key=***&delete_mode=delete';
+    ```
+
+  * 用户租户 `mysql_tenant` 为本租户配置备份路径，备份介质为 Azure Blob，配置清理模式为 `delete`，同时指定校验算法为 `md5`。
+
+    ```shell
+    obclient> ALTER SYSTEM SET DATA_BACKUP_DEST='azblob://oceanbase-test-bucket/backup/data?host=http://****.blob.core.windows.net&access_id=****&access_key=****&delete_mode=delete&checksum_type=md5';
+    ```
+
+## 相关文档
+
+* [备份路径和归档路径源端配置案例](../../../../../600.manage/600.backup-and-recovery/1500.configuration-case-the-source-of-backup-dest-and-archive-dest.md)
+
+* [BACKUP KEY](500.backup-key.md)
+
+* [BACKUP](600.backup.md)
+
+* [备份前准备](../../../../../600.manage/600.backup-and-recovery/400.data-backup/100.preparation-before-data-backup.md)

@@ -1,0 +1,35 @@
+---
+title: DROPJAVA
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286706.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DROPJAVA
+
+`DBMS_JAVA.DROPJAVA` 用于删除上传的外部资源 Jar 包。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该系统包从 OceanBase 数据库 V4.4.0 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_JAVA.DROPJAVA(IN jar_name VARCHAR(65535));
+```
+
+`jar_name` 是上传时 `loadjava` 的 `jar_name`。
+
+## 示例
+
+执行如下命令删除上传的外部资源 Jar 包：
+
+```shell
+obclient> CALL DBMS_JAVA.DROPJAVA('my_add_jar');
+```

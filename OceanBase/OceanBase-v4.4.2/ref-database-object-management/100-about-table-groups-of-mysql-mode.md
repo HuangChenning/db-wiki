@@ -1,0 +1,64 @@
+---
+title: "表组概述"
+book: "数据库对象管理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283621.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 表组概述
+
+表组（Table Group）是一个逻辑上的集合概念，用于将一组业务关联性强的表组织在一起。在 OceanBase 数据库中，默认情况下，不同表的数据是随机分布在不同存储节点上的。通过创建表组，可以显式地定义这组表在物理存储上的邻近关系，从而优化关联查询的性能和数据管理的便利性。
+
+## 表组的 SHARDING 属性
+
+在历史版本（V3.x）中，表组具有严格的分区定义，导致表加入表组的限制很强。从 V4.2.0 版本开始，表组引入了 `SHARDING` 属性，取代了原有的分区概念。该属性决定了表组内各表对应分区在集群中的聚合与分布方式，这些被聚合在一起的分区集合称为一个分区组（Partition Group）。
+
+`SHARDING` 属性有以下三种模式，对应不同的数据分布策略：
+
+* `SHARDING = NONE`：表示对加入表组内各表的分区方式无限制，且表之间分区不作聚合。在 V4.4.2 BP1 之前版本中，`NONE` 语义还包含所有分区都在同一日志流上不作打散（聚集单节点），新版本去除该语义，具体分布范围还取决于 `SCOPE` 属性。
+
+* `SHARDING = PARTITION`：表组内每一张表的数据按一级分区打散，如果是二级分区表，则一级分区下的所有二级分区聚集在一起。
+
+  * 分区要求：所有表的一级分区的分区定义相同；如果是二级分区表，也只校验一级分区的分区定义。因此，一级分区表和二级分区表可以同时存在，只要这些表的一级分区的分区定义相同即可。
+  * 分区对齐规则：具有相同一级分区值的分区聚集在一起，包括：一级分区表的一级分区和二级分区表对应一级分区下的所有二级分区。
+
+* `SHARDING = ADAPTIVE`：表组内每一张表的数据根据自适应方式打散。即，如果表组内的表是一级分区表，则按一级分区打散；如果表组内的表是二级分区表，则按每个一级分区下的二级分区打散。
+
+  此类表组内表的分区要求及分区对齐规则如下：
+
+  * 分区要求：表组内的表全部是一级分区表或者全部是二级分区表。如果是一级分区表，则要求一级分区的分区定义相同；如果是二级分区表，则要求一级分区和二级分区的分区定义都相同。
+  * 分区对齐规则：如果表组内的表全部是一级分区表，则一级分区值相同的分区聚集在一起；如果表组内的表全部是二级分区表，则一级分区值和二级分区值均相同的分区聚集在一起。
+
+## 表组 SCOPE 属性
+
+对于 V4.4.2 版本，OceanBase 数据库从 V4.4.2 BP1 版本开始，表组新增了 `SCOPE` 属性，用于定义经过 `SHARDING` 聚合后形成的 Partition Group 在集群中的分布范围。
+
+`SCOPE` 属性有以下三种取值：
+
+* `SERVER`：表示所有 Partition Group 的 Leader 聚集在同一节点上。该取值提供最强的数据本地性，但可能影响集群负载均衡。
+* `ZONE`：表示所有 Partition Group 的 Leader 分布在同一 Zone 内，且打散在 Zone 内各节点。该取值平衡了数据本地性和 Zone 内的负载均衡。
+* `CLUSTER`：表示所有 Partition Group 的 Leader 打散在集群内各节点。该取值能最大化集群的负载均衡能力，但可能增加跨节点访问。
+
+### SCOPE = ZONE 使用场景
+
+1. 跨 Zone 延迟敏感：需要将相关分区的 Leader 聚合到同一个 Zone，减少跨 Zone 访问延迟。
+2. Zone 内负载均衡：在同一个 Zone 内，需要将不同分区的 Leader 分散到不同 Server。避免单 Server 负载过高。
+3. 全局索引一致性：主表和全局索引的 Leader 在同一 Zone，保证数据访问的本地性。
+
+## 相关文档
+
+* [创建表组](../400.manage-table-groups-of-mysql-mode/200.create-a-table-group-of-mysql-mode.md)
+
+* [查看表组信息](../400.manage-table-groups-of-mysql-mode/300.view-the-information-of-a-table-group-of-mysql-mode.md)
+
+* [将表添加到表组](../400.manage-table-groups-of-mysql-mode/400.add-tables-to-a-table-group-of-mysql-mode.md)
+
+* [修改表组属性](../400.manage-table-groups-of-mysql-mode/500.modify-the-sharding-attribute-ot-a-table-group-of-mysql-mode.md)
+
+* [管理表组内的表](../400.manage-table-groups-of-mysql-mode/600.manage-tables-within-a-table-group-of-mysql-mode.md)
+
+* [删除表组](../400.manage-table-groups-of-mysql-mode/700.delete-a-table-group-of-mysql-mode.md)

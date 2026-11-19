@@ -1,0 +1,28 @@
+---
+title: nls_sort
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-0000000002183531.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# nls_sort
+
+`nls_sort` 用于查看字符串值的排序规则。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该变量不支持修改。</p>
+  </main>
+
+|  **属性**  |                                                   **描述**                                                   |
+|----------|------------------------------------------------------------------------------------------------------------|
+| 参数类型     | varchar                 |
+| 默认值      | BINARY                  |
+| 取值范围     | N/A                     |
+| 生效范围     | <li> Global   <li> Session    |
+| 是否参与序列化  | 是                       |
+| 是否影响计划生成 | 是                       |

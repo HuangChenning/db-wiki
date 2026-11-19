@@ -1,0 +1,74 @@
+---
+title: "查看表所占用的磁盘空间"
+book: "系统管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000002672298.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-management
+---
+
+# 查看表所占用的磁盘空间
+
+OceanBase 数据库支持通过视图来查看表中数据所占用的磁盘空间大小。
+
+## 使用限制
+
+对于 V4.2.5 版本，从 V4.2.5 BP3 版本开始，支持用户租户通过 `DBA_OB_TABLE_SPACE_USAGE` 视图查看表所占用的磁盘空间大小。
+
+## 操作步骤
+
+1. 用户租户的租户管理员登录到数据库。
+
+   <main id="notice" type='explain'>
+   <h4>说明</h4>
+   <p>MySQL 租户的管理员用户为 <code>root</code> 用户，Oracle 租户的管理员用户为 <code>SYS</code> 用户。</p>
+   </main>
+
+   连接示例如下，连接数据库时请以实际环境为准。
+
+   ```shell
+   obclient -h10.xx.xx.xx -P2883 -uroot@mysql_tenant#obdemo -p***** -A
+   ```
+
+2. 执行以下语句，查看表数据的磁盘空间占用情况。
+
+   :::tab
+   tab MySQL 模式
+
+   MySQL 租户查看本租户下各表的磁盘空间占用情况，语句如下：
+
+   ```shell
+   obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OB_TABLE_SPACE_USAGE;
+   ```
+
+   tab Oracle 模式
+
+   Oracle 租户查看本租户下各表的磁盘空间占用情况，语句如下：
+
+   ```shell
+   obclient [SYS]> SELECT * FROM SYS.DBA_OB_TABLE_SPACE_USAGE;
+   ```
+
+   :::
+
+   查询结果的示例如下：
+
+   ```shell
+   +----------+---------------+--------------------------------+-------------+---------------+
+   | TABLE_ID | DATABASE_NAME | TABLE_NAME                     | OCCUPY_SIZE | REQUIRED_SIZE |
+   +----------+---------------+--------------------------------+-------------+---------------+
+   |   500011 | test          | wide_table_row_storage2        |  4495925120 |    4613763072 |
+   |   500012 | test          | wide_table_column_storage2     |  3915023145 |    4195397632 |
+   |   500014 | test          | wide_table_row_column_storage2 |  8410964107 |    9805275136 |
+   +----------+---------------+--------------------------------+-------------+---------------+
+   3 rows in set
+   ```
+
+   返回结果中：
+
+   * `OCCUPY_SIZE`：表压缩后落盘的数据量，单位为字节。
+   * `REQUIRED_SIZE`：表压缩后落盘的数据量实际占用了多少磁盘空间，单位为字节。
+
+   从返回结果中，还可以通过 `(OCCUPY_SIZE / REQUIRED_SIZE) * 100%` 来计算磁盘空间的利用率。例如，本示例中，表 `wide_table_row_storage2` 的磁盘空间利用率为 `(4495925120 / 4613763072) * 100% = 97.4%`。

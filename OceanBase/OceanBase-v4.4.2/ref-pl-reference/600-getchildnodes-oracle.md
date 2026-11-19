@@ -1,0 +1,77 @@
+---
+title: GETCHILDNODES
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006354587.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# GETCHILDNODES
+
+`GETCHILDNODES` 函数用于返回指定节点 `n` 的所有直接子节点，结果以有序列表（`DBMS_XMLDOM.DOMNODELIST`）形式呈现，但不包括更深层级的后代节点。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该子程序从 OceanBase 数据库 V4.4.2 BP2 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_XMLDOM.getChildNodes (
+   node IN DBMS_XMLDOM.DOMNODE);
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| node | 需要获取子节点的 `DBMS_XMLDOM.DOMNODE` 句柄。通常为带有子节点的文档节点或元素节点，具体支持类型以当前实现为准。 |
+
+## 返回值
+
+直接子节点组成的 `DBMS_XMLDOM.DOMNODELIST`。
+
+## 使用说明
+
+遍历返回列表时，请配合 [GETLENGTH](../19500.dbms-xmldom-oracle/800.getlength-xmldom-oracle.md) 与 [ITEM](../19500.dbms-xmldom-oracle/1000.item-oracle.md) 使用。若需访问更深层节点，应对子节点递归调用本函数。
+
+## 示例
+
+该示例通过 `DBMS_XMLPARSER` 系统包解析 XML 文档并获取 `DOMDOCUMENT` 句柄，然后通过 `DBMS_XMLDOM` 系统包获取 XML 文档的 `DOMNODELIST` 句柄，并获取列表中的第一个元素的子节点列表：
+
+```sql
+-- 声明解析器和文档句柄变量
+DECLARE
+  p   DBMS_XMLPARSER.PARSER;
+  doc DBMS_XMLDOM.DOMDOCUMENT;
+  n   DBMS_XMLDOM.DOMNODE;
+  nl  DBMS_XMLDOM.DOMNODELIST;
+BEGIN
+  -- 创建解析器实例
+  p := DBMS_XMLPARSER.NEWPARSER;
+  -- 在解析器上解析 XML 文档
+  DBMS_XMLPARSER.PARSECLOB(p, '<root><a/></root>');
+  -- 获取 XML 文档的 DOMDOCUMENT 句柄
+  doc := DBMS_XMLPARSER.GETDOCUMENT(p);
+  -- 释放解析器实例
+  DBMS_XMLPARSER.FREEPARSER(p);
+  -- 获取 XML 文档中所有名为 "root" 的元素列表
+  nl := DBMS_XMLDOM.GETELEMENTSBYTAGNAME(doc, 'root');
+  -- 获取列表中的第一个元素
+  n  := DBMS_XMLDOM.ITEM(nl, 0);
+  -- 获取节点列表
+  nl := DBMS_XMLDOM.GETCHILDNODES(n);
+  -- 释放 XML 文档资源
+  DBMS_XMLDOM.FREEDOCUMENT(doc);
+END;
+/
+```

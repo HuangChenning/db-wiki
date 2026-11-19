@@ -1,0 +1,63 @@
+---
+title: LEAVE
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005684913.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# LEAVE
+
+`LEAVE` 语句用于退出带有指定标签的流程控制语句。如果标签用于最外层的存储程序块，则使用 LEAVE 将退出该程序。
+
+## 语法
+
+```sql
+LEAVE label
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| label | 标签名称，指定要退出的流程控制语句。 |
+
+`LEAVE` 语句可以用于 `BEGIN ... END` 块中，以及 `LOOP`、`REPEAT` 和 `WHILE` 循环语句中。
+
+## 示例
+
+在 LOOP 循环中使用 LEAVE 退出循环。
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE PROCEDURE leave_example()
+    BEGIN
+        DECLARE i INT DEFAULT 0;
+        loop_label: LOOP
+            SET i = i + 1;
+            IF i >= 5 THEN
+                LEAVE loop_label;
+            END IF;
+        END LOOP loop_label;
+        SELECT i;
+    END //
+
+obclient> DELIMITER ;
+
+obclient> CALL leave_example();
+```
+
+查询结果如下：
+
+```sql
++------+
+| i    |
++------+
+|    5 |
++------+
+1 row in set
+```

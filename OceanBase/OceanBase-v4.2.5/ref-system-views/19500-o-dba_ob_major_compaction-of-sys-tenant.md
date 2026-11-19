@@ -1,0 +1,84 @@
+---
+title: oceanbase.DBA_OB_MAJOR_COMPACTION
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501243.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_MAJOR_COMPACTION
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户的合并全局信息。
+
+## 字段说明
+
+|           字段名称           |     类型      | 是否可以为 NULL |        描述         |
+|--------------------------|-------------|------------|---------------------------------------------|
+| FROZEN_SCN           | bigint(20) unsigned  | NO         | 最近一次合并的版本号           |
+| FROZEN_TIME              | timestamp(6)  | NO         | 最近一次合并发起的时间（将 FROZEN_SCN 以可读的形式展示）          |
+| GLOBAL_BROADCAST_SCN | bigint(20) unsigned  | NO         | 全局广播的合并版本         |
+| LAST_SCN             | bigint(20) unsigned  | NO         | 上一个已经完成合并的版本      |
+| LAST_FINISH_TIME         | timestamp(6)  | NO         | 上一次合并结束时间         |
+| START_TIME               | timestamp(6)  | NO         | 合并开始时间            |
+| STATUS                   | varchar(10) | NO         | <ul><li>`IDLE`：没有在合并中   </li><li> `COMPACTING`：正在合并中   </li><li> `CHECKSUM`：校验 checksum </li></ul>   |
+| IS_ERROR                 | varchar(3)  | NO         | <ul><li> `YES`：合并过程存在错误   </li><li> `NO`：合并过程没有报错  </li></ul>  |
+| IS_SUSPENDED             | varchar(3)  | NO         | <ul><li>`YES`：暂停合并状态</li><li> `NO`：没有暂停合并</li></ul>      |
+| INFO                     | varchar(14) | NO         | 展示合并信息。例如：合并失败原因  |
+
+## 查询示例
+
+系统租户查看本租户的合并信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.DBA_OB_MAJOR_COMPACTION;
+```
+
+查询结果如下所示：
+
+```shell
++---------------------+----------------------------+----------------------+---------------------+----------------------------+----------------------------+--------+----------+--------------+------+
+| FROZEN_SCN          | FROZEN_TIME                | GLOBAL_BROADCAST_SCN | LAST_SCN            | LAST_FINISH_TIME           | START_TIME                 | STATUS | IS_ERROR | IS_SUSPENDED | INFO |
++---------------------+----------------------------+----------------------+---------------------+----------------------------+----------------------------+--------+----------+--------------+------+
+| 1736359201793995000 | 2025-01-09 02:00:01.793995 |  1736359201793995000 | 1736359201793995000 | 2025-01-09 02:05:56.738721 | 2025-01-09 02:00:01.822737 | IDLE   | NO       | NO           |      |
++---------------------+----------------------------+----------------------+---------------------+----------------------------+----------------------------+--------+----------+--------------+------+
+1 row in set
+```
+
+## 相关视图或文档
+
+* 查看本租户各个 Zone 的合并信息：[DBA_OB_ZONE_MAJOR_COMPACTION](23200.o-dba_ob_zone_major_compaction-of-sys-tenant.md)
+
+* 查看 Tablet 级的合并基础统计信息：
+
+  * [GV$OB_MERGE_INFO](../300.performance-view-of-sys-tenant/700.gv-merge_info-of-sys-tenant.md)
+
+  * [V$OB_MERGE_INFO](../300.performance-view-of-sys-tenant/30800.v-merge_info-of-sys-tenant.md)
+
+* 查看 Tablet 级的合并的详细历史信息：
+
+  * [GV$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-sys-tenant/3400.gv-ob_tablet_compaction_history-of-sys-tenant.md)
+  * [V$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-sys-tenant/33800.v-ob_tablet_compaction_history-of-sys-tenant.md)
+
+* 合并相关的操作，参见以下文档：
+
+  * [自动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/200.automatic-merge-triggering.md)
+
+  * [定时触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/300.scheduled-trigger-merge.md)
+
+  * [自适应合并](../../../200.system-management/500.manage-data-storage/200.merge-management/320.adaptive-compavtion.md)
+
+  * [手动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/400.manually-trigger-a-merge.md)
+
+  * [手动控制合并](../../../200.system-management/500.manage-data-storage/200.merge-management/500.manually-control-a-merge.md)
+
+  * [查看合并信息](../../../200.system-management/500.manage-data-storage/200.merge-management/500.view-merge-process.md)

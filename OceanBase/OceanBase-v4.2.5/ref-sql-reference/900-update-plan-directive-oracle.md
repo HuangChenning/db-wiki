@@ -1,0 +1,61 @@
+---
+title: UPDATE_PLAN_DIRECTIVE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503701.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# UPDATE_PLAN_DIRECTIVE
+
+`UPDATE_PLAN_DIRECTIVE` 过程用于更新资源计划指令。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+
+## 语法 
+
+```sql
+DBMS_RESOURCE_MANAGER.UPDATE_PLAN_DIRECTIVE (
+    PLAN                             IN VARCHAR2,
+    GROUP_OR_SUBPLAN                 IN VARCHAR2,
+    NEW_COMMENT                      IN VARCHAR2 DEFAULT NULL,
+    NEW_MGMT_P1                      IN INT   DEFAULT NULL,
+    NEW_UTILIZATION_LIMIT            IN INT   DEFAULT NULL,
+    NEW_MIN_IOPS                     IN INT   DEFAULT NULL,
+    NEW_MAX_IOPS                     IN INT   DEFAULT NULL,
+    NEW_WEIGHT_IOPS                  IN INT   DEFAULT NULL);
+```
+
+## 参数说明 
+
+|        参数        |           说明         |
+|-------------------|-------------------------|
+| PLAN              | 资源计划的名称。  |
+| GROUP_OR_SUBPLAN  | 资源使用组或子计划的名称。  |
+| NEW_COMMENT       | 对计划指令的注释。  |
+| NEW_MGMT_P1       | 指定系统满负载情况下，相对可用的最大 CPU 占比。 |
+| NEW_UTILIZATION_LIMIT | CPU 资源使用比例上限。 该参数的取值范围为 \[0, 100\]。"100"表示最大可使用租户全部 CPU 资源。如果取值"20"则表示最大可使用租户 20% 的 CPU 资源。 |
+| NEW_MIN_IOPS      | 指定出现 IO 争用时，资源组预留的 IOPS 资源，总和不超过 100。|
+| NEW_MAX_IOPS      | 指定资源组最大可使用的 IOPS 资源，总和可以超过 100。|
+| NEW_WEIGHT_IOPS   | 指定 IOPS 的权重值，总和可以超过 100。|
+
+## 使用说明 
+
+如果未指定 `UPDATE_PLAN_DIRECTIVE` 的参数，则参数值在数据字典中保持不变。
+
+要清除（变成零或无效）资源计划指令中的任何数值参数，请使用 `UPDATE_PLAN_DIRECTIVE` 过程将其设置为 -1。
+
+## 示例 
+
+```shell
+obclient> BEGIN
+  DBMS_RESOURCE_MANAGER.UPDATE_PLAN_DIRECTIVE('DAY','group1','中间级别组');
+END ;
+```

@@ -1,0 +1,47 @@
+---
+title: POSITION
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000007053248.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# POSITION
+
+## 描述
+
+该函数在字符串中搜索指定的子字符串，并返回子字符串第一次出现的字符位置。
+
+## 语法
+
+``` sql
+POSITION(substring IN string)
+```
+
+## 参数解释
+
+| 参数      | 说明                   |
+|-----------|------------------------|
+| substring | 指定要搜索的子字符串。 |
+| string    | 指定被搜索的字符串。   |
+
+## 返回类型
+
+返回 `NUMBER` 数据类型。未找到指定子字符串时返回 `0`。
+
+## 示例
+
+返回 `Base` 在字符串 `中OceanBase` 中第一次出现的字符位置。
+
+``` sql
+obclient> SELECT POSITION('Base' IN '中OceanBase') AS result FROM DUAL;
++--------+
+| RESULT |
++--------+
+|      7 |
++--------+
+1 row in set
+```

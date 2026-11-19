@@ -1,0 +1,71 @@
+---
+title: "C3P0 连接池配置示例"
+book: "应用开发"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001698991.html"
+tags:
+  - oceanbase
+  - distributed
+  - develop
+---
+
+# C3P0 连接池配置示例
+
+本文介绍 C3P0 连接池配置依赖和示例代码。
+
+## 配置依赖
+
+```plaintext
+ <dependency>
+   <groupId>com.mchange</groupId>
+   <artifactId>c3p0</artifactId>
+   <version>0.9.5</version>
+ </dependency>
+```
+
+```shell
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.25</version>
+</dependency>
+<dependency>
+    <groupId>com.mchange</groupId>
+    <artifactId>c3p0</artifactId>
+    <version>0.9.5</version>
+</dependency>
+```
+
+## 示例代码
+
+```unknow
+public class C3P0PoolTest {
+    private static ComboPooledDataSource dataSource = new ComboPooledDataSource("oboracle");
+    public void init() throws PropertyVetoException {
+        dataSource.setDriverClass("com.mysql.cj.jdbc.Driver");
+        dataSource.setJdbcUrl("jdbc:mysql://10.100.xxx.xxx:30035/test?useSSL=false");
+        dataSource.setUser("test@tt3");
+        dataSource.setPassword("******");
+        dataSource.setInitialPoolSize(3);
+        dataSource.setMaxPoolSize(10);
+        dataSource.setMinPoolSize(3);
+        dataSource.setAcquireIncrement(3);
+    }
+    public void testInsert() throws SQLException, PropertyVetoException {
+        init();
+        Connection connection =  dataSource.getConnection();
+        System.out.println("autocommit is " + connection.getAutoCommit());
+        connection.setAutoCommit(false);
+        connection.prepareStatement("create table t1(c1 binary_double)").execute();
+        PreparedStatement ps = connection.prepareStatement("insert into t1 values('2.0')");
+        ps.execute();
+        ResultSet resultSet = ps.executeQuery("select * from t1");
+        while (resultSet.next()) {
+            int count  = resultSet.getMetaData().getColumnCount();
+            for (int i = 1; i <= count; i++) {
+                System.out.println(resultSet.getMetaData().getColumnName(i) + ":" + resultSet.getString(i));
+            }
+        }
+    }
+}
+```

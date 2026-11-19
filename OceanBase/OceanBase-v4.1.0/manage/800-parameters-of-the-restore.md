@@ -1,0 +1,128 @@
+---
+title: "物理恢复相关参数介绍"
+book: "管理数据库"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001692906.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 物理恢复相关参数介绍
+
+本节主要对恢复命令中的相关参数进行介绍。
+
+## 恢复命令相关
+
+### 命令
+
+* 恢复到指定时间戳
+
+   ```shell
+   obclient [(none)]>ALTER SYSTEM RESTORE dest_tenant_name FROM uri UNTIL TIME=timestamp WITH restore_option [DESCRIPTION description];
+   ```
+
+* 恢复到指定 SCN
+
+   ```shell
+   obclient [(none)]>ALTER SYSTEM RESTORE dest_tenant_name FROM uri UNTIL SCN=scn WITH restore_option [DESCRIPTION description];
+   ```
+
+* 恢复到最新位点
+
+   ```shell
+   obclient [(none)]> ALTER SYSTEM RESTORE dest_tenant_name FROM uri WITH restore_option [DESCRIPTION description];
+   ```
+
+### 参数解释
+
+|         参数        |     描述      |
+|--------------------|--------------|
+| dest_tenant_name   | 指恢复的新租户的名称。 |
+| uri                | 指备份时设置的数据备份路径 `backup_data_dest` 与日志归档路径 `log_archive_dest`，该值至少包含一条数据备份路径和一条日志归档路径，路径间用 `,` 分隔。    |
+| timestamp          | 指恢复指定时间戳，恢复到该时间点为止，且包括该 `timestamp` 位点，指定 `timestamp` 必须以 `=` 连接。`timestamp` 仅支持 `YYYY-MM-DD HH24:MI:SS.FF` 格式，并且小数部分（`FF`）支持 0~6 位小数，可以精确到微秒。|
+| scn                | 指恢复指定的 SCN，恢复到该 SCN 位点为止，且包括该 `scn` 位点，指定 `scn` 须以 `=` 连接。|
+| restore_option     | 支持 `pool_list`、`locality`、`primary_zone`、`kms_encrypt`，不同参数间采用 `&` 分隔： <ul><li>`pool_list`为必选项，填写用户的资源池。多个资源池之间用英文逗号（,）分隔。</li>  <li>`locality` 为可选项，填写新租户副本分布的 Locality 信息，需要满足与新租户所在集群的 `pool_list` 的 Zone 信息相匹配。 不填时，默认按照 resource_pool 的 `zone_list` 为每个 Zone 设一个 F 副本。</br>填写样例: `locality='F@z1,F@z2,F@z3'` <li> `primary_zone` 为可选项，填写新租户的 Leader 副本的偏好位置，需要满足与  `pool_list` 及`locality` 的匹配，即需要满足 Zone 信息匹配以及 `primary_region` 内至少有两个 Paxos 成员等限制。不填时，则系统按照 `locality` 的 `zone_list` 将 Leader 随机分布在这些 Zone 中。 </br>填写样例: `primary_zone='z1'`</li> <li>`kms_encrypt`为可选项，为 `true` 则表示在恢复时需要使用在恢复准备操作中指定的 `kms_encrypt_info`，默认缺省值为 `false`。 </li></ul>   |
+| description |为可选项，指用户指定的描述信息。 |
+
+### timestamp 与 scn 选取约束
+
+`timestamp` 与 `scn` 需要大于等于数据备份视图 `CDB_OB_BACKUP_SET_FILES` 中记录的数据备份的最小恢复位点 `MIN_RESTORE_SCN`，小于等于日志归档视图 `CDB_OB_ARCHIVELOG` 中的最大归档位点 `CHECKPOINT_SCN`。由于日志归档可能出现断流，因此恢复位点的选择还需要考虑日志归档的不连续区间，对于可恢复区间的选择则可能是分段的。
+
+举例说明，假设用户的备份情况如下：
+
+* 发起了 2 次日志归档，其中 `round_id` 分别为 1、2。
+
+* 发起了 3 次数据备份，有效数据备份分别为 `full_backup_set_1`、 `full_backup_set_2`、`inc_backup_set_3`。
+
+物理恢复的可恢复区间如下图所示。其中，数据备份的右边界均为 `MIN_RESTORE_SCN`（例如，数据备份 `full_backup_set_1` 的 `MIN_RESTORE_SCN` 对应图中的 `scn 300`）；日志归档的右边界均为 `CHECKPOINT_SCN`（例如，日志备份 `round 1` 的 `CHECKPOINT_SCN` 对应图中的 `scn 500`）。
+
+![可恢复区间](img/1652808f89c98a5c.jpg)
+
+由于日志归档可能发生中断，故在计算恢复区间时还需要排除中间不连续的时间段，这样就会呈现出分段的可恢复区间，即图中大括号划出的范围：`[scn 300, scn 500] \∪ [scn 900, scn 1500]`。
+
+## 恢复性能相关
+
+### 命令
+
+```shell
+obclient [(none)]> ALTER SYSTEM SET ha_high_thread_score =10 TENANT = mysql;
+```
+
+### 参数解释
+
+|         参数                |     描述                                        |
+|-----------------------------|------------------------------------------------|
+| ha_high_thread_score         |  设置恢复任务队列使用线程资源的权重值。            |
+
+## Recover 命令相关
+
+### 命令
+
+* 回放到日志到指定的时间戳，且包含该时间戳位点。
+
+  ```sql
+  ALTER SYSTEM RECOVER STANDBY [TENANT tenant_name] UNTIL TIME='timestamp';
+  ```
+
+* 回放到日志到指定的 scn，且包含该 scn 位点。
+
+  ```sql
+  ALTER SYSTEM RECOVER STANDBY [TENANT tenant_name] UNTIL SCN=scn;
+  ```
+
+* 无终点，持续回放归档源端日志。
+
+  ```sql
+  ALTER SYSTEM RECOVER STANDBY [TENANT tenant_name] UNTIL UNLIMITED;
+  ```
+
+* 取消 Recover。
+
+  ```sql
+  ALTER SYSTEM RECOVER STANDBY TENANT tenant_name CANCEL;
+  ```
+
+### 参数解释
+
+|         参数                |     描述                                        |
+|-----------------------------|------------------------------------------------|
+| tenant_name         |  租户名            |
+| timestamp          | 指恢复指定时间戳，恢复到该时间点为止，且包括该 `timestamp` 位点，指定 `timestamp` 必须以 `=` 连接。`timestamp` 仅支持 `YYYY-MM-DD HH24:MI:SS.FF` 格式，并且小数部分（`FF`）支持 0~6 位小数，可以精确到微秒。|
+| scn                | 指恢复指定的 SCN，恢复到该 SCN 位点为止，且包括该 `scn` 位点，指定 `scn` 须以 `=` 连接。|
+| UNLIMITED                | 无终点恢复，持续回放归档源端日志。|
+
+## Active 命令相关
+
+### 命令
+
+```shell
+obclient [(none)]> ALTER SYSTEM ACTIVATE STANDBY TENANT tenant_name;
+```
+
+### 参数解释
+
+|         参数        |     描述           |
+|--------------------|-------------------|
+| tenant_name         | 恢复成功的备租户名。当前每条命令仅支持切换一个租户。|

@@ -1,0 +1,72 @@
+---
+title: "空间参考系统 (SRS)"
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005288385.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 空间参考系统 (SRS)
+
+空间数据的空间参考系统 (Spatial Reference System，SRS) 是基于坐标的地理位置系统。OceanBase 数据库当前版本仅支持系统默认支持的 SRS。
+
+## 空间参考系统类型
+
+空间参考系统（SRS）主要分为以下几类：
+
+* 地理 SRS：以地球椭球体为基础，使用经纬度作为坐标，通常用角度（如度）表示，适用于描述真实地理位置（如 GPS 经纬度），例如常用的 WGS 84（SRID=4326）。
+* 投影 SRS：将椭球体上的地理坐标投影到平面上，采用笛卡尔坐标系，使用长度单位（如米、英尺），常见于平面地图展示和空间分析。
+
+此外，OceanBase 还支持一种特殊的空间参考系统 —— `SRID 0`，它表示一个无限大、无单位的二维平面（抽象的笛卡尔坐标系）。这种坐标系没有地理含义，不对应任何地球表面的位置，通常用于游戏、仿真、工程设计等虚拟或局部坐标场景。值得注意的是，`SRID 0` 是空间数据的默认 SRID，使用时需审慎区分其与真实地理坐标系的用途。
+
+## 获取空间参考系统信息
+
+您可以通过查询 `INFORMATION_SCHEMA.ST_SPATIAL_REFERENCE_SYSTEMS` 系统表，获得数据库内置的空间参考系统信息。例如，SRID 为 4326（WGS 84）的定义如下：
+
+```sql
+obclient> SELECT *  FROM INFORMATION_SCHEMA.ST_SPATIAL_REFERENCE_SYSTEMS
+     WHERE SRS_ID = 4326\G
+*************************** 1. row ***************************
+                SRS_NAME: WGS 84
+                  SRS_ID: 4326
+            ORGANIZATION: EPSG
+ORGANIZATION_COORDSYS_ID: 4326
+              DEFINITION: GEOGCS["WGS 84",DATUM["World Geodetic System 1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.017453292519943278,AUTHORITY["EPSG","9122"]],AXIS["Lat",NORTH],AXIS["Lon",EAST],AUTHORITY["EPSG","4326"]]
+             DESCRIPTION: NULL
+1 row in set
+```
+
+上述例子展示了广泛应用于 GPS 系统的 SRS，SRS_NAME 为 WGS 84，SRS_ID 为 4326。`DEFINITION` 字段为 WKT（Well-Known Text）格式，描述了 SRS 的详细结构。WKT 是基于 EBNF（扩展巴科斯-诺尔范式）定义的标准文本表示方法，既适用于存储几何数据，也适合在 GIS 场景下用作 SRS 描述。
+
+需要注意以下两点：
+
+* `SRS_ID` 数值可直接用于空间数据的 SRID 字段或空间函数中的相关参数。
+* 进行空间运算时，参与运算的所有几何对象必须具有相同的 SRID，否则将会导致错误。
+
+## SRID 选择指南
+
+在使用空间数据时，正确设置 SRID（空间参考系统标识符）对确保计算结果的准确性至关重要。请根据您的数据类型进行选择。
+
+**推荐使用 `SRID=4326`。**绝大多数地理应用应使用 `SRID=4326`。`SRID=4326` 支持精确的距离、面积和缓冲区计算，符合国际标准，便于与其他 GIS 系统集成。适用于如下场景，例如：
+
+* GPS 坐标（经纬度）
+* 手机定位、地图 API（如高德、Google Maps、百度地图）返回的坐标
+* 城市、道路、POI 等地理信息
+
+**谨慎使用 `SRID=0`。**`SRID=0` 表示"无坐标系"，所有计算按纯数学平面处理，结果无地理意义。
+
+<main id="notice" type='alert'>
+<h4>警告</h4>
+<p>切勿将真实经纬度数据设为 <code>SRID=0</code>，否则会导致距离、面积等分析结果严重错误。</p>
+</main>
+
+`SRID=0` 仅适用于数据不代表真实地球位置的场景，例如：
+
+* 游戏地图、虚拟场景中的坐标
+* CAD 工程图、建筑平面图等局部坐标系
+* 抽象图表、流程图或测试用的模拟数据
+
+此外，在地理信息查询中，由于 `SRID=0` 被视为无边界的平面笛卡尔坐标系，数据库无法像针对 `SRID=4326`（WGS 84）那样利用经纬度范围进行预定义的精细化网格划分。这种空间索引分辨率的缺失，导致 `SRID=0` 的索引过滤效率下降（产生过多 False Positives），在高并发或大规模数据场景下，其查询性能显著低于配置了正确空间参考系的 `SRID=4326` 数据。

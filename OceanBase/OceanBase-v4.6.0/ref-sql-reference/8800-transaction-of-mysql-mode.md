@@ -1,0 +1,103 @@
+---
+title: TRANSACTION
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686101.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# TRANSACTION
+
+`TRANSACTION` 相关语句用于管理数据库事务。
+
+数据库事务（Database Transaction）是指作为单个逻辑工作单元执行的一系列操作。事务处理可以用来维护数据库的完整性，保证成批的 SQL 操作全部执行或全部不执行。
+
+显示事务是用户自定义或用户指定的事务。通过 `BEGIN` 和 `BEGIN WORK`（被作为 `START TRANSACTION` 的别名）语句显示开始，以 `COMMIT` 或 `ROLLBACK` 语句显示结束。
+
+## 语法
+
+```sql
+transaction_stmt:
+      START TRANSACTION [READ ONLY | READ WRITE]
+    | BEGIN [WORK]
+    | COMMIT [WORK]
+    | ROLLBACK [WORK]
+    | SET TRANSACTION {READ ONLY | READ WRITE}
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| START TRANSACTION [READ ONLY \| READ WRITE] | 开启事务语句。一旦开启事务，则随后的 SQL 数据操作语句（即 `INSERT`、`UPDATE`、`DELETE` 等）直到显式提交时才会生效。`READ ONLY` 表示事务是只读方式开启，事务内不允许执行修改操作。`READ WRITE` 表示事务是读写方式开启，默认就是此种模式。 |
+| BEGIN [WORK] | `BEGIN` 和 `BEGIN WORK` 被作为 `START TRANSACTION` 的别名。 |
+| COMMIT [WORK] | 提交当前事务，使事务中的所有修改永久生效。 |
+| ROLLBACK [WORK] | 回滚当前事务，撤销事务中的所有修改。 |
+| SET TRANSACTION {READ ONLY \| READ WRITE} | 将当前事务设置成 `READ ONLY` 或者 `READ WRITE` 模式。 |
+
+## 示例
+
+使用 `START TRANSACTION` 开启事务并提交。
+
+```sql
+obclient> CREATE TABLE order_table(id INT PRIMARY KEY, order_name VARCHAR(50), amount DECIMAL(10,2));
+
+obclient> START TRANSACTION;
+
+obclient> INSERT INTO order_table VALUES (1, 'Order001', 100.50);
+
+obclient> UPDATE order_table SET amount = 150.00 WHERE id = 1;
+
+obclient> COMMIT;
+```
+
+使用 `BEGIN` 开启事务并回滚。
+
+```sql
+obclient> BEGIN;
+
+obclient> INSERT INTO order_table VALUES (2, 'Order002', 200.00);
+
+obclient> UPDATE order_table SET amount = 250.00 WHERE id = 2;
+
+obclient> ROLLBACK;
+```
+
+回滚后，查询表数据确认修改已撤销。
+
+```sql
+obclient> SELECT * FROM order_table;
+```
+
+查询结果如下：
+
+```sql
++----+-----------+--------+
+| id | order_name| amount |
++----+-----------+--------+
+|  1 | Order001  | 150.00 |
++----+-----------+--------+
+1 row in set
+```
+
+使用 `SET TRANSACTION` 设置事务为只读模式。
+
+```sql
+obclient> SET TRANSACTION READ ONLY;
+
+obclient> START TRANSACTION;
+
+obclient> SELECT * FROM order_table;
+```
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <ul>
+  <li>在事务还没有 <code>COMMIT</code> 之前，您可以查看本事务中的操作是否已经生效。例如，可以在 <code>COMMIT</code> 前执行 SQL 语句 <code>SELECT * FROM order_table;</code>。</li>
+  <li>本事务 Session 的访问能读到最新的结果，本事务 Session 之外的访问结果肯定是没有生效，在事务还没有 <code>COMMIT</code> 前，之前做的操作除当前事务连接之外都是不可见的。</li>
+  <li>如果想回滚该事务，直接用 <code>ROLLBACK</code> 代替 <code>COMMIT</code>。</li>
+  </ul>
+</main>

@@ -1,0 +1,43 @@
+---
+title: "GV$GLOBAL_TRANSACTION"
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283901.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$GLOBAL_TRANSACTION
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+显示所有节点上当前活跃的全局事务的信息
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该视图仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 字段说明
+
+|   **字段名称**   |     **类型**     | **是否可以为 NULL** |             **描述**              |
+|--------------|----------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| FORMATID     | NUMBER(38)     | NO             | 全局事务的格式标识符                      |
+| SVR_IP       | VARCHAR2(128)  | NO             | 服务器 IP                          |
+| SVR_PORT     | NUMBER(38)     | NO             | 服务器端口号                          |
+| GLOBALID     | VARCHAR2(256 ) | NO             | 全局事务的标识符                        |
+| BRANCHID     | VARCHAR2(256 ) | NO             | 全局事务的分支资格                       |
+| BRANCHES     | NUMBER(38)     | NO             | 全局事务中的分支机构总数                    |
+| REFCOUNT     | NUMBER(38)     | NO             | 全局事务的同级数，必须与分支机构相同              |
+| PREPARECOUNT | NUMBER         | NO             | 已准备的全局事务分支机构数                   |
+| STATE        | CHAR(6)        | NO             | 全局事务分支的状态：<ul><li>ACTIVE   </li><li> COLLECTING   </li><li> FINALIZED   </li><li> FAILED   </li><li> RECOVERING   </li><li> UNASSOCIATED   </li><li> FORGOTTEN   </li><li> READY FOR RECOVERY   </li><li> NO-READONLY FAILED   </li><li> SIBLING INFO WRITTEN   </li><li> \[ORACLE COORDINATED\]ACTIVE   </li><li> \[ORACLE COORDINATED\]COLLECTING   </li><li> \[ORACLE COORDINATED\]FINALIZED   </li><li> \[ORACLE COORDINATED\]FAILED   </li><li> \[ORACLE COORDINATED\]RECOVERING   </li><li> \[ORACLE COORDINATED\]UNASSOCIATED   </li><li> \[ORACLE COORDINATED\]FORGOTTEN   </li><li> \[ORACLE COORDINATED\]READY FOR RECOVERY   </li><li> \[ORACLE COORDINATED\]NO-READONLY FAILED   </li><li> \[MULTINODE\]ACTIVE   </li><li> \[MULTINODE\]COLLECTING   </li><li> \[MULTINODE\]FINALIZED   </li><li> \[MULTINODE\]FAILED   </li><li> \[MULTINODE\]RECOVERING   </li><li> \[MULTINODE\]UNASSOCIATED   </li><li> \[MULTINODE\]FORGOTTEN   </li><li> \[MULTINODE\]READY FOR RECOVERY   </li><li> \[MULTINODE\]NO-READONLY FAILED   </li><li> \[MULTINODE\]SIBLING INFO WRITTEN   </li><li> COMBINATION </li></ul>    |
+| FLAGS        | NUMBER         | NO             | 状态的数字表示                         |
+| COUPLING     | CHAR(15)       | NO             | 表示分支是自由（FREE），松散耦合（LOOSELY COUPLED）还是紧密耦合（TIGHTLY COUPLED）                                                         |
+| CON_ID       | VARCHAR2(256)  | NO             | 租户 ID                           |

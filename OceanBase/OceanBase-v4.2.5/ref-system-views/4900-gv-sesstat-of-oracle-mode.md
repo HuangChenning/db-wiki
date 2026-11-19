@@ -1,0 +1,72 @@
+---
+title: "GV$SESSTAT"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500677.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$SESSTAT
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前租户在当前 OBServer 节点上的 Session 级别的一些统计信息，其中，`STATISTIC#` 表示统计项编号，可以从 `V$STATNAME` 中查询到对应统计项编号的统计项名称及其含义。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| SID | NUMBER | NO | 对于 V4.2.x 版本：<ul><li> V4.2.5 BP4 之前版本：<br>在所有连接方式（直连模式/ODP 模式）下，该字段均表示 Server Session ID。</li><li> V4.2.5 BP4 及之后版本：<ul><li>在直连模式下：<br>该字段表示 Server Session ID。</li> <li>在 ODP 模式下：</li><ul><li>当 ODP 中的配置项 <code>client_session_id_version = 2</code> 时，该字段表示 Client Session ID。 </li> <li>当 <code>client_session_id_version = 1</code> 时，该字段表示 Server Session ID。</li></ul></ul></li></ul>  |
+| CON_ID | NUMBER | NO | 租户 ID |
+| SVR_IP | VARCHAR2(46) | NO | 服务器的 IP 地址 |
+| SVR_PORT | NUMBER(38) | NO | 服务器端口号 |
+| STATISTIC# | NUMBER | NO | 统计项编号 |
+| VALUE | NUMBER | NO | 统计项值 |
+
+## 查询示例
+
+用户租户下，查看本租户在所有 OBServer 节点的 Session 级别的统计事件信息，展示前 10 条记录。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.GV$SESSTAT WHERE ROWNUM <= 10;
+```
+
+查询结果如下：
+
+```shell
++----------------------+--------+----------------+----------+------------+-------+
+| SID                  | CON_ID | SVR_IP         | SVR_PORT | STATISTIC# | VALUE |
++----------------------+--------+----------------+----------+------------+-------+
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |          0 |     0 |
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |          2 |     0 |
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |        129 |     0 |
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |        130 |     0 |
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |        161 |     0 |
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |        162 |     0 |
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |        163 |     0 |
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |        164 |     0 |
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |        165 |     0 |
+| -9223372036854723788 |   1004 | 11.xxx.xxx.xxx |    28825 |        166 |     0 |
++----------------------+--------+----------------+----------+------------+-------+
+10 rows in set
+```
+
+## 相关视图或文档
+
+* 查看租户级别的统计事件信息：
+
+  * [GV$SYSSTAT](5700.gv-sysstat-of-oracle-mode.md)
+
+  * [V$SYSSTAT](36500.v-sysstat-of-oracle-mode.md)
+
+* 查看租户所有统计事件的定义：[V$STATNAME](36400.v-statname-of-oracle-mode.md)
+
+* 有关统计事件的详细说明，参见 [常见统计事件说明](../../../700.system-views/510.statistical-event-description.md)。

@@ -1,0 +1,115 @@
+---
+title: CREATE USER
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286486.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CREATE USER
+
+## 描述
+
+`CREATE USER` 语句用于创建新的 OceanBase 数据库用户。创建新用户后，可以使用新用户连接 OceanBase 数据库。
+
+## 使用限制及注意事项
+
+* 认证串格式校验：`IDENTIFIED AS`/`BY PASSWORD`，校验 `$S$` 格式，拒绝 `$A$`（`sha2`）等错误格式。
+* 标准 MySQL Connector 可以连接使用 `caching_sha2_password` 认证插件的用户。
+* `ob_sm3_password` 为 OceanBase 特有认证插件，标准 MySQL Connector / 未适配的 ODP 可能无法完成使用该认证插件的用户的连接。
+
+## 权限要求
+
+执行 `CREATE USER` 语句创建用户需要当前用户拥有全局的 CREATE USER 权限。有关 OceanBase 数据库权限的详细介绍，请参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 语法
+
+```sql
+CREATE USER [IF NOT EXISTS] {user [, user...]}
+    [REQUIRE {NONE | SSL | X509 | tls_option}]
+    [WITH resource_option [resource_option...]];
+
+user:
+      user_name
+    | user_name IDENTIFIED [WITH auth_plugin] BY password
+    | user_name IDENTIFIED [WITH auth_plugin] BY PASSWORD password
+    | user_name IDENTIFIED [WITH auth_plugin] AS PASSWORD 'auth_string'
+
+auth_plugin:
+    mysql_native_password
+    | caching_sha2_password
+    | ob_sm3_password
+
+tls_option:
+      CIPHER cipher_name
+    | ISSUER issuer_name
+    | SUBJECT subject_name
+
+resource_option:
+      MAX_CONNECTIONS_PER_HOUR integer
+    | MAX_USER_CONNECTIONS integer
+```
+
+## 参数说明
+
+| 参数   | 描述     |
+|-------|-----------|
+| IF NOT EXISTS | 用于指示如果用户名已存在，则不进行创建。创建用户时，如果要创建的用户名已存在且没有指定 `IF NOT EXISTS`，则会报错。 |
+| user_name | 用户名，新建用户后，`mysql.user` 表会新增一行该用户的表项。可同时创建多个用户时，使用英文逗号（`,`）隔开。 |
+| auth_plugin | 用于指定用户身份验证的方式（认证插件），详细介绍可参见下文 [auth_plugin](#auth_plugin)。|
+| IDENTIFIED BY password | 为待创建的用户创建一个密码，此处密码为明文，存入 `mysql.user` 表后，服务器端会变为密文存储下来。如果密码中包含特殊字符 <code>~!@#%^&*_-+=`\|(){}[]:;',.?/</code>，需使用英文引号（<code>'</code> 或 <code>"</code>）包含。 |
+| IDENTIFIED BY PASSWORD password | 为待创建的用户创建一个密码，此处密码为密文，将直接存入 `mysql.user` 表。 |
+| IDENTIFIED AS PASSWORD |将账户身份验证插件设置为 `auth_plugin`，并将 `auth_string` 值存储在 `mysql.user`表中。如果插件需要哈希字符串，则假定该字符串已经是插件所需的哈希格式。|
+| REQUIRE | 指定用户的密码验证要求，有如下几种取值。<ul><li>NONE：表示用户没有密码验证要求，意味着用户可以使用任何密码或不设置密码。</li><li>SSL：表示用户必须使用 SSL 连接进行身份验证。</li><li>X509：表示用户必须使用 X509 证书进行身份验证。</li><li>tls_option：表示用户必须满足指定的 TLS（Transport Layer Security）要求。</li></ul> |
+| tls_option | 指定 TLS 要求的具体选项。<ul><li>CIPHER：用于指定 TLS 连接使用的加密算法或密码套件。</li><li>ISSUER：用于指定 TLS 证书的发行者（Issuer）。</li><li>SUBJECT：用于指定 TLS 证书的主题（Subject）。</li></ul> |
+| resource_option | 指定用户的资源选项，指定多个资源选项时，使用英文空格隔开。<ul><li>MAX_CONNECTIONS_PER_HOUR：用于指定每小时允许的最大连接数，integer 是一个整数，表示允许的最大连接数。</li><li>MAX_USER_CONNECTIONS：用于指定每个用户允许的最大连接数，integer 是一个整数，表示允许的最大连接数。</li></ul> |
+
+### auth_plugin
+
+* `mysql_native_password`：传统的密码认证插件，使用 SHA-1 哈希算法。
+* `caching_sha2_password`：基于 SHA-256 的密码认证插件，具有更高的安全防护等级。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>对于 V4.4.2 版本，从 V4.4.2 BP2 版本开始支持认证插件 <code>caching_sha2_password</code>。</p>
+  </main>
+
+* `ob_sm3_password`：该插件在认证协议与状态机上完全复用 `caching_sha2_password`（AuthSwitch、快速认证/完整认证、TLS/RSA 传密），但算法与元数据保持独立，使用 SM3 哈希算法替代 SHA-256，用于密码存储与认证校验。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>对于 V4.4.2 版本，从 V4.4.2 BP3 版本开始支持认证插件 <code>ob_sm3_password</code>。</p>
+  </main>
+
+## 示例
+
+* 创建用户 test1 和 test2，并指定明文密码及用户允许的最大连接数
+
+  ```sql
+  obclient> CREATE USER IF NOT EXISTS test1 IDENTIFIED BY '********', test2 IDENTIFIED BY '********' WITH MAX_USER_CONNECTIONS 10;
+  ```
+
+* 创建用户 test3，指定密文密码，同时指定必须使用 SSL 连接进行身份验证
+
+  ```sql
+  obclient> CREATE USER IF NOT EXISTS test3 IDENTIFIED BY PASSWORD '********' REQUIRE SSL;
+  ```
+
+* 创建用户 test4，并指定需使用 mysql_native_password 身份验证插件
+
+  ```sql
+  obclient> CREATE USER IF NOT EXISTS test4 IDENTIFIED WITH mysql_native_password BY PASSWORD '********';
+  ```
+
+## 相关文档
+
+* 授予用户权限的操作可参见 [授予权限](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/200.authority-of-mysql-mode.md)。
+
+* 可从 `mysql.user` 表中查看创建的用户信息，`mysql.user` 表的详细介绍可参见 [mysql.user](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/4200.mysql-user-of-mysql-mode.md)
+
+* 使用创建的用户连接 OceanBase 数据库的操作可参见 [连接 OceanBase 数据库](../../../../../300.develop/100.application-development-of-mysql-mode/100.connect-to-oceanbase-database-of-mysql-mode/100.connection-methods-overview-of-mysql-mode.md) 章节。
+* 有关创建新用户时使用默认插件的介绍，参见 [default_authentication_plugin](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/2100.default_authentication_plugin-global.md)。
+* 有关认证插件的介绍，参见 [身份鉴别](../../../../../600.manage/500.security-and-permissions/200.identification-and-authentication/100.identification-and-authentication-of-mysql-mode/100.identification-of-mysql-mode.md)。

@@ -1,0 +1,33 @@
+---
+title: "V$SQL_MONITOR_STATNAME"
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700819.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# V$SQL_MONITOR_STATNAME
+
+V$SQL_MONITOR_STATNAME
+===========================================
+
+**功能**
+---------------------------
+
+展示 `GV$SQL_PLAN_MONITOR` 的 `OTHERSTAT_X_ID` 字段中数字的含义。
+
+**字段说明**
+-----------------------------
+
+|  **字段名称**   |    **类型**     | **是否可以为 NULL** |          **描述**          |
+|-------------|---------------|----------------|--------------------------|
+| CON_ID      | NUMBER          | NO             | 租户 ID                    |
+| ID          | NUMBER    | NO             | 字段 ID                    |
+| GROUP_ID    | NUMBER    | NO             | 字段分类 ID 。同一类算子会共享一个分类 ID |
+| NAME        | VARCHAR2(40)  | NO             | 字段名称                     |
+| DESCRIPTION | VARCHAR2(200) | NO             | 字段详细描述                   |
+| TYPE        | NUMBER        | NO             | 保留字段                     |
+| FLAGS       | NUMBER        | NO             | 保留字段                     |

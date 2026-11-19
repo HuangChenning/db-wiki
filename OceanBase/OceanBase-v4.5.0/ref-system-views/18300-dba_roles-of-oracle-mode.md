@@ -1,0 +1,58 @@
+---
+title: DBA_ROLES
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004477309.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_ROLES
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户内存在的所有角色。
+
+<main id="notice" >
+<h4>功能适用性</h4>
+<p>该视图仅适用于 OceanBase 数据库 Oracle 模式。</p>
+</main>
+
+## 字段说明
+
+|      **字段名称**       |    **类型**    | **是否可以为 NULL** |               **描述**               |
+|---------------------|--------------|----------------|------------------------------------|
+| ROLE                | VARCHAR2(30) | NO             | 角色名称                               |
+| PASSWORD_REQUIRED   | VARCHAR2(8)  | NO             | 指示角色是否需要启用密码。目前支持角色密码功能，但该字段不能正确显示 |
+| AUTHENTICATION_TYPE | VARCHAR2(11) | NO             | 指示角色的身份验证机制。目前暂不支持该字段。             |
+
+## 查询示例
+
+查看本租户内存在的所有角色。
+
+```shell
+obclient> SELECT * FROM SYS.DBA_ROLES;
+```
+
+查询结果如下：
+
+```shell
++---------------------+-------------------+---------------------+
+| ROLE                | PASSWORD_REQUIRED | AUTHENTICATION_TYPE |
++---------------------+-------------------+---------------------+
+| CONNECT             | NO                | NONE                |
+| RESOURCE            | NO                | NONE                |
+| DBA                 | NO                | NONE                |
+| PUBLIC              | NO                | NONE                |
+| STANDBY_REPLICATION | NO                | NONE                |
+| ROLE1               | NO                | NONE                |
++---------------------+-------------------+---------------------+
+6 rows in set
+```

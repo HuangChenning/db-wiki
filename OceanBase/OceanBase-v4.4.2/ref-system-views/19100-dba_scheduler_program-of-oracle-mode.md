@@ -1,0 +1,55 @@
+---
+title: DBA_SCHEDULER_PROGRAM
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284163.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_SCHEDULER_PROGRAM
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V3.2.3 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前租户下的所有调度程序信息。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该视图仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 字段说明
+
+|        字段名称         |       类型       | 是否可以为 NULL |                描述                 |
+|---------------------|----------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| OWNER               | VARCHAR2(128)  | YES        | 调度程序的所有者                          |
+| PROGRAM_NAME        | VARCHAR2(30)   | NO         | 调度程序名称                            |
+| PROGRAM_TYPE        | VARCHAR2(16)   | YES        | 程序操作的类型：<ul><li>`PLSQL_BLOCK`   </li><li> `STORED_PROCEDURE`   </li><li> `EXECUTABLE`</li></ul>    |
+| PROGRAM_ACTION      | VARCHAR2(4000) | YES        | 指定程序操作的字符串                        |
+| NUMBER_OF_ARGUMENTS | NUMBER(38)     | YES        | 程序接受的参数数量                         |
+
+## 查询示例
+
+查看本租户下的所有调度程序信息。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_SCHEDULER_PROGRAM;
+```
+
+查询结果如下：
+
+```shell
++-------+--------------+------------------+----------------+---------------------+
+| OWNER | PROGRAM_NAME | PROGRAM_TYPE     | PROGRAM_ACTION | NUMBER_OF_ARGUMENTS |
++-------+--------------+------------------+----------------+---------------------+
+| SYS   | empprogram   | STORED_PROCEDURE | hr.empprogram  |                   0 |
++-------+--------------+------------------+----------------+---------------------+
+1 row in set
+```

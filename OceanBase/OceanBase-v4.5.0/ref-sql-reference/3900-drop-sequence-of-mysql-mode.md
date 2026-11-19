@@ -1,0 +1,44 @@
+---
+title: DROP SEQUENCE
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479615.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP SEQUENCE
+
+## 描述
+
+该语句用来删除序列。
+
+## 语法
+
+```sql
+DROP SEQUENCE [IF EXISTS] [schema.]sequence_name
+```
+
+## 参数解释
+
+|      **参数**       |                    **描述**                     |
+|-------------------|-----------------------------------------------|
+| IF EXISTS         | 如果该序列不存在则不要报错，而是给出提示信息。可选参数。             |
+| schema            | 指定包含序列的用户。如果不指定 `Schema`，则默认为当前登录用户的序列。可选参数。 |
+| sequence_name     | 指定要删除的序列名称。                                   |
+
+## 示例
+
+* 删除序列 `user_seq`。
+
+```sql
+obclient> DROP SEQUENCE user_seq;
+```
+
+* 删除序列 `product_seq`，如果不存在也不报错。
+
+```sql
+obclient> DROP SEQUENCE IF EXISTS product_seq;
+```

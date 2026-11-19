@@ -1,0 +1,43 @@
+---
+title: DROP SEQUENCE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503347.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP SEQUENCE
+
+## 描述
+
+该语句用来删除序列。
+
+## 权限要求
+
+执行 `DROP SEQUENCE` 语句需要当前用户具备 `DROP` 管理权限。有关 OceanBase 数据库权限的详细介绍，请参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 格式
+
+```sql
+DROP SEQUENCE [IF EXISTS] [schema. ] sequence_name;
+```
+
+## 参数解释
+
+|      参数       |                            描述                             |
+|---------------|-----------------------------------------------------------|
+| schema.       | 指定包含序列的用户。如果不指定 `Schema`，则默认为当前登录用户的序列。 |
+| IF EXISTS     | 如果该序列不存在则不要报错，而是给出信息提示。|
+| sequence_name | 指定要删除的序列名称。                                               |
+
+## 示例
+
+删除序列 `seq1`。
+
+```sql
+obclient> DROP SEQUENCE IF EXISTS seq1;
+Query OK, 0 rows affected
+```

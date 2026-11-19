@@ -1,0 +1,35 @@
+---
+title: "函数索引不支持的系统函数列表"
+book: "数据库对象管理"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283515.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 函数索引不支持的系统函数列表
+
+在 OceanBase 数据库的 Oracle 模式中，对函数索引的表达式进行了限制。本节主要列出了禁止用于函数索引的系统函数。
+
+## 非用户性的系统函数
+
+非用户性的系统函数默认全部禁止用于函数索引。
+
+## 其他系统函数
+
+以下系统函数禁止用于函数索引。
+
+|--------------------|-------------------|----------------|---------------------|
+|   REGEXP_INSTR     |   CONNECT_BY_PATH | REGEXP_COUNT   |   CURRENT_TIMESTAMP |
+|   REGEXP_REPLACE   |   CURRENT_DATE    | REGEXP_SUBSTR  |   HOST_IP           |
+|   REGEXP_LIKE      |   RPC_PORT        | DBTIMEZONE     |   IS_SERVING_TENANT |
+|   UID              |   LAST_TRACE_ID   | SYSTIMESTAMP   |   SYSDATE       |
+|   SESSIONTIMEZONE  |   LOCALTIMESTAMP  | SYS_GUID       |   OB_VERSION    |
+|   AT TIME ZONE     |   EXTRACT         | AT LOCAL       |   USER          |
+|   SYS_CONTEXT      |   CHARSET         | ROWID_TO_CHAR  |   COLLATION     |
+|   DBTIMEZONE       |   COERCIBILITY    | CARDINALITY    |   DEFAULT       |
+|   ROWIDIDTONCHAR   |   ROWNUM          | DECODE         |   LNNVL         |
+|   TIMESTAMP_TO_SCN |   VALUES          | SCN_TO_TIMESTAMP | USERENV       |
+|   DUMP             |  -                | -              |          -      |

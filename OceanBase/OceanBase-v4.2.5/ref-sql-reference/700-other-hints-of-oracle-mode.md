@@ -1,0 +1,345 @@
+---
+title: "其他 Hint"
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504815.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 其他 Hint
+
+OceanBase 数据库还支持 CURSOR_SHARING_EXACT Hint、MONITOR Hint、PX_JOIN_FILTER Hint、NO_PX_JOIN_FILTER Hint、QB_NAME Hint、READ_CONSISTENCY Hint、QUERY_TIMEOUT Hint、LOG_LEVEL Hint、USE_PLAN_CACHE Hint、TRANS_PARAM Hint、TRACING Hint、STAT Hint、TOPK Hint 和 TRACE_LOG Hint。
+
+## CURSOR_SHARING_EXACT Hint
+
+OceanBase 数据库支持使用绑定变量替换 SQL 语句中的字面量，此功能由 `CURSOR_SHARING` 变量控制，即当`cursor_sharing='exact'` 时不需要参数化，详细信息请参见 [cursor_sharing](../../../../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/2000.cursor_sharing-global.md)。
+
+用户可以指定 `CURSOR_SHARING_EXACT` Hint 来指示优化器关闭此行为。当您指定此 Hint 时，OceanBase 数据库在执行 SQL 语句时不会尝试将字面量替换为绑定变量，从而实现参数改写。
+
+`CURSOR_SHARING_EXACT` Hint 的语法如下：
+
+```sql
+/*+ CURSOR_SHARING_EXACT */
+```
+
+`CURSOR_SHARING_EXACT` Hint 的示例如下：
+
+```sql
+obclient> CREATE TABLE t(c1 INT PRIMARY KEY,c2 VARCHAR(20));
+Query OK, 0 rows affected
+
+obclient> INSERT INTO t VALUES(5,'oceanbase');
+Query OK, 1 row affected
+
+obclient> SELECT /*+ CURSOR_SHARING_EXACT*/ * FROM t WHERE c1=5 AND c2 ='oceanbase';
++----------+----------+
+|    C1    |   C2     |
++----------+----------+
+|    5     | oceanbase|
++---------------------+
+1 row in set   
+
+obclient> SELECT query_sql, statement FROM gv$ob_plan_cache_plan_stat; GV$OB_PLAN_CACHE_PLAN_STAT
++---------------------------------------------------------------------------+---------------------------------------------------------------+
+|  query_sql                                                                |   statement                                                   |
++---------------------------------------------------------------------------+---------------------------------------------------------------+
+| SELECT /*+ CURSOR_SHARING_EXACT*/ * FROM t WHERE c1=5 AND c2 ='oceanbase' |  SELECT /*+ CURSOR_SHARING_EXACT*/ * FROM t WHERE c1=5 AND c2 ='oceanbase' |     
++-------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set
+```
+
+## MAX_CONCURRENT Hint
+
+`MAX_CONCURRENT` Hint 用于指定 SQL 语句的最大并发执行线程数。例如，通过设置为 `MAX_CONCURRENT(1)`，即可指定 SQL 语句以单线程模式执行，这意味着在任何时候，都只有一个线程在处理任务。
+
+`MAX_CONCURRENT` Hint 的语法如下：
+
+```sql
+/*+ MAX_CONCURRENT() */
+```
+
+请注意，`MAX_CONCURRENT()` 中的值可以设置为负数，但是对 SQL 语句的并发控制不生效；推荐设置 `MAX_CONCURRENT()` 中的值为大于 0 的正整数。
+
+## MONITOR Hint
+
+`MONITOR` Hint 会强制对查询进行实时 SQL 监视，对于非长时间运行的语句也生效。
+
+`MONITOR` Hint 的语法如下：
+
+```sql
+/*+ MONITOR */
+```
+
+## PX_JOIN_FILTER Hint
+
+`PX_JOIN_FILTER` Hint 强制优化器使用并行联接位图过滤。
+
+`PX_JOIN_FILTER` Hint 的语法如下：
+
+```sql
+/*+ PX_JOIN_FILTER (tablespec) */
+```
+
+## NO_PX_JOIN_FILTER Hint
+
+`NO_PX_JOIN_FILTER` Hint 会阻止优化器使用并行联接位图过滤。
+
+`NO_PX_JOIN_FILTER` Hint 的语法如下：
+
+```sql
+/*+ NO_PX_JOIN_FILTER (tablespec) */
+```
+
+## QB_NAME Hint
+
+使用 `QB_NAME` Hint 来定义查询块的名称。可以在外部查询的 Hint 中使用该名称，也可以在内联视图的 Hint 中使用该名称，从而影响在被命名查询块中的对表的查询。
+
+`QB_NAME` Hint 的语法如下：
+
+```sql
+/*+ QB_NAME ( queryblock ) */
+```
+
+如果两个或多个查询块具有相同的名称，或者同一个查询块两次被 Hint 指定了不同的名称，那么优化器将忽略所有引用该查询块的名称和 Hint。未使用 `QB_NAME` Hint 命名的查询块具有由系统生成的唯一名称。这些名称可以显示在计划表中，也可以在查询块中的其他 Hint 中使用。
+
+`QB_NAME` Hint 的示例如下：
+
+```sql
+SELECT /*+ QB_NAME(qb) FULL(@qb e) */ employee_id, last_name
+FROM employees e
+WHERE last_name = 'Smith';
+```
+
+## READ_CONSISTENCY Hint
+
+`READ_CONSISTENCY` Hint 指示服务器去指定某条 SQL 所读取的表模式为弱一致（指定参数
+
+`WEAK`）或强一致性（指定参数 `STRONG`）。
+
+`READ_CONSISTENCY` Hint 的语法如下：
+
+```sql
+/*+ READ_CONSISTENCY(WEAK[STRONG]) */
+```
+
+`READ_CONSISTENCY` Hint 的示例如下：
+
+```sql
+SELECT /*+ READ_CONSISTENCY(WEAK) */ *
+FROM employees
+WHERE employees.department_id = 1001;
+```
+
+隔离级别为 Repeatable Read 和 Serializable 时支持执行弱读请求，示例如下。
+
+  ```sql
+  obclient> SET transaction read only;
+  Query OK, 0 rows affected (0.001 sec)
+  obclient> SELECT /*+ read_consistency(weak)*/ * FROM t WHERE a=2;
+  +------+------+
+  | ID   | A    |
+  +------+------+
+  | NULL |    2 |
+  +------+------+
+  1 row in set (0.001 sec)
+  ```
+
+## QUERY_TIMEOUT Hint
+
+`QUERY_TIMEOUT` Hint 指示服务器设定某条 SQL 执行时的超时时间，单位为微秒。
+
+`QUERY_TIMEOUT` Hint 的语法如下：
+
+```sql
+/*+ QUERY_TIMEOUT (intnum) */
+```
+
+示例如下，当该查询 1 秒之内未执行完该语句即返回超时错误：
+
+```sql
+SELECT /*+ QUERY_TIMEOUT(1000000) */ *
+FROM employees e
+WHERE e.department_id = 1001;
+```
+
+## LOG_LEVEL Hint
+
+`LOG_LEVEL` Hint 指示服务器运行某句 SQL 时采用何种日志级别来执行。
+
+`LOG_LEVEL` Hint 的语法如下：
+
+```sql
+/*+ LOG_LEVEL ([']log_level[']) */
+```
+
+以下示例采用 `DEBUG` 日志级别来执行该 SQL 语句：
+
+```sql
+SELECT /*+ LOG_LEVEL(DEBUG) */ *
+FROM employees e
+WHERE e.department_id = 1001;
+```
+
+## USE_PLAN_CACHE Hint
+
+`USE_PLAN_CACHE` Hint 指示服务器执行某条 SQL 时是否要在计划缓存机制下运行，参数 `NONE` 为不执行计划缓存机制，参数 `DEFAULT` 表示按照服务器本身的设置来决定是否执行计划缓存机制。
+
+`USE_PLAN_CACHE` Hint 的语法如下：
+
+```sql
+/*+ USE_PLAN_CACHE (NONE[DEFAULT]) */
+```
+
+示例如下，以下语句不执行计划缓存机制：
+
+```sql
+SELECT /*+ USE_PLAN_CACHE(NONE) */ *
+FROM employees e
+WHERE e.department_id = 1001;
+```
+
+## TRANS_PARAM Hint
+
+`TRANS_PARAM` Hint 指示服务器执行事务时是否要按照参数 `param` 指定的参数来执行，现在支持的参数只有事务层面的提前解行锁 `FORCE_EARLY_LOCK_FREE` 参数，`FORCE_EARLY_LOCK_FREE` 的值为 **TRUE** 时，表示支持，**FALSE** 表示不支持。注意这里的参数名和参数值要用单引号（' '）引起来，当参数的值为数值型时可以不用引号引起来。
+
+`TRANS_PARAM` Hint 的语法如下：
+
+```sql
+/*+ TRANS_PARAM ['param' , 'param_value'] */
+```
+
+`TRANS_PARAM` Hint 的示例如下：
+
+```sql
+SELECT /*+ TRANS_PARAM('FORCE_EARLY_LOCK_FREE' 'TRUE') */ *
+FROM employees e
+WHERE e.department_id = 1001;
+```
+
+## TRACING Hint
+
+`TRACING` Hint 指示服务器对某些执行计划中的算子采用 `TRACING` 跟踪。
+
+`TRACING` Hint 的语法如下：
+
+```sql
+/*+ TRACING(TRACING_NUM_LIST)*/
+```
+
+`TRACING` Hint 的示例如下：
+
+```sql
+SELECT /*+ TRACING(1) */ *
+FROM employees e
+WHERE e.department_id = 1001;
+```
+
+## STAT Hint
+
+`STAT` Hint 指示对某些执行计划中的算子采用 `STAT` 显示信息。
+
+`STAT` Hint 的语法如下：
+
+```sql
+/*+ STAT(TRACING_NUM_LIST) */
+```
+
+`STAT` Hint 的示例如下：
+
+```sql
+SELECT /*+ STAT(1) */ *
+FROM employees e
+WHERE e.department_id = 1001;
+```
+
+## TOPK Hint
+
+`TOPK` Hint 指示服务器设置模糊查询的精度和最小行数。其中参数 `PRECSION` 的值为整型，取值范围为 \[0,100\]，表示执行模糊查询时的行数百分比，参数 `MINIMUM_ROWS` 用来指定最小的返回行数。
+
+`TOPK` Hint 的语法如下：
+
+```sql
+/*+ TOPK(PRECISION MINIMUM_ROWS) */
+```
+
+`TOPK` Hint 的示例如下：
+
+```sql
+SELECT /*+ TOPK(1,10) */ *
+FROM employees e
+WHERE e.department_id = 1001;
+```
+
+## TRACE_LOG Hint
+
+`TRACE_LOG` Hint 指示服务器收集跟踪日志（Trace log），收集的跟踪日志（Trace log）在运行 `SHOW TRACE` 命令时展示。
+
+`TRACE_LOG` Hint 的语法如下：
+
+```sql
+/*+ TRACE_LOG */
+```
+
+`TRACE_LOG` Hint 的示例如下：
+
+```sql
+SELECT /*+ TRACE_LOG */ *
+FROM employees e
+WHERE e.department_id = 1001;
+```
+
+## OPT_PARAM Hint
+
+`OPT_PARAM` Hint 指定在查询级别更新一些优化器相关的配置项/系统变量。
+`OPT_PARAM` Hint 语法如下：
+
+```sql
+/*+ OPT_PARAM ( parameter_name [,] parameter_value ) */
+```
+
+### 参数解释
+
+* `parameter_name`：指配置项或系统变量名。
+* `parameter_value`：指需要指定的变量值。
+
+`OPT_PARAM` Hint 对如下参数有效：
+
+|参数|解释|
+|----|----|
+|`rowsets_enabled`|开启/关闭向量化，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+| `rowsets_max_rows`|设置批量返回行数 `batch_size` 大小，数据类型是 `INT`，取值范围为 `[0, 65535]`，取值不能用单引号（''）包裹。|
+|`enable_newsort`|允许查询中开启/关闭 newsort 优化，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`use_part_sort_mgb`|允许查询中开启/关闭 part sort merge group by，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`enable_in_range_optimization`|允许查询中开启/关闭 in 优化，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`xsolapi_generate_with_clause`|允许查询中开启/关闭 cte 抽取改写，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`preserve_order_for_pagination`|运行为分页查询添加 `order by` 保序/禁止添加 `order by`，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`storage_card_estimation`|是否使用存储层估行，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`workarea_size_policy`|用于设置手动或者自动调整 SQL 工作区大小的策略，数据类型是 `VARCHAR`，取值范围为 `'MANUAL'` 表示手动调整和 `'AUTO'` 表示自动调整，取值需要用单引号（''）包裹。|
+|`enable_rich_vector_format`|用于开关向量化 2.0（session 级别参数），数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`spill_compression_codec`|用于指定需要临时物化的算子选用的压缩算法，数据类型是 `VARCHAR`，取值为`NONE`、`LZ4`、`SNAPPY`、`ZSTD` ,代表不同的压缩算法。默认为 `NONE`，表示不进行压缩。|
+|`inlist_rewrite_threshold`|允许触发 `inlist` 改写成 `values statement` 的常量个数阈值，数据类型是 `INT64`，取值范围为 `[1, 2147483647]`。|
+|`hash_join_enabled`|控制是否生成 hash join 计划，数据类型是 `BOOL`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`optimizer_sortmerge_join_enabled`|控制是否生成 merge join 计划，数据类型是 `BOOL`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`nested_loop_join_enabled`|控制是否生成 nested loop join 计划，数据类型是 `BOOL`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`enable_range_extraction_for_not_in`|控制是否对 not in 谓词抽取 query range，数据类型是 `BOOL`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`optimizer_index_cost_adj`|控制优化器计算索引扫描的代价中统计信息代价的占比，数据类型是 `INT`，取值范围为 [0,100]。|
+|`optimizer_skip_scan_enabled`|控制是否生成 table skip scan 计划，数据类型是 `BOOL`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`optimizer_better_inlist_costing`|控制是否开启优化器 in 表达式优化，数据类型是 `BOOL`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`optimizer_group_by_placement`|控制是否启用 group by placement 改写，数据类型是 `BOOL`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+|`with_subquery`|控制对 CTE 的优化策略<ul><li>0：由优化器决策 CTE 是否物化执行还是展开执行。</li><li>1：强制优化器物化 CTE。</li><li>2：强制优化器展开 CTE，数据类型是 `INT`，取值范围为 [0，2]。|
+|`enable_spf_batch_rescan`|控制是否对 subplan filter 启用 das batch rescan。|
+|`bloom_filter_ratio`|控制 bloom filter 的理论误判率，数据类型是 `INT`，取值范围为 [0.100]。|
+|`runtime_filter_type`|控制 Runtime Filter 类型，数据类型为 `VARCHAR`，取值如下：<ul><li>BLOOM_FILTER：表示使用 Bloom Filter 类型的 Runtime Filter 进行数据过滤，通过判断数据是否在 Bloom Filter 内进行过滤。</li><li>RANGE：表示使用 RANGE 类型的 Runtime Filter 进行数据过滤，其内部存储了 Build 表的最大最小值，通过判断数据是否在在该区间内进行过滤。</li><li>IN：表示使用 IN 类型的 Runtime Filter 进行数据过滤，其内部数据结构为 Hash 表，通过判断数据是否在 Hash 表内对数据进行过滤。</li><li>空字符串：表示关闭 Runtime Filter 功能。</li></ul>|
+|`nlj_batching_enabled`|控制是否开启 NESTED LOOP JOIN 和 SUBPLAN FILTER 算子的 BATCH RESCAN 优化数据类型是 `BOOL`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。|
+
+对下方查询，使用 `OPT_PARAM` Hint 指定 `enable_in_range_optimization` 值对当前查询开启 IN 优化。
+
+```shell
+SELECT /*+ opt_param('enable_in_range_optimization', 'true') */ *
+from t1
+where c1 in (1,2,3,4,5,...,1000)
+and c2 in (1,2,3,4,5,...,1000);
+```

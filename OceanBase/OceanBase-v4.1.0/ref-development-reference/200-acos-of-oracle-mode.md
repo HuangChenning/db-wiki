@@ -1,0 +1,46 @@
+---
+title: ACOS
+book: "应用开发参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702833.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-development-reference
+---
+
+# ACOS
+
+## 描述
+
+该函数是反余弦函数，返回一个在 \[0,π\] 范围内的值，以弧度表示。
+
+## 语法
+
+```sql
+ACOS(num_expression)
+```
+
+## 参数解释
+
+|       参数       |                          说明                          |
+|----------------|------------------------------------------------------|
+| num_expression | `NUMBER` 类型或可隐式转换为 `NUMBER` 类型的表达式 。取值在 \[-1,1\] 之间。 |
+
+## 返回类型
+
+返回 `NUMBER` 数据类型。
+
+## 示例
+
+返回 `0.3` 的 `ACOS` 的值。
+
+```sql
+obclient> SELECT ACOS(0.3) "acos_test" FROM DUAL;
++------------------------------------------+
+| acos_test                                |
++------------------------------------------+
+| 1.26610367277949911125931873041222227514 |
++------------------------------------------+
+1 row in set
+```

@@ -1,0 +1,29 @@
+---
+title: all_cluster_list
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502292.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# all_cluster_list
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>由于 V2.x 版本对集群配置进行了优化调整，该配置项从 V2.2.50 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`all_cluster_list` 用于显示访问相同 `config_url` 的服务器列表。
+
+## 属性说明
+
+|      **属性**      | **描述** |
+|------------------|--------|
+| 参数类型             | String    |
+| 默认值               | 空值     |
+| 是否重启 OBServer 节点生效 | 否      |

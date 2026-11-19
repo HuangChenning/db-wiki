@@ -1,0 +1,36 @@
+---
+title: log_archive_batch_buffer_limit
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502182.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# log_archive_batch_buffer_limit
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于 V4.x 版本对架构进行了变更升级，该配置项已不再适用，从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+当物理备份开启时，`log_archive_batch_buffer_limit` 用于控制日志归档单机的最大内存使用量。
+
+## 属性说明
+
+|        属性        |    描述     |
+|------------------|-----------|
+| 参数类型             | Capacity      |
+| 默认值              | 1G        |
+| 取值范围             | \[2M, +∞) |
+| 是否重启 OBServer 节点生效 | 否         |
+
+## 配置示例
+
+```shell
+obclient> ALTER SYSTEM SET log_archive_batch_buffer_limit = 1GB;
+```

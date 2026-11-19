@@ -1,0 +1,35 @@
+---
+title: dead_socket_detection_timeout
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702096.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# dead_socket_detection_timeout
+
+`dead_socket_detection_timeout` 用于设置检测失效 Socket 的时间间隔。
+
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>从 V4.0.0 版本开始默认值由 10s 调整为 3s。</p>
+</main>
+
+|      **属性**      |   **描述**   |
+|------------------|------------|
+| 参数类型             | 时间类型       |
+| 默认值              | 3s        |
+| 取值范围             | \[0s, 2h] |
+| 是否重启 OBServer 节点生效 | 否          |
+
+其中：
+
+* 当 dead_socket_detection_timeout 的值为 0 时，表示禁用 Socket 级故障检测。
+
+  
+
+* 当 dead_socket_detection_timeout 的值大于 0 时，表示启用 Socket 级故障检测，且当发送端有数据超过 设置的时间还未收到对方的应答，则认为当前 Socket 不可用。

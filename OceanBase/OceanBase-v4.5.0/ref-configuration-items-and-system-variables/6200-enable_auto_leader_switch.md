@@ -1,0 +1,30 @@
+---
+title: enable_auto_leader_switch
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478999.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# enable_auto_leader_switch
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于 V4.x 版本对系统架构进行了优化调整，自动切主由单日志流控制，不再需要进行负载均衡，该配置项从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`enable_auto_leader_switch` 用于设置是否开启自动切主。
+
+## 属性说明
+
+|      **属性**      |                     **描述**                |
+|------------------|---------------------------------------------------------|
+| 参数类型             | Bool                                                 |
+| 默认值              | True                                                  |
+| 取值范围             | False：不启用    |
+| 是否重启 OBServer 节点生效 | 否                                               |

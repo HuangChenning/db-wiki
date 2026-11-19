@@ -1,0 +1,403 @@
+---
+title: "创建日志流"
+book: "管理数据库"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682022.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 创建日志流
+
+用户可以根据业务需要，在 `UNIT_GROUP`（同构 Zone 模式）/`UNIT_LIST`（异构 Zone 模式）上创建日志流，以便手动调整租户在各服务节点上的日志流个数。
+
+## 背景信息
+
+当前版本支持同构 Zone 和异构 Zone 模式的租户，其中：
+
+* 同构 Zone 模式下，需要通过指定 Unit Group 来创建日志流。
+
+* 异构 Zone 模式下，需要通过指定 UNIT_LIST 来创建日志流。
+
+  有关同构 Zone 模式和异构 Zone 模式的详细区别，参见 [数据分布](../300.replica-management/400.data-distribution.md)。
+
+## 注意事项
+
+执行创建日志流操作前，需要注意以下事项：
+
+* 当前仅支持创建普通的用户日志流，不支持创建广播日志流。
+
+* 创建日志流操作仅支持在主租户上完成。且待创建日志流的租户的 `STATUS` 和 `SWITCHOVER_STATUS` 需要为 `NORMAL`。
+
+* 创建日志流时：
+
+  * 同构 Zone 模式下，要求目标 `UNIT_GROUP` 的状态必须为 `ACTIVE`，且视图 `DBA_OB_UNITS` 中目标 `UNIT_GROUP_ID` 的值不能为 0。
+  * 异构 Zone 模式下，要求目标 `UNIT_LIST` 的状态必须为 `ACTIVE`，且指定的目标 `UNIT_LIST` 不能为空。
+
+* 为待创建的日志流指定 `PRIMARY_ZONE` 时，需要保证指定的 Zone 在租户的 `ZONE_LIST` 中。对于日志流而言，设置日志流的 `PRIMARY_ZONE` 与设置租户的 `PRIMARY_ZONE` 略有不同，日志流仅允许设置一个 Zone，例如 `z1` 或`z2`，不能像租户一样设置 `z1,z2`、`z1; z2` 或 `RANDOM`。
+
+* 负载均衡相关的配置项建议为关闭状态，即值为 `False`，否则：
+
+  * 当租户级配置项 [enable_rebalance](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2800.enable_rebalance.md) 为开启状态，即值为 `True` 时，创建的日志流会被系统从目标 `UNIT_GROUP`/`UNIT_LIST` 中迁移到其他 `UNIT_GROUP`/`UNIT_LIST` 中。
+
+  * 当租户级配置项 [enable_transfer](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/3000.enable_transfer.md) 为开启状态，即值为 `True` 时，创建的日志流可能会被删除。
+
+## 步骤一：创建前检查
+
+1. 管理员用户登录到集群的 `sys` 租户或用户租户。
+
+   连接示例如下，连接数据库时请以实际环境为准。
+
+   ```shell
+   obclient -h10.xx.xx.xx -P2883 -uroot@sys#obdemo -p***** -A
+   ```
+
+2. 查询租户的状态、`PRIMARY_ZONE` 和 Locality 相关信息。
+
+   创建日志流时，要求租户的 `STATUS` 和 `SWITCHOVER_STATUS` 均为 `NORMAL`。同时，如果需要指定日志流的 `PRIMARY_ZONE`，需要保证指定的 Zone 在租户的 `ZONE_LIST` 中，而租户的 `ZONE_LIST` 可以参考租户 Locality 中有哪些 Zone。
+
+   * 系统租户
+
+      ```shell
+      obclient(root@sys)[oceanbase]> SELECT TENANT_ID, TENANT_NAME, STATUS, SWITCHOVER_STATUS, TENANT_ROLE, PRIMARY_ZONE, LOCALITY FROM oceanbase.DBA_OB_TENANTS WHERE tenant_name = 'mq_t1';
+      ```
+
+   * 用户租户
+
+      :::tab
+      tab MySQL 模式
+
+      MySQL 模式下，执行以下命令，查询租户状态。
+
+      ```shell
+      obclient> SELECT TENANT_ID, TENANT_NAME, STATUS, SWITCHOVER_STATUS, TENANT_ROLE, PRIMARY_ZONE, LOCALITY FROM oceanbase.DBA_OB_TENANTS;
+      ```
+
+      tab Oracle 模式
+
+      Oracle 模式下，执行以下命令，查询租户状态。
+
+      ```shell
+      obclient> SELECT TENANT_ID, TENANT_NAME, STATUS, SWITCHOVER_STATUS, TENANT_ROLE, PRIMARY_ZONE, LOCALITY FROM SYS.DBA_OB_TENANTS;
+      ```
+
+      :::
+
+   查询结果的示例如下：
+
+   ```shell
+   +-----------+-------------+--------+-------------------+-------------+--------------+-------------------------------------+
+   | TENANT_ID | TENANT_NAME | STATUS | SWITCHOVER_STATUS | TENANT_ROLE | PRIMARY_ZONE | LOCALITY                            |
+   +-----------+-------------+--------+-------------------+-------------+--------------+-------------------------------------+
+   |      1002 | mq_t1       | NORMAL | NORMAL            | PRIMARY     | RANDOM       | FULL{1}@z1, FULL{1}@z2, FULL{1}@z3  |
+   +-----------+-------------+--------+-------------------+-------------+--------------+-------------------------------------+
+   1 row in set
+   ```
+
+3. 查询租户的 Unit 信息，确认目标 `UNIT_GROUP`（同构 Zone 模式）/`UNIT_LIST`（异构 Zone 模式）的状态为 `ACTIVE`。
+
+   在系统租户下执行以下命令，查询租户的 Unit 信息。
+
+   ```shell
+   obclient(root@sys)[oceanbase]> SELECT UNIT_GROUP_ID, UNIT_ID, ZONE, SVR_IP, SVR_PORT FROM oceanbase.DBA_OB_UNITS WHERE TENANT_ID=1002 AND STATUS = 'ACTIVE' ORDER BY UNIT_GROUP_ID;
+   ```
+
+   查询结果如下：
+
+   ```shell
+   +---------------+---------+------+----------------+----------+
+   | UNIT_GROUP_ID | UNIT_ID | ZONE | SVR_IP         | SVR_PORT |
+   +---------------+---------+------+----------------+----------+
+   |          1001 |    1001 | z1   | xxx.xx.xxx.198 |     2882 |
+   |          1001 |    1002 | z2   | xxx.xx.xxx.196 |     2882 |
+   |          1001 |    1003 | z3   | xxx.xx.xxx.204 |     2882 |
+   |          1002 |    1004 | z1   | xxx.xx.xxx.194 |     2882 |
+   |          1002 |    1005 | z2   | xxx.xx.xxx.192 |     2882 |
+   |          1002 |    1006 | z3   | xxx.xx.xxx.197 |     2882 |
+   +---------------+---------+------+----------------+----------+
+   6 rows in set
+   ```
+
+4. 确认配置项 [enable_rebalance](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2800.enable_rebalance.md) 和 [enable_transfer](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/3000.enable_transfer.md) 是否处于关闭状态，即值为 `False`。
+
+   用户租户下，执行以下命令，查询配置项的值。
+
+   ```shell
+   obclient> SHOW PARAMETERS LIKE '%enable_rebalance%';
+   ```
+
+   ```shell
+   obclient> SHOW PARAMETERS LIKE '%enable_transfer%';
+   ```
+
+   如果值为 `True`，则可以执行以下命令，分别将值修改为 `False`。
+
+   ```shell
+   obclient> ALTER SYSTEM SET enable_rebalance = False;
+   ```
+
+   ```shell
+   obclient> ALTER SYSTEM SET enable_transfer = False;
+   ```
+
+## 步骤二：创建日志流
+
+确保各项检查符合要求后，根据业务情况，选择合适的操作，为租户创建日志流。
+
+### 系统租户为用户租户创建日志流
+
+1. 使用 `root` 用户登录到集群的 `sys` 租户。
+
+   连接示例如下，连接数据库时请以实际环境为准。
+
+   ```shell
+   obclient -h10.xx.xx.xx -P2883 -uroot@sys#obdemo -p***** -A
+   ```
+
+2. 创建日志流。
+
+   系统租户为用户租户创建日志流的 SQL 语句如下：
+
+   ```sql
+   ALTER SYSTEM CREATE LS {UNIT_GROUP [=] unit_group_id} | {UNIT_LIST [=] (unit_id_list) }[, PRIMARY_ZONE [=] 'zone_name'] TENANT [=] 'tenant_name';
+   ```
+
+   语句相关说明如下：
+
+   * `unit_group_id`：指定待创建日志流的目标 `UNIT_GROUP` 的 ID，仅适用于同构 Zone 模式的租户。`unit_group_id` 可在系统租户下，通过查询 `oceanbase.DBA_OB_UNITS` 视图获取。
+  
+   * `unit_id_list`：指定待创建的日志流分布的 Unit 列表，仅适用于异构 Zone 模式的租户。`unit_id_list` 可在系统租户下，通过查询 `oceanbase.DBA_OB_UNITS` 视图获取，每个 Zone 不超过一个 Unit。
+
+   * `zone_name`：目标 Zone 的名称。如果不指定 `PRIMARY_ZONE`，则由系统根据租户下同一个 `UNIT_GROUP`（同构 Zone 模式）/`UNIT_LIST`（异构 Zone 模式）内的 `PRIMARY_ZONE` 保持均衡的规则来分配。
+
+   * `tenant_name`：待创建日志流的目标租户的名称。
+
+   示例如下：
+
+   :::tab
+   tab 同构 Zone 模式
+
+   * 在 ID 为 1001 的 `UNIT_GROUP` 上创建一个日志流。
+
+     ```shell
+     obclient(root@sys)[(none)]> ALTER SYSTEM CREATE LS UNIT_GROUP 1001 TENANT = mq_t1;
+     ```
+
+     语句执行后，系统会在指定的 `UNIT_GROUP_ID` 为 1001（其对应的 Unit 分别为 1001、1002、1003）上创建一个日志流。
+
+   * 在 ID 为 1001 的 `UNIT_GROUP` 上创建一个日志流，并且设置该日志流的 `PRIMARY_ZONE` 为 `z1`。
+
+     ```shell
+     obclient(root@sys)[(none)]> ALTER SYSTEM CREATE LS UNIT_GROUP 1001, PRIMARY_ZONE 'z1' TENANT = mq_t1;
+     ```
+
+     语句执行后，系统会在指定的 `UNIT_GROUP_ID` 为 1001（其对应的 Unit 分别为 1001、1002、1003）上创建一个日志流，且其主 Zone 为 `z1`。
+
+   tab 异构 Zone 模式
+
+   * 在 `UNIT_ID` 分别为 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流。
+  
+      ```shell
+      obclient(root@sys)[(none)]> ALTER SYSTEM CREATE LS UNIT_LIST (1001,1002,1003) TENANT = mq_t1;
+      ```
+
+      语句执行后，系统会在指定的 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流。
+
+   * 在 `UNIT_ID` 分别为 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流，并且设置该日志流的 `PRIMARY_ZONE` 为 `z1`。
+  
+      ```shell
+      obclient(root@sys)[(none)]> ALTER SYSTEM CREATE LS UNIT_LIST (1001,1002,1003), PRIMARY_ZONE 'z1' TENANT = mq_t1;
+      ```
+
+      语句执行后，系统会在指定的 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流，且其主 Zone 为 `z1`。
+
+   :::
+
+3. 确认创建的日志流。
+
+   1. 获取新创建的日志流的 `LS_ID`。
+
+      ```shell
+      obclient(root@sys)[oceanbase]> SELECT * FROM oceanbase.CDB_OB_TENANT_EVENT_HISTORY WHERE EVENT='CREATE LS' AND TENANT_ID=1002 ORDER BY TIMESTAMP DESC LIMIT 1\G
+      ```
+
+      查询结果的示例如下：
+
+      ```shell
+      *************************** 1. row ***************************
+       TENANT_ID: 1002
+       TIMESTAMP: 2026-01-09 11:31:14.284278
+          MODULE: LS COMMAND
+           EVENT: CREATE LS
+           NAME1: ARGS
+          VALUE1: {op:1, op str:"CREATE LS", tenant_id:1002, ls_id:{id:-1}, unit_group_id:1001, ls_primary_zone:"z1"}
+           NAME2: LS_ID
+          VALUE2: 1003
+           NAME3: LS_GROUP_ID
+          VALUE3: 1002
+           NAME4: UNIT_GROUP_ID
+          VALUE4: 1001
+           NAME5: PRIMARY_ZONE
+          VALUE5: z1
+           NAME6: NULL
+          VALUE6:
+      EXTRA_INFO: NULL
+          SVR_IP: 6.xx.xxx.xxx
+        SVR_PORT: 13324
+        TRACE_ID: Y3xxxxxxxxxxx-xxxxxxxxxxxxxxx-x-x
+       COST_TIME: 19407
+        RET_CODE: 0
+       ERROR_MSG: NULL
+      1 row in set
+      ```
+
+      根据查询结果可知，新创建的日志流的 `LS_ID` 为 1003。
+
+   2. 确认新创建的日志流的详细信息。
+
+      ```shell
+      obclient(root@sys)[oceanbase]> SELECT LS_ID, STATUS, PRIMARY_ZONE, LS_GROUP_ID, UNIT_LIST FROM oceanbase.CDB_OB_LS WHERE TENANT_ID=1002 AND LS_ID = 1003;
+      ```
+
+      查询结果的示例如下：
+
+      ```shell
+      +-------+--------+--------------+-------------+----------------+
+      | LS_ID | STATUS | PRIMARY_ZONE | LS_GROUP_ID | UNIT_LIST      |
+      +-------+--------+--------------+-------------+----------------+
+      |  1003 | NORMAL | z1;z2,z3     |        1001 | 1001,1002,1003 |
+      +-------+--------+--------------+-------------+----------------+
+      1 row in set
+      ```
+
+      根据查询结果可知，新创建的日志流的状态为 `NORMAL`，主 Zone 为 `z1`，且分布在 1001、1002、1003 的 `UNIT_LIST`(同构 Zone 模式下，对应 `oceanbase.DBA_OB_UNITS` 视图中 `UNIT_GROUP_ID` 相同的一组 Unit) 上，与预期结果一致，日志流创建成功。
+
+### 用户租户创建本租户的日志流
+
+1. MySQL 模式租户或 Oracle 模式租户的租户管理员连接数据库。
+
+   连接示例如下，连接数据库时请以实际环境为准。
+
+   ```shell
+   obclient -h10.xx.xx.xx -P2883 -uroot@mq_t1#obdemo -p***** -A
+   ```
+
+2. 创建日志流。
+
+   用户租户创建日志流的 SQL 语句如下：
+
+   ```sql
+   ALTER SYSTEM CREATE LS {UNIT_GROUP [=] unit_group_id} | {UNIT_LIST [=] (unit_id_list) }[, PRIMARY_ZONE [=] 'zone_name'];
+   ```
+
+   语句相关说明如下：
+
+   * `unit_group_id`：指定待创建日志流的目标 `UNIT_GROUP` 的 ID，仅适用于同构 Zone 模式的租户。`unit_group_id` 可在系统租户下，通过查询 `oceanbase.DBA_OB_UNITS` 视图获取。
+  
+   * `unit_id_list`：指定待创建的日志流分布的 Unit 列表，仅适用于异构 Zone 模式的租户。`unit_id_list` 可在系统租户下，通过查询 `oceanbase.DBA_OB_UNITS` 视图获取，每个 Zone 不超过一个 Unit。
+
+   * `zone_name`：目标 Zone 的名称。如果不指定 `PRIMARY_ZONE`，则由系统根据租户下同一个 `UNIT_GROUP`（同构 Zone 模式）/`UNIT_LIST`（异构 Zone 模式）内的 `PRIMARY_ZONE` 保持均衡的规则来分配。
+
+   示例如下：
+
+   :::tab
+   tab 同构 Zone 模式
+
+   * 在 ID 为 1001 的 `UNIT_GROUP` 上创建一个日志流。
+
+     ```shell
+     obclient> ALTER SYSTEM CREATE LS UNIT_GROUP 1001;
+     ```
+
+     语句执行后，系统会在指定的 `UNIT_GROUP_ID` 为 1001（其对应的 Unit 分别为 1001、1002、1003）上创建一个日志流。
+
+   * 在 ID 为 1001 的 `UNIT_GROUP` 上创建一个日志流，并且设置该日志流的 `PRIMARY_ZONE` 为 `z1`。
+
+     ```shell
+     obclient> ALTER SYSTEM CREATE LS UNIT_GROUP 1001, PRIMARY_ZONE 'z1';
+     ```
+
+     语句执行后，系统会在指定的 `UNIT_GROUP_ID` 为 1001（其对应的 Unit 分别为 1001、1002、1003）上创建一个日志流，且其主 Zone 为 `z1`。
+
+   tab 异构 Zone 模式
+
+   * 在 `UNIT_ID` 分别为 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流。
+
+      ```shell
+      obclient> ALTER SYSTEM CREATE LS UNIT_LIST (1001,1002,1003);
+      ```
+
+      语句执行后，系统会在指定的 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流。
+
+   * 在 `UNIT_ID` 分别为 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流，并且设置该日志流的 `PRIMARY_ZONE` 为 `z1`。
+
+      ```shell
+      obclient> ALTER SYSTEM CREATE LS UNIT_LIST (1001,1002,1003), PRIMARY_ZONE 'z1';
+      ```
+
+      语句执行后，系统会在指定的 1001、1002、1003 的 `UNIT_LIST` 上创建一个日志流，且其主 Zone 为 `z1`。
+
+   :::
+
+3. 确认创建的日志流。
+
+   以 MySQL 模式租户为例，操作如下。
+
+   1. 获取新创建的日志流的 `LS_ID`。
+
+      ```shell
+      obclient> SELECT * FROM oceanbase.DBA_OB_TENANT_EVENT_HISTORY WHERE EVENT='CREATE LS' ORDER BY TIMESTAMP DESC LIMIT 1\G
+      ```
+
+      查询结果的示例如下：
+
+      ```shell
+      *************************** 1. row ***************************
+       TENANT_ID: 1002
+       TIMESTAMP: 2026-01-09 11:31:14.284278
+          MODULE: LS COMMAND
+           EVENT: CREATE LS
+           NAME1: ARGS
+          VALUE1: {op:1, op str:"CREATE LS", tenant_id:1002, ls_id:{id:-1}, unit_group_id:1001, ls_primary_zone:"z1"}
+           NAME2: LS_ID
+          VALUE2: 1003
+           NAME3: LS_GROUP_ID
+          VALUE3: 1002
+           NAME4: UNIT_GROUP_ID
+          VALUE4: 1001
+           NAME5: PRIMARY_ZONE
+          VALUE5: z1
+           NAME6: NULL
+          VALUE6:
+      EXTRA_INFO: NULL
+          SVR_IP: 6.xx.xxx.xxx
+        SVR_PORT: 13324
+        TRACE_ID: Y3xxxxxxxxxxx-xxxxxxxxxxxxxxx-x-x
+       COST_TIME: 19407
+        RET_CODE: 0
+       ERROR_MSG: NULL
+      1 row in set
+      ```
+
+      根据查询结果可知，新创建的日志流的 `LS_ID` 为 1003。
+
+   2. 确认新创建的日志流的详细信息。
+
+      ```shell
+      obclient> SELECT LS_ID, STATUS, PRIMARY_ZONE, LS_GROUP_ID, UNIT_LIST FROM oceanbase.DBA_OB_LS WHERE LS_ID = 1003;
+      ```
+
+      查询结果的示例如下：
+
+      ```shell
+      +-------+--------+--------------+-------------+----------------+
+      | LS_ID | STATUS | PRIMARY_ZONE | LS_GROUP_ID | UNIT_LIST      |
+      +-------+--------+--------------+-------------+----------------+
+      |  1003 | NORMAL | z1;z2,z3     |        1001 | 1001,1002,1003 |
+      +-------+--------+--------------+-------------+----------------+
+      1 row in set
+      ```
+
+      根据查询结果可知，新创建的日志流的状态为 `NORMAL`，主 Zone 为 `z1`，且分布在 1001、1002、1003 的 `UNIT_LIST`(同构 Zone 模式下，对应 `oceanbase.DBA_OB_UNITS` 视图中 `UNIT_GROUP_ID` 相同的一组 Unit) 上，与预期结果一致，日志流创建成功。

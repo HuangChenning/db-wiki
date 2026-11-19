@@ -1,0 +1,35 @@
+---
+title: "执行表级恢复"
+book: "管理数据库"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-standalone-1000000006077267.html"
+tags:
+  - oceanbase
+  - standalone
+  - manage
+---
+
+# 执行表级恢复
+
+#### 注意
+
+恢复使用的备份集的数据版本号为 V4.3.5.0 及以上版本，则系统会自动使用快速恢复方式来执行表级恢复过程中辅助租户的恢复。如果恢复使用的备份集的数据版本号为 V4.3.5.0（不含）以下版本，则仍然使用全量恢复方式来执行辅助租户的恢复。
+
+恢复所使用的备份集的数据版本号可以通过查询视图 `CDB_OB_BACKUP_SET_FILES`（sys 租户）或 `DBA_OB_BACKUP_SET_FILES`（用户租户）中的 `TENANT_COMPATIBLE` 列来确认。
+
+#### 注意
+
+- **物理恢复辅助租户执行阶段**，可以通过调整 [ha_high_thread_score](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285762) 配置项来动态调整恢复的并行度，调整后立即生效。其中，辅助租户名可以通过表级恢复的任务进度表 [CDB_OB_RECOVER_TABLE_JOBS](https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284650) 查看。具体调整请参见[物理恢复](200-initiate-the-tenant-restore.md)
+- **跨租户导表阶段**，你可以通过调整目标租户的 `recover_table_concurrency` 或 `recover_table_dop` 配置项来动态调整多表/单表恢复的并行度，调整后立即生效。
+
+#### 说明
+
+如果重命名的 `database_name` 或 `table_name` 中含有特殊字符，则含特殊字符的 `database_name` 或 `table_name` 需要放在反引号（\`\`）内。
+
+#### 注意
+
+- 表数据恢复成功即表示表恢复成功，允许索引、约束或其他关联的 Schema 恢复失败。
+- 表级恢复结束后，建议还原 `ddl_thread_score`、`recover_table_concurrency` 和 `recover_table_dop` 配置项设置。如果不恢复，则后续的表级恢复都会按照设置的并行参数执行。
+- 表级恢复中表关联触发器的恢复，将按照以下模式进行：
+  - 如果表级恢复发起命令中未对恢复的表名进行了重命名（REMAP TABLE 映射），即表按原始表名进行恢复，则需要恢复表关联的触发器；
+  - 如果表级恢复发起命令中对恢复的表名进行了重命名（REMAP TABLE 映射），即表按新的表名进行恢复，则不再恢复表关联的触发器。

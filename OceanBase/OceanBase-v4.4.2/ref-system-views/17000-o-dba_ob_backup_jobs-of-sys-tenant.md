@@ -1,0 +1,54 @@
+---
+title: oceanbase.DBA_OB_BACKUP_JOBS
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284649.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_BACKUP_JOBS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户自身的备份 JOB 任务。`sys` 租户和 Meta 租户不支持物理备份。
+
+## 字段说明
+
+| 字段名称 | 字段名称 | 是否可以为 NULL | 字段名称 |
+| --- | --- | --- | --- |
+| JOB_ID | bigint(20) | NO | 备份JOB 任务 ID，发起一次备份对应一条 JOB 任务记录 |
+| INCARNATION | bigint(20) | NO | 表示 Flashback Database 后的第几次分身 |
+| BACKUP_SET_ID | bigint(20) | YES | 备份集 ID，sys 租户默认为 0，普通租户从 1 开始递增 |
+| INITIATOR_TENANT_ID | bigint(20) | NO | 任务发起者的租户 ID，表示该任务的发起租户，对应执行备份 SQL 命令的租户 ID |
+| INITIATOR_JOB_ID | bigint(20) | NO | 任务发起者所属于的 JOB_ID |
+| EXECUTOR_TENANT_ID | varchar(65536) | NO | 该 JOB 级备份任务关联的需要执行备份的租户 ID |
+| PLUS_ARCHIVELOG | varchar(4096) | NO | 是否开启日志补齐功能：<ul><li>ON：开启日志补齐功能</li><li>OFF：关闭日志补齐功能</li></ul> |
+| BACKUP_TYPE | varchar(4096) | NO | 备份类型：<ul><li>`FULL`：表示全量备份 </li> <li>`INC`：表示增量备份</li></ul> |
+| JOB_LEVEL | varchar(4096) | NO | JOB 级别：<ul><li>CLUSTER：sys 租户发起所有租户的备份任务</li><li>SYS_TENANT：sys 租户发起的指定租户的备份任务</li><li>USER_TENANT：普通租户发起自身的备份</li></ul> |
+| ENCRYPTION_MODE | varchar(4096) | YES | 加密模式：<ul><li>None：表示不加密</li><li>Password：表示只使用密码保护</li><li>Password Encryption ：表示加密，并且使用密码保护</li><li>Transparent Encryption：表示使用 TDE 加密</li><li>Dual mode Encryption ：表示使用 TDE 加密以及密码保护</li></ul> </br>目前仅支持 None 和 Password 两种模式 |
+| PASSWD | varchar(4096) | YES | 密码 |
+| START_TIMESTAMP | timestamp(6) | NO | JOB 级备份任务开始时间 |
+| END_TIMESTAMP | timestamp(6) | NO | JOB 级备份任务结束时间 |
+| STATUS | varchar(4096) | NO | 备份的状态 |
+| RESULT | bigint(20) | NO | 备份错误码结果 |
+| COMMENT | varchar(4096) | YES | 错误码描述 |
+| DESCRIPTION | varchar(4096) | YES | 用户指定备份描述信息 |
+| PATH | varchar(4096) | YES | 备份路径 |
+
+## 相关视图或文档
+
+* 查看所有租户的 Job 级备份任务的历史记录：[CDB_OB_BACKUP_JOB_HISTORY](6900.o-cdb_ob_backup_job_history-of-sys-tenant.md)
+
+* 查看所有租户的 Task 级备份任务：[CDB_OB_BACKUP_TASKS](7600.o-cdb_ob_backup_tasks-of-sys-tenant.md)
+
+* 查看所有租户的 Task 级备份任务的历史记录：[CDB_OB_BACKUP_TASK_HISTORY](7500.o-cdb_ob_backup_task_history-of-sys-tenant.md)
+
+* 查看数据备份进度的详细操作及说明，参见 [查看数据备份进度](../../../../600.manage/600.backup-and-recovery/400.data-backup/500.view-data-backup-progress.md)。

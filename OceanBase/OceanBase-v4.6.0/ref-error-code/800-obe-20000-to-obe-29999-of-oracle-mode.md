@@ -1,0 +1,1710 @@
+---
+title: "OBE-20000 ~ OBE-29999"
+book: "错误码"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682629.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-error-code
+---
+
+# OBE-20000 ~ OBE-29999
+
+|description||
+|---|---|
+|keywords||
+|dir-name||
+|dir-name-en||
+|tenant-type|Oracle Mode|
+|slug|obe-20000-29999-oracle-mode|
+
+# OBE-20000 ~ OBE-29999
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## OBE-20000：operator binding does not exist
+
+* OceanBase 错误码：7299
+
+* SQLSTATE：42000
+
+* 错误原因：在尝试执行操作时，指定的操作符绑定（operator binding）未找到。
+
+* 解决方法：确认使用的操作符或函数名称是否正确无误，没有拼写错误。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul><li>在 V4.3.x 版本中，该错误码从 V4.3.2 版本开始引入。</li><li>在 V4.2.x 版本中，该错误码从 V4.2.4 版本开始引入。</li></ul>
+</main>
+
+## OBE-20000: application error from remote", "%.*s
+
+* OceanBase 错误码：9767
+
+* SQLSTATE：HY000
+
+* 错误原因：远程应用错误。
+
+* 解决方法：检查 DBLink 远端数据库的报错。
+
+## OBE-20000：'%.*s' invalid partition name
+
+* OceanBase 错误码：11002
+
+* SQLSTATE：HY000
+
+* 错误原因：分区名称 '%.*s' 无效。
+* 解决方法：请检查分区名称 '%.*s' 是否正确，并且符合分区命名规则。确保使用有效的分区名称进行操作。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.3.0 版本开始引入。</p>
+</main>
+
+## OBE-20000： The stored procedure  'raise_application_error' was called which causes this error to be  generated", "ORA%06ld: %.*s
+
+* OceanBase 错误码：20000
+
+* SQLSTATE：HY000
+
+* 错误原因：调用了过程自定义错误代码 `RAISE_APPLICATION_ERROR`，从而导致此错误。
+
+* 解决方法：按照错误消息中的描述修复问题，或与应用程序管理员或 DBA 联系以了解更多信息。
+
+## OBE-21000：error number argument to raise_application_error of stringstring is out of range
+
+* OceanBase 错误码：21000
+
+* SQLSTATE：HY000
+
+* 错误原因：`RAISE_APPLICATION_ERROR` 的错误编号参数超出了参数范围。
+
+## OBE-21560：argument %.\*s is null, invalid, or out of range
+
+* OceanBase 错误码：5934
+
+* SQLSTATE：HY000
+
+* 错误原因：传递的参数值是 `NULL`、无效的或者超出范围的。例如 `LOB / FILE` 的位置或大小参数的值超出 1 到（4 GB-1）的范围；在无效的打开模式中打开文件等。
+
+* 解决方法：检查并更正程序，确保不传递 `NULL`、无效的或超出范围的参数值。
+
+## OBE-22003：value is out of range
+
+* OceanBase 错误码：4157
+
+* SQLSTATE：22003
+
+* 错误原因：执行指定的 `TCP/IP` 函数 `func` 时发生意外的通信错误。`TCP/IP` 函数返回代码为 `rc`，函数 `func` 参数为 `parm`。
+
+* 解决方法：请联系技术支持人员协助排查。
+
+## OBE-22160：element at index [%ld] does not exist
+
+* OceanBase 错误码：9801
+
+* SQLSTATE：HY000
+
+* 错误原因：试访问集合（如数组、嵌套表）中一个不存在的索引位置。
+
+* 解决方法：解决此问题的关键在于确保访问集合时使用的索引是有效的。
+
+## OBE-22369：invalid parameter encountered in method %s
+
+* OceanBase 错误码：5955
+
+* SQLSTATE：HY000
+
+* 错误原因：正在向 `SYS` 传递无效参数。包括：`SYS.任何类型`、`SYS.任何数据` or `SYS.任意数据集`。
+
+* 解决方法：检查传递的参数，并确保这些参数是允许的。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-22370：incorrect usage of method %s
+
+* OceanBase 错误码：5956
+
+* SQLSTATE：HY000
+
+* 错误原因：`SYS.任何类型`、`SYS.任何数据` or `SYS.任意数据集` 被不当使用。
+
+* 解决方法：采用正确用法。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-22625：OCIAnyData is not well-formed
+
+* OceanBase 错误码：5965
+
+* SQLSTATE：HY000
+
+* 错误原因：在未初始化构造的情况下使用 `OCIAnyData`。
+
+* 解决方法：在添加属性之前，请使用 `OCIAnyDataBeginConstruct` 初始化句柄。使用 `OCIAnyDataEndConstruct` 完成构造。或者使用 `OCIAny-DataConvert` 进行构造。在访问属性之前，请确保它已正确构造。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-22626：Type Mismatch while constructing or accessing OCIAnyData
+
+* OceanBase 错误码：5957
+
+* SQLSTATE：HY000
+
+* 错误原因：提供的类型与 AnyData 的类型不匹配。如果尝试分段构造或访问，则提供的类型与当前属性的类型不匹配。
+
+* 解决方法：确保提供的类型与要构造或访问的对象的类型匹配。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-22627：tc \[%s\] must be that of object/varray/nested table
+
+* OceanBase 错误码：5966
+
+* SQLSTATE：HY000
+
+* 错误原因：类型代码不是 object/varray/nested 表的类型代码。
+
+* 解决方法：确保类型代码是 `OCI_TYPECODE_OBJECT` 或 `OCI_TYPECODE_VARRAY` 或 `OCI_TYPECODE_TABLE`。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-22806：not an object or REF
+
+* OceanBase 错误码：5477
+* SQLSTATE：42000
+* 错误原因：不是对象或 REF。
+* 解决方法：使用对象或者 REF 重试操作。
+
+## OBE-22816：unsupported feature with RETURNING clause
+
+* OceanBase 错误码：9573
+
+* SQLSTATE：HY000
+
+* 错误原因：对象类型列目前不支持 RETURNING 子句，LONG 列、远程表、带有子查询的 INSERT 和 INSTEAD OF 触发器。
+
+* 解决方式：使用单独的语句来获取值。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-22858：invalid alteration of datatype
+
+* OceanBase 错误码：7414
+* SQLSTATE：42000
+* 错误原因：尝试更改数据类型时，数据类型不允许更改或更改后的数据类型无效。
+* 解决方法：
+   1. 检查数据类型：检查要更改的数据类型是否允许更改，确保更改后的数据类型有效。
+   2. 检查数据大小：检查要更改的数据大小，确保更改后的数据类型可以容纳所有数据。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.0 版本开始引入。</p>
+</main>
+
+## OBE-22859：invalid modification of columns
+
+* OceanBase 错误码：7415
+* SQLSTATE：42000
+* 错误原因：尝试修改不允许修改的列或表结构。
+* 解决方法：
+   1. 检查表结构：可以检查要修改的表结构，确保表结构允许进行修改。
+   2. 检查列属性：可以检查要修改的列属性，确保列属性允许进行修改。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.0 版本开始引入。</p>
+</main>
+
+## OBE-22859：Expected XML tag , got no content
+
+* OceanBase 错误码：7416
+* SQLSTATE：42000
+* 错误原因：在 XML 数据中，缺少标签内容。
+* 解决方法：
+   1. 检查 XML 数据：可以检查 XML 数据是否正确，确保所有标签都有内容。
+   2. 检查 XML 格式：可以检查 XML 格式是否正确，确保所有标签都正确嵌套和关闭。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.0 版本开始引入。</p>
+</main>
+
+## OBE-22866：cannot replace a type with table dependents
+
+* OceanBase 错误码：11006
+
+* SQLSTATE：HY000
+
+* 错误原因：无法替换存在表依赖的类型。
+
+* 解决方法：删除所有依赖当前类型的表，然后重试该操作。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.2 版本开始引入。</p>
+</main>
+
+## OBE-22901：cannot compare VARRAY or LOB attributes of an object type
+
+* OceanBase 错误码：7432
+
+* SQLSTATE：42000
+
+* 错误原因：在没有 MAP 或 ORDER 方法的情况下尝试比较对象类型的 VARRAY 或 LOB 属性。
+
+* 解决方法：为对象类型定义 MAP 或 ORDER 方法。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.2 版本开始引入。</p>
+</main>
+
+## OBE-22902：CURSOR expression not allowed
+
+* OceanBase 错误码：9766
+
+* SQLSTATE：HY000
+
+* 错误原因：输出参数不是一个绑定变量。
+* 解决方法：检查输出参数的使用方式，确保使用的是绑定变量。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.3.0 版本开始引入。</p>
+</main>
+
+## OBE-22903：MULTISET expression not allowed
+
+* OceanBase 错误码：9716
+* SQLSTATE：HY000
+* 错误原因：不允许使用 MULTISET 表达式。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-22907：invalid CAST to a type that is not a nested table or VARRAY
+
+* OceanBase 错误码：9717
+* SQLSTATE：HY000
+* 错误原因：不是嵌套表或 VARRAY 类型的无效 CAST。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-22922：LOB value does not exist
+
+* OceanBase 错误码：7419
+* SQLSTATE：HY000
+* 错误原因：在尝试访问 LOB 值时，该值不存在。
+* 解决方法：检查 LOB 值所在的表或索引是否存在或已经被删除，确认是否可以重新恢复该表或索引。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.0 版本开始引入。</p>
+</main>
+
+## OBE-22928：invalid privilege on directories
+
+* OceanBase 错误码：5374
+
+* SQLSTATE：HY000
+
+* 错误原因：尝试授予或撤销对于目录的权限，但是该权限对于目录是无效的。
+
+* 解决方法：只能授予或撤销对于目录的 `CREATE`、`DELETE`、`READ`、`WRITE` 和 `EXECUTE`权限。不要授予或撤销其他权限。
+
+## OBE-22950：cannot ORDER objects without MAP or ORDER method
+
+* OceanBase 错误码：7412
+* SQLSTATE：42000
+* 错误原因： 在比较对象时，对象没有定义 MAP 或 ORDER 方法。
+* 解决方法：
+   1. 定义 MAP 或 ORDER 方法：可以在对象的定义中定义 MAP 或 ORDER 方法，以便在排序时使用。MAP 方法用于将对象映射到一个标量值，ORDER 方法用于比较两个对象的大小。
+   2. 修改排序方式：如果无法定义 MAP 或 ORDER 方法，可以考虑修改排序方式，使用其他方式进行排序，例如使用其他列进行排序。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.0 版本开始引入。</p>
+</main>
+
+## OBE-22990：LOB locators cannot span transactions
+
+* OceanBase 错误码：9715
+
+* SQLSTATE：HY000
+
+* 错误原因：LOB 句柄不支持跨事务的写操作。
+
+* 解决方法：对 LOB 句柄进行重新赋值后再进行写操作。
+
+## OBE-22998：CLOB or NCLOB in multibyte character set not supported
+
+* OceanBase 错误码：22998
+
+* SQLSTATE：HY000
+
+* 错误原因：固定宽度或变宽多字节字符集中的 `CLOB` 或 `NCLOB` 被传递给一个 `SQL` 字符函数，但是该函数不支持多字节 `LOB` 数据。
+
+* 解决方法：使用 `DBMS_LOB` 函数，如 `DBMS_LOB.INSTR()` 和 `DBMS_LOB.SUBSTR()`，或使用 `PLSQL``DBMS_LOB.READ/WRITE` 来访问 `LOB` 数据。
+
+## OBE-23413：table %s.%s does not have a materialized view log
+
+* OceanBase 错误码：9755
+
+* SQLSTATE：HY000
+
+* 错误原因：由于主表不包含物化视图日志，无法进行快速刷新。
+
+* 解决方法：请创建对应的物化视图日志。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.2 版本开始引入。</p>
+</main>
+
+## OBE-23420：the parameter %s must evaluate to a time in the future
+
+* OceanBase 错误码：9764
+
+* SQLSTATE：HY000
+
+* 错误原因：参数 “interval” 的计算结果为早于 `CURRENT_DATE` 的时间。
+
+* 解决方法：选择计算结果晚于 `CURRENT_DATE` 的时间的表达式。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.2 版本开始引入。</p>
+</main>
+
+## OBE-23481：unexpected name string'%.\*s'
+
+* OceanBase 错误码：5932
+
+* SQLSTATE：HY000
+
+* 错误原因：错误的名称字符。
+
+## OBE-23538：cannot explicitly refresh a NEVER REFRESH materialized view (%s)
+
+* OceanBase 错误码：9761
+
+* SQLSTATE：HY000
+
+* 错误原因：尝试显式刷新 NEVER REFRESH MV。
+
+* 解决方法：不要执行此刷新操作或从列表中删除 MV。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.2 版本开始引入。</p>
+</main>
+
+## OBE-24230: input to DBMS_DDL.WRAP is not a legal PL/SQL unit
+
+* OceanBase 错误码：9807
+
+* SQLSTATE：HY000
+
+* 错误原因：在使用 `DBMS_DDL.WRAP` 存储过程时，输入的文本不是一个合法的 PL/SQL 单元。
+
+* 解决方法：检查语法中是否缺少分号或者有不完整语句。
+
+## OBE-24234：unable to get source of string \\'%.\*s\\'.\\'%.\*s\\', insufficient privileges or does not exist
+
+* OceanBase 错误码：5962
+
+* SQLSTATE：HY000
+
+* 错误原因：`DBMS_PREPROCESSOR` 子程序中指定的 PL/SQL 对象不存在，或者没有查看其源代码所需的权限。
+
+* 解决方法：确保指定的对象存在，并且具有查看其源所需的权限。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-24235：bad value for object type: %.\*s
+
+* OceanBase 错误码：5961
+
+* SQLSTATE：HY000
+
+* 错误原因：指定的对象类型不合适。
+
+* 解决方法：确保指定的对象类型是以下类型之一：包、包体、过程、函数、触发器、类型和类型体。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-24236：source text is empty
+
+* OceanBase 错误码：5960
+
+* SQLSTATE：HY000
+
+* 错误原因：提供给 `DBMS_PREPROCESSOR` 子程序的输入源文本为空。
+
+* 解决方法：传递非空输入源文本作为输入。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-24247: network access denied by access control list (ACL)
+
+* OceanBase 错误码：9818、9791
+
+* SQLSTATE：HY000
+
+* 错误原因：当前数据库用户未被授权通过网络访问外部服务。
+
+* 解决方法：为执行网络操作的数据库用户配置 ACL，明确授予其访问特定外部网络资源的权限。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-24249：Authentication scheme '%.*s' not supported
+
+* OceanBase 错误码：9797
+
+* SQLSTATE：HY000
+
+* 错误原因：身份验证方案不支持。
+
+* 解决方法：核对服务器支持的认证方案。
+
+## OBE-24250：No supported authentication scheme found
+
+* OceanBase 错误码：9798
+
+* SQLSTATE：HY000
+
+* 错误原因：未找到支持的身份验证方案。
+
+* 解决方法：排查 OceanBase 客户端环境配置。若问题出现在特定的 SMTP 等应用场景中，则需额外确保客户端请求的认证方法与服务器端公告的可用方法相匹配。
+
+## OBE-24323：value not allowed
+
+* OceanBase 错误码：7297
+
+* SQLSTATE：HY000
+
+* 错误原因：参数传入了空值或无效值。
+
+* 解决方法：验证所有必需参数是否已正确传入合法值。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.2.2 版本开始引入。</p>
+</main>
+
+## OBE-24334：no descriptor for this position
+
+* OceanBase 错误码：5973
+
+* SQLSTATE：HY000
+
+* 错误原因：应用程序从句柄中获取非法位置的描述符。
+
+* 解决方法：检查位置号。
+
+## OBE-24381：error(s) in array DML
+
+* OceanBase 错误码：5883
+
+* SQLSTATE：HY000
+
+* 错误原因：DML 语句中的一行或多行失败。
+
+* 解决方法：请参考错误句柄中的错误堆栈。
+
+## OBE-24761：transaction rolled back
+
+* OceanBase 错误码：6002
+
+* SQLSTATE：40000
+
+* 错误原因：事务回滚。
+
+## OBE-24761：transaction rolled back: transaction context does not exist
+
+* OceanBase 错误码：6213
+
+* SQLSTATE：40000
+
+* 错误原因：事务回滚，事务上下文不存在。
+
+## OBE-24761：transaction rolled back: transaction is killed
+
+* OceanBase 错误码：6211
+
+* SQLSTATE：25000
+
+* 错误原因：事务回滚，事务被终止。
+
+## OBE-24761：transaction rolled back: partition is frozen
+
+* OceanBase 错误码：6214
+
+* SQLSTATE：25000
+
+* 错误原因：事务回滚，分区被冻结。
+
+## OBE-24761：transaction rolled back: Transaction exiting
+
+* OceanBase 错误码：6223
+
+* SQLSTATE：25000
+
+* 错误原因：事务回滚，事务已经存在。
+
+## OBE-24761：transaction rolled back: transaction needs rollback
+
+* OceanBase 错误码：6224
+
+* SQLSTATE：25000
+
+* 错误原因：事务回滚，事务需要回滚。
+
+## OBE-24761：transaction rolled back: transaction idle timeout
+
+* OceanBase 错误码：6278
+
+* SQLSTATE：25000
+
+* 错误原因：事务回滚，事务超时。
+
+相关问题案例：
+
+* [事务空闲超时，错误代码 OBE-24761](https://www.oceanbase.com/knowledge-base/oceanbase-database-1000000000217853)
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-24761：transaction rolled back: transaction context count reach limit
+
+* OceanBase 错误码：6234
+
+* SQLSTATE：25000
+
+* 错误原因：事务回滚，事务上下文数量达到限制。
+
+## OBE-25002 : cannot create INSTEAD OF triggers on tables
+
+* OceanBase 错误码：9572
+
+* SQLSTATE：HY000
+
+* 错误原因：不能在表上创建 `INSTEAD OF` 触发器。
+
+* 解决方式：在视图上创建 `INSTEAD OF` 触发器，或者在表上创建 `DML` 触发器。
+
+## OBE-25004 : WHEN clause is not allowed in INSTEAD OF triggers
+
+* OceanBase 错误码：9571
+
+* SQLSTATE：HY000
+
+* 错误原因：在 INSTEAD OF 触发器中指定WHEN子句。
+
+* 解决方式：在创建 INSTEAD OF 触发器时删除WHEN子句。
+
+## OBE-25005 : cannot CREATE INSTEAD OF trigger on a read-only view
+
+* OceanBase 错误码：9663
+
+* SQLSTATE：HY000
+
+* 错误原因：不能在只读视图上创建 `INSTEAD OF` 触发器。
+
+* 解决方式：将 `INSTEAD OF` 触发器创建在非只读视图上。
+
+## OBE-25009 : Nested tableclause allowed only for INSTEAD OF triggers
+
+* OceanBase 错误码：9569
+
+* SQLSTATE：HY000
+
+* 错误原因：嵌套表子句只允许出现在 INSTEAD OF 触发器中。
+
+* 解决方式：使用视图嵌套表列来定义嵌套表触发器。
+
+## OBE-25020：renaming system triggers is not allowed
+
+* OceanBase 错误码：9803
+
+* SQLSTATE：HY000
+
+* 错误原因：不允许重命名系统触发器。
+
+* 解决方法：表明你正尝试进行一项不被允许的操作。应立即停止重命名系统触发器的尝试。
+
+## OBE-25021 : cannot reference a trigger defined on another table
+
+* OceanBase 错误码：9705
+
+* SQLSTATE：HY000
+
+* 错误原因：FOLLOWS 子句中引用的触发器是在另一个表上定义的。
+
+* 解决方式：在同一张表上创建引用的触发器。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-25022 : cannot reference a trigger of a different type
+
+* OceanBase 错误码：9706
+
+* SQLSTATE：HY000
+
+* 错误原因：FOLLOWS 或 PRECEDES 子句中引用的触发器是不同的类型或不是组合触发器。
+
+* 解决方式：将引用的触发器创建为相同类型或组合触发器。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-25023 : Cyclic trigger dependency is not allowed
+
+* OceanBase 错误码：9707
+
+* SQLSTATE：HY000
+
+* 错误原因：形成了一个触发器依赖的循环。
+
+* 解决方式：不要创建可以形成循环依赖的触发器。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-25025 : cannot specify PRECEDES clause
+
+* OceanBase 错误码：9708
+
+* SQLSTATE：HY000
+
+* 错误原因：创建常规触发器时指定了 PRECEDES 子句。
+
+* 解决方式：不要创建带有 PRECEDES 子句的常规触发器。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-25128：No insert/update/delete on table with constraint disabled and validated
+
+* OceanBase 错误码：5795
+
+* SQLSTATE：HY000
+
+* 错误原因：尝试在包含 `DISABLE VALIDATE` 约束的表上进行插入、更新或删除操作。
+
+* 解决方法：更改约束的状态。
+
+## OBE-25129：cannot modify constraint (%.\*s) - no such constraint
+
+* OceanBase 错误码：5800
+
+* SQLSTATE：HY000
+
+* 错误原因：此表不存在指定的约束。
+
+## OBE-25137：Data value %s out of range in '%s'
+
+* OceanBase 错误码：4157
+
+* SQLSTATE：22003
+
+* 错误原因：转换后操作数的值大于转换目标值的大小。
+
+* 解决方式：增加转换目标值的大小。
+
+## OBE-25154：Column part of using clause can not have qualifier
+
+* OceanBase 错误码：5619
+
+* SQLSTATE：HY000
+
+* 错误原因：用于命名联接（`NATURAL` 联接或使用 `USING` 子句的联接）的列不能具有显式限定符。
+
+* 解决方法：删除限定符。
+
+## OBE-25156：old style outer join (+) cannot be used with ANSI joins
+
+* OceanBase 错误码：5625
+
+* SQLSTATE：HY000
+
+* 错误原因：当查询块使用 ANSI 样式联接时，不能使用用于指定外部联接 `+` 的旧表示法。
+
+* 解决方法：使用 ANSI 样式指定外部联接。
+
+## OBE-25405：Transaction state unknown
+
+* OceanBase 错误码：6222
+
+* SQLSTATE：HY000
+
+* 错误原因：事务尝试提交时发生故障。故障切换可能不会自动确定事务状态。
+
+* 解决方法：用户必须手动确定事务的状态。
+
+## OBE-28001：the password has expired
+
+* OceanBase 错误码：4366
+
+* SQLSTATE：HY000
+
+* 错误原因：用户的帐户已过期，需要更改密码。
+
+* 解决方法：更改密码或联系数据库管理员。
+
+## OBE-28101：policy already exists
+
+* OceanBase 错误码：9718
+* SQLSTATE：HY000
+* 错误原因：策略已存在。
+* 解决方法：检查是否已添加策略或使用不同的策略名称。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28102：policy does not exist
+
+* OceanBase 错误码：9719
+* SQLSTATE：HY000
+* 错误原因：策略不存在。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28103：adding a policy to an object owned by SYS is not allowed
+
+* OceanBase 错误码：9720
+* SQLSTATE：HY000
+* 错误原因：不允许向 SYS 拥有的对象添加策略。
+* 解决方法：您不能执行此操作。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28104：input value for %s is not valid
+
+* OceanBase 错误码：9721
+* SQLSTATE：HY000
+* 错误原因：参数的输入值无效。
+* 解决方法：请指定一个有效的参数值。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28105：cannot create security relevant column policy in an object view
+
+* OceanBase 错误码：9722
+* SQLSTATE：HY000
+* 错误原因：无法在对象视图中创建与安全相关的列策略。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28106：input value for argument %s is not valid
+
+* OceanBase 错误码：9723
+* SQLSTATE：HY000
+* 错误原因：参数的输入值无效或丢失。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28107：policy was disabled
+
+* OceanBase 错误码：9724
+* SQLSTATE：HY000
+* 错误原因：策略已禁用。
+* 解决方法：若强制执行该策略，则必须启用它。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28108：circular security policies detected
+
+* OceanBase 错误码：9725
+* SQLSTATE：HY000
+* 错误原因：对同一对象的策略相互引用。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28109：the number of related policies has exceeded the limit of 16
+
+* OceanBase 错误码：9726
+* SQLSTATE：HY000
+* 错误原因：同一对象涉及的策略过多。
+* 解决方法：放弃一项或多项策略。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28110：policy function or package %.*s.%.*s has error
+
+* OceanBase 错误码：9727
+* SQLSTATE：HY000
+* 错误原因：策略函数或包有误，已被删除或不在有效。
+* 解决方法：检查功能的状态并更正问题。或者重新创建具有有效功能的策略。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28111：insufficient privilege to evaluate policy predicate
+
+* OceanBase 错误码：9728
+* SQLSTATE：HY000
+* 错误原因：策略函数的所有者无权访问的对象。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28112：failed to execute policy function
+
+* OceanBase 错误码：9729
+* SQLSTATE：HY000
+* 错误原因：无法执行策略功能。策略函数在执行过程中出现一处或多处错误。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28113：policy predicate has error
+
+* OceanBase 错误码：9730
+* SQLSTATE：HY000
+* 错误原因：策略谓词有错误。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28116：insufficient privileges to do direct path access
+
+* OceanBase 错误码：9731
+* SQLSTATE：HY000
+* 错误原因：权限不足，无法进行直接路径访问。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28117：integrity constraint violated * parent record not found
+
+* OceanBase 错误码：9732
+* SQLSTATE：HY000
+* 错误原因：违反了完整性约束，找不到父记录。
+* 解决方法：确保更新后的外键值也必须在父级中可见。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28118：policy group already exists
+
+* OceanBase 错误码：9733
+* SQLSTATE：HY000
+* 错误原因：策略组已存在。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28119：policy group does not exist
+
+* OceanBase 错误码：9734
+* SQLSTATE：HY000
+* 错误原因：策略组不存在。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28120：driving context already exists
+
+* OceanBase 错误码：9735
+* SQLSTATE：HY000
+* 错误原因：驱动上下文已存在。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28121：driving context does not exist
+
+* OceanBase 错误码：9736
+* SQLSTATE：HY000
+* 错误原因：驱动上下文不存在。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28122：can not update SYS_DEFAULT policy group
+
+* OceanBase 错误码：9737
+* SQLSTATE：HY000
+* 错误原因：无法更新 SYS_DEFAULT 策略组。
+* 解决方法：不要尝试创建或删除 SYS_DEFAULT 策略组。不允许执行此操作。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28123：Driving context %.*s,%.*s contains invalid group %.*s
+
+* OceanBase 错误码：9738
+* SQLSTATE：HY000
+* 错误原因：驱动上下文包含无效的组。
+* 解决方法：确保在初始化策略驱动上下文时将有效的策略组传递给 DBMS_SESSION.SET_CONTEXT。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28124：Column %.*s in sec_relevant_cols cannot be of an object data type
+
+* OceanBase 错误码：9739
+* SQLSTATE：HY000
+* 错误原因：`sec_relevant_cols` 中的列不能是对象数据类型。
+* 解决方法： 确保在 `sec_relevant_cols` 中指定的列都不是对象数据类型或 XMLType。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28125：A protected base column was referenced in an unprotected virtual column expression
+
+* OceanBase 错误码：9740
+* SQLSTATE：HY000
+* 错误原因：在未受保护的虚拟列表达式中引用了受保护的基列。
+* 解决方法：检查策略定义并确保虚拟列也受到保护。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28126：Attribute association failed for policy %.*s
+
+* OceanBase 错误码：9741
+* SQLSTATE：HY000
+* 错误原因：策略的属性关联失败。
+* 解决方法：请指定一个本地应用程序上下文属性。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28132：The MERGE INTO syntax does not support the security policy
+
+* OceanBase 错误码：9742
+* SQLSTATE：HY000
+* 错误原因：MERGE INTO 语法不支持安全策略。
+* 解决方法：
+  * 若您没有修改安全策略的权限，则在已定义安全策略的表上使用 INSERT、UPDATE 和 DELETE DML 语句，而不是 MERGE INTO。
+  * 若您有权修改安全策略，则以 statement_types 包含所有 DML 语句类型（INSERT、UPDATE 和 DELETE）的方式重新定义它，或者确保该策略没有与安全相关的列。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.1.0 版本开始引入。</p>
+</main>
+
+## OBE-28115：policy with check option violation
+
+* OceanBase 错误码：5789
+
+* SQLSTATE：HY000
+
+* 错误原因：写入数据的安全标记错误。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-28106：input value for argument #%d is not valid
+
+* OceanBase 错误码：9687
+
+* SQLSTATE：HY000
+
+* 错误原因：输入参数不合法。
+
+## OBE-28264：Client identifier is too long
+
+* OceanBase 错误码：9688
+
+* SQLSTATE：HY000
+
+* 错误原因：超过 Client ID 上限 64 字节。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V3.2.4 版本开始引入。</p>
+</main>
+
+## OBE-28265：Namespace beginning with 'SYS_' is not allowed
+
+* OceanBase 错误码：9690
+
+* SQLSTATE：HY000
+
+* 错误原因：创建的 `context namespace` 不能有 `'SYS_'` 前缀。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V3.2.4 版本开始引入。</p>
+</main>
+
+## OBE-28267：The maximum size specified by the _session_context_size parameter was exceeded
+
+* OceanBase 错误码：9691
+
+* SQLSTATE：HY000
+
+* 错误原因：`session based context` 键值对个数超过了 `_session_context_size` 指定的上限。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V3.2.4 版本开始引入。</p>
+</main>
+
+## OBE-28268：Invalid NameSpace Value
+
+* OceanBase 错误码：9689
+
+* SQLSTATE：HY000
+
+* 错误原因：`context namespace namespace` 名称不合法。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V3.2.4 版本开始引入。</p>
+</main>
+
+## OBE-29253：Invalid count argument passed to procedure dbms_sql.define_array
+
+* OceanBase 错误码：9679
+
+* SQLSTATE：HY000
+
+* 错误原因：在调用包 `dbms_sql` 的过程定义数组时指定的 `count` 参数的值无效。无效值为负数和空值。参数必须是正整数。
+
+* 解决方法：请更正 PL/SQL 程序，以便只传递有效参数来定义数组，然后重试。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-29256: Cursor contains both regular and array defines which is illegal 
+
+* Ocean Base 错误码：9551
+
+* SQLSTATE：HY000
+
+* 错误原因：在此游标上同时定义了 `define_array` 和 `define_column`，这是非法的。游标不可能同时包含列和数组定义。
+
+* 解决方法：修改 PL 程序以仅调用两个函数中的一个。
+
+## OBE-29257：host %.\*s unknown
+
+* OceanBase 错误码：5928
+
+* SQLSTATE：HY000
+
+* 错误原因：指定的主机未知。
+
+* 解决方法：检查主机名或 IP 地址的拼写，确保主机名或 IP 地址有效。
+
+## OBE-29258: buffer too small
+
+* OceanBase 错误码：9785
+
+* SQLSTATE：HY000
+
+* 错误原因：在进行 TCP 网络通信时，操作的缓冲区大小不足以容纳需要读取或写入的数据量。
+
+* 解决方法：增大缓冲区。
+
+## OBE-29259: end-of-input reached
+
+* OceanBase 错误码：9786
+
+* SQLSTATE：HY000
+
+* 错误原因：该错误可能由以下一种或多种情况引发：
+  
+  * 网络或服务端中断。
+  * 安全协议不兼容。
+  * 请求或数据格式问题。
+  * 数据库端资源或超时限制。
+
+* 解决方法：
+  
+  * 验证网络连通性与目标服务状态。
+  * 检查并升级安全协议支持。
+  * 调整数据库网络配置与超时。
+
+## OBE-29260: network error: %.*s
+
+* OceanBase 错误码：9787
+
+* SQLSTATE：HY000
+
+* 错误原因：网络错误。
+
+* 解决方法：排查网络配置。
+
+## OBE-29261: bad argument
+
+* OceanBase 错误码：5951、5968、9813、9788
+
+* SQLSTATE：HY000
+
+* 错误原因：错误的参数传递给 PL API。
+
+* 解决方法：检查传递给 PL API的参数，然后重试。
+
+## OBE-29262: bad URL
+
+* OceanBase 错误码：9814
+
+* SQLSTATE：HY000
+
+* 错误原因：传递给 UTL_HTTP 包的 URL 格式不正确或无效。
+
+* 解决方法：检查 URL 是否正确。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29263: HTTP protocol error
+
+* OceanBase 错误码：9820
+
+* SQLSTATE：HY000
+
+* 错误原因：HTTP 协议错误。
+
+* 解决方法：检查服务器或网络问题。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29264: unknown or unsupported URL scheme
+
+* OceanBase 错误码：9824
+
+* SQLSTATE：HY000
+
+* 错误原因：UTL_HTTP 包无法识别或不支持您在 URL 中指定的协议方案。
+
+* 解决方法：检查并修正您的 URL 字符串。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29266: end-of-body reached
+
+* OceanBase 错误码：9815
+
+* SQLSTATE：HY000
+
+* 错误原因：在使用 UTL_HTTP 包读取 HTTP 响应体的过程中，程序试图从已经读取到结束位置的 HTTP 响应流中继续读取数据。
+
+* 解决方法：在绝大多数情况下，它是一个需要被捕获和妥善处理的正常流程信号，而非一个需要修复的故障。 您需要确保代码中有健全的异常处理逻辑来优雅地结束 HTTP 请求。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29268: HTTP client error
+
+* OceanBase 错误码：9816
+
+* SQLSTATE：HY000
+
+* 错误原因：HTTP 客户端请求失败。
+
+* 解决方法：检查客户端发出的请求信息是否正确，检查网络连通性和服务器状态。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29269: HTTP server error
+
+* OceanBase 错误码：9817
+
+* SQLSTATE：HY000
+
+* 错误原因：HTTP 服务器问题。
+
+* 解决方法：检查 HTTP 服务器状态。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29270: too many open HTTP requests
+
+* OceanBase 错误码：9822
+
+* SQLSTATE：HY000
+
+* 错误原因：打开的 HTTP 请求太多。
+
+* 解决方法：调整会话连接数限制，关闭不必要的连接请求。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29273: HTTP request failed
+
+* OceanBase 错误码：9821
+
+* SQLSTATE：HY000
+
+* 错误原因：HHTTP 请求失败。
+
+* 解决方法：检查服务器或网络连通性。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29275: partial multibyte character
+
+* OceanBase 错误码：9819、9789
+
+* SQLSTATE：HY000
+
+* 错误原因：多字节字符被不完整地处理。
+
+* 解决方法：检查 UTL_HTTP 响应数据处理代码开始，排查是否有按字节计算长度或截取的操作。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29276: transfer timeout
+
+* OceanBase 错误码：9823、9790
+
+* SQLSTATE：HY000
+
+* 错误原因：传输超时。
+
+* 解决方法：调整网络环境、优化服务端性能或增加客户端的超时设置。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.4.1 版本开始引入。</p>
+</main>
+
+## OBE-29277: invalid SMTP operation
+
+* OceanBase 错误码：9794
+
+* SQLSTATE：HY000
+
+* 错误原因：SMTP 操作无效。
+
+* 解决方法：排查 SMTP 协议命令的调用顺序和邮件数据格式的合规性。
+
+## OBE-29278: SMTP transient error: %.*s
+
+* OceanBase 错误码：9795
+
+* SQLSTATE：HY000
+
+* 错误原因：SMTP 通信遇到了临时性障碍。
+
+* 解决方法：核对 SMTP 服务器信息，检查网络与环境限制。
+
+## OBE-29279: SMTP permanent error: %.*s
+
+* OceanBase 错误码：9796
+
+* SQLSTATE：HY000
+
+* 错误原因：此错误表示在使用数据库的邮件功能（如 UTL_SMTP 包）时，遇到了导致邮件无法发送的永久性故障。
+
+* 解决方法：根据错误详情判断问题属于地址错误、认证失败、服务器策略拒绝还是网络不通。
+
+## OBE-29280: invalid directory path 
+
+* Ocean Base 错误码：9554
+
+* SQLSTATE：HY000
+
+* 错误原因：目录对象不存在。
+
+* 解决方法：更正目录对象参数或使用 `CREATE DIRECTORY` 命令创建目录对象。
+
+## OBE-29281: invalid mode 
+
+* Ocean Base 错误码：9555
+
+* SQLSTATE：HY000
+
+* 错误原因：为文件打开模式指定了无效的值。
+
+* 解决方法：修改模式的值为如下的值之一：`r` 、`a` 或 `w`。
+
+## OBE-29282: invalid file ID 
+
+* Ocean Base 错误码：9556
+
+* SQLSTATE：HY000
+
+* 错误原因：指定了一个文件 ID 句柄，但是没有对应的打开文件。
+
+* 解决方法：验证文件 ID 句柄的值是对 `UTL_FILE.FOPEN` 的调用返回的值。
+
+## OBE-29283: invalid file operationstring 
+
+* Ocean Base 错误码：9557
+
+* SQLSTATE：HY000
+
+* 错误原因：试图从不存在的文件或目录中读取文件，或者操作系统拒绝了文件或目录访问。
+
+* 解决方法：验证文件系统上的文件和目录访问权限，如果正在读取，请验证文件是否存在。
+
+## OBE-29284: file read error 
+
+* Ocean Base 错误码：9558
+
+* SQLSTATE：HY000
+
+* 错误原因：读取文件失败。
+
+* 解决方法：验证文件是否存在，是否可访问以及在读取模式下是否已打开。
+
+## OBE-29285: file write error 
+
+* Ocean Base 错误码：9559
+
+* SQLSTATE：HY000
+
+* 错误原因：无法写入，刷新或关闭文件。
+
+* 解决方法：验证文件是否存在，是否可访问以及在写入或追加模式下是否已打开。
+
+## OBE-29286: internal error 
+
+* Ocean Base 错误码：9560
+
+* SQLSTATE：HY000
+
+* 错误原因：分配 PL 会话内存时发生致命错误。
+
+* 解决方法：验证 PL 会话已连接，并且有足够的内存资源可用。
+
+## OBE-29287: invalid maximum line size 
+
+* Ocean Base 错误码：9562
+
+* SQLSTATE：HY000
+
+* 错误原因：指定的最大行的值无效。
+
+* 解决方法：更正最大行的值。
+
+## OBE-29288: invalid file name 
+
+* Ocean Base 错误码：9563
+
+* SQLSTATE：HY000
+
+* 错误原因：指定了无效的文件名或长度无效的文件名。
+
+* 解决方法：更正文件名。
+
+## OBE-29289: directory access denied 
+
+* OceanBase 错误码：9564
+
+* SQLSTATE：HY000
+
+* 错误原因：指定了一个目录对象，但是并没有访问该目录对象的权限。
+
+* 解决方法：使用命令 `GRANT [privilege] ON DIRECTORY [object] TO [username];` 授予访问该目录对象的权限。
+
+## OBE-29290: invalid offset specified for seek 
+
+* OceanBase 错误码：9565
+
+* SQLSTATE：HY000
+
+* 错误原因：试图查找超出文件末尾的位置，或者绝对偏移和相对偏移均为 `NULL`，或者绝对偏移小于零。
+
+* 解决方法：如果指定绝对偏移量，请确保它在 \[0，文件中的字节总数\] 的范围内；如果指定相对偏移量，请确保它不大于当前字节位置加上文件中剩余的字节数。
+
+## OBE-29291: file remove operation failed 
+
+* OceanBase 错误码：9566
+
+* SQLSTATE：HY000
+
+* 错误原因：操作系统拒绝了删除文件的操作。
+
+* 解决方法：验证文件存在并且具有对文件和目录的删除权限。
+
+## OBE-29292: file rename operation failed 
+
+* OceanBase 错误码：9567
+
+* SQLSTATE：HY000
+
+* 错误原因：操作系统拒绝了文件重命名的操作，可能原因如下：
+
+  * 源目录或目标目录不存在或不可访问。
+
+  * 源文件不可访问。
+  
+  * 目标文件已存在。
+
+* 解决方法：验证源文件、源目录及目标目录是存在并且可访问的，且目标文件不存在。
+
+## OBE-29295: invalid mime header tag
+
+* OceanBase 错误码：5970
+
+* SQLSTATE：HY000
+
+* 错误原因：扫描 `mime` 头标记的字符串时出错
+
+* 解决方法：验证源数据是否为有效的 `mime` 头字符串，格式是否为 charset/encoding/encoded string。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该错误码从 V4.0.0 版本开始引入。</p>
+</main>
+
+## OBE-29298: Character set mismatch 
+
+* OceanBase 错误码：9561
+
+* SQLSTATE：HY000
+
+* 错误原因：文件的字符集模式与读取或写入操作的字符集不匹配。
+
+* 解决方法：使用正确的 `UTL_FILE` 读写程序，其对应于该文件的字符集模式。
+
+## OBE-29357: %s %.\*s already exists
+
+* OceanBase 错误码：4702
+
+* SQLSTATE：HY000
+
+* 错误原因：程序 `CREATE_PLAN` 、`CREATE_CDB_PLAN`、`CREATE_CONSUMER_GROUP` 或程序包`DBMS_RESOURCE_MANAGER` 的 `CREATE_CATEGORY` 的参数名称已在使用中。
+
+* 解决方法：指定未使用的参数名称。
+
+## OBE-29358: resource plan %.\*s does not exist
+
+* OceanBase 错误码：4703
+
+* SQLSTATE：HY000
+
+* 错误原因：指定了无效的计划名称作为程序包 `DBMS_RESOURCE_MANAGER` 的 `UPDATE_PLAN` 或 `UPDATE_CDB_PLAN` 的参数。
+
+* 解决方法：指定存在的计划名称。
+
+## OBE-29361: value %ld for %s is outside valid range of 0 to 100
+
+* OceanBase 错误码：4704
+
+* SQLSTATE：HY000
+
+* 错误原因：为计划指令参数指定了无效的值。
+
+* 解决方法：指定一个介于 `0` 和 `100` 之间的值（包括 `0` 和 `100` ）。
+
+## OBE-29362：plan directive %.\*s, %.\*s does not exist
+
+* OceanBase 错误码：4705
+
+* SQLSTATE：HY000
+
+* 错误原因：为程序包 `DBMS_RESOURCE_MANAGER` 的 `UPDATE_PLAN_DIRECTIVE` 或 `UPDATE_CDB_PLAN_DIRECTIVE` 指定了不存在的计划指令。
+
+* 解决方法：指定现有的计划指令。
+
+## OBE-29364：plan directive %.\*s, %.\*s already exists
+
+* OceanBase 错误码：4706
+
+* SQLSTATE：HY000
+
+* 错误原因：试图创建一个已经存在的计划指令。
+
+* 解决方法：使用其他值重试创建操作。
+
+## OBE-29366：plan directive name '%.\*s' not supported
+
+* OceanBase 错误码：4707
+
+* SQLSTATE：HY000
+
+* 错误原因：不支持的计划指令名称。
+
+## OBE-29368：consumer group %.\*s does not exist
+
+* OceanBase 错误码：4710
+
+* SQLSTATE：HY000
+
+* 错误原因：指定了不存在的使用者组。
+
+* 解决方法：指定一个存在的使用者组。
+
+## OBE-29471：DBMS_SQL access denied
+
+* OceanBase 错误码：5856
+
+* SQLSTATE：HY000
+
+* 错误原因：出于安全考虑，`DBMS_SQL` 的访问被拒绝了。
+
+* 解决方法：尝试从 Alert 日志和 Trace 文件中获取更多信息。
+
+## OBE-29474：DBMS_SQL.OPEN_CURSOR failed. security_level of 0 is not allowed
+
+* OceanBase 错误码：9677
+
+* SQLSTATE：HY000
+
+* 错误原因：`DBMS_SQL.OPEN_CURSOR` 指定的安全级别为 0。
+
+* 解决方法：指定有效的安全级别。
+
+## OBE-29879：cannot create multiple domain indexes on a column list using same
+
+* OceanBase 错误码：7301
+
+* SQLSTATE：42000
+
+* 错误原因：尝试在一个列列表上创建多个基于相同域的索引。
+
+* 解决方法：检查并移除任何不必要的重复索引请求。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul><li>在 V4.3.x 版本中，该错误码从 V4.3.2 版本开始引入。</li><li>在 V4.2.x 版本中，该错误码从 V4.2.4 版本开始引入。</li></ul>
+</main>
+
+## OBE-29900：operator binding does not exist
+
+* OceanBase 错误码：7298
+
+* SQLSTATE：42000
+
+* 错误原因：在尝试执行操作时，指定的操作符绑定（operator binding）未找到。
+
+* 解决方法：确认使用的操作符或函数名称是否正确无误，没有拼写错误。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <ul><li>在 V4.3.x 版本中，该错误码从 V4.3.2 版本开始引入。</li><li>在 V4.2.x 版本中，该错误码从 V4.2.4 版本开始引入。</li></ul>
+</main>

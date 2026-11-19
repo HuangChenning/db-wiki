@@ -1,0 +1,24 @@
+---
+title: "cache 的使用规范"
+book: "SQL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005683340.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# cache 的使用规范
+
+本文介绍在 OceanBase 数据库关于 cache 的使用规范。
+
+* 业务上对某个字段频繁的重复写，推荐使用写缓存机制，如计数器的写入。
+
+* 使用 hint 控制计划缓存
+
+  * `/*+ USE_PLAN_CACHE(NONE)*/` 表示不使用计划缓存。
+
+  * `/*+USE_PLAN_CACHE(DEFAULT)*/` 表示使用计划缓存。
+
+* SQL 语句禁止使用提示，如 `force index`，`ignore index`，`straight_join`，`SQL_no_cache` 等。

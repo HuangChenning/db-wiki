@@ -1,0 +1,57 @@
+---
+title: DBA_OB_TABLEGROUP_TABLES
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005284195.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_TABLEGROUP_TABLES
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户表组、表的关联关系。不展示不在表组中的表。
+
+## 字段说明
+
+|      字段名称       |      类型       | 是否可以为 NULL |      描述       |
+|-----------------|---------------|------------|---------------|
+| TableGROUP_NAME | VARCHAR2(128) | NO         | 表组名           |
+| OWNER           | VARCHAR2(128) | YES        | 表所属的数据库名 |
+| TABLE_NAME      | VARCHAR2(256) | YES        | 表名       |
+| SHARDING        | VARCHAR2(20)  | NO         | 表组的 SHARDING 属性：<ul><li>`NONE`：表组内的所有表的所有分区均聚集在同一台机器上，并且对加入表组的表没有任何限制。</li> <li>`PARTITION`：表组内每一张表的数据按一级分区打散；如果是二级分区表，则一级分区下的所有二级分区聚集在一起。</li> <li>`ADAPTIVE`：表组内每一张表的数据根据自适应方式打散。即，如果表组内的表是一级分区表，则按一级分区打散；如果表组内的表是二级分区表，则按每个一级分区下的二级分区打散。</li></ul>  |
+| SCOPE           | VARCHAR2(20)  | YES        | 表组的 `SCOPE` 属性。取值如下：<ul><li>`SERVER`：表示所有分区组的 Leader 分布在同一节点上。 </li><li>`ZONE`：表示所有分区组的 Leader 分布在同一 Zone 内，且打散在 Zone 内各节点。 </li><li>`CLUSTER`：表示所有分区组的 Leader 打散在集群内各节点。</li></ul> <main id="notice" type='explain'><h4>说明</h4><p>对于 V4.4.2 版本，该字段从 V4.4.2 BP1 版本开始引入。</p></main>|
+
+## 查询示例
+
+用户租户查询本租户名为 `TBLGROUP2` 的表组的关联关系。
+
+```shell
+obclient> SELECT * FROM SYS.DBA_OB_TABLEGROUP_TABLES WHERE tablegroup_name = 'TBLGROUP2';
+```
+
+返回结果如下：
+
+```shell
++-----------------+--------------+------------+----------+--------+
+| TABLEGROUP_NAME | OWNER        | TABLE_NAME | SHARDING | SCOPE  |
++-----------------+--------------+------------+----------+--------+
+| TBLGROUP2       | TEST_USER001 | TEST_TBL3  | NONE     | SERVER |
+| TBLGROUP2       | TEST_USER001 | TEST_TBL4  | NONE     | SERVER |
++-----------------+--------------+------------+----------+--------+
+2 rows in set
+```
+
+## 相关视图或文档
+
+* [CDB_OB_TABLEGROUP_TABLES](../../300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/10900.o-cdb_ob_tablegroup_tables-of-sys-tenant.md)
+
+* [查看表组信息](../../../300.database-object-management/200.manage-object-of-oracle-mode/300.manage-table-groups-of-oracle-mode/300.view-the-information-of-a-table-group-of-oracle-mode.md)

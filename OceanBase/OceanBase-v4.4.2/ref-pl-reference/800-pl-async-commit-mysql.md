@@ -1,0 +1,112 @@
+---
+title: "PL 异步提交优化"
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005405882.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# PL 异步提交优化
+
+在 OceanBase 数据库中，存储过程（Stored Procedure）是用户业务逻辑的重要载体。当前实现中，存储过程内的事务提交采用同步方式，即工作线程在调用事务提交接口后，需要阻塞等待事务提交完成后才能返回。非极端情况下，本地事务提交耗时大多在微秒级，分布式事务耗时在毫秒级（主要是网络通信延迟），因此当出现分布式事务时，PL 整体延迟会大幅提高，吞吐量也会大幅下降。因此 V4.4.2 版本支持 PL 异步提交优化，缓解以上问题，进一步提升 PL 性能。
+
+## 启用 PL 异步提交优化
+
+使用 `ob_enable_pl_async_commit` 系统变量控制是否开启该优化。
+当系统的吞吐量或 TPS 达不到业务要求时，可尝试打开 `ob_enable_pl_async_commit`，开启 PL 异步提交优化，大部分提交场景都会有一定的性能提升，高并发场景会大幅提高系统的吞吐量。
+
+## 在存储过程中声明 ASYNC_COMMIT
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>存储过程的 <code>ASYNC_COMMIT</code> 特性从 V4.4.2 BP3 版本开始支持。</p>
+</main>
+
+MySQL 模式下，创建存储过程或存储函数时均可以在参数列表之后、过程体（或函数体）之前声明 `ASYNC_COMMIT` 特性，用于标识该对象面向异步提交场景。该特性是标记性声明，不会体现在 `SHOW CREATE PROCEDURE` 的输出中；是否实际启用异步提交仍由系统变量 `ob_enable_pl_async_commit` 控制。
+
+### 语法
+
+```sql
+CREATE PROCEDURE sp_name ([proc_parameter[,...]]) ASYNC_COMMIT
+    routine_body
+```
+
+### 示例
+
+```sql
+DELIMITER $$
+CREATE PROCEDURE proc_async_commit() ASYNC_COMMIT
+BEGIN
+    INSERT INTO t1 VALUES(1);
+    COMMIT;
+END $$
+DELIMITER ;
+```
+
+## 使用示例
+
+1. 创建测试表。
+
+    ```shell
+    obclient> CREATE TABLE test1(a int);
+    ```
+
+2. 创建存储过程 `test`。
+
+    ```shell
+    obclient> DELIMITER $$
+    CREATE PROCEDURE test()
+    BEGIN
+    DECLARE counter INT DEFAULT 1;
+    WHILE counter <= 1000 DO
+        INSERT INTO t0 (a) VALUES (counter);
+        commit;
+        SET counter = counter + 1;
+    END WHILE;
+    END $$
+
+    DELIMITER ;
+    ```
+
+3. 性能对比测试执行。
+
+    * 开启 PL 异步提交优化。
+
+        ```shell
+        obclient> SET ob_enable_pl_async_commit=ON;
+        obclient> call test();
+        Query OK, 0 rows affected (5.376 sec)
+        obclient> call test();
+        Query OK, 0 rows affected (5.122 sec)
+        obclient> call test();
+        Query OK, 0 rows affected (5.131 sec)
+        obclient> call test();
+        Query OK, 0 rows affected (5.117 sec)
+        obclient> call test();
+        Query OK, 0 rows affected (4.946 sec)
+        ```
+
+    * 关闭 PL 异步提交优化。
+
+       ```shell
+       obclient> SET ob_enable_pl_async_commit=OFF;
+       obclient> call test();
+        Query OK, 0 rows affected (5.489 sec)
+        obclient> call test();
+        Query OK, 0 rows affected (5.484 sec)
+        obclient> call test();
+        Query OK, 0 rows affected (5.481 sec)
+        obclient> call test();
+        Query OK, 0 rows affected (5.440 sec)
+        obclient> call test();
+        Query OK, 0 rows affected (5.501 sec)
+       ```
+
+    向数据库表中循环插入 1000 条数据，并且每插入一条数据就立即提交一次事务，开启优化后平均耗时 `5.1384s` 。关闭优化平均耗时 `5.479s`。性能大约提升 6%。。一次事务中处理的数据越多，事务越大，提交耗时越久，那么和 SQL 并行起来的效果就会越好，性能提升也越大。
+
+## 相关文档
+
+[ob_enable_pl_async_commit](../../../../700.reference/800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/6520.ob_enable_pl_async_commit-global.md)

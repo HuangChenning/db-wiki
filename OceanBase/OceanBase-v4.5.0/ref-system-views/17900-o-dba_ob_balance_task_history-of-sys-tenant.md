@@ -1,0 +1,64 @@
+---
+title: oceanbase.DBA_OB_BALANCE_TASK_HISTORY
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004477718.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_BALANCE_TASK_HISTORY
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.2.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示租户下所有执行负载均衡任务的历史。
+
+## 字段说明
+
+| **字段** | **类型** | **是否为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| TASK_ID | bigint(20) | NO | 负载均衡任务 ID |
+| CREATE_TIME | timestamp(6) | NO | Task 开始时间 |
+| FINISH_TIME | timestamp(6) | NO | Task 完成时间，包括成功、取消时间 |
+| TASK_TYPE | varchar(64) | NO | 任务类型 <ul><li>`LS_SPLIT`：日志流分裂  </li><li>`LS_ALTER`：修改日志流属性 </li><li>`LS_MERGE`：日志流合并 </li><li>`LS_TRANSFER`：日志流 Transfer </li></ul>|
+| SRC_LS | bigint(20) | NO | 源端日志流（从数据源产生的日志数据流） |
+| DEST_LS | bigint(20) | NO | 目的端日志流 |
+| PART_LIST | longtext | YES | 分区列表，包括：用户表分区和全局索引分区 |
+| FINISHED_PART_LIST | longtext | YES | 当前已完成均衡处理的分区列表 |
+| PART_COUNT | bigint(20) | YES | 分区列表中分区的数量 |
+| FINISHED_PART_COUNT | bigint(20) | YES | 当前已完成均衡处理的分区数量 |
+| LS_GROUP_ID | bigint(20) | NO | 日志流组 ID |
+| STATUS | varchar(64) | NO | 任务状态：<ul><li>`COMPLETED`：任务执行成功 </li><li>`CANCELED`：任务取消 </li></ul>|
+| PARENT_LIST | varchar(1024) | YES | 父任务列表 |
+| CHILD_LIST | varchar(1024) | YES | 子任务列表 |
+| CURRENT_TRANSFER_TASK_ID | bigint(20) | NO | 当前负载均衡任务触发的 Transfer 任务 ID |
+| JOB_ID | bigint(20) | NO | 当前任务所属的 Job ID |
+| COMMENT | longtext | YES | 注释信息 |
+
+## 相关视图或文档
+
+* 查看所有租户当前正在执行的日志流级别的负载均衡任务（Task）：[CDB_OB_BALANCE_TASKS](8000.o-cdb_ob_balance_tasks-of-sys-tenant.md)
+
+* 查看所有租户日志流级别的负载均衡工作（Job）：
+
+  * [CDB_OB_BALANCE_JOBS](7800.o-cdb_ob_balance_jobs-of-sys-tenant.md)
+  * [CDB_OB_BALANCE_JOB_HISTORY](7700.o-cdb_ob_balance_job_history-of-sys-tenant.md)
+
+* 查看所有租户 Tablet 级别的负载均衡任务（Task）：
+
+  * [CDB_OB_TRANSFER_TASKS](11800.o-cdb_ob_transfer_tasks-of-sys-tenant.md)
+  * [CDB_OB_TRANSFER_TASK_HISTORY](11700.o-cdb_ob_transfer_task_history-of-sys-tenant.md)
+
+* 查看所有租户的 Transfer Partition 任务（Task）：
+
+  * [CDB_OB_TRANSFER_PARTITION_TASKS](11500.o-cdb_ob_transfer_partition_tasks-of-sys-tenant.md)
+  * [CDB_OB_TRANSFER_PARTITION_TASK_HISTORY](11600.o-cdb_ob_transfer_partition_tasks_history-of-sys-tenant.md)
+
+* 有关数据负载均衡的相关操作，参见 [数据负载均衡](../../../../600.manage/350.load-balancing-manage/100.load-balancing-overview.md) 章节。

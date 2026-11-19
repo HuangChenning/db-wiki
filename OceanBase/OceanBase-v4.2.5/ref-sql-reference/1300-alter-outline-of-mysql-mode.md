@@ -1,0 +1,61 @@
+---
+title: ALTER OUTLINE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503273.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER OUTLINE
+
+## 描述
+
+该语句用于添加绑定 Outline 和限流规则，仅支持修改使用 `SQL_TEXT` 创建的 Outline。
+
+## 权限要求
+
+执行 `ALTER OUTLINE` 语句需要当前用户具备 `ALTER` 管理权限。有关 OceanBase 数据库权限的详细介绍，请参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 语法
+
+```sql
+ALTER OUTLINE outline_name ADD stmt [ TO target_stmt ];
+```
+
+## 参数解释
+
+|     **参数**     |                                                                                                                                        **描述**                                                                                                                                         |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| outline_name   | 指定要修改的 Outline 名称。                                                                                                                                                                                                                                                                    |
+| stmt           | 一般为一个带有 Hint 和原始参数的 DML 语句。                                                                                                                                                                                                                                                           |
+| TO target_stmt | 如果不指定 `TO target_stmt`，则表示如果数据库接受的 SQL 参数化后与 `stmt` 去掉 Hint 参数化文本相同，则将该 SQL 绑定 `stmt` 中 Hint 生成执行计划；如果期望对含有 Hint 的语句进行固定计划，则需要 `TO target_stmt` 来指明原始的 SQL。  <br>**注意**  在使用 `target_stmt` 时，严格要求 `stmt` 与 `target_stmt` 在去掉 Hint 后完全匹配。 |
+
+## 示例
+
+* 通过 `ALTER OUTLINE` 来添加限流规则。
+
+  ```sql
+  obclient> ALTER OUTLINE ol_1 ADD SELECT /*+max_concurrent(1)*/ * FROM t1 WHERE c1 = 1 and c2 = ?;
+  obclient> ALTER OUTLINE ol_1 ADD SELECT /*+max_concurrent(1)*/ * FROM t1 WHERE c1 = ? and c2 = 1;
+  ```
+
+* 通过 `ALTER OUTLINE` 来添加执行计划。
+
+  ```sql
+  obclient> CREATE OUTLINE ol_2 ON SELECT /*+max_concurrent(1)*/ * FROM t1,t2 WHERE t1.c1 = 1;
+  obclient> ALTER OUTLINE ol_2 ADD SELECT /*+use_nl(t2)*/ * FROM t1,t2 WHERE t1.c1 = 1;
+  ```
+
+* 通过 `ALTER OUTLINE` 来添加执行计划和限流规则。
+
+  ```sql
+  obclient> ALTER OUTLINE ol_1 ADD SELECT /*++use_nl(t2) max_concurrent(1)*/ * FROM t1 WHERE c1 = 1 and c2 = ?;
+  obclient> ALTER OUTLINE ol_1 ADD SELECT /*++use_nl(t2) max_concurrent(1)*/ * FROM t1 WHERE c1 = ? and c2 = 1;
+  ```
+
+## 注意事项
+
+* 同一个 `outline_name` 只能指定一个执行计划。如果通过 `CREATE OUTLINE` 语句指定了执行计划，则无法通过执行 `ALTER OUTLINE` 时再添加。

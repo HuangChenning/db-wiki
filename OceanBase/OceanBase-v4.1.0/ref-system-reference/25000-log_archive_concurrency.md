@@ -1,0 +1,45 @@
+---
+title: log_archive_concurrency
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702137.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# log_archive_concurrency
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.1.0 版本开始生效范围由集群级调整为租户级。</p>
+</main>
+
+## 功能描述
+
+`log_archive_concurrency` 用于设置日志归档的并发度。
+
+## 属性说明
+
+| **属性** | **描述** |
+| -------- | ------- |
+| 参数类型   | Int |
+| 默认值     | 1 |
+| 取值范围   | [1，100]<main id="notice" type='explain'><h4>说明</h4><p>该配置项从 V4.1.0 版本开始取值范围调整为 [1,100]，取值大于 10 时默认以 10 生效。</p></main> |
+| 是否可修改  | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否 |
+
+## 配置示例
+
+* sys 租户调整用户租户 MySQL 的日志归档并行度。
+
+    ```shell
+    obclient> ALTER SYSTEM SET log_archive_concurrency = 5 tenant = 'mysql';
+    ```
+
+* MySQL 租户调整本租户日志归档并行度。
+
+    ```shell
+    obclient> ALTER SYSTEM SET log_archive_concurrency = 5;
+    ```

@@ -1,0 +1,50 @@
+---
+title: ALTER DATABASE
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286456.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# ALTER DATABASE
+
+## 描述
+
+该语句用来修改数据库的属性。
+
+## 语法
+
+```sql
+ALTER {DATABASE|SCHEMA} [database_name] [SET] alter_specification [alter_specification ...];
+
+alter_specification:
+    [DEFAULT] {CHARACTER SET | CHARSET} [=] charset_name
+  | [DEFAULT] COLLATE [=] collation_name
+  | {READ ONLY | READ WRITE}
+  | [DEFAULT] TABLEGROUP [=] {NULL | table_group_name}
+```
+
+## 参数解释
+
+|                        **参数**                         |                                                        **描述**                                                        |
+|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| database_name                                         | 指定要修改属性的数据库名称。如果不指定，会对当前数据库进行修改。如果当前数据库为空，则返回错误。                                                    |
+| \[DEFAULT\] { CHARACTER SET \| CHARSET } charset_name | 指定数据库的默认字符集，其中 `CHARACTER SET` 与 `CHARSET` 同义。`DEFAULT` 关键字是可选的，不影响语义。                              |
+| \[DEFAULT\] COLLATE collation_name                    | 指定数据库的默认字符序。`DEFAULT` 关键字是可选的，不影响语义。                                                                |
+| READ ONLY \| READ WRITE                               | 设置数据库级只读或读写属性。                                                                                                       |
+| [DEFAULT] TABLEGROUP table_group_name                   | 设置数据库默认表组信息，`NULL` 表示取消数据库默认表组。 <main id="notice" type='explain'><h4>说明</h4> <p>对于 V4.4.x 版本，从 V4.4.1 版本开始执行该命令时，会实际修改 DataBase 下所有表的 TableGroup 属性。有关 Database 下用户表聚合的介绍信息，参见 <a href="../../../../../600.manage/350.load-balancing-manage/430.tablegroup-weight-management/100.aggregation-of-user-tables-in-a-database.md">Database 下用户表的聚合</a>。 修改 Database 的 TableGroup 属性后，系统不会立即将所有用户表的分区对齐到同一个日志流。如果期望尽快进行用户表的聚合：<ul><li>可以通过调用 <code>DBMS_BALANCE.TRIGGER_PARTITION_BALANCE</code> 子程序，手动触发一次分区均衡。手动触发分区均衡的详细操作，参见 <a href="../../../../../600.manage/350.load-balancing-manage/600.partition-balance-management/200.manually-trigger-a-partition-balancing-task.md">手动触发分区均衡</a>。 </li><li>或者，也可以等待定时分区均衡任务的触发。有关定时分区均衡任务的相关信息，参见 <a href="../../../../../600.manage/350.load-balancing-manage/600.partition-balance-management/100.configure-a-scheduled-partition-balancing-task.md">配置定时分区均衡任务</a>。</li></ul></p></main>|
+
+## 示例
+
+修改数据库 `test2` 的字符集为 `UTF8MB4`，字符序为 `UTF8MB4_BIN`，且为读写属性。
+
+```sql
+obclient> ALTER DATABASE test2 DEFAULT CHARACTER SET utf8mb4;
+
+obclient> ALTER DATABASE test2 DEFAULT COLLATE utf8mb4_bin;
+
+obclient> ALTER DATABASE test2 READ WRITE;
+```

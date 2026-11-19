@@ -1,0 +1,48 @@
+---
+title: oceanbase.DBA_OB_TRANSFER_PARTITION_TASKS
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004477668.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_TRANSFER_PARTITION_TASKS
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.2.1 BP2 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `DBA_OB_TRANSFER_PARTITION_TASKS` 展示了本租户下当前正在处理的 Transfer Partition 任务。
+
+由于不支持对系统租户下的用户表执行 Transfer Partition 操作，该视图的查询结果为空。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| TASK_ID          | bigint(20)   | NO   |  Transfer Partition 任务的唯一标识   |
+| CREATE_TIME      | timestamp(6) | YES  |  创建时间   |
+| MODIFY_TIME      | timestamp(6) | YES  |  信息更新时间   |
+| TABLE_ID         | bigint(20)   | NO   |  Transfer 的分区所在的表 ID   |
+| OBJECT_ID        | bigint(20)   | NO   |  Transfer 的分区的 `OBJECT_ID`   |
+| DEST_LS          | bigint(20)   | NO   |  目的端日志流   |
+| BALANCE_JOB_ID   | bigint(20)   | NO   |  任务执行时关联的负载均衡工作 ID   |
+| TRANSFER_TASK_ID | bigint(20)   | NO   |  任务执行时关联的 Transfer 任务 ID   |
+| STATUS           | varchar(64)  | NO   |  任务状态：<ul><li>WAITING：任务等待中，没有开始执行</li><li>INIT：任务开始调度</li><li>DOING：任务开始执行 Transfer</li></ul>   |
+| COMMENT          | longtext     | YES  |  注释信息   |
+
+## 相关视图或文档
+
+* 查看所有租户当前正在处理的 Transfer Partition 任务：[oceanbase.CDB_OB_TRANSFER_PARTITION_TASKS](11500.o-cdb_ob_transfer_partition_tasks-of-sys-tenant.md)
+
+* 查看当前租户已执行的 Transfer Partition 任务历史：[oceanbase.DBA_OB_TRANSFER_PARTITION_TASK_HISTORY](23300.o-dba_ob_transfer_partition_tasks_history-of-sys-tenant.md)
+
+* 有关 Transfer Partition 的详细操作，参见 [Transfer Partition](../../../../600.manage/350.load-balancing-manage/200.transfer-partition-management.md)。
+
+* 有关数据负载均衡的更多操作，参见 [数据负载均衡](../../../../600.manage/350.load-balancing-manage/100.load-balancing-overview.md) 章节。

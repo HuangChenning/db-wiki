@@ -1,0 +1,457 @@
+---
+title: "函数概述"
+book: "SQL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286622.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# 函数概述
+
+OceanBase 数据库内嵌的函数可以直接在 SQL 语句中使用。每个函数的入参传入值均有期望的数据类型，如果传入的数据类型不是期望的数据类型，则 OceanBase 数据库会在实际执行 SQL 函数之前尝试将参数传入的数值转换为期望的数据类型。
+
+函数与运算符相似，即给定一些数据元素作为参数的输入并返回结果。然而函数在入参形式上与运算符有比较大的区别。函数允许包含的参数数量不定，一个函数里可以有一到两个，甚至更多的参数。
+
+```sql
+函数名（参数，参数，...）
+```
+
+函数也可以没有任何参数，类似于伪列。但是，伪列通常为结果集中的每一行返回不同的值，而没有任何变量的函数通常为每一行返回相同的值。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>在 SQL 语句中对 <code>LOB</code> 列使用函数时，OceanBase 数据库将在 SQL 和 PL 处理期间创建临时 <code>LOB</code> 列，并有一定的使用限制，详情信息请参见 <a href="../../../../../100.learn-more-about-oceanbase/400.compatibility-with-oracle/100.overview-of-compatibility-with-oracle.md">与 Oracle 兼容性对比</a>。</p>
+  </main>
+
+本章中函数分成了两大类，每一类函数的参数和最终的函数返回值都有其特定的数据类型：
+
+* **单行函数** ：包括数字函数、返回字符串的字符串函数、返回数字的字符串函数、时间日期函数、通用比较函数、转换函数、编码解码函数、空值相关函数、环境和标识函数、层次函数以及大对象函数等。
+
+* **统计函数** ：包括聚合函数和分析函数。
+
+单行函数对于被查询的表或者视图每一行均返回一个结果值，这些函数可以使用在 SQL 语句的 `SELECT`、`WHERE`、`START WITH`、`CONNECT BY`、`HAVING` 等子句当中。
+
+分析函数与聚合函数，都是对行集组（一组行的集合）进行聚合计算。不同的是，聚合函数每组只能返回一个值（一行），而分析函数每组可以返回多个值（多行）。行集组又称为窗口（Window）。聚合函数通常和 `SELECT` 语句中的 `GROUP BY` 子句一起使用，使用时数据库将查询表或视图的行分为几组，并将聚合函数应用于每组行，同时为每组返回一个结果行。
+
+使用分析函数时需要用特殊的关键字 `OVER` 来指定窗口。更多关于窗后函数的信息，请参见 [分析函数说明](400.analysis-functions-of-oracle-mode/100.window-function-description-of-oracle-mode.md)。
+
+## 数字函数
+
+数字函数的变量输入与函数输出结果均为数字类型，绝大部分的数字函数的返回值的数据类型为 `NUMBER`，可以精确到小数点后 38 位。一些高等代数相关函数 `COS()`、`COSH()`、`EXP()`、`LN()`、`LOG()`、`SIN()`、`SINH()`、`SQRT()`、`TAN()`、`TANH()` 等函数的结果精确到小数点后 36 位，其他代数相关函数 `ACOS()`，`ASIN()`，`ATAN()` 和 `ATAN2()`。其结果返回值精确到小数点后 30 位。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| ABS | 返回指定数值表达式的绝对值 |
+| ACOS | 返回以弧度表示的角，其余弦为指定的数值表达式 |
+| ASIN | 返回以弧度表示的角，其正弦为指定的数值表达式 |
+| ATAN | 返回以弧度表示的角，其正切为指定的数值表达式 |
+| ATAN2 | 返回以弧度表示的角，其正切为指定的两个数值表达式的比值 |
+| BITAND | 对两个数值进行按位与运算 |
+| CEIL | 返回大于或等于指定数值的最小整数 |
+| COS | 返回指定角度的余弦值 |
+| COSH | 返回指定角度的双曲余弦值 |
+| EXP | 返回 e 的指定次幂 |
+| FLOOR | 返回小于或等于指定数值的最大整数 |
+| GENERATOR | 生成指定范围内的随机数 |
+| LN | 返回指定数值的自然对数 |
+| LOG | 返回指定数值的对数 |
+| MOD | 返回两个数值相除的余数 |
+| NANVL | 如果第一个参数为 NaN，返回第二个参数 |
+| NORMAL | 生成正态分布的随机数 |
+| POWER | 返回指定数值的指定次幂 |
+| RANDOM | 生成 0 到 1 之间的随机数 |
+| RANDSTR | 生成指定长度的随机字符串 |
+| REMAINDER | 返回两个数值相除的余数 |
+| ROUND | 将数值四舍五入到指定的小数位数 |
+| SIGN | 返回数值的符号（-1、0 或 1） |
+| SIN | 返回指定角度的正弦值 |
+| SINH | 返回指定角度的双曲正弦值 |
+| SQRT | 返回指定数值的平方根 |
+| TAN | 返回指定角度的正切值 |
+| TANH | 返回指定角度的双曲正切值 |
+| TRUNC | 将数值截断到指定的小数位数 |
+| UNIFORM | 生成指定范围内的均匀分布随机数 |
+| WIDTH_BUCKET | 将数值分配到指定数量的桶中 |
+| ZIPF | 生成齐普夫分布的随机数 |
+
+## 返回字符串的字符串函数
+
+函数的返回值的最大长度受数据类型的影响、例如，函数的返回值的数据类型是 `VARCHAR2`，但是返回值实际的大小超过了 `VARCHAR2` 数据类型的最大限制，此时 OceanBase 数据库会对结果进行截断处理并返回，但是在客户端上并不会提示。
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>如果返回值的数据类型是 <code>CLOB</code>，当返回值长度超过了最大限制时，OceanBase 数据库不会返回数据且显示错误提示。</p>
+  </main>
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| CHR | 将 ASCII 值转换为字符 |
+| CONCAT | 连接两个字符串 |
+| INITCAP | 将字符串中每个单词的首字母大写 |
+| LOWER | 将字符串转换为小写 |
+| LPAD | 在字符串左边填充指定字符 |
+| LTRIM | 删除字符串左边的空格或指定字符 |
+| NLS_LOWER | 使用指定的语言环境将字符串转换为小写 |
+| NLS_UPPER | 使用指定的语言环境将字符串转换为大写 |
+| NLSSORT | 返回字符串的排序键 |
+| REGEXP_REPLACE | 使用正则表达式替换字符串 |
+| REGEXP_SUBSTR | 使用正则表达式提取子字符串 |
+| REPLACE | 替换字符串中的子字符串 |
+| RPAD | 在字符串右边填充指定字符 |
+| RTRIM | 删除字符串右边的空格或指定字符 |
+| SOUNDEX | 返回字符串的语音表示 |
+| SUBSTR | 从字符串中提取子字符串 |
+| SUBSTRB | 以字节为单位从字符串中提取子字符串 |
+| TRIM | 删除字符串两端的空格或指定字符 |
+| TRANSLATE | 将字符串中的字符替换为其他字符 |
+| UPPER | 将字符串转换为大写 |
+
+## 返回数字的字符串函数
+
+返回数字的字符串函数根据指定条件的返回数字，例如 ASCII 码值、字符（串）的位置等。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| ASCII | 返回字符串第一个字符的 ASCII 值 |
+| INSTR | 返回子字符串在字符串中的位置 |
+| INSTRB | 返回子字符串在字符串中的起始字节位置 |
+| INSTRC | 返回子字符串在字符串中的起始 Unicode 完整字符位置 |
+| LENGTH | 返回字符串的长度 |
+| LENGTHB | 返回字符串的字节长度 |
+| LENGTHC | 返回字符串的 Unicode 完整字符数 |
+| POSITION | 返回子字符串第一次出现的字符位置 |
+| REGEXP_COUNT | 返回字符串中匹配正则表达式的次数 |
+| REGEXP_INSTR | 返回正则表达式匹配的位置 |
+
+## 时间日期函数
+
+时间日期函数支持的入参数据类型有三类，包括日期时间 (`DATE`)、时间戳 (`TIMESTAMP`、`TIMESTAMP WITH TIME ZONE`、`TIMESTAMP WITH LOCAL TIME ZONE`)，以及间隔 (`INTERVAL DAY TO SECOND`、`INTERVAL YEAR TO MONTH`)。
+
+仅支持 `DATE` 数据类型输入参数的函数包括：`ADD_MONTHS`、`CURRENT_DATE, LAST_DAY` 和 `NEXT_DAY`。
+
+如果对于以上函数，您尝试给入的是 `TIMESTAMP` 类型的数据，OceanBase 数据库内部会先进行隐式数据类型转换后带入函数进行运算，并返回 `DATE` 类型的返回值。
+
+在使用时间日期函数前，建议执行 `SELECT * FROM NLS_DATABASE_PARAMETERS` 查看当前的 NLS 格式，如下所示：
+
+```sql
+obclient> SELECT * FROM NLS_DATABASE_PARAMETERS;
++-------------------------+------------------------------+
+| PARAMETER               | VALUE                        |
++-------------------------+------------------------------+
+| NLS_DATE_FORMAT         | DD-MON-RR                    |
+| NLS_TIMESTAMP_FORMAT    | YYYY-MM-DD HH24:MI:SS        |
+| NLS_TIMESTAMP_TZ_FORMAT | DD-MON-RR HH.MI.SSXFF AM TZR |
+| NLS_TERRITORY           | AMERICA                      |
+| NLS_SORT                | BINARY                       |
+| NLS_COMP                | BINARY                       |
+| NLS_CHARACTERSET        | AL32UTF8                     |
+| NLS_NCHAR_CHARACTERSET  | AL16UTF16                    |
+| NLS_DATE_LANGUAGE       | AMERICAN                     |
+| NLS_LENGTH_SEMANTICS    | BYTE                         |
+| NLS_NCHAR_CONV_EXCP     | FALSE                        |
+| NLS_CALENDAR            | GREGORIAN                    |
+| NLS_NUMERIC_CHARACTERS  | .,                           |
++-------------------------+------------------------------+
+13 rows in set
+```
+
+如果与文中示例的显示格式不一致，可以执行如下命令更改格式：
+
+```sql
+obclient>ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS';
+Query OK, 0 rows affected
+
+obclient>ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SS.FF';
+Query OK, 0 rows affected
+/*将返回值中秒的小数位设置为 9 位*/
+
+obclient> ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT = 'YYYY-MM-DD HH24:MI:SS.FF TZR TZD';
+Query OK, 0 rows affected
+```
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <ul>
+    <li><code>MONTHS_BETWEEN</code> 返回值为 1 个数字。</li>
+    <li><code>ROUND</code> 和 <code>TRUNC</code> 并不能进行隐式转换，必须传输 <code>DATE</code> 类型的数值，否则会报错。</li>
+    </ul>
+  </main>
+
+剩余的函数对于三种参数数据类型均可以支持，且返回和输入参数相同的数据类型。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| ADD_MONTHS | 将指定的月数添加到日期 |
+| CURRENT_DATE | 返回当前日期 |
+| CURRENT_TIMESTAMP | 返回当前日期和时间 |
+| DBTIMEZONE | 返回数据库时区 |
+| EXTRACT | 从日期时间中提取指定的部分 |
+| FROM_TZ | 将时间戳和时区转换为带时区的时间戳 |
+| LAST_DAY | 返回指定日期所在月份的最后一天 |
+| LOCALTIMESTAMP | 返回当前本地时间戳 |
+| MONTHS_BETWEEN | 返回两个日期之间的月数差 |
+| NEXT_DAY | 返回指定日期后的下一个指定星期几的日期 |
+| NUMTODSINTERVAL | 将数值转换为日到秒的间隔 |
+| NUMTOYMINTERVAL | 将数值转换为年到月的间隔 |
+| ROUND | 将日期四舍五入到指定的格式 |
+| SESSIONTIMEZONE | 返回当前会话的时区 |
+| SYSDATE | 返回当前系统日期和时间 |
+| SYSTIMESTAMP | 返回当前系统时间戳 |
+| SYS_EXTRACT_UTC | 从带时区的时间戳中提取 UTC 时间 |
+| TO_CHAR | 将日期时间转换为字符串 |
+| TO_DSINTERVAL | 将字符串转换为日到秒的间隔 |
+| TO_TIMESTAMP | 将字符串转换为时间戳 |
+| TO_TIMESTAMP_TZ | 将字符串转换为带时区的时间戳 |
+| TO_YMINTERVAL | 将字符串转换为年到月的间隔 |
+| TRUNC | 将日期截断到指定的格式 |
+| TZ_OFFSET | 返回指定时区的偏移量 |
+
+## 通用比较函数
+
+可以通过本类别函数快速的在集合中寻找到最大值和最小值。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| GREATEST | 返回参数列表中的最大值 |
+| LEAST | 返回参数列表中的最小值 |
+
+## 转换函数
+
+可以通过本类型的函数将原本的数据类型转换为另外一种数据类型。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| ASCIISTR | 将字符串转换为 ASCII 字符串 |
+| CAST | 将表达式转换为指定的数据类型 |
+| CHARTOROWID | 将字符串转换为 ROWID |
+| CONVERT | 将字符串从一个字符集转换为另一个字符集 |
+| HEXTORAW | 将十六进制字符串转换为 RAW 数据 |
+| RAWTOHEX | 将 RAW 数据转换为十六进制字符串 |
+| RAWTONHEX | 将 RAW 数据转换为十六进制 NVARCHAR2 字符串 |
+| ROWIDTOCHAR | 将 ROWID 转换为字符串 |
+| ROWIDTONCHAR | 将 ROWID 转换为 NCHAR 字符串 |
+| SCN_TO_TIMESTAMP | 将 SCN 转换为时间戳 |
+| TIMESTAMP_TO_SCN | 将时间戳转换为 SCN |
+| TO_BINARY_DOUBLE | 将表达式转换为 BINARY_DOUBLE |
+| TO_BINARY_FLOAT | 将表达式转换为 BINARY_FLOAT |
+| TO_BLOB | 将表达式转换为 BLOB |
+| TO_CHAR | 将表达式转换为字符串 |
+| TO_CLOB | 将表达式转换为 CLOB |
+| TO_DATE | 将字符串转换为日期 |
+| TO_MULTI_BYTE | 将单字节字符转换为多字节字符 |
+| TO_NCHAR | 将表达式转换为 NCHAR 字符串 |
+| TO_NUMBER | 将表达式转换为数字 |
+| TO_SINGLE_BYTE | 将多字节字符转换为单字节字符 |
+| TO_YMINTERVAL | 将字符串转换为年到月的间隔 |
+| TO_DSINTERVAL | 将字符串转换为日到秒的间隔 |
+| TO_TIMESTAMP | 将字符串转换为时间戳 |
+| TO_TIMESTAMP_TZ | 将字符串转换为带时区的时间戳 |
+| UNISTR | 将字符串转换为 Unicode 字符串 |
+| NLS_CHARSET_ID |用于返回与字符集名称对应的字符集 ID 号|
+
+
+## 编码解码函数
+
+可以通过本类型的函数在 OceanBase 数据库中实现数据的编码解密需求
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| DECODE | 条件表达式，类似于 CASE 语句 |
+| DUMP | 返回表达式的内部表示形式 |
+| ORA_HASH | 计算表达式的哈希值 |
+| VSIZE | 返回表达式的内部表示形式的字节数 |
+
+## 空值相关函数
+
+空值相关函数用于处理参数中的空值。对于绝大多数的函数当入参为空值 `NULL` 的时候，其返回的结果也为 `NULL`。这种情况下，您可以使用 `NVL` 函数返回一个非空值。例如，一张记录佣金的表的佣金列 `commission_pct` 为空值 `NULL`，则表达式`NVL(commission_pct，0)` 返回 0；如果 `commission_pct` 的值不为 `NULL`，则返回实际的佣金值。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| COALESCE | 返回第一个非 NULL 值 |
+| LNNVL | 检查条件是否为 NULL 或 FALSE |
+| NANVL | 如果第一个参数为 NaN，返回第二个参数 |
+| NULLIF | 如果两个参数相等，返回 NULL |
+| NVL | 如果第一个参数为 NULL，返回第二个参数 |
+| NVL2 | 如果第一个参数不为 NULL，返回第二个参数，否则返回第三个参数 |
+| TIMESTAMP_NVL | 当第一个时间戳表达式为 NULL 时返回第二个时间戳表达式 |
+
+## 环境相关函数
+
+环境相关函数主要提供会话或者租户实例相关的环境信息。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| OB_VERSION | 返回 OceanBase 数据库版本 |
+| SYS_CONTEXT | 返回指定上下文的属性值 |
+| SYS_GUID | 生成全局唯一标识符 |
+| UID | 返回当前用户的用户 ID |
+| USER | 返回当前用户名 |
+| USERENV | 返回当前会话的环境信息 |
+
+## 层次函数
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| SYS_CONNECT_BY_PATH | 返回从根到节点的列值的路径，由 `CONNECT BY` 条件返回的每一行的列值用指定分隔符号分隔。 |
+
+## 大对象函数
+
+大对象函数用于构造大对象数据。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| EMPTY_BLOB | 返回一个非 `NULL`、长度为 0 的 `BLOB` 定位器 |
+| EMPTY_CLOB | 返回一个非 `NULL`、长度为 0 的 `CLOB` 定位器 |
+
+## JSON 函数
+
+JSON 函数对 JSON 值进行创建、操作和搜索等操作。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| JSON_ARRAY | 创建 JSON 数组 |
+| JSON_ARRAYAGG | 将多行聚合为 JSON 数组 |
+| JSON_EQUAL | 比较两个 JSON 值是否相等 |
+| JSON_EXISTS | 检查 JSON 文档中是否存在指定路径 |
+| JSON_MERGEPATCH | 使用 JSON Merge Patch 合并文档 |
+| JSON_OBJECT | 创建 JSON 对象 |
+| JSON_OBJECTAGG | 将多行聚合为 JSON 对象 |
+| JSON_QUERY | 从 JSON 文档中查询值 |
+| JSON_TABLE | 将 JSON 数据转换为表格式 |
+| JSON_VALUE | 从 JSON 文档中提取标量值 |
+
+## XML 函数
+
+XML 函数可以高效地查询、更新和搜索 XML 文档。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| DELETEXML | 从 XML 文档中删除节点 |
+| EXISTSNODE | 检查 XML 文档中是否存在指定节点 |
+| EXTRACT | 从 XML 文档中提取节点 |
+| EXTRACTVALUE | 从 XML 文档中提取值 |
+| INSERTCHILDXML | 在 XML 文档中插入子节点 |
+| UPDATEXML | 更新 XML 文档中的节点 |
+| XMLAGG | 将多行 XML 值聚合为单个 XML 文档 |
+| XMLATTRIBUTES | 创建 XML 属性 |
+| XMLCAST | 将 XML 值转换为指定数据类型 |
+| XMLCONCAT | 连接多个 XML 值 |
+| XMLELEMENT | 创建 XML 元素 |
+| XMLFOREST | 创建 XML 森林 |
+| XMLPARSE | 解析字符串为 XML 文档 |
+| XMLSEQUENCE | 将 XML 文档转换为行序列 |
+| XMLSERIALIZE | 将 XML 文档序列化为字符串 |
+| XMLTABLE | 将 XML 数据转换为表格式 |
+
+## TABLE FUNCTION
+
+TABLE FUNCTION（表函数）用于返回可在 `FROM` 子句中引用的行集结果。
+
+| 名称 | 功能描述 |
+|------|----------|
+| JSON_TABLE | 将 JSON 数据转换为表格式 |
+| XMLTABLE | 将 XML 数据转换为表格式 |
+| FILES | 从外部文件读取数据并返回表结构 |
+
+更多信息请参见 [TABLE FUNCTION 概述](550.table-functions-of-oracle-mode/100.table-functions-overview-of-oracle-mode.md)。
+## 聚合函数
+
+聚合函数对一组值执行计算并返回单一的值。聚合函数忽略空值。聚合函数经常与 `SELECT` 语句的 `GROUP BY` 子句一同使用。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| APPROX_COUNT_DISTINCT | 返回近似不重复值的数量 |
+| AVG | 返回数值的平均值 |
+| CORR | 返回两个数值列的相关系数 |
+| COUNT | 返回行数或非 NULL 值的数量 |
+| COVAR_POP | 返回总体协方差 |
+| COVAR_SAMP | 返回样本协方差 |
+| CUME_DIST | 返回累积分布值 |
+| DENSE_RANK | 返回密集排名 |
+| GROUP_ID | 返回分组 ID |
+| GROUPING | 返回 GROUP BY 子句的分组信息 |
+| GROUPING_ID | 返回分组 ID 的位向量 |
+| KEEP | 在分组中保留指定条件的值 |
+| LISTAGG | 将多行值连接成一个字符串 |
+| MAX | 返回最大值 |
+| MEDIAN | 返回中位数 |
+| MIN | 返回最小值 |
+| PERCENTILE_CONT | 返回连续百分位值 |
+| PERCENTILE_DISC | 返回离散百分位值 |
+| PERCENT_RANK | 返回百分比排名 |
+| RANK | 返回排名 |
+| REGR_ | 线性回归函数族 |
+| ROLLUP | 创建分组汇总 |
+| STDDEV | 返回标准差 |
+| STDDEV_POP | 返回总体标准差 |
+| STDDEV_SAMP | 返回样本标准差 |
+| SUM | 返回数值的总和 |
+| VAR_POP | 返回总体方差 |
+| VAR_SAMP | 返回样本方差 |
+| VARIANCE | 返回方差 |
+| WMSYS.WM_CONCAT/WM_CONCAT | 将多行值连接成一个字符串 |
+
+## 分析函数
+
+分析函数（某些数据库下也叫做窗口函数）与聚合函数类似，计算总是基于一组行的集合，不同的是，聚合函数一组只能返回一行，而分析函数每组可以返回多行，组内每一行都是基于窗口的逻辑计算的结果。分析函数可以显著优化需要 Self-Join 的查询。
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| ARG_MAX | 返回最大值的参数 |
+| ARG_MIN | 返回最小值的参数 |
+| AVG | 返回数值的平均值 |
+| CORR | 返回两个数值列的相关系数 |
+| COUNT | 返回行数或非 NULL 值的数量 |
+| COVAR_POP | 返回总体协方差 |
+| COVAR_SAMP | 返回样本协方差 |
+| CUME_DIST | 返回累积分布值 |
+| DENSE_RANK | 返回密集排名 |
+| FIRST_VALUE | 返回窗口中的第一个值 |
+| KEEP | 在分组中保留指定条件的值 |
+| LAG | 返回前一行或前 N 行的值 |
+| LAST_VALUE | 返回窗口中的最后一个值 |
+| LEAD | 返回后一行或后 N 行的值 |
+| LISTAGG | 将多行值连接成一个字符串 |
+| MAX | 返回最大值 |
+| MEDIAN | 返回中位数 |
+| MIN | 返回最小值 |
+| NTH_VALUE | 返回窗口中的第 N 个值 |
+| NTILE | 将结果集分成指定数量的组 |
+| PERCENTILE_CONT | 返回连续百分位值 |
+| PERCENTILE_DISC | 返回离散百分位值 |
+| PERCENT_RANK | 返回百分比排名 |
+| RANK | 返回排名 |
+| RATIO_TO_REPORT | 返回值在组中的比例 |
+| REGR_ | 线性回归函数族 |
+| ROW_NUMBER | 返回行号 |
+| STDDEV | 返回标准差 |
+| STDDEV_POP | 返回总体标准差 |
+| STDDEV_SAMP | 返回样本标准差 |
+| SUM | 返回数值的总和 |
+| VAR_POP | 返回总体方差 |
+| VAR_SAMP | 返回样本方差 |
+| VARIANCE | 返回方差 |
+| WMSYS.WM_CONCAT/WM_CONCAT | 将多行值连接成一个字符串 |
+
+## 信息函数
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| OB_TRANSACTION_ID | 返回当前事务 ID |
+
+## 空间函数
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| SDO_GEOMETRY | 创建空间几何对象 |
+| 查询计算函数 | 查询和计算空间几何对象的属性 |
+
+## 审计函数
+
+| 函数名 | 功能描述 |
+|--------|----------|
+| AUDIT_LOG_ENCRYPTION_PASSWORD_SET | 触发归档当前审计日志并生成新的加密密钥 |
+| AUDIT_LOG_ENCRYPTION_PASSWORD_GET | 获取对应归档日志文件的加密密码 |

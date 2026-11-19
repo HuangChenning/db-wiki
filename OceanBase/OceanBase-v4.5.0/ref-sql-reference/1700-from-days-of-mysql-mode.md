@@ -1,0 +1,34 @@
+---
+title: FROM_DAYS
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004481322.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# FROM_DAYS
+
+## 声明
+
+```javascript
+FROM_DAYS(N)
+```
+
+## 说明
+
+返回指定天数 `N` 对应的 `DATE` 值。天数指距离 `0000-01-01` 的天数。
+
+## 示例
+
+```javascript
+obclient> SELECT FROM_DAYS(736271), FROM_DAYS(700000);
++-------------------+-------------------+
+| FROM_DAYS(736271) | FROM_DAYS(700000) |
++-------------------+-------------------+
+| 2015-11-04        | 1916-07-15        |
++-------------------+-------------------+
+1 row in set
+```

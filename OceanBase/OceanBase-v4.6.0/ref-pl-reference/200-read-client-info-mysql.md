@@ -1,0 +1,42 @@
+---
+title: READ_CLIENT_INFO
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000006286144.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# READ_CLIENT_INFO
+
+`READ_CLIENT_INFO` 过程用于读取当前会话的 `client_info` 字段的值。
+
+## 语法
+
+```sql
+DBMS_APPLICATION_INFO.READ_CLIENT_INFO (
+OUT client_info VARCHAR(65535));
+```
+
+## 参数说明
+
+`client_info` 参数用于提供给 `SET_CLIENT_INFO` 过程最新的客户端信息值。
+
+## 示例
+
+```sql
+obclient> DECLARE
+  myclient VARCHAR(65535);
+  mymodule VARCHAR(65535);
+  myaction VARCHAR(65535);
+BEGIN
+  DBMS_APPLICATION_INFO.SET_CLIENT_INFO('OBClient');
+  DBMS_APPLICATION_INFO.READ_CLIENT_INFO(myclient);
+  SELECT myclient AS client;
+  DBMS_APPLICATION_INFO.SET_MODULE('OBmodule', 'inserting');
+  DBMS_APPLICATION_INFO.READ_MODULE(mymodule, myaction);
+  SELECT mymodule AS module_name, myaction AS action_name;
+END;
+```

@@ -1,0 +1,30 @@
+---
+title: get_leader_candidate_rpc_timeout
+book: "配置项和系统变量"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005286045.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# get_leader_candidate_rpc_timeout
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>由于 V4.x 版本对架构进行了变更升级，该配置项已不再适用，从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`get_leader_candidate_rpc_timeout` 用于设置自动切主策略获取切主候选者的内部请求超时时间。
+
+## 属性说明
+
+|      **属性**      |    **描述**    |
+|------------------|--------------|
+| 参数类型             | Time         |
+| 默认值              | 9s           |
+| 取值范围             | \[2s, 180s\] |
+| 是否重启 OBServer 节点生效 | 否            |

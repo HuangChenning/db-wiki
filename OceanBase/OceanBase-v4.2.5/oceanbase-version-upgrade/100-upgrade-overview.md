@@ -1,0 +1,118 @@
+---
+title: "升级概述"
+book: "OceanBase 升级"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001502708.html"
+tags:
+  - oceanbase
+  - distributed
+  - oceanbase-version-upgrade
+---
+
+# 升级概述
+
+OceanBase 集群支持通过使用升级脚本进行集群升级。整个升级过程对应用无感知，应用无需配合服务端做任何的停写停服务操作。OceanBase 集群会按照 Zone 的顺序进行升级。升级过程中，分区 Leader 会在各个 Zone 间进行切主动作，并将要进行升级 Zone 的业务引流到其他 Zone 上执行。
+
+本文将介绍 OceanBase 集群升级时的升级流程、注意事项、升级限制和升级影响。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>OceanBase 集群暂不支持 V4.0.0 之前的版本原地升级到 V4.x 版本。</p>
+</main>
+
+## 升级限制
+
+OceanBase 集群升级时，有如下限制：
+
+* 禁止 DDL：升级过程中的部分阶段需要禁止 DDL，升级完成后会自动打开。
+* 禁止 `major freeze`：部分版本之间的升级会禁止合并，升级完成后会自动打开。
+* 禁止迁移复制和负载均衡：部分版本之间的升级会禁止迁移复制和负载均衡。
+* 禁止物理备份恢复：集群升级过程中不会发起物理基线备份（日志归档不断）、物理恢复。
+* 禁止新建租户。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>如果 OceanBase 集群关联了仲裁服务，那么在进行 OceanBase 集群版本升级时，需要确保先升级仲裁服务版本，然后再升级 OceanBase 集群版本。仲裁服务版本升级的详细信息，请参见 <a href="200.arbitration-services-version-upgrade.md">升级仲裁服务</a>。</br>可以使用系统租户查询视图 <a href="../../700.reference/700.system-views/300.system-view-of-sys-tenant/200.dictionary-view-of-sys-tenant/14800.o-dba_ob_arbitration_service-of-sys-tenant.md">oceanbase.DBA_OB_ARBITRATION_SERVICE</a> 检查本 OceanBase 集群是否关联仲裁服务。</p>
+</main>
+
+## 注意事项
+
+OceanBase 集群升级时，需要注意以下几点：
+
+* OceanBase 4.0 版升级至 4.1 版本的过程中会停日志归档。
+* 升级过程如果需要 `ADD SERVER/DELETE SERVER` 操作，请联系技术人员支持。
+* OceanBase 过渡版本不可以直接升级，需要参考 `oceanbase_upgrade_dep.yml` 文件中的升级版本序列。
+* 升级脚本需要直连 Root Service 服务所在的 observer 进程执行，不能通过 OceanBase 数据库代理（OceanBase Database Proxy，简称：ODP） 连接。
+* 升级过程中可能会涉及下列参数的变化，升级前需要对这些参数进行备份：
+
+  * [server_permanent_offline_time](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/300.cluster-level-configuration-items/20600.server_permanent_offline_time.md)
+  * [enable_rebalance](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/2900.enable_rebalance.md)
+  * [enable_rereplication](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/300.cluster-level-configuration-items/8300.enable_rereplication.md)
+
+* 从 V4.2.2 版本开始，OceanBase 数据库不再支持使用 zlib_1.0 压缩算法。在升级过程中，会进行以下前置检查：
+
+  * 在升级过程中，不再支持使用 `zlib` 压缩算法作为 `log_transport_compress_func` 参数。请使用其他压缩算法替代 `zlib` 压缩算法。
+  * 在升级过程中，如果发现某些表使用了 `zlib` 压缩算法，请将这些表中的压缩算法替换为其他支持的压缩算法，或者在升级期间不使用压缩。
+  * 在升级过程中，不允许使用 `zlib` 作为 Table API 连接的压缩算法。请通过设置 `table_api_transport_compress_func` 参数来选择其他的压缩算法。
+
+* 当有 V4.x 的低版本集群升级到 V4.2.5 及往后的版本集群时，对于备租户，低版本集群无法解析高版本集群生成的日志，此时会在备租户提交日志时报错（仅报错，对应日志不会持久化）。
+* 集群 Tablet 比较多的情况下，升级过程中 OBServer 重启会比较耗时，已知问题 300w+ 的 Tablet，重启时长大约在 20 分钟左右，升级过程中大量 Tablet 场景需要特别注意预留足够升级时间。
+* 在 V4.2.5 BP3、V4.2.5 BP4、V4.2.5 BP5、V4.3.5 BP1、V4.3.5 BP2、V4.3.5 BP3 版本增加了对 X86 架构环境运行的指令集要求。OBServer 进程会在启动前检查当前环境是否支持 AVX 指令集，如果缺少该指令集会禁止启动。将不支持 AVX 指令集的 X86 机器上的旧版 OBServer 升级至上述版本会造成无法启动和回退的情况，请务必关注。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>OceanBase 数据库自以下版本开始对 AVX 指令集的强制依赖策略已调整：<ul><li>对于 V4.3.5 版本，从 V4.3.5 BP4 版本开始不再强制要求 AVX 指令集支持。</li><li>对于 V4.2.5 版本，从 V4.2.5 BP6 版本开始不再强制要求 AVX 指令集支持。</li><li>对于 V4.4.0 版本，从 V4.4.1 版本开始不再强制要求 AVX 指令集支持。</li></ul></p>
+  </main>
+
+* 备份恢复 V4.3.2 的版本，无法升级到 V4.3.3（V4.3.2 版本的备份，无法在 V4.3.3 版本恢复）版本。
+* MySQL 模式 PL 权限检查：
+
+  * V4.2.1 升级至 V4.2.5 版本，需要提前确认 `_enable_mysql_pl_priv_check` 变量；该变量单独控制 MySQL PL 权限检查，且不受 `PRIVILEGE_FEATURES_ENABLE` 控制，存量租户开启前必须先补齐相关用户的 PL 权限，新建租户默认开启该检查，避免升级后存储过程、函数等 PL 对象因权限缺失导致执行失败。
+
+## 升级说明
+
+* 支持 V4.2.1 BP10 及之前版本先经停 V4.2.1 BP11 版本后再升级到 V4.2.5 BP7 版本。
+* V4.2.2 版本需要经停 V4.2.2.1 版本升级到 V4.2.5 BP7 版本。
+* V4.2.3/V4.2.4/4.2.5 版本可以直接升级到 V4.2.5 BP7 版本。
+
+## 升级路径图
+
+![4257-4356-4421-460](img/7dd6a181a70337bf.png)
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>本文升级路径图仅针对 SN 模式，如需了解更多版本的升级路径，可以参考 <code>oceanbase_upgrade_dep.yml</code> 文件，该文件记录了 OceanBase 的版本升级拓扑图。</li><li>解压目标版本的 OceanBase RPM 包后，会在存放 RPM 包的目录下生成 <code>home</code> 和 <code>use</code> 两个目录。升级相关脚本和 <code>oceanbase_upgrade_dep.yml</code> 文件存放 <code>home/admin/oceanbase/etc</code> 目录下。</li></ul>使用 <code>oceanbase_upgrade_dep.yml</code> 文件确认升级路径的详细信息，参见 <a href="200.start-upgrade.md">升级 OceanBase 集群</a> 中的 <b>步骤二：确认升级流程</b> 章节。</p>
+</main>
+
+**升级路径图含义如下：**
+
+* V4.2.x 版本的路径：
+
+  * V4.0.0.0/V4.1.0.0-V4.1.0.2/V4.2.0.0 版本可以升级到 V4.2.1.11 版本，然后再升级至 V4.2.5.7 版本。
+  * V4.2.2-V4.2.4 可以直接升级到 V4.2.5.7 版本，也可以先升级到 V4.2.5.0-V4.2.5.6 版本，然后再升级至 V4.2.5.7 版本。
+  * V4.2.5 BP7 版本可以直接升级到 V4.4.2 或 V4.4.2.1 版本。
+  * barrier 版本：V4.2.1.11、V4.2.5.7。
+
+* V4.3.x 版本的升级路径：
+
+  * V4.3.x 各版本都可以直接升级到 V4.3.5.6 版本。
+  * V4.3.5.6 版本可以升级到 V4.4.2.1 版本。
+  * 暂不支持 V4.2.x 系列或更低版本升级到 V4.3.x 版本。
+  * barrier 版本：V4.3.5.6。
+
+* V4.4.x 版本的升级路径：
+
+  * V4.4.0/V4.4.1 版本可以直接升级到 V4.4.2 版本或 V4.4.2.1 版本。
+  * V4.4.0/V4.4.1 版本可以直接升级到 V4.6.0 版本。
+
+* V4.5.x 版本的升级路径：
+
+  * V4.5.0 版本可以升级到 V4.6.0 版本。
+
+## 后续操作
+
+[升级 OceanBase 集群](200.start-upgrade.md)
+
+## 相关文档
+
+有关使用 OceanBase 云平台（OceanBase Cloud Platform，简称 OCP）升级 OceanBase 集群的操作方法，请参见 [升级版本](https://www.oceanbase.com/docs/enterprise-oceanbase-ocp-cn-1000000000125677)。

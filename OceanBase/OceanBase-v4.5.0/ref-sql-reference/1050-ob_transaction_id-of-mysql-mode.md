@@ -1,0 +1,73 @@
+---
+title: OB_TRANSACTION_ID
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480737.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# OB_TRANSACTION_ID
+
+## 声明
+
+```sql
+OB_TRANSACTION_ID()
+```
+
+## 说明
+
+* 当前会话处于活跃事务中，则返回所处的事务 ID 整数值，大于 0。
+* 当前会话如果未处于活跃事务中，返回 0。
+
+## 示例
+
+查询当前会话处于活跃事务中的事务 ID。
+
+1. 开启事务。
+
+   ```shell
+   obclient [test]> BEGIN;
+   ```
+
+2. 查询当前事务 ID。
+
+   ```shell
+   obclient [test]> SELECT OB_TRANSACTION_ID();
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +---------------------+
+   | OB_TRANSACTION_ID() |
+   +---------------------+
+   |            14565563 |
+   +---------------------+
+   1 row in set
+   ```
+
+3. 提交事务。
+
+   ```shell
+   obclient [test]> COMMIT;
+   ```
+
+4. 查询当前未处于活跃事务中的事务 ID。
+
+   ```shell
+   obclient [test]> SELECT OB_TRANSACTION_ID();
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +---------------------+
+   | OB_TRANSACTION_ID() |
+   +---------------------+
+   |                   0 |
+   +---------------------+
+   1 row in set
+   ```

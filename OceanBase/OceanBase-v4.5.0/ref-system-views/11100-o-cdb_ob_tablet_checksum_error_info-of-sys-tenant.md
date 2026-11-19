@@ -1,0 +1,36 @@
+---
+title: oceanbase.CDB_OB_TABLET_CHECKSUM_ERROR_INFO
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004477620.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_TABLET_CHECKSUM_ERROR_INFO
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示 Tablet 副本之间出现的数据不一致的信息。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| TENANT_ID | bigint(20) | NO | 租户 ID |
+| TABLET_ID | bigint(20) | NO | 出现校验和不一致的 TABLET ID |
+
+## 查询示例
+
+系统租户查看 Tablet 副本之间出现的数据不一致的信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OB_TABLET_CHECKSUM_ERROR_INFO;
+```

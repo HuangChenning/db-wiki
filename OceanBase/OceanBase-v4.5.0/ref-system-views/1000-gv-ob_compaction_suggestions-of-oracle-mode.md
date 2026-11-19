@@ -1,0 +1,36 @@
+---
+title: "GV$OB_COMPACTION_SUGGESTIONS"
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004477016.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$OB_COMPACTION_SUGGESTIONS
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示所有节点上 Compaction 的建议信息。
+
+## 字段说明
+
+|    字段名称     |                类型                 | **是否可以为 NULL** |                                            描述                                            |
+|-------------|-----------------------------------|----------------|--------|
+| SVR_IP      | VARCHAR2(46)                      | NO             | 服务器 IP 地址                                                                                |
+| SVR_PORT    | NUMBER(38)                        | NO             | 服务器端口号|
+| TENANT_ID   | NUMBER(38)                        | NO             | 租户 ID |
+| TYPE        | VARCHAR2(64)                      | NO             | Compaction 的类型： <ul><li>`MDS_TABLE_MERGE`：将系统的元数据按照 SSTable 的格式持久化到磁盘里。</li> <li>`MAJOR_MERGE`：租户级合并</li> <li>`MEDIUM_MERGE`：分区级合并</li> <li>`MINI_MERGE`：Mini Compaction，将 MemTable 转变成 Mini SSTable。</li> <li>`MINOR_MERGE`：Minor Compaction，多个 Mini SSTable 合成一个新的 Mini SSTable 或者多个 Mini SSTable 与一个 Minor SSTable 合成一个新的 Minor SSTable。</li> <li>`META_MAJOR_MERGE`：一种特殊的 Compaction 类型，是将某个指定时间点之前的数据合成一个 Meta Major SSTable，其数据格式与 Major SSTable 一样，不包含多版本数据和未提交事务数据。</li></ul>   |
+| TABLE_ID    | NUMBER(38)                        | NO             | 主表 ID |
+| LS_ID       | NUMBER(38)                        | NO             | 日志流 ID|
+| TABLET_ID   | NUMBER(38)                        | NO             | 数据分片 ID                                                                                  |
+| START_TIME  | TIMESTAMP(6) WITH LOCAL TIME ZONE | NO             | 开始时间  |
+| FINISH_TIME | TIMESTAMP(6) WITH LOCAL TIME ZONE | NO             | 结束时间  |
+| SUGGESTION  | VARCHAR2(1024)                     | NO             | 建议信息  |

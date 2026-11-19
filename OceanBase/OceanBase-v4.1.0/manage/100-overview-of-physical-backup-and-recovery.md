@@ -1,0 +1,261 @@
+---
+title: "物理备份与恢复概述"
+book: "管理数据库"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001687890.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 物理备份与恢复概述
+
+备份恢复是 OceanBase 数据库高可用特性的核心组件，主要用于保障数据的安全，包括预防存储介质损坏和用户的错误操作等。如果存储介质损坏或者用户误操作而导致了数据丢失，可以通过恢复的方式恢复用户的数据。
+
+## 概述
+
+OceanBase 数据库 V4.1.0 版本支持 OSS、NFS 两种备份介质，提供了备份、恢复、清理三大功能。
+
+OceanBase 数据库支持租户级别的物理备份。物理备份由数据备份、日志归档两种数据组成，故物理备份由数据备份和日志归档两个功能组合而成。这里的租户指的是用户的 User 租户，不支持 `sys` 租户和 Meta 租户的物理备份。
+
+数据备份指的是备份数据的功能，该功能分为全量备份和增量备份两种：
+
+* 全量备份是指备份所有的宏块。
+
+* 增量备份是指备份上一次备份以后新增和修改过的宏块。
+
+<main id="notice" type='notice'>
+<h4>注意</h4>
+<p>在进行物理备份操作时，需要先开启日志归档模式后，才能执行数据备份。</p>
+</main>
+
+数据备份主要备份的数据如下：
+
+* 租户相关信息，包括租户名、集群名、时区（Zone）、Locality、租户的兼容模式（MySQL 或 Oracle）等
+
+* 全部用户表数据
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>数据备份会备份系统变量，但不会备份租户的配置项以及私有系统表数据。</p>
+</main>
+
+数据备份功能在备份目的地创建的目录以及各目录下保存的文件类型如下所示。
+
+```javasript
+├── backup_set_1_full                                        // 全量备份集
+│   ├── backup_set_1_full_20230111T193330_20230111T193420.obbak //占位符，展示全量备份的开始和结束时间
+│   ├── infos
+│   │   ├── data_info_turn_1                                 // turn 1 下的租户级备份文件
+│   │   │   ├── tablet_log_stream_info.obbak                 // tablet 与 日志流映射文件
+│   │   │   ├── tenant_major_data_macro_range_index.0.obbak  // major 宏块索引
+│   │   │   ├── tenant_major_data_meta_index.0.obbak         // major meta 索引
+│   │   │   ├── tenant_major_data_sec_meta_index.0.obbak     // major 逻辑id与物理id映射
+│   │   │   ├── tenant_minor_data_macro_range_index.0.obbak  // minor 宏块索引
+│   │   │   ├── tenant_minor_data_meta_index.0.obbak         // minor meta 索引
+│   │   │   └── tenant_minor_data_sec_meta_index.0.obbak     // minor 逻辑 id 与物理 id 的映射文件
+│   │   ├── diagnose_info.obbak                              // 备份集诊断信息文件
+│   │   ├── locality_info.obbak                              // 当前备份集的所属租户的 locality 信息
+│   │   └── meta_info                                        // 租户级别的日志流元信息文件，包含所有日志流的元信息
+│   │       ├── ls_attr_info.1.obbak                         // 备份时的日志流列表快照
+│   │       └── ls_meta_infos.obbak                          // 所有日志流的meta集合
+│   ├── logstream_1                                          // 日志流1
+│   │   ├── major_data_turn_1_retry_0                        // turn 1,retry 0下的基线数据
+│   │   │   ├── macro_block_data.0.obbak                     // 一个数据文件，512MB~4GB
+│   │   │   ├── macro_range_index.obbak                      // macro索引
+│   │   │   ├── meta_index.obbak                             // meta索引
+│   │   │   └── sec_meta_index.obbak                         // 逻辑 id 与物理 id 映射文件
+│   │   ├── meta_info_turn_1_retry_0                         // turn 1,retry 0 下的日志流元信息文件
+│   │   │   ├── ls_meta_info.obbak                           // 日志流元信息
+│   │   │   └── tablet_info.obbak                            // 日志流 tablet 列表
+│   │   ├── minor_data_turn_1_retry_0                        // turn 1,retry 0 下的转储数据
+│   │   │   ├── macro_block_data.0.obbak
+│   │   │   ├── macro_range_index.obbak
+│   │   │   ├── meta_index.obbak
+│   │   │   └── sec_meta_index.obbak
+│   │   └── sys_data_turn_1_retry_0                          //turn 1, retry 0 下的系统 tablet 数据
+│   │       ├── macro_block_data.0.obbak
+│   │       ├── macro_range_index.obbak
+│   │       ├── meta_index.obbak
+│   │       └── sec_meta_index.obbak
+│   ├── logstream_1001                                       // 1001 号日志流
+│   │   ├── major_data_turn_1_retry_0
+│   │   │   ├── macro_block_data.0.obbak
+│   │   │   ├── macro_range_index.obbak
+│   │   │   ├── meta_index.obbak
+│   │   │   └── sec_meta_index.obbak
+│   │   ├── meta_info_turn_1_retry_0
+│   │   │   ├── ls_meta_info.obbak
+│   │   │   └── tablet_info.obbak
+│   │   ├── minor_data_turn_1_retry_0
+│   │   │   ├── macro_block_data.0.obbak
+│   │   │   ├── macro_range_index.obbak
+│   │   │   ├── meta_index.obbak
+│   │   │   └── sec_meta_index.obbak
+│   │   └── sys_data_turn_1_retry_0
+│   │       ├── macro_block_data.0.obbak
+│   │       ├── macro_range_index.obbak
+│   │       ├── meta_index.obbak
+│   │       └── sec_meta_index.obbak
+│   ├── single_backup_set_info.obbak                        // 当前备份集的元信息
+│   └── tenant_backup_set_infos.obbak                       // 当前租户的全量备份集信息
+├── backup_sets                                             // backup set 占位符，用于 list
+│   ├── backup_set_1_full_end_success_20230111T193420.obbak // 全量备份结束占位符
+│   └── backup_set_1_full_start.obbak                       // 全量备份起始占位符
+│   ├── backup_set_2_inc_start.obbak                        // 增量备份起始占位符
+│   └── backup_set_2_inc_end_success_20230111T194420.obbak  // 增量备份结束占位符
+├── check_file
+│   └── 1002_connect_file_20230111T193020.obbak             // 连通性检查文件
+└── format.obbak                                            // 备份路径的格式化信息
+```
+
+数据备份目录中，顶层目录包含以下三种数据：
+
+* `format.obbak`：用于记录备份路径的元信息。
+
+* `check_file`：用于用户数据备份目录的连通性检查。
+
+* `backup_sets`：数据备份列表的汇总目录，记录了所有的数据备份集列表。
+
+* `backup_set_1_full`：该目录表示的是一个数据备份集，目录名结尾为 `full` 表示全量备份，为 `inc` 表示增量备份。每一次数据备份都会生成一个对应的备份集，数据备份结束后，该备份集就不会再修改了。
+
+  在一个数据备份集下，主要包含以下数据：
+
+  * `backup_set_1_full_20230111T193330_20230111T193420.obbak`：该文件展示了该备份集的 ID、开始和结束的时间。此文件仅用来展示信息。
+
+  * `infos`：该目录记录了数据备份集的元信息。
+
+  * `logstream_1`：该目录记录了 1 号日志流的所有数据，1 号日志流是 OceanBase 数据库租户的系统日志流。
+
+  * `logstream_1001`：该目录记录了 1001 号日志流的所有数据，大于 1000 的日志流是 OceanBase 数据库租户的用户日志流。
+
+  * `single_backup_set_info.obbak`：该文件记录了该备份集的元信息，包括备份的位点、依赖的日志等信息。
+
+  * `tenant_backup_set_infos.obbak`：该文件记录了当前租户已有的所有备份集的元信息。
+
+  同时，每个日志流数据下有 4 种目录，含 `retry` 的目录表示日志流级别的重试；含 `turn` 的目录表示租户级别的重试：
+
+  * `meta_info_xx`：该目录记录的是 LS 元信息和 tablet 元信息。
+  * `sys_data_xx`：该目录记录的是 LS 内部系统 tablet 的数据。
+  * `minor_data_xx`：该目录记录的是普通 tablet 的转储数据。
+  * `major_data_xx`：该目录记录的是普通 tablet 的基线数据。
+
+日志归档是指日志数据的自动归档功能，OBServer 节点会定期将日志数据归档到指定的备份路径。这个动作是全自动的，不需要外部定期触发。
+
+日志归档功能在备份目的地创建的目录以及各目录下保存的文件类型如下所示。
+
+```javasript
+log_archive_dest
+    ├── check_file
+    │   └── 1002_connect_file_20230111T193049.obbak // 连通性检查文件
+    ├── format.obbak                                // 备份路径的格式化信息
+    ├── rounds                                      // Rounds 占位符目录
+    │   └── round_d1002r1_start.obarc               // Round 开始占位符
+    ├── pieces                                      // Piece 占位符目录
+    │   ├── piece_d1002r1p1_start_20230111T193049.obarc // Piece 开始占位符，piece_DSETID_ROUNDID_PIECEID_DATE_start
+    │   └── piece_d1002r1p1_end_20230111T193249.obarc   // Piece 结束占位符，piece_DSETID_ROUNDID_PIECEID_DATE_end
+    └── piece_d1002r1p1                             // Piece 目录，目录命名格式为 piece_DSETID_ROUNDID_PIECEID       
+        ├── piece_d1002r1p1_20230111T193049_20230111T193249.obarc // 记录了 Piece 的连续区间
+        ├── checkpoint   
+        │   └── checkpoint_info.0.obarc             // 记录 Piece 的归档进度，正在归档的 Piece 才会记录
+        ├── single_piece_info.obarc                 // 记录该 Piece 的元信息
+        ├── tenant_archive_piece_infos.obarc        // 记录该 Piece 之前的所有 frozen Piece 的元信息        
+        ├── file_info.obarc                         // 所有日志流文件列表
+        ├── logstream_1                             // 1 号日志流
+        │   ├── file_info.obarc                    // 日志流1的文件列表
+        │   ├── log
+        │   │   └── 1.obarc                         // 1 号日志流下的归档文件  
+        │   └── schema_meta                         // 记录数据字典的元信息，只会在 1 号日志流生成此文件
+        │       └── 1677588501408765915.obarc                           
+        └── logstream_1001                          // 1001 号日志流
+            ├── file_info.obarc                      // 1001 号日志流的文件列表
+            └── log
+                └── 1.obarc                          // 1001 号日志流的归档文件      
+```
+
+日志归档目录中，顶层目录包含以下三种数据：
+
+* `format.obbak`：用于记录归档路径的元信息，包括使用路径的租户等信息。
+
+* `check_file`：用于用户日志归档目录的连通性检查。
+
+* `rounds`：日志归档的 Round 汇总列表，记录了所有 Round 的列表。
+
+* `pieces`：日志归档的 Piece 汇总列表，记录了所有的 Piece 的列表。
+
+* `piece_d1002r1p1`：日志归档的 Piece 目录，目录命名格式为 `piece_DSETID_ROUNDID_PIECEID`。其中，`DSETID` 指的是 `log_archive_dest` 对应的 id；`ROUNDID` 指的是日志归档 Round 的 id，是一个单调递增的整数；`PIECEID` 指的是日志归档 Piece 的 id，也是一个单调递增的整数。
+
+  一个日志归档的 Piece 目录下，又包含以下数据：
+
+  * `piece_d1002r1p1_20230111T193049_20230111T193249.obarc`：该文件展示了当前 Piece 的 id、开始和结束的时间，并且仅用来展示信息。
+
+  * `checkpoint`：该目录是 Active 的 Piece 记录归档位点的目录，ObArchiveScheduler 模块会定期更新该目录的位点信息。
+
+  * `single_piece_info.obarc`：该文件记录了当前 Piece 的元信息。
+
+  * `tenant_archive_piece_infos.obarc`：该文件记录了当前租户内所有 Frozen  Pieces 的元信息。
+
+  * `file_info.obarc`：该文件记录了 Piece 内的日志流列表。
+
+  * `logstream_1`：该目录记录了 1 号日志流的日志文件，1 号日志流是 OceanBase 数据库租户的系统日志流。
+  
+  * `logstream_1001`：该目录记录了 1001 号日志流的日志文件，大于 1000 的日志流是 OceanBase 数据库租户的用户日志流。
+
+  同时，每个日志流备份下还有 3 种数据：
+
+  * `file_info.obarc`：该文件记录了日志流内的文件列表。
+
+  * `log`：该目录中保存了当前日志流的所有归档文件，文件名和源集群内部的日志文件一致。
+  
+  * `schema_meta`：该目录记录了数据字典的元信息，仅系统日志流才有，用户日志流下无该目录。
+
+OceanBase 数据库支持租户级别的恢复，恢复是基于已有数据的备份重建新租户的过程。用户只需要一个 `alter system restore tenant` 命令，就可以完成整个恢复过程。恢复过程包括租户系统表和用户表的 Restore 和 Recover 过程。Restore 是将恢复需要的基线数据恢复到目标租户的 OBServer 节点，Recover 是将基线对应的日志恢复到对应的 OBServer 节点。
+
+## 与 V3.x/V2.x 版本相关功能的差异性对比
+
+### 日志归档
+
+| 差异项             | V3.x/V2.2x                                                     |  V4.x                                               |
+|-------------------|---------------------------------------------------------------|-----------------------------------------------------|
+| 归档级别          | 集群级                                                         | 租户级                                              |
+| 归档粒度          | 按分区                                                         | 按日志流                                            |
+| 权限要求          | 只能通过 `sys` 租户操作，例如设置归档路径、开启归档、查看归档进度等 | 既可以通过 `sys` 租户操作，也可以通过用户租户的管理员用户操作 |
+| 使用方式          | <ol><li>通过 <code>ALTER SYSTEM SET BACKUP_DEST</code> 语句设置集群级备份路径</li> <li> 通过 <code>ALTER SYSTEM SET BACKUP_DEST_OPTION</code> 语句设置 Piece 切换周期，默认不开启切 Piece 的功能</li></ol> | 通过 <code>ALTER SYSTEM SET LOG_ARCHIVE_DEST</code> 语句设置租户级归档路径以及 Piece 切换周期，默认为 `1d` 即 1 天，并且日志归档路径与数据备份路径可以分别独立配置 |
+| 切 Piece 功能    | 允许不开启切 Piece 的功能且默认不开启                             | 仅允许开启切 Piece 功能，且默认周期 1 天              |
+| 归档延迟时间的设置方法  | 通过 `ALTER SYSTEM SET LOG_ARCHIVE_CHECKPOINT_INTERVAL` 语句设置 | 通过 `ALTER SYSTEM SET ARCHIVE_LAG_TARGET` 语句设置   |
+| `sys` 租户下 执行 `ALTER SYSTEM ARCHIVELOG` 语句后的结果 | 开启当前集群中所有租户的归档，在归档开启后新建的租户也会自动开启归档 | 开启当前集群中所有租户的归档，在归档开启后新建的租户不会自动开启归档 |
+| 归档日志压缩功能  | 通过 `ALTER SYSTEM SET BACKUP_LOG_ARCHIVE_OPTION` 设置          | 不支持                                               |
+| 归档视图         | 归档相关视图主要为以下 3 个：<ul><li>CDB_OB_BACKUP_ARCHIVELOG</li> <li>CDB_OB_BACKUP_ARCHIVELOG_SUMMARY</li> <li>CDB_OB_BACKUP_PIECE_FILES</li></ul> | 归档相关视图为以下 8 个：<ul><li>CDB_OB_ARCHIVELOG</li> <li>DBA_OB_ARCHIVELOG</li> <li>CDB_OB_ARCHIVELOG_SUMMARY</li> <li>DBA_OB_ARCHIVELOG_SUMMARY <li>CDB_OB_ARCHIVE_DEST</li> <li>DBA_OB_ARCHIVE_DEST</li> <li>CDB_OB_ARCHIVELOG_PIECE_FILES</li> <li>DBA_OB_ARCHIVELOG_PIECE_FILES</li></ul> |
+| 归档介质要求     | 要求必须是 SSD                                                   | 可以是 HDD 或者 SSD                                          |
+| 归档文件数量     | 文件数量和分区数成正比，百万分区场景下，会产生海量小文件的问题。      | 文件数量少，与分区数无关，不会存在海量小文件的问题       |
+| 备库归档         | 不支持                                                           | 支持                                                |
+
+### 数据备份
+
+| 差异项             | V3.x/V2.2x                                                       |  V4.x                                               |
+|-------------------|------------------------------------------------------------------|------------------------------------------------------|
+| 备份级别           |  集群级                                                          | 租户级                                              |
+| 权限               | 只能通过 `sys` 租户操作，例如设置备份路径，开始备份，查看备份进度等   | 既可以通过 `sys` 租户操作，也可以通过用户租户的管理员用户操作 |
+| 备份路径的设置方法  | 通过 `ALTER SYSTEM SET BACKUP_DEST` 语句设置集群级的备份路径       |  通过 `ALTER SYSTEM SET DATA_BACKUP_DEST` 语句设置租户级备份路径，且数据备份路径与日志归档路径可以分别独立配置 |
+| 指定路径的数据备份  |  `sys` 租户通过执行 `ALTER SYSTEM BACKUP TENANT tenant_name_list TO backup_destination;` 语句发起 | 不支持                                   |
+| BACKUP PLUS ARCHIVELOG 功能 | 不支持                                                  | 支持                                                  |
+| 空间膨胀           | 备份期间保留快照点，会导致备份期间存储空间膨胀                       | 不保留快照点，不会导致空间膨胀                            |
+| 备库备份           | 不支持                                                          | 支持                                                  |
+| 视图               | 备份相关视图主要为以下 5 个：<ul><li>CDB_OB_BACKUP_JOB_DETAILS</li> <li>CDB_OB_BACKUP_SET_DETAILS</li> <li>CDB_OB_BACKUP_SET_EXPIRED</li> <li>CDB_OB_BACKUP_PROGRESS</li> <li>CDB_OB_BACKUP_SET_FILES</li></ul> | 备份相关视图主要为以下 10 个：<ul><li>CDB_OB_BACKUP_JOBS</li> <li>DBA_OB_BACKUP_JOBS</li> <li>CDB_OB_BACKUP_JOB_HISTORY</li> <li>DBA_OB_BACKUP_JOB_HISTORY</li> <li>CDB_OB_BACKUP_TASKS</li> <li>DBA_OB_BACKUP_TASKS</li> <li>CDB_OB_BACKUP_TASK_HISTORY</li> <li>DBA_OB_BACKUP_TASK_HISTORY</li> <li>CDB_OB_BACKUP_SET_FILES</li> <li>DBA_OB_BACKUP_SET_FILES</li></ul>  |
+
+### 物理恢复
+
+| 差异项             | V3.x/V2.2x                                                       |  V4.x                                               |
+|-------------------|------------------------------------------------------------------|-----------------------------------------------------|
+| 数据路径           | 在恢复命令中提供集群级备份路径                                     | 需要同时提供数据备份和日志归档 2 个路径                |
+| 恢复并发度设置     | 在发起恢复命令前，通过 `ALTER SYSTEM SET RESTORE_CONCURRENCY` 语句设置 | 在恢复命令中指定 `concurrecy`                       |
+| 秘钥管理方式       |<ol><li>Internal 模式不需要设置秘钥信息</li> <li>kms 模式在原服务可访问的情况下，也不需要提供秘钥信息</li></ol> | <ol><li>需要单独备份主密钥信息</li> <li>恢复时需要指定主密钥地址</li></ol> |
+| 恢复完成后的租户角色 | 主租户，即主库                                                   | 备租户，即备库                                       |
+| 升级              | 恢复过程中会自动升级租户                                           | 恢复完成后需要手动升级租户                             |
+| 表级恢复          | 支持，且仅支持将表恢复到新租户（恢复过程中创建的租户）中，不支持恢复到已存在的租户中           | V4.2.1 版本开始支持，仅支持将表恢复到已存在的租户中，不支持恢复到新租户（恢复过程中创建的租户）中       |
+| 通过 `ADD RESTORE SOURCE` 语句来恢复 | 支持                                            | 不支持                                               |
+
+## 相关文档
+
+关于物理备份与恢复的更多详细介绍，请参见 [备份恢复](../../700.reference/100.oceanbase-database-concepts/1000.high-data-reliability-and-availability/500.backup-and-recovery/100.backup-and-recovery-overview.md) 章节。

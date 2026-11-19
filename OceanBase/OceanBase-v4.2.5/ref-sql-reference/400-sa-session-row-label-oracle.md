@@ -1,0 +1,47 @@
+---
+title: SA_SESSION.ROW_LABEL
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503969.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SA_SESSION.ROW_LABEL
+
+`SA_SESSION.ROW_LABEL` 返回与当前会话的策略相关联的行标签的名称。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 语法 
+
+```sql
+SA_SESSION.ROW_LABEL (
+      policy_name IN VARCHAR)
+RETURN VARCHAR;
+```
+
+
+
+## 参数解释 
+
+
+
+|   **参数**    |                          **描述**                           |
+|-------------|-----------------------------------------------------------|
+| policy_name | 指定策略。要查找现有策略，请查询 `ALL_SA_POLICIES` 数据字典视图的 `POLICY_NAME` 列。 |
+
+
+
+## 示例 
+
+如下示例为返回与 `shield_agent_policy` 策略相关联的行标签。
+
+```sql
+SELECT SA_SESSION.ROW_LABEL ('shield_agent_policy') FROM DUAL;
+```

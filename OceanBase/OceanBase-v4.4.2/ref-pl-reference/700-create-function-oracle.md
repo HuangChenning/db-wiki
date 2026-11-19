@@ -1,0 +1,174 @@
+---
+title: CREATE FUNCTION
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285378.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CREATE FUNCTION
+
+## 描述
+
+`CREATE FUNCTION` 语句用于创建或替换独立函数或调用规范。独立函数是指存储在数据库中的函数（返回单个值的子程序）。
+
+<main id="notice" type="explain">
+<h4>功能适用性</h4>
+<p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type="notice">
+<h4>注意</h4>
+<p>使用 <code>CREATE FUNCTION</code> 语句创建的独立函数不同于在 PL 块或包中声明和定义的函数。</p>
+</main>
+
+## 前提条件
+
+要在 Schema 中创建或替换独立函数，必须具有 `CREATE FUNCTION` 的系统权限。要在另一个用户的 Schema 中创建或替换独立函数，则必须具有 `CREATE ANY FUNCTION` 的系统权限。
+
+## 使用限制
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>对于 V4.4.2 版本，从 V4.4.2 BP4 版本开始，标量函数不能直接作为窗口函数使用。</p>
+</main>
+
+标量函数（未使用 `AGGREGATE USING` 定义的函数）不能直接作为窗口函数使用，否则报错 `-5561`（`Invalid use of window function`，Oracle 模式下以 `OBE-00600` 形式返回）。
+
+以如下建表语句和标量函数为例：
+
+```sql
+CREATE TABLE employee_tbl (id NUMBER, raw_col RAW(100));
+
+INSERT INTO employee_tbl VALUES (1, hextoraw('616263'));
+INSERT INTO employee_tbl VALUES (2, hextoraw('646566'));
+
+CREATE OR REPLACE FUNCTION get_raw_length(p_raw RAW) RETURN NUMBER IS
+BEGIN
+  RETURN UTL_RAW.LENGTH(p_raw);
+END;
+/
+```
+
+以下语句均会报错：
+
+```sql
+-- 自定义标量函数直接用于 OVER()
+SELECT id, get_raw_length(raw_col) OVER (ORDER BY id) FROM employee_tbl;
+
+-- 系统标量函数直接用于 OVER()
+SELECT id, UTL_RAW.LENGTH(raw_col) OVER (ORDER BY id) FROM employee_tbl;
+```
+
+报错信息如下：
+
+```shell
+OBE-00600: internal error code, arguments: -5561, Invalid use of window function
+```
+
+如需在窗口函数中使用，可以将标量函数作为聚合函数的参数，或使用 `AGGREGATE USING` 定义的聚合函数。例如：
+
+```sql
+SELECT id, SUM(UTL_RAW.LENGTH(raw_col)) OVER (ORDER BY id) AS total_len
+FROM employee_tbl
+ORDER BY id;
+```
+
+返回结果如下：
+
+```sql
++------+-----------+
+| ID   | TOTAL_LEN |
++------+-----------+
+|    1 |         3 |
+|    2 |         6 |
++------+-----------+
+```
+
+## 语法
+
+`create_function` 的语法如下：
+
+```sql
+CREATE [ OR REPLACE ]
+FUNCTION plsql_function_source
+```
+
+其中，`plsql_function_source` 的语法如下：
+
+```sql
+[ schema. ] function_name
+  [ ( parameter_declaration [, parameter_declaration]... ) ]
+  RETURN datatype [ sharing_clause ]
+  [ invoker_rights_clause
+    | accessible_by_clause
+    | DETERMINISTIC
+    | parallel_enable_clause
+    | result_cache_clause
+    | default_collation_clause
+    | pipelined_clause
+    ]...
+  { { AGGREGATE | PIPELINED }  USING [ schema. ] implementation_type
+  | [ PIPELINED ] { IS | AS } { [ declare_section ] body
+                              | call_spec
+                              }
+  } ;
+```
+
+## 语义
+
+| 语法 | 关键字或语法节点 | 说明 |
+|------|------------------|------|
+| create_function | OR REPLACE | 重新创建该函数（如果存在），然后重新编译。在重新定义函数之前被授予该函数权限的用户仍然可以访问该函数而无需重新获得权限。如果有任何基于函数的索引依赖于该函数，则数据库会将索引标记为 `DISABLED`。 |
+| plsql_function_source | schema | 该函数所在的 Schema 名称。默认值为当前用户的 Schema。 |
+| plsql_function_source | function_name | 要创建的函数名称。 |
+| plsql_function_source | RETURN datatype | 对于数据类型，请指定函数返回值的数据类型。返回值可以为 PL 所支持的任何数据类型。 |
+| plsql_function_source | body | 函数所必需的可执行部分，以及函数的异常处理部分（可选）。 |
+| plsql_function_source | declare_section | 函数的可选声明部分。声明对于函数来说是局部的，可以在 `body` 中引用，在函数完成执行后不再存在。 |
+| plsql_function_source | DETERMINISTIC | 表示该函数是确定性的，即对于相同的输入参数总是返回相同的结果。这对于优化查询性能很重要。 |
+| plsql_function_source | parallel_enable_clause | 表示该函数可以在并行查询中安全执行。当指定此特性时，函数必须满足确定性、不修改数据库状态、不依赖会话状态等条件。 |
+
+## 示例
+
+创建函数 `get_salary_by_dept`。
+
+```sql
+CREATE OR REPLACE FUNCTION get_salary_by_dept(
+       v_in_dept_id NUMBER,
+       v_out_emp_count OUT NUMBER)
+       RETURN NUMBER
+   IS
+       v_sum NUMBER;
+   BEGIN
+       SELECT SUM(salary), count(*) INTO v_sum, v_out_emp_count
+           FROM employees WHERE deptno=v_in_dept_id;
+       RETURN v_sum;
+   EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+         DBMS_OUTPUT.PUT_LINE('Dept id '||v_in_dept_id||' not found');
+      WHEN OTHERS THEN
+         DBMS_OUTPUT.PUT_LINE('ERR: '||SQLCODE||': '||SQLERRM);
+   END get_salary_by_dept;
+/
+```
+
+创建可以在并行查询中安全执行的函数。
+
+```sql
+CREATE OR REPLACE FUNCTION sub_query_result(input VARCHAR)
+DETERMINISTIC
+PARALLEL_ENABLE
+RETURN VARCHAR
+IS
+    result tp_sys_para.para_value%type;
+BEGIN
+    SELECT tp.para_value INTO result
+    FROM tp_sys_para tp
+    WHERE tp.para_name_e = input;
+    RETURN result;
+END;
+/
+```

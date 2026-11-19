@@ -1,0 +1,33 @@
+---
+title: oceanbase.DBA_OB_SYNC_STANDBY_DEST
+book: "系统视图"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005842888.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.DBA_OB_SYNC_STANDBY_DEST
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>对于 V4.4.2 版本，该视图从 V4.4.2 BP1 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `DBA_OB_SYNC_STANDBY_DEST` 用于展示本租户的强同步下游信息。
+
+## 字段说明
+
+| 字段名称   | 类型          | 是否可以为 NULL | 描述                          |
+|-----------|---------------|----------------|-------------------------------|
+| TENANT_ID | bigint(20)    | NO             | 租户 ID     |
+| DEST_ID   | bigint(20)    | NO             | 强同步备租户的 ID，当前限制一个主租户只能有一个 ID 为 0 的强同步备租户     |
+| VALUE     | longtext      | NO             | 强同步的备租户的信息，包含 ip_list、登录名、密码、cluster_id 等     |
+
+## 相关视图或文档
+
+系统租户下查询所有租户的强同步下游信息，参见 [CDB_OB_SYNC_STANDBY_DEST](10550.o-cdb-ob_sync_standby_dest-sys-tenant.md)。

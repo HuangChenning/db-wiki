@@ -1,0 +1,55 @@
+---
+title: DO
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478353.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DO
+
+`DO` 语句用于执行 SQL 表达式，但不返回任何结果。
+
+## 语法
+
+```sql
+DO expr [, expr ...]
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| expr | 要执行的 SQL 表达式。可以指定多个表达式，用逗号分隔。 |
+
+在一些场景中，`DO` 语句等价于 `SELECT expr`，以实现快速响应而不用返回结果。
+
+## 示例
+
+执行表达式但不返回结果。
+
+```sql
+obclient> DO SLEEP(5);
+```
+
+执行多个表达式：
+
+```sql
+obclient> DO @var1 := 10, @var2 := 20, @var3 := @var1 + @var2;
+
+obclient> SELECT @var1, @var2, @var3;
+```
+
+查询结果如下：
+
+```sql
++-------+-------+-------+
+| @var1 | @var2 | @var3 |
++-------+-------+-------+
+|    10 |    20 |    30 |
++-------+-------+-------+
+1 row in set
+```

@@ -1,0 +1,54 @@
+---
+title: SUM
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001504370.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SUM
+
+## 声明
+
+```sql
+SUM([ DISTINCT | ALL ] expr) OVER (analytic_clause)
+```
+
+## 说明
+
+返回 `expr` 的总数。若返回集合中无任何行，则 `SUM()` 返回 `NULL`。`DISTINCT` 关键字可用于求得 `expr` 不同值的总和。
+
+若找不到匹配的行，则 `SUM()` 返回 `NULL`。
+
+## 示例
+
+```sql
+obclient> CREATE TABLE employees(LAST_NAME CHAR(10), SALARY DECIMAL, JOB_ID CHAR(32));
+Query OK, 0 rows affected
+
+obclient> INSERT INTO employees VALUES('JIM', 2000, 'CLEANER');
+Query OK, 1 row affected
+
+obclient> INSERT INTO employees VALUES('MIKE', 12000, 'ENGINEERING');
+Query OK, 1 row affected
+
+obclient> INSERT INTO employees VALUES('LILY', 13000, 'ENGINEERING');
+Query OK, 1 row affected
+
+obclient> INSERT INTO employees VALUES('TOM', 11000, 'ENGINEERING');
+Query OK, 1 row affected
+
+obclient> SELECT LAST_NAME, SUM(SALARY) OVER (PARTITION BY JOB_ID) TOTAL_S FROM employees;
++-----------+---------+
+| LAST_NAME | TOTAL_S |
++-----------+---------+
+| JIM       |    2000 |
+| MIKE      |   36000 |
+| LILY      |   36000 |
+| TOM       |   36000 |
++-----------+---------+
+4 rows in set
+```

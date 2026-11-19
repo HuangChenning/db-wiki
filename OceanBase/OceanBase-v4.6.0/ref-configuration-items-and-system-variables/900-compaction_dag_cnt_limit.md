@@ -1,0 +1,49 @@
+---
+title: compaction_dag_cnt_limit
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685445.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# compaction_dag_cnt_limit
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V4.2.1 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`compaction_dag_cnt_limit` 用于配置 Compaction DAG 队列上 DAG 数量的上限值。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  `sys` 租户和用户租户均可修改该配置项。
+
+## 属性说明
+
+| **属性** | **描述** |
+| -------- | -------- |
+| 参数类型           | Int  |
+| 默认值             | 50000 <main id="notice" type='explain'><h4>说明</h4><p>从 V4.4.0 版本开始，默认值由 15000 调整为 50000。</p></main> |
+| 取值范围           | [10000，500000] <main id="notice" type='explain'><h4>说明</h4><p>从 V4.4.0 版本开始，取值范围由 [10000，200000] 调整为 [10000，500000]。</p></main> |
+| 是否可修改         | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。  |
+
+## 配置示例
+
+设置 Compaction DAG 队列上 DAG 数量的上限值为 50000。
+
+```shell
+obclient> ALTER SYSTEM SET compaction_dag_cnt_limit = 50000;
+```

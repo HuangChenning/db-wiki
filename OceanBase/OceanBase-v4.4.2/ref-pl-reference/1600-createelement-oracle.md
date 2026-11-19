@@ -1,0 +1,63 @@
+---
+title: CREATEELEMENT
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000007021544.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CREATEELEMENT
+
+`CREATEELEMENT` 函数用于在指定 DOM 文档上创建元素节点，元素名称由 `tagname` 指定。创建后的元素可通过 `MAKENODE` 转换为通用节点，并通过 `APPENDCHILD` 挂载到 DOM 树中。
+
+<main id="notice" >
+  <h4>功能适用性</h4>
+  <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+</main>
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>对于 V4.4.2 版本，该子程序从 OceanBase 数据库 V4.4.2 BP3 版本开始引入。</p>
+</main>
+
+## 语法
+
+```sql
+DBMS_XMLDOM.createElement (
+   doc     IN DBMS_XMLDOM.DOMDOCUMENT,
+   tagname IN VARCHAR2);
+```
+
+## 参数解释
+
+| **参数** | **解释** |
+|----------|----------|
+| doc | 目标 `DBMS_XMLDOM.DOMDOCUMENT` 句柄。 |
+| tagname | 元素标签名。 |
+
+## 返回值
+
+`DBMS_XMLDOM.DOMELEMENT` 元素节点句柄。
+
+## 使用说明
+
+创建的元素尚未挂载到文档树；需通过 `MAKENODE` 转为 `DOMNODE` 后，再使用 `APPENDCHILD` 追加到父节点。
+
+从 V4.4.2 BP3 版本开始，如果 `tag_name` 为 `NULL` 或空字符串，函数报错 `OBE-64505`（NULL or invalid string argument specified）。
+
+## 示例
+
+```sql
+DECLARE
+  doc  DBMS_XMLDOM.DOMDOCUMENT;
+  elem DBMS_XMLDOM.DOMELEMENT;
+BEGIN
+  doc := DBMS_XMLDOM.newDOMDocument;
+  elem := DBMS_XMLDOM.createElement(doc, 'item');
+  DBMS_XMLDOM.freeDocument(doc);
+END;
+/
+```

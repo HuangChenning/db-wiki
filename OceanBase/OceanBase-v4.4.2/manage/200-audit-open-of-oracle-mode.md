@@ -1,0 +1,94 @@
+---
+title: "开启安全审计"
+book: "管理数据库"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283319.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 开启安全审计
+
+本章节介绍如何开启审计功能并设置审计记录的存储位置。
+
+OceanBase 数据库的审计相关操作一般由内置的 `ORAAUDITOR` 用户进行，该用户的密码和权限由 `SYS` 用户指定。
+
+## 操作步骤
+
+1. 使用 `SYS` 用户登录到 Oracle 租户并解锁 `ORAAUDITOR` 用户。
+
+   ```shell
+   obclient> ALTER USER ORAAUDITOR ACCOUNT UNLOCK;
+   ```
+
+   <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>OceanBase 数据库默认创建了 <code>ORAAUDITOR</code> 用户。该用户默认处于锁定状态，在使用审计前需要启用该用户。</p>
+   </main>
+
+2. 修改 `ORAAUDITOR` 用户的登录密码。
+
+   为了保障安全性，`ORAAUDITOR` 用户的登录密码需要由 `SYS` 用户来指定。如果后续需要修改该密码，重新指定一个新的密码即可。
+
+   ```shell
+   obclient> ALTER USER ORAAUDITOR IDENTIFIED BY ******;
+   ```
+
+3. 设置 `ORAAUDITOR` 用户的权限。
+
+   `ORAAUDITOR` 用户默认不带任何权限，为了执行安全审计相关的操作，需要通过 `GRANT` 语句给 `ORAAUDITOR` 用户授予 `CREATE SESSION` 权限。如果允许 `ORAAUDITOR` 用户查看审计记录，需要授予 `SELECT ANY DICTIONARY` 权限。
+
+   ```shell
+   obclient> GRANT CREATE SESSION, SELECT ANY DICTIONARY TO ORAAUDITOR;
+   ```
+
+4. 启用审计功能并设置审计记录的存储位置。
+
+   通过配置项 `audit_trail` 开启审计功能，执行成功后立即生效。该配置项的取值如下：
+
+   * `NONE`：关闭审计，为默认值。
+
+   * `OS`：审计记录写入本地磁盘文件。
+
+   * `LOG`：审计记录写入审计日志。该取值从 V4.4.2 BP2 版本开始支持。
+
+   * `DB`：审计记录写入内部表。
+
+   * `DB,EXTENDED / DB_EXTENDED`：审计记录写入内部表且记录包含执行的 SQL 语句。
+
+   示例如下：
+
+   ```shell
+   obclient> ALTER SYSTEM SET audit_trail = 'DB,EXTENDED';
+   ```
+
+   关于 `audit_trail` 配置项的详细信息，参见 [audit_trail](../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/400.audit_trail.md)。 
+
+   <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>审计记录支持写入内部表、写入本地磁盘文件和写入审计日志三种方式：</p>
+      <ul>
+      <li>写入磁盘文件：通过异步写的方式记录在 <code><安装目录>/audit/</code> 下，默认在 <code>/home/admin/oceanbase/audit/observer_xx_xxxxxx.aud</code>。</li>
+      <li>写入审计日志：审计记录写入审计日志文件，支持日志归档、压缩、轮转、清理及加密等管理策略，从 V4.4.2 BP2 版本开始支持。</li>
+      <li>写入内部表：审计信息直接写入系统表。内部表 <code>__all_tenant_security_audit_record</code>，存放审计记录；内部表 <code>__all_virtual_audit_operation</code> 或 <code>__all_virtual_audit_action</code>，存放审计相关 <code>ID</code> 和 <code>Name</code> 的映射。</li>
+      </ul>
+   </main>
+
+## 审计日志加密
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>Oracle 模式审计日志加密功能从 V4.4.2 BP2 版本开始支持。</p>
+</main>
+
+Oracle 租户在将审计记录写入日志文件（`audit_trail` 为 `LOG`）时，支持对归档日志以明文或加密方式落盘。加密通过 `audit_log_encryption` 配置项以及审计函数 `AUDIT_LOG_ENCRYPTION_PASSWORD_SET()` 和 `AUDIT_LOG_ENCRYPTION_PASSWORD_GET()` 实现。具体步骤参见文末配置文档。
+
+## 相关文档
+
+有关安全审计的更多相关操作，参见：
+
+* [设置和查看审计规则](300.set-up-and-view-audit-rules-of-oracle-mode.md)
+* [查看审计记录](500.audit-records-of-oracle-mode.md)
+* [审计函数概述](../../../../700.reference/500.sql-reference/100.sql-syntax/300.common-tenant-of-oracle-mode/500.functions-of-oracle-mode/970.audit-functions-of-oracle-mode/100.audit-functions-overview-of-oracle-mode.md)

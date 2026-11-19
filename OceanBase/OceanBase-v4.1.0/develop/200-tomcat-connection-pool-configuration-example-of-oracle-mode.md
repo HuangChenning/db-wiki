@@ -1,0 +1,43 @@
+---
+title: "Tomcat 连接池配置示例"
+book: "应用开发"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001697434.html"
+tags:
+  - oceanbase
+  - distributed
+  - develop
+---
+
+# Tomcat 连接池配置示例
+
+本文介绍 Tomcat 连接池的配置示例。
+
+## 配置文件示例
+
+Tomcat 连接池的配置文件修改示例如下。
+
+```xml
+<Resource name="jdbc"
+auth="Container"
+type="javax.sql.DataSource"
+maxActive="100" //一个数据库在此服务器上所能打开的最大连接数
+maxIdle="30"    //一个数据库在此服务器上维持的最小连接数
+maxWait="10000" //最大等待时间。10000毫秒
+username="root"
+password="******"
+driverClassName="com.oceanbase.jdbc.Driver"
+url="jdbc:oceanbase://10.100.xxx.xxx:18815/test?characterEncoding=UTF-8"/>
+```
+
+## 配置项目
+
+配置文件修改成功后，配置项目的 `web.xml` 如下。
+
+```xml
+<resource-ref>
+         <res-ref-name>jdbc</res-ref-name>
+         <res-type>javax.sql.DataSource</res-type>
+         <res-auth>Container</res-auth>
+</resource-ref>
+```

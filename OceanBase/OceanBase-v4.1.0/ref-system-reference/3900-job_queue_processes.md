@@ -1,0 +1,34 @@
+---
+title: job_queue_processes
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700982.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# job_queue_processes
+
+job_queue_processes 
+========================================
+
+`job_queue_processes` 用来设定每个租户上可以同时运行的任务数上限，目的是为了控制任务挤占租户的资源。
+
+
+|        属性        |     描述     |
+|------------------|------------|
+| 参数类型             | 整型         |
+| 默认值              | 1000       |
+| 取值范围             | \[0,1000\] |
+| 是否重启 OBServer 节点生效 | 否          |
+
+
+
+设置 `job_queue_processes` 为 `0`，则表示定时任务不启动。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>该配置项当前仅在 Oracle 模式下生效。</p>
+  </main>

@@ -1,0 +1,61 @@
+---
+title: "V$SESSION_WAIT_HISTORY"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501399.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# V$SESSION_WAIT_HISTORY
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示当前 OBServer 节点上所有 Session 的最近 10 次等待事件的信息。
+
+## 字段说明
+
+| **字段名称** | **类型** | **是否可以为 NULL** | **描述** |
+| --- | --- | --- | --- |
+| SID | bigint(20) | NO | 对于 V4.2.x 版本：<ul><li> V4.2.5 BP4 之前版本：<br>在所有连接方式（直连模式/ODP 模式）下，该字段均表示 Server Session ID。</li><li> V4.2.5 BP4 及之后版本：<ul><li>在直连模式下：<br>该字段表示 Server Session ID。</li> <li>在 ODP 模式下：</li><ul><li>当 ODP 中的配置项 <code>client_session_id_version = 2</code> 时，该字段表示 Client Session ID。 </li> <li>当 <code>client_session_id_version = 1</code> 时，该字段表示 Server Session ID。</li></ul></ul></li></ul> |
+| CON_ID | bigint(20) | NO | 租户 ID |
+| SVR_IP | varchar(46) | NO | 服务器的 IP 地址 |
+| SVR_PORT | bigint(20) | NO | 服务器端口 |
+| SEQ# | bigint(20) | NO | 等待事件序列号 |
+| EVENT# | bigint(20) | NO | 等待事件编号 |
+| EVENT | varchar(64) | NO | 等待事件名称 |
+| P1TEXT | varchar(64) | NO | 等待事件的参数 1 的描述 |
+| P1 | bigint(20) unsigned | NO | 等待事件的参数 1 的值 |
+| P2TEXT | varchar(64) | NO | 等待事件的参数 2 的描述 |
+| P2 | bigint(20) unsigned | NO | 等待事件的参数 2 的值 |
+| P3TEXT | varchar(64) | NO | 等待事件的参数 3 的描述 |
+| P3 | bigint(20) unsigned | NO | 等待事件的参数 3 的值 |
+| WAIT_TIME | double | NO | 等待事件的等待时间，单位为百分之一秒 |
+| WAIT_TIME_MICRO | bigint(20) | NO | 等待事件的等待时间，单位为微秒 |
+| TIME_SINCE_LAST_WAIT_MICRO | bigint(20) | NO | 自上一次等待结束到当前等待的时间，单位为微秒 |
+
+## 查询示例
+
+系统租户下，查看当前 OBServer 节点上所有 Session 的最近 10 次等待事件的信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.V$SESSION_WAIT_HISTORY;
+```
+
+查询结果如下：
+
+```shell
++----------------------+--------+----------------+----------+------+--------+-------+--------+------+--------+------+--------+------+-------------------+------------------+----------------------------+
+| SID                  | CON_ID | SVR_IP         | SVR_PORT | SEQ# | EVENT# | EVENT | P1TEXT | P1   | P2TEXT | P2   | P3TEXT | P3   | WAIT_TIME         | WAIT_TIME_MICRO  | TIME_SINCE_LAST_WAIT_MICRO |
++----------------------+--------+----------------+----------+------+--------+-------+--------+------+--------+------+--------+------+-------------------+------------------+----------------------------+
+| -9223372036854775604 |      1 | 11.xxx.xxx.xxx |    28825 |    1 |      0 |       |        |    0 |        |    0 |        |    0 | 174315105890.7662 | 1743151058907662 |                          0 |
++----------------------+--------+----------------+----------+------+--------+-------+--------+------+--------+------+--------+------+-------------------+------------------+----------------------------+
+1 row in set
+```

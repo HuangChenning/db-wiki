@@ -1,0 +1,42 @@
+---
+title: "BEGINCREATE 静态存储过程"
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480047.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# BEGINCREATE 静态存储过程
+
+`BEGINCREATE` 静态存储过程用于开始创建新的 `ANYDATA`。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+STATIC PROCEDURE BeginCreate(
+dtype IN OUT NOCOPY AnyType,
+adata OUT NOCOPY AnyData);
+```
+
+## 参数解释
+
+|  参数   |         解释          |
+|-------|---------------------|
+| dtype | `ANYDATA` 的类型。      |
+| adata | 返回正在构建中的 `ANYDATA`。 |
+
+## 异常情况
+
+`DBMS_TYPES.INVALID_PARAMETERS`：`dtype` 无效（`ANYTYPE` 不完整或者存在类似的缺陷）。
+
+## 使用说明
+
+无需在此调用后立即调用 `PIECEWISE`，会自动以逐段方式开始构建 `ANYDATA` 过程。

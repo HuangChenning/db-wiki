@@ -1,0 +1,37 @@
+---
+title: DBA_SYNONYMS
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700743.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# DBA_SYNONYMS
+
+## 功能
+
+查看数据库中所有同义词。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+## 相关视图
+
+* ALL_SYNONYMS
+
+* USER_SYNONYMS
+
+## 字段说明
+
+|   **字段名称**   |    **类型**     | **是否可以为 NULL** |                     **描述**                      |
+|--------------|---------------|----------------|-------------------------------------------------|
+| OWNER        | VARCHAR2(128) | NO             | 同义词的拥有者                                         |
+| SYNONYM_NAME | VARCHAR2(128) | NO             | 同义词名字                                           |
+| TABLE_OWNER  | VARCHAR2(128) | NO             | 同义词引用对象的拥有者                                     |
+| TABLE_NAME   | VARCHAR2(128) | NO             | 同义词引用的对象名字                                      |
+| DB_LINK      | VARCHAR2(128) | NO             | 如果引用的是 DB Link，则表示 DB Link 名字。目前同义词暂不支持 DB LINK |

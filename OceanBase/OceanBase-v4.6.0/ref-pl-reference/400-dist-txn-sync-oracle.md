@@ -1,0 +1,30 @@
+---
+title: DIST_TXN_SYNC
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686623.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# DIST_TXN_SYNC
+
+当数据库实例之一发生故障时，可以使用此子程序同步不确定事务。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_XA.DIST_TXN_SYNC;
+```
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>OceanBase 数据库支持此过程仅做兼容使用，并无实质操作。</p>
+  </main>

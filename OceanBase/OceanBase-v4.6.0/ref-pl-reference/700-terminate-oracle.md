@@ -1,0 +1,29 @@
+---
+title: TERMINATE
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686701.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# TERMINATE
+
+用户调用 `TERMINATE` 函数用以终止对包的使用。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_RANDOM.TERMINATE
+```
+
+## 使用说明
+
+此程序不执行任何功能，尽管当前支持此程序，但已过期，不建议使用。

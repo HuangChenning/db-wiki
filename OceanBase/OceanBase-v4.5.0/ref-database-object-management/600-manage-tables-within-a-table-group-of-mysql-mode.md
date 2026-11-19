@@ -1,0 +1,189 @@
+---
+title: "管理表组内的表"
+book: "数据库对象管理"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004476756.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 管理表组内的表
+
+表加入到表组后，可以对表进行分区管理（例如，修改表的分区类型、分区个数、分区值、添加分区、删除分区等）、将表移出表组、将表迁移到其他表组等操作。
+
+## 管理表的分区
+
+### 表分区修改注意事项
+
+在修改表分区后，数据分布可能会发生变化，进而可能导致资源分配不均衡的问题。因此，建议在修改表分区时，开启租户的分区均衡，以确保资源分配的优化与均衡。
+
+有关数据负载均衡的信息，参见 [数据负载均衡概述](../../../../600.manage/350.load-balancing-manage/100.load-balancing-overview.md)。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>
+  <ul><li>在 OceanBase 数据库 V4.4.0 及之前版本升级至 V4.4.1 版本时：
+      <ul><li>定时分区均衡任务 <code>SCHEDULED_TRIGGER_PARTITION_BALANCE</code> 默认关闭（<code>enabled = 0</code>）。
+      </li><li>租户级配置项 <code>partition_balance_schedule_interval</code> 的值保持不变，分区均衡任务还是依赖租户级配置项 <code>partition_balance_scheduler_interval</code> 控制，维持 V4.4.1 之前版本的行为。
+      </li><li>用户开启定时任务 <code>SCHEDULED_TRIGGER_PARTITION_BALANCE</code> 时校验 <code>partition_balance_schedule_interval = 0</code>，否则报错 <code>OB_OP_NOT_ALLOW</code>。</li></ul>
+  </li><li>在 OceanBase 数据库 V4.4.1 版本新建的租户：
+      <ul><li>定时分区均衡任务 <code>SCHEDULED_TRIGGER_PARTITION_BALANCE</code> 默认开启（</code>enabled = 1</code>）。
+      </li><li>租户级配置项 <code>partition_balance_schedule_interval</code> 默认为 0。分区均衡的触发完全依赖定时任务以及用户手动触发。有关定时任务以及用户手动触发均衡任务的信息，参见 <a href="../../../../600.manage/350.load-balancing-manage/600.partition-balance-management/100.configure-a-scheduled-partition-balancing-task.md">配置定时分区均衡任务</a> 和 <a href="../../../../600.manage/350.load-balancing-manage/600.partition-balance-management/200.manually-trigger-a-partition-balancing-task.md">手动触发分区均衡</a>。
+      </li><li>用户设置 <code>partition_balance_schedule_interval</code> 时校验 <code>SCHEDULED_TRIGGER_PARTITION_BALANCE</code> 关闭，否则报错 <code>OB_OP_NOT_ALLOW</code>。</li></ul>
+  </li></ul>
+  </p>
+</main>
+
+### 表分区的修改规则
+
+对表组内的表进行分区管理操作前，您可以先通过视图查看当前表所属表组的 `SHARDING` 属性、表组中存在哪些表以及表组内表的分区信息，详细操作可参见 [查看表组信息](../400.manage-table-groups-of-mysql-mode/300.view-the-information-of-a-table-group-of-mysql-mode.md)。
+
+再根据查询结果，如果表组内仅有当前这张表，则可以正常进行分区管理操作，不受限制。如果表组中除了当前表还有其他表，则需要遵循以下修改规则：
+
+* 当该表所在的表组的 `SHARDING` 属性为 `NONE` 时：
+  
+  * 如果该表为非分区表，则允许非分区表改为一级分区表或二级分区表。
+
+  * 如果该表为分区表，则允许一级分区表改为二级分区表，允许二级分区表改为一级分区表，同时也允许添加或删除分区，即分区类型、分区个数、分区值修改没有限制。
+
+* 当该表所在的表组的 `SHARDING` 属性为 `PARTITION` 时：
+
+  * 如果该表为非分区表，则不允许将非分区表修改为分区表。
+
+  * 如果该表为分区表，则不允许将其修改为非分区表。
+
+    * 如果该表为一级分区表，则允许将其修改为二级分区表，并且二级分区表中的一级分区对应的分区类型、分区个数和分区值必须与表组内其他表保持一致，对二级分区表的分区类型、分区个数及分区值的定义没有限制。除了允许通过添加一级分区和删除一级分区的操作修改分区个数，不允许通过其他方式将一级分区的分区类型、分区个数、分区值修改为与表组内其他表不相同的值。
+
+    * 如果该表为二级分区表，则允许将其修改为一级分区表，且一级分区对应的分区类型、分区个数和分区值需要与表组内其他表的值保持一致。除了允许通过添加一级分区和删除一级分区的操作修改分区个数，不允许通过其他方式将一级分区的分区类型、分区个数、分区值修改为与表组内其他表不相同的值。
+
+    对于执行过添加或删除一级分区的表组，系统不会进行负载均衡，必须当表组内所有表的分区类型、分区个数、分区值等均满足 `PARTITION` 的属性要求时，才会进行负载均衡。
+
+* 当该表所在的表组的 `SHARDING` 属性为 `ADAPTIVE` 时：
+
+  * 如果该表为非分区表，则不允许将非分区表修改为分区表。
+
+  * 如果该表为分区表，则不允许将其修改为非分区表。
+
+    * 如果该表所在的表组内全是一级分区表，则不允许将该表修改为非分区表或二级分区表。同时，除了允许通过添加或删除一级分区的操作修改分区个数，不允许通过其他方式将表的分区类型、分区个数、分区值修改为与表组内其他表不相同的值。
+
+    * 如果该表所在的表组内全是二级分区表，则不允许将表修改为一级分区表。同时，除了允许通过添加或删除一级分区、添加或删除二级分区的操作修改分区个数，不允许通过其他方式将表的分区类型、分区个数、分区值修改为与表组内其他表不相同的值。
+
+    对于执行过添加或删除一级分区、添加或删除二级分区的表组，系统不会进行负载均衡，必须当表组内所有表的分区类型、分区个数、分区值等均满足 `ADAPTIVE` 的属性要求时，才会进行负载均衡。
+
+### 修改表的分区
+
+根据当前表的实际情况结合修改规则，参考以下内容，进行表分区的修改。
+
+* [修改分区方式](../300.manage-partitions-of-mysql-mode/300.modify-partition-rules-of-mysql-mode.md)
+
+* [添加分区](../300.manage-partitions-of-mysql-mode/400.add-a-partition-of-mysql-mode.md)
+
+* [删除分区](../300.manage-partitions-of-mysql-mode/500.delete-a-partition-of-mysql-mode.md)
+
+* [设置分区权重](../../../../600.manage/350.load-balancing-manage/450.balance-weight-management/100.set-the-balance-weight-for-a-table.md)
+
+* [清除分区权重](../../../../600.manage/350.load-balancing-manage/450.balance-weight-management/300.clear-the-balance-weight.md)
+
+## 将表移出表组
+
+表加入到表组后，可以将表从表组中移出，SQL 语句如下。
+
+```sql
+ALTER TABLE table_name SET TABLEGROUP '';
+```
+
+下面通过一个简单的示例进行说明。
+
+1. 假设有一个表组 `tblgroup1`，且表组内包含 `tbl1` 和 `tbl2` 两个表。
+
+   ```sql
+   SHOW TABLEGROUPS WHERE tablegroup_name = 'tblgroup1';
+   ```
+
+   查询结果：
+
+   ```shell
+   +-----------------+------------+---------------+----------+
+   | Tablegroup_name | Table_name | Database_name | Sharding |
+   +-----------------+------------+---------------+----------+
+   | tblgroup1       | tbl1       | test          | ADAPTIVE |
+   | tblgroup1       | tbl2       | test          | ADAPTIVE |
+   +-----------------+------------+---------------+----------+
+   2 rows in set
+   ```
+
+2. 将表 `tbl1` 移出表组。
+
+   ```sql
+   ALTER TABLE tbl1 SET TABLEGROUP '';
+   ```
+
+3. 再次查看表组中的表。
+
+   ```sql
+   SHOW TABLEGROUPS WHERE tablegroup_name = 'tblgroup1';
+   ```
+
+   查询结果：
+
+   ```shell
+   +-----------------+------------+---------------+----------+
+   | Tablegroup_name | Table_name | Database_name | Sharding |
+   +-----------------+------------+---------------+----------+
+   | tblgroup1       | tbl2       | test          | ADAPTIVE |
+   +-----------------+------------+---------------+----------+
+   1 rows in set
+   ```
+
+## 将表迁移到其他表组
+
+表加入到表组后，可以将表迁移到其他符合条件的表组中。
+
+将表迁移到其他表组中时，需要查看目标表组的属性及表组内表的分区信息，以确认当前表是否满足加入表组的条件。查看表组信息的详细操作请参见 [查看表组信息](../400.manage-table-groups-of-mysql-mode/300.view-the-information-of-a-table-group-of-mysql-mode.md)。
+
+* 对于 `SHARDING` 属性为 `NONE` 的表组，对待迁入的表没有任何限制，可以直接迁移到该表组。
+
+* 对于 `SHARDING` 属性为 `PARTITION` 的表组，要求待迁入的表其对应的一级分区必须与表组中所有表的一级分区的分区定义一致，包括分区类型、分区个数、分区值。表组中可以同时有一级分区表和二级分区表。
+
+  相同的分区定义具体指：
+
+  * 分区类型相同，例如，都是 Range 分区。
+  * 如果是 Hash 分区，要求引用的列数相同，并且分区个数相同。
+  * 如果是 Range 分区，要求引用的列数相同，分区数相同，Range 分割点也相同。
+
+* 对于 `SHARDING` 属性为 `ADAPTIVE`的表组，要求待迁入的表其对应的一级分区和二级分区必须与表组中所有表的一级分区和二级分区的分区定义一致，包括分区类型、分区个数、分区值。表组中必须全是一级分区表或全是二级分区表。
+
+  相同的分区定义具体指：
+
+  * 分区类型相同（例如，都是 Hash + Range 分区）。
+  * 如果是 Hash 分区，要求引用的列数相同，并且分区个数相同。
+  * 如果是 Range 分区，要求引用的列数相同，分区数相同，Range 分割点也相同。
+  * 对于二级分区，根据其分区类型，与一级分区的要求相同。
+
+将表迁移到其他表组的 SQL 语句如下。
+
+```sql
+ALTER TABLE table_name SET TABLEGROUP tablegroup_name;
+```
+
+将表 `tbl1` 迁移至表组 `tblgroup2` 的示例如下：
+
+```sql
+ALTER TABLE tbl1 SET TABLEGROUP tblgroup2;
+```
+
+## 相关文档
+
+* [关于表组](../400.manage-table-groups-of-mysql-mode/100.about-table-groups-of-mysql-mode.md)
+
+* [创建表组](../400.manage-table-groups-of-mysql-mode/200.create-a-table-group-of-mysql-mode.md)
+
+* [查看表组信息](../400.manage-table-groups-of-mysql-mode/300.view-the-information-of-a-table-group-of-mysql-mode.md)
+
+* [将表添加到表组](../400.manage-table-groups-of-mysql-mode/400.add-tables-to-a-table-group-of-mysql-mode.md)
+
+* [修改表组的 SHARDING 属性](../400.manage-table-groups-of-mysql-mode/500.modify-the-sharding-attribute-ot-a-table-group-of-mysql-mode.md)
+
+* [删除表组](../400.manage-table-groups-of-mysql-mode/700.delete-a-table-group-of-mysql-mode.md)

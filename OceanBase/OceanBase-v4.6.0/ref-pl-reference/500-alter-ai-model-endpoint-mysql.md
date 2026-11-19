@@ -1,0 +1,131 @@
+---
+title: ALTER_AI_MODEL_ENDPOINT
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686367.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# ALTER_AI_MODEL_ENDPOINT
+
+`ALTER_AI_MODEL_ENDPOINT` 过程用于修改 AI 模型对象的访问端点。
+
+## 语法
+
+```sql
+PROCEDURE alter_ai_model_endpoint(
+    IN name VARCHAR(128),
+    IN params JSON);
+```
+
+## 参数说明
+
+<table>
+  <thead>
+    <tr>
+      <th>参数</th>
+      <th>描述</th>
+      <th>类型</th>
+      <th>取值范围</th>
+      <th>是否可空</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td>AI 模型对象的访问端点的名称。</td>
+      <td>VARCHAR(128)</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td rowspan="6">params</td>
+      <td><code>ai_model_name</code>，表示由 <code>CREATE_AI_MODEL</code> 过程创建的 AI 模型对象的名称</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>url</code>，表示 AI 模型服务访问端点的完整 URL，即聊天、嵌入或重排序等功能的具体接口地址，而非基础 URL</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>access_key</code>，表示访问端点的访问密钥</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>request_model_name</code>，表示用户自定义的模型名称，例如 <code>big-m3-custom</code>，放在请求消息体里面</td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>YES，可以为空或不指定</td>
+    </tr>
+    <tr>
+      <td><code>provider</code>，表示模型供应商</td>
+      <td>JSON STRING</td>
+      <td><ul><li><code>aliyun-openAI</code>：阿里云 OpenAI</li><li><code>aliyun-dashscope</code>：阿里云 DashScope</li><li><code>deepseek</code>：DeepSeek</li><li><code>siliconflow</code>：SiliconFlow</li><li><code>hunyuan-openAI</code>：混元 OpenAI</li><li><code>openAI</code>：OpenAI</li></ul></td>
+      <td>NO</td>
+    </tr>
+    <tr>
+      <td><code>parameters</code>，表示端点的扩展参数，用于配置 <code>AI_COMPLETE</code> 和 <code>AI_EMBED</code> 函数处理多行数据时的并发批处理行为。该字段的值是 <b>JSON 字符串</b>（不是 JSON 对象），推荐使用 <code>JSON_OBJECT()</code> 函数构建参数，避免复杂的转义问题。支持的子参数见下文 <a href="#parameters-sub-params">parameters 参数说明</a>。<main id="notice" type='explain'><h4>说明</h4><p>该参数从 V5.0.1 版本开始引入。不配置时使用默认并发范围 10~100。</p></main></td>
+      <td>JSON STRING</td>
+      <td></td>
+      <td>YES，可以为空或不指定</td>
+    </tr>
+  </tbody>
+</table>
+
+### parameters 参数说明
+
+`parameters` 字段用于配置并发批处理参数。系统采用 AIMD 自适应算法，根据模型服务响应动态调整并发数，在吞吐量和稳定性之间取得平衡。
+
+| 参数 | 描述 | 类型 | 默认值 | 是否可空 |
+| --- | --- | --- | --- | --- |
+| `min_concurrency` | 并发数下限。AIMD 自适应降速时不低于此值。 | int | 10 | YES，可以为空、不指定或设为 0（表示使用默认值） |
+| `max_concurrency` | 并发数上限。初始并发数等于此值。 | int | 100 | YES，可以为空、不指定或设为 0（表示使用默认值） |
+
+参数调优说明如下：
+
+* 公有云 API（如 OpenAI/DeepSeek 等）建议 `max_concurrency` 不超过 50，避免触发限流。
+* 自建模型服务可根据算力适当放大。
+* 如果频繁出现 429 限流日志，说明 `max_concurrency` 偏高，应调低或依赖自适应降速。
+
+## 示例
+
+修改 AI 模型对象的访问端点。
+
+```sql
+CALL DBMS_AI_SERVICE.ALTER_AI_MODEL_ENDPOINT (
+  'my_model_endpoint1', '{
+    "access_key" : "sk2-xxxxxxxxxxxx",
+    "url": "https://api.deepseek.com/chat/completions"
+  }');
+```
+
+修改已有端点的并发批处理参数，通过 **JSON 对象方式（推荐使用）** 配置。
+
+```sql
+CALL DBMS_AI_SERVICE.ALTER_AI_MODEL_ENDPOINT('my_model_endpoint1',
+  JSON_OBJECT("parameters", '{"min_concurrency": 10, "max_concurrency": 80}')
+);
+```
+
+修改已有端点的并发批处理参数，通过纯 JSON 字符串方式配置，需要双重转义 `\\\"`。
+
+```sql
+CALL DBMS_AI_SERVICE.ALTER_AI_MODEL_ENDPOINT('my_model_endpoint1', '{
+  "parameters": "{\\\"min_concurrency\\\": 10, \\\"max_concurrency\\\": 80}"
+}');
+```
+
+## 相关文档
+
+* [DBMS_AI_SERVICE 子程序概览](100.dbms-ai-service-overview-mysql.md)
+* [CREATE_AI_MODEL_ENDPOINT](400.create-ai-model-endpoint-mysql.md)
+* [DROP_AI_MODEL_ENDPOINT](600.drop-ai-model-endpoint-mysql.md)

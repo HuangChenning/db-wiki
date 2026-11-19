@@ -1,0 +1,1294 @@
+---
+title: "系统变量总览"
+book: "配置项和系统变量"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500148.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# 系统变量总览
+
+本文根据系统变量的功能，详细地罗列了 OceanBase 数据库的系统变量。
+
+## Global 级别
+
+### 安全相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| [validate_password_check_user_name](300.global-system-variable/13800.validate_password_check_user_name-global.md)    | 用于设置用户密码是否可以和用户名相同。               |
+| [validate_password_length](300.global-system-variable/13900.validate_password_length-global.md)             | 用于设置用户密码最小长度。                     |
+| [validate_password_mixed_case_count](300.global-system-variable/14000.validate_password_mixed_case_count-global.md)   | 用于设置用户密码至少包含的大写字母个数以及至少包含的小写字母个数。 |
+| [validate_password_number_count](300.global-system-variable/14100.validate_password_number_count-global.md)       | 用于设置用户密码至少包含的数字个数。                |
+| [validate_password_policy](300.global-system-variable/14200.validate_password_policy-global.md) | 用于设置密码检查策略。                       |
+| [validate_password_special_char_count](300.global-system-variable/14300.validate_password_special_char_count-global.md) | 用于设置用户密码至少包含的特殊字符个数。 |
+| [ob_tcp_invited_nodes](300.global-system-variable/9700.ob_tcp_invited_nodes-global.md) | 用于设置租户的 IP 白名单，支持百分号（%） 、短横线（_） 和 IP（多个 IP 之间用逗号分隔），支持 IP 列表匹配、掩码匹配和模糊匹配。 |
+| [default_password_lifetime](300.global-system-variable/2300.default_password_lifetime-global.md) | 用于设置密码的过期时间。             |
+| [block_encryption_mode](300.global-system-variable/800.block_encryption_mode-global.md)           | 用于指定在函数 aes_encrypt 和 aes_decrypt 中使用的加密算法。   |
+| [sql_safe_updates](300.global-system-variable/11900.sql_safe_updates-global.md)                | 用于设置是否启用 MySQL 的 SQL 安全模式，默认为关闭。 |
+| [lower_case_table_names](300.global-system-variable/3600.lower_case_table_names-global.md) | 用于设置是否对大小写敏感。 |
+| super_read_only | 用于控制数据库的读写权限，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| check_proxy_users                 | 用于启用或禁用对代理用户映射的检查。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| keyring_aws_cmk_id                | 用于指定 AWS 密钥管理服务（KMS）的客户主密钥 ID。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| keyring_aws_region                | 用于指定 AWS 区域，用于密钥管理服务。其默认值为 `us-east-1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| keyring_encrypted_file_data       | 用于存储加密密钥的文件的路径。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| keyring_encrypted_file_password   | 用于加密密钥文件的密码。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| keyring_file_data                 | 用于指定文件路径，用于存储密钥。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| keyring_okv_conf_dir              | 用于指定 Oracle Key Vault 配置目录路径。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| keyring_operations                | 用于指定密钥操作模式，比如读取、写入等。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| max_connect_errors                | 用于设置最大连接错误数，超过此数后将禁止该用户连接。其默认值为 `100`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| mysql_firewall_mode               | 用于设置 MySQL 防火墙的工作模式。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| mysql_firewall_trace              | 用于启用或禁用防火墙的跟踪记录。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| mysql_native_password_proxy_users | 设置使用基础密码认证是否支持代理用户。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| net_retry_count                   | 设置网络重试的次数。其默认值为 `10`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| old_passwords                     | 控制函数使用的密码哈希方法。其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| secure_auth                       | 用于设置服务器是否使用新的密码进行安全认证行为。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| sha256_password_proxy_users       | 用于设置是否支持 SHA-256 密码认证的代理用户。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| show_compatibility_56             | 用于设置是否兼容 MySQL 5.6 版本。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| validate_password_dictionary_file | 用于指定密码验证的字典文件路径。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| auto_generate_certs               | 用于控制服务器是否在数据目录中自动生成 SSL 密钥和证书文件。其默认值为 `ON`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| disconnect_on_expired_password    | 用于设置在密码过期时是否断开连接。其默认值为 `ON`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| have_dynamic_loading              | 用于设置是否支持动态加载插件。其默认值为 `YES`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| keyring_aws_conf_file             | 用于指定 AWS 密钥环的配置文件路径。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| keyring_aws_data_file             | 用于指定 AWS 密钥环数据文件的路径。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| lower_case_file_system            | 用于指示 MySQL 是否在不区分大小写的文件系统上运行。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| max_digest_length                 | 用于设置每个会话占用的最大内存字节数，其默认值为 `1024`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndbinfo_database                  | 用于设置 NDB 信息的数据库。其默认值为 `ndbinfo`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| sha256_password_private_key_path  | 用于设置存储 SHA-256 密码认证私钥的路径。其默认值为 `private_key.pem`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| sha256_password_public_key_path   | 用于设置存储 SHA-256 密码认证公钥的路径。其默认值为 `public_key.pem`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| skip_show_database                | 用于设置是否仅允许 SHOW DATABASES 权限的用户执行 SHOW DATABASES 语句，并且该语句显示所有数据库名称。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+
+### 版本信息相关
+
+|         变量名          |                   功能描述                    |
+|-----------------------------|-------------------------------------------|
+| [version_comment](300.global-system-variable/13600.version_comment-global.md)                   | 用于查看 OBServer 节点的版本信息。                      |
+| [version](300.global-system-variable/13500.version-global.md)                           | 用于查看服务器的版本号。|
+| [ob_proxy_global_variables_version](400.session-system-variable/8700.ob_proxy_global_variables_version-session.md) | 用于设置 OBServer 节点返回给 OBproxy 所需的全局变量的最新版本信息。 |
+| [ob_enable_transmission_checksum](300.global-system-variable/7600.ob_enable_transmission_checksum-global.md) | 用于设置 obproxy 和 OBServer 节点之间是否进行数据包校验和，设置后实时生效。 |
+| [ob_compatibility_control](300.global-system-variable/6350.ob_compatibility_control-global.md) | 用于控制 MYSQL5.7、 MYSQL8.0 有兼容性冲突时的行为模式。在创建租户时指定兼容模式，且在租户创建后无法修改。|
+| [ob_compatibility_version](300.global-system-variable/6360.ob_compatibility_version-global.md) | 用于控制产品行为发生变更的功能兼容的 OceanBase 数据库版本。在创建租户时指定兼容版本，且在租户创建后无法修改。|
+| [ob_security_version](300.global-system-variable/9350.ob_security_version-global.md)| 用于控制安全功能兼容的 OceanBase 数据库版本。在创建租户时指定兼容版本，且在租户创建后无法修改。|
+| new                               | 用于设置在 MySQL 4.0 版本中是否启用某些 4.1 版本的行为，并保留以提供向后兼容性。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| version_tokens_session            | 用于设置会话级别的版本标记。其默认值为 `NULL`，表示任何服务器版本列表均匹配。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### Debug 相关
+
+|   变量名   |     功能描述 |
+|----------------|---------|
+| debug | 用于设置调试选项，其默认值为 `d:t:i:o,/tmp/mysqld.trace`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| [ob_global_debug_sync](400.session-system-variable/7800.ob_global_debug_sync-session.md) | 用于 Debug 时设置同步点，设置此变量会影响所有 session。 |
+
+
+### 读写/查询相关
+
+|    变量名     |                      功能描述                       |
+|-------------------|-------------------------------------------------|
+| [query_cache_size](300.global-system-variable/11000.query_cache_size-global.md)        | 用于设置分配给存储历史查询结果的内存，即尚未使用的内存。 |
+| [query_cache_type](300.global-system-variable/11100.query_cache_type-global.md)        | 用于查询缓存类型。 |
+| [ob_query_timeout](300.global-system-variable/9000.ob_query_timeout-global.md)        | 用于设置查询超时时间。 |
+| [net_buffer_length](300.global-system-variable/4100.net_buffer_length-global.md)       | 用于设置 OBServer 节点能接受的 SQL Query 的大小。               |
+| [read_only](300.global-system-variable/11200.read_only-global.md)           | 用于设置租户是否为只读模式。 |
+| [ob_read_consistency](300.global-system-variable/9100.ob_read_consistency-global.md) | 用于设置读一致性级别。    |
+| [ob_max_read_stale_time](300.global-system-variable/8200.ob_max_read_stale_time-global.md) | 弱读取查询的最大延迟阈值（us）。 |
+| [net_read_timeout](300.global-system-variable/4200.net_read_timeout-global.md)          | 用于中断读之前等待连接的其它数据的秒数。     |
+| [net_write_timeout](300.global-system-variable/4300.net_write_timeout-global.md)         | 用于设置中断写之前等待块写入连接的秒数。     |
+| [ob_enable_index_direct_select](300.global-system-variable/7000.ob_enable_index_direct_select-global.md)   | 用于设置是否允许用户直接查询索引表。|
+| [ob_enable_aggregation_pushdown](300.global-system-variable/6700.ob_enable_aggregation_pushdown-global.md)  | 用于设置是否允许聚合操作下压。 |
+| [ob_enable_jit](300.global-system-variable/7100.ob_enable_jit-global.md)                   | 用于设置 JIT 执行引擎模式。              |
+| [sql_throttle_network](300.global-system-variable/12200.sql_throttle_network-global.md)       | 用于指定请求排队时间，如果请求排队时间大于或等于该值，则不允许执行查询。   |
+| [parallel_servers_target](300.global-system-variable/10700.parallel_servers_target-global.md) | 用于设置每个 Server 上的大查询排队条件。  |
+| [cte_max_recursion_depth](300.global-system-variable/1950.cte_max_recursion_depth-global.md)  | 用于设置公共表表达式（CTE）的最大递归深度。服务器会终止执行任何超过此 CTE 值的操作。 |
+| [regexp_stack_limit](300.global-system-variable/11350.regexp_stack_limit-global.md)  | 用于正则表达式匹配操作的内部堆栈的最大可用内存。 |
+| [regexp_time_limit](300.global-system-variable/11360.regexp_time_limit-global.md)  | 用于正则表达式匹配操作的时间限制。 |
+| big_tables                        | 用于是否开启使用大表查询，开启后可以使用 MyISAM 大表特性。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_prune_level             | 用于控制查询优化器的行为，优化器会根据对每个表访问的行数的估计，跳过一些不必要的查询计划，从而减少查询编译时间。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_search_depth            | 用于设置优化器搜索查询执行计划的深度。其默认值为 `62`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_switch                  | 用于设置优化器的行为选项，以启用或禁用特定功能。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_trace                   | 用于启用查询优化器的跟踪功能，用于调试和分析查询执行计划。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_trace_features          | 用于指定在优化器跟踪中要包括的特性。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_trace_limit             | 用于设置优化器最大跟踪条目数。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+|  optimizer_trace_max_mem_size     | 用于设置优化器跟踪最大内存使用量。其默认值为 `16384`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_trace_offset            | 用于设置优化器跟踪的偏移量，其默认值为 `-1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| range_optimizer_max_mem_size      | 用于设置范围优化器的最大内存使用量。其默认值为 `8388608`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| rewriter_enabled                  | 用于启用或禁用查询重写功能。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| rewriter_verbose                  | 用于启用详细模式，用于调试查询重写过程。其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| show_create_table_verbosity       | 用于设置创建表时是否显示行格式。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| sql_big_selects                   | 用于是否启用大查询。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### 调度程序相关
+
+| 变量名 | 功能描述 |
+|-------|----------|
+| [event_scheduler](300.global-system-variable/2550.event_scheduler-global.md)  | 用于确定事件调度程序是否在服务器上启用和运行。 |
+
+### 副本相关
+
+|  变量名  | 功能描述 |
+|---------|----------|
+| [ob_create_table_strict_mode](300.global-system-variable/6100.ob_create_table_strict_mode-global.md)   | 用于设置建表的严格模式。 |
+| [ob_default_replica_num](300.global-system-variable/6400.ob_default_replica_num-global.md) | 用于设置每个集群中表的默认副本数。 |
+| master_info_repository                                  | 指定副本是将元数据记录到系统数据库 InnoDB 的表 mysql 中，还是作为数据目录中的文件。其默认值为 `FILE`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| replication_optimize_for_static_plugin_config           | 控制是否启用共享锁，以提高半同步复制的性能。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| replication_sender_observe_commit_only                  | 控制是否启用限制回调，以提高半同步复制的性能。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| rpl_semi_sync_slave_enabled                             | 控制是否在副本上启用半同步复制，默认值为 `OFF`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| rpl_semi_sync_slave_trace_level                         | 指定副本上半同步复制调试跟踪级别，默认值为 `32`，表示网络等待级别。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| rpl_stop_slave_timeout                                  | 指定在 STOP SLAVE 超时前需要等待的时间，单位为秒，默认值为 `31536000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| slave_checkpoint_group                                  | 设置在调用检查点操作来更新进度状态之前，多线程复制可以处理的最大事务数。其默认值为 `512`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slave_checkpoint_period                                 | 设置在通过调用检查点操作来更新多线程复制的状态之前，允许经过的最大时间，单位为毫秒。其默认值为 `300`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| slave_compressed_protocol                               | 当源和副本都支持压缩时，控制是否使用源或副本协议的压缩。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置。</p></main> |
+| slave_exec_mode                                         | 设置复制线程如何解决复制期间的冲突和错误。设置为 `IDEMPOTENT` 可以抑制重复键和未找到键的错误；设置为 `STRICT`，则不会抑制重复键和未找到键的错误。其默认值为 `STRICT`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slave_max_allowed_packet                                | 设置复制 SQL 和 I/O 线程的最大数据包大小，单位为字节。其默认值为 `1073741824`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slave_net_timeout                                       | 在副本认为连接已断开、中止读取并尝试重新连接之前，等待来自源的更多数据或心跳信号的时间，单位为秒。其默认值为 `60`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置。</p></main> |
+| slave_parallel_type                                     | 指定当开启了多线程复制时，使用哪种类型并行执行复制事务。其默认值为 `DATABASE`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slave_parallel_workers                                  | 设置并行执行复制事务的线程数，默认值为 `0`，表示禁用并行执行复制事务。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slave_pending_jobs_size_max                             | 对于多线程复制，指定其保存尚未应用的事件的工作队列的最大长度，单位为字节。其默认值为 `16777216`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| slave_preserve_commit_order                             | 对于多线程复制，控制其是否按照回放日志中的事务顺序来提交事务。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slave_rows_search_algorithms                            | 指定副本使用什么算法搜索查找相关的行。其默认值为 `TABLE_SCAN,INDEX_SCAN`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slave_sql_verify_checksum                               | 控制复制 SQL 线程是否使用从回放日志中读取的校验和来验证数据，默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slave_transaction_retries                               | 当复制 SQL 线程由于死锁或者事务执行时间超过变量 `innodb_lock_wait_timeout` 指定的值而导致执行失败时，系统自动重新执行该事务的次数。其默认值为 `10`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slave_type_conversions                                  | 控制使用基于行的复制时副本上的类型转换模式。其默认值为空，表示禁止源和副本之间的类型转换。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| sql_slave_skip_counter                                  | 设置副本需要跳过的来自源的事件数。默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| skip_slave_start                                        | 控制副本服务器在服务器启动时，是否跳过启动复制线程。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| slave_load_tmpdir                                       | 指定副本创建临时文件的目录名称，默认值为空。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| slave_skip_errors                                       |  设置复制时跳过哪些错误，默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| max_relay_log_size                                      | 指定服务器自动轮换中继日志文件的大小阈值，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| relay_log_info_repository                               | 指定副本服务器是将其应用元数据存储库作为 InnoDB 表保存在 mysql 系统数据库中，还是作为数据目录中的一个文件，默认值为 `FILE`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| relay_log_purge                                         | 对不再需要的中继日志文件，启用或禁用自动清除功能，默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| sync_relay_log                                          | 设置如何同步中继日志到中继日志文件。当该变量的值大于 0 时，MySQL 服务器会在向中继日志写入每 `sync_relay_log` 次事件后，同步中继日志到磁盘。其默认值为 `10000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| sync_relay_log_info                                     | 设置如何将应用中继日志的位置信息同步到文件或表中，设置此变量会立即对所有复制通道生效，包括正在运行的通道。其默认值为 `10000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| sync_master_info                                  | 该变量对副本的影响取决于副本的 `master_info_repository` 是设置为 FILE 还是 TABLE。其默认值为 `10000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| init_slave                                        | 该变量类似于 init_connect，用于指定每次复制 SQL 线程启动时由从服务器执行的字符串。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| log_slow_slave_statements                         | 如果复制的从服务器开启了慢查询日志，是否将复制线程执行的慢 SQL 记录到慢查询日志。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| report_host                                       | 副本注册期间报告给源的主机名或 IP 地址。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| report_password                                   | 副本注册期间报告给源的复制用户账户的密码。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| report_port                                       | 副本注册期间报告给源的用于连接到副本的 TCP/IP 端口号。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| report_user                                       | 副本注册期间报告给源的账户的用户名。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| relay_log                                         | 中继日志的名称。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| relay_log_basename                                | 中继日志的名称和完整路径。其默认值为 `/usr/local/mysql/data/obrd-relay-bin`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| relay_log_index                                   | 中继日志索引文件的名称。其默认值为 `/usr/local/mysql/data/obrd-relay-bin.index`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| relay_log_info_file                               | 记录有关中继日志信息的文件的名称。其默认值为 `relay-log.info`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                  |
+| relay_log_recovery                                | 如果启用该变量，可以使从服务器启动后立即启用中继日志的自动恢复。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| relay_log_space_limit                             | 所有中继日志可使用的最大容量，单位为字节。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+
+
+### 复制源相关
+
+| 变量名                                                   | 功能描述                                                      |
+|---------------------------------------------------------|---------------------------------------------------------------|
+| rpl_semi_sync_master_enabled                            | 控制源上是否启用半同步复制。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| rpl_semi_sync_master_timeout                            | 指定源在提交后等待副本确认的时间，单位为毫秒。其默认值为 `10000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| rpl_semi_sync_master_trace_level                        | 指定源上的半同步复制调试跟踪级别，默认值为 `32`，表示网络等待级别。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| rpl_semi_sync_master_wait_for_slave_count               | 指定源在继续之前，每个事务必须接收的副本确认数。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| rpl_semi_sync_master_wait_no_slave                      | 控制即使副本数下降到少于变量 `rpl_semi_sync_master_wait_for_slave_count` 配置的数量时，源是否也会等待超时（变量 `rpl_semi_sync_master_timeout` 设置的时间）。默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| rpl_semi_sync_master_wait_point                         | 指定半同步源在向提交事务的客户端返回状态之前，等待副本确认事务接收的时间点。其默认值为 `AFTER_SYNC`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### GTID 功能相关
+
+| 变量名   | 功能描述  |
+|----------|----------|
+|  enforce_gtid_consistency        | 用于设置是否使用 GTID 安全记录的语句来强制执行 GTID 一致性其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+|  gtid_executed_compression_period | 用于设置服务器对 `gtid_executed` 值进行压缩的频率，其默认值为 `1000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+|  gtid_mode                        | 用于控制是否启用基于 GTID 的日志记录以及日志事务类型，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+|  gtid_purged                      | 用于设置由服务器上已提交但服务器上的任何二进制日志文件中不存在的所有事务的 GTID 组成。其默认值为 `空值`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### 回收站相关
+
+|     变量名     |      功能描述      |
+|----------|----------------|
+| [recyclebin](300.global-system-variable/11300.recyclebin-global.md) | 用于设置是否开启回收站功能。 |
+| [ob_enable_truncate_flashback](300.global-system-variable/7700.ob_enable_truncate_flashback-global.md)    | 用于设置是否启用表截断的闪回。 |
+
+### 缓存相关
+
+|          变量名           |             功能描述             |
+|-------------------------------|------------------------------|
+| [ob_enable_pl_cache](300.global-system-variable/6560.ob_enable_pl_cache.md)                | 用于控制 PL cache 模块是否开启。        |
+| [ob_enable_plan_cache](300.global-system-variable/7200.ob_enable_plan_cache-global.md)                | 用于设置是否打开 Plan Cache。         |
+| [ob_plan_cache_percentage](300.global-system-variable/8600.ob_plan_cache_percentage-global.md)            | 用于设置计划缓存可使用内存占租户内存的百分比。     |
+| [ob_plan_cache_evict_high_percentage](300.global-system-variable/8400.ob_plan_cache_evict_high_percentage-global.md) | 用于设置触发计划缓存淘汰的内存大小占内存上限绝对值的百分比。 |
+| [ob_plan_cache_evict_low_percentage](300.global-system-variable/8500.ob_plan_cache_evict_low_percentage-global.md)  | 用于设置停止淘汰计划缓存的内存大小占内存上限绝对值的百分比。 |
+| [ob_bnl_join_cache_size](300.global-system-variable/6100.ob_bnl_join_cache_size-global.md)          | 用于设置 Batch Nested Loop Join（BNLJ）操作中单次缓存的数据量。 |
+| stored_program_cache          | 用于设置存储过程和函数的缓存数量，其默认值为 `256`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+|  table_open_cache_instances   | 用于设置打开表缓存实例数，其默认值为 `16`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+
+### 函数相关
+
+|    变量名     |   功能描述     |
+|--------------|----------------|
+| [interactive_timeout](300.global-system-variable/3200.interactive_timeout-global.md)       | 用于设置服务器关闭交互式连接前等待活动的秒数。  |
+| [wait_timeout](300.global-system-variable/13700.wait_timeout-global.md)              | 用于设置服务器关闭非交互连接之前等待活动的秒数。 |
+| [group_concat_max_len](300.global-system-variable/2800.group_concat_max_len-global.md)    | 用于设置允许的 `GROUP_CONCAT()` 函数结果的最大长度。         |
+
+### 会话相关
+
+| 变量名   | 功能描述  |
+|----------|----------|
+|  session_track_gtids            | 用于控制服务器是否将 GTID 返回给客户端，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+|  session_track_transaction_info | 用于控制服务器是否跟踪当前会话中的事务状态，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### InnoDB 存储引擎相关
+
+| 变量名 |  功能描述 |
+|-------|-----------|
+| innodb_change_buffering_debug   | 用于设置更改 InnoDB 缓冲区的调试级别，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| innodb_compress_debug   | 用于调整和控制压缩行为的调试级别，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>|
+| innodb_disable_resize_buffer_pool_debug   | 用于是否开启 InnoDB 缓冲池的大小调整，其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_fil_make_page_dirty_debug   | 用于在调试 InnoDB 中弄脏指定的页面数，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_limit_optimistic_insert_debug   | 用于设置每个 B-tree 页面的记录数，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_merge_threshold_set_all_debug   | 用于设置索引页面的页满百分比，其默认值为 `50`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_saved_page_number_debug   | 用于设置在调试 InnoDB 中保存的页码数，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| [innodb_strict_mode](300.global-system-variable/3100.innodb_strict_mode-global.md)   | 用于设置特定语法的 SQL 检查模式。     |
+| [innodb_stats_persistent](300.global-system-variable/3130.innodb_stats_persistent-global.md)   | 用于控制是否将 InnoDB 索引统计信息持久化到磁盘上。 |
+| innodb_trx_purge_view_update_only_debug   | 用于控制事务清理过程中仅更新清理视图的调试级别，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_trx_rseg_n_slots_debug   | 用于指定事务回滚段（transaction rollback segment）中的槽数量。每个槽用于存储事务的回滚信息，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_replication_delay                                | 当达到变量 `innodb_replication_delay` 配置的值时，复制服务器上复制线程的延长时间，单位为毫秒。其默认值为 `0`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_force_recovery                                   | 崩溃恢复模式，用于修复损坏的 InnoDB 存储引擎的数据。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_flush_log_at_timeout                             | 指定间隔多久刷新一次日志，单位为秒，默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_flush_log_at_trx_commit                          | 用于控制提交操作严格遵守 ACID 特性和更高性能之间的平衡，默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_log_checkpoint_now                               | 启用该调试选项可以强制 InnoDB 写入一个检查点，默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_log_checksums                                    | 启用或禁用 Redo 日志页的校验和，默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| innodb_log_compressed_pages                             | 控制是否在 Redo 日志中保存压缩后的页，默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| innodb_log_write_ahead_size                             | 指定 Redo 日志的预写块大小，单位为字节，默认值为 `8192`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_max_undo_log_size                                | 指定 undo 表空间的阈值大小，默认值为 `1073741824`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_online_alter_log_max_size                        | 指定在对表进行在线 DDL 操作期间所使用的临时日志文件的大小上限，单位为字节，默认值为 `134217728`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| innodb_undo_log_truncate                                | 当该变量启用时，超过变量 `innodb_max_undo_log_size` 定义的阈值的 undo 表空间将被标记为截断。其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| innodb_undo_logs                                        | 指定 InnoDB 所使用的回滚段数，默认值为 `128`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| innodb_rollback_on_timeout      | 用于设置事务超时是否中止并回滚整个事务，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_api_disable_rowlock      | 用于设置 InnoDB memcached 执行 DML 操作时是否禁用行锁，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_autoinc_lock_mode        | 用于生成自动增量值的锁定模式，其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_read_only                | 用于是否以只读模式启动 InnoDB。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_api_bk_commit_interval   | 用于设置 InnoDB memcached 接口的自动提交的连接频率，其默认值为 `5`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_api_trx_level            | 用于控制 memcached 接口处理查询的事务隔离级别，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_support_xa      | 用于是否启用 InnoDB 支持 XA 事务。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+|  innodb_sync_debug     | 用于设置存储引擎是否启用同步调试检查，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_adaptive_flushing         | 用于指定是否根据工作负载动态调整缓冲池中脏页的刷新速率，其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_adaptive_flushing_lwm     | 用于设置自适应刷新的重做日志容量的最低百分比，其默认值为 `10`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_adaptive_hash_index       | 用于是否启用 InnoDB 自适应哈希索引机制，其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_adaptive_max_sleep_delay  | 用于设置根据当前工作负载 InnoDB 自动调整的延迟时间，其默认值为 `150000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_autoextend_increment      | 用于设置 InnoDB 数据文件扩展大小的增量（单位为 MB），其默认值为 `64`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_background_drop_list_empty| 用于设置在后台任务列表为空时执行某些操作，如删除表或索引。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_buffer_pool_dump_at_shutdown | 用于设置 InnoDB 在关闭时是否将缓冲池内容转储到磁盘，以便下次启动时快速恢复。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_buffer_pool_dump_now      | 用于设置是否实时转储 InnoDB 缓冲池中的内容，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_buffer_pool_dump_pct      | 用于指定每个缓冲池中转储内容的百分比，其默认值为 `25`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_buffer_pool_filename      | 用于设置存储时缓存池中生成的表空间 ID 和页面 ID 列表的文件的名称的格式，其默认值为 `ib_buffer_pool`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_buffer_pool_load_abort    | 用于设置是否终止正在进行的缓冲池加载操作，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_buffer_pool_load_now      | 用于设置是否立即加载先前转储的缓冲池内容，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_buffer_pool_size          | 用于设置 InnoDB 缓冲池的大小，其默认值为 `134217728`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_change_buffer_max_size    | 用于设置 InnoDB 变更缓冲区最大占用缓冲池的百分比，其默认值为 `25`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_change_buffering          | 用于配置 InnoDB 的变更缓冲的缓冲策略，例如插入、删除等操作。其默认值为 `all`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_checksum_algorithm        | 用于指定生成和验证存储在 InnoDB 表空间的磁盘块中的校验和，其默认值为 `crc32`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_cmp_per_index_enabled     | 用于启用或禁用每个索引的压缩数据统计信息的收集，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_commit_concurrency        | 用于设置能够同时执行提交操作的最大线程数，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_compression_failure_threshold_pct| 用于设置表压缩失败率的阈值百分比，其默认值为 `5`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_compression_level         | 用于指定 InnoDB 压缩表和索引的 zlib 压缩级别，其默认值为 `6`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_compression_pad_pct_max   | 用于指定每个压缩页中可以保留为可用空间的最大百分比，其默认值为 `50`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_concurrency_tickets       | 用于设置 InnoDB 的并发线程数，其默认值为 `5000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_default_row_format        | 用于设置 InnoDB 表和临时表的默认行格式，其默认值为 `DYNAMIC`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_disable_sort_file_cache   | 用于是否禁用合并排序临时文件的系统缓存。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_file_format               | 用于设置表文件空间启用的 InnoDB 文件格式。其默认值为 `Barracuda`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_file_format_max           | 用于设置系统表空间中的文件格式标签，其默认值为 `Barracuda`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_file_per_table            | 用于设置是否在系统表空间中创建表，其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_fill_factor               | 用于设置排序索引构建期间填充的每个 B 树页面上的空间百分比，其默认值为 `100`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_flush_neighbors           | 用于指定从 InnoDB 缓冲池刷新页面时是否还会刷新同一范围内的其他脏页，其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_flush_sync                | 用于控制 InnoDB 是否在每次写入数据时立即将数据写入磁盘，其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_flushing_avg_loops        | 用于控制 InnoDB 在写入数据时的平均循环数，其默认值为 `30`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_lru_scan_depth            | 用于指定每个缓冲池实例中页面清理器线程扫描缓冲池 LRU 页面列表以查找要刷新的脏页的深度，其默认值为 `1024`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_max_dirty_pages_pct       | 用于设置 InnoDB 的最大缓冲区页面异常比例，其默认值为 `75`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_max_dirty_pages_pct_lwm   | 用于启用预刷新的脏页最低百分比，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_max_purge_lag             | 用于设置事务提交后到被完全清除的最大延迟时间，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_max_purge_lag_delay       | 用于指定当 `innodb_max_purge_lag` 阈值被超过时，延迟执行 INSERT、UPDATE 和 DELETE 操作的最大延迟时间（单位为 us），其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ignore_builtin_innodb            | 用于设置是否忽略内置的 InnoDB 存储引擎，其默认值为 `NO`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_buffer_pool_chunk_size    | 用于设置 InnoDB 缓存池分块大小，其默认值为 `134217728`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_buffer_pool_instances     | 用于设置 InnoDB 缓存池实例数，其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_buffer_pool_load_at_startup | 用于设置启动时是否自动加载缓存池，其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_checksums                 | 用于设置 InnoDB 是否对从磁盘读取的所有表使用校验和校验，其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_doublewrite               | 用于设置 InnoDB 是否将所有数据存储两次，首先存储到双写缓冲区，然后存储到实际的数据文件。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_file_format_check         | 用于设置是否启用 InnoDB 检查系统表中的文件格式标记，其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_flush_method              | 用于设置将数据刷新到 InnoDB 数据文件和日志文件的方法，其默认值为 `NULL`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_force_load_corrupted      | 用于设置是否在 InnoDB 在启动时加载标记为损坏的表，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_page_size                 | 用于指定 InnoDB 表空间的页面大小，其默认值为 `16384`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_version                   | 用于设置 InnoDB 版本号，其默认值为 `5.7.38`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| information_schema_stats_expiry       | 用于设置服务器从存储引擎获取数据并替换缓存中数据的秒数，其默认值为 `86400`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| low_priority_updates      | 用于设置是否控制 INSERT、UPDATE、DELETE 和 REPLACE 语句的优先级。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_error_count      | 用于设置服务器能够存储在诊断上下文中的错误、警告和通知的最大数量，其默认值为 `64`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_insert_delayed_threads      | 用于设置执行 INSERT DELAYED 语句的最大线程数，其默认值为 `20`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_monitor_disable                            | 该变量作为开关，控制禁用哪些指标计数器。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| innodb_monitor_enable                             | 该变量作为开关，控制启用哪些指标计数器。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| innodb_monitor_reset                              | 该变量作为开关，控制将哪些指标计数器的计数值重置为 0。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                   |
+| innodb_monitor_reset_all                          | 该变量作为开关，控制将哪些指标计数器的所有值（最大值、最小值等）重置为 0。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| innodb_old_blocks_pct                             | 指定旧数据块子列表在 InnoDB 缓冲池中的近似百分比。其默认值为 `37`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| innodb_old_blocks_time                            | 指定在第一次访问后，插入旧子列表的块必须保留多久的时间，然后才能移动到新子列表，单位为毫秒。其默认值为 `1000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| innodb_purge_batch_size                           | 指定一次性从历史列表中解析和处理的 undo 日志页面的数量。其默认值为 `300`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| innodb_purge_rseg_truncate_frequency              | 控制清除回滚段的频率，即清除系统每调用多少次就释放一次回滚段。其默认值为 `128`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>      |
+| innodb_random_read_ahead                          | 使用启用随机预读技术来优化 InnoDB I/O。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| innodb_read_ahead_threshold                       | 控制 InnoDB 存储引擎的线性预读行为。其默认值为 `56`，表示 InnoDB 必须从一个区段顺序读取至少 56 页，以启动对下一个区段的异步读取。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                 |
+| innodb_rollback_segments                          | 指定用于生成 Undo 记录的事务的回滚段数量。其默认值为 `128`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| innodb_spin_wait_delay                            | 每次自旋锁等待的时间间隔。其默认值为 `6`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| innodb_status_output                              | 启用或禁用标准 InnoDB 监视器的定期输出。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| innodb_status_output_locks                        | 启用或禁用 InnoDB 锁监控。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| innodb_sync_spin_loops                            | 在一个 InnoDB 互斥锁被释放之前，一个线程等待的次数，超过该值线程就会被挂起。其默认值为 `30`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_fast_shutdown                              | InnoDB 引擎的关闭模式。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| innodb_io_capacity                                | InnoDB 对后台任务每秒可以执行的 IOPS 数的近似值。其默认值为 `200`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| innodb_io_capacity_max                            | 在紧急情况下，后台任务每秒可以执行的最大 IOPS 数。其默认值为 `2000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| innodb_thread_concurrency                         | InnoDB 内部允许的最大线程数。其默认值为 `0`，表示无限制。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                   |
+| innodb_thread_sleep_delay                         | InnoDB 线程在被加入 InnoDB 等待队列之前休眠的时间，单位为微秒。其默认值为 `10000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>      |
+| innodb_adaptive_hash_index_parts                  | 指定自适应哈希索引搜索系统的分区数。其默认值为 `8`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_numa_interleave                            | 是否启用 NUMA 交错内存策略来分配缓冲池内存。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| innodb_open_files                                 | 指定一次可以打开的最大文件数。其默认值为 `2000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| innodb_page_cleaners                              | 刷新缓冲池脏页的线程数。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| innodb_purge_threads                              | 用于清除操作的后台线程数。其默认值为 `4`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| innodb_read_io_threads                            | 执行读取操作时的 I/O 线程数。其默认值为 `4`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| innodb_sync_array_size                            | 指定互斥体/锁等待数组的大小。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| innodb_use_native_aio                             | 是否使用 Linux 异步 I/O 子系统。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| innodb_write_io_threads                           | 执行写入操作的 I/O 线程数。其默认值为 `4`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| innodb_api_enable_binlog                          | 是否允许将 InnoDB memcached 插件与 MySQL binlog 一起使用。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| innodb_locks_unsafe_for_binlog                    | 该变量会影响 InnoDB 如何使用间隙锁定进行搜索和索引扫描。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| innodb_log_buffer_size                            | 指定 InnoDB 事务日志缓存的大小，单位为字节。其默认值为 `16777216`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| innodb_log_files_in_group                         | 日志组中的日志文件数。其默认值为 `2`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| innodb_log_file_size                              | 日志组中每个日志文件的大小，单位为字节。其默认值为 `50331648`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| innodb_log_group_home_dir                         | 指定 InnoDB Redo 日志的目录路径。其默认值为 `./`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| innodb_undo_directory                             | 指定 InnoDB 创建的 undo 表空间的目录。其默认值为 `./`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| innodb_undo_tablespaces                           | 指定 InnoDB 可使用的 undo 表空间的个数。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| default_tmp_storage_engine  | 用于指定默认的临时表存储引擎。其默认值为 `InnoDB`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。  </p></main> |
+| innodb_tmpdir               | 用于指定 InnoDB 用于存储临时文件的目录。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。  </p></main> |
+| mecab_rc_file | 指定 MeCab 的配置文件路径。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+| innodb_temp_data_file_path  | 指定 InnoDB 用于临时数据文件的存储路径。其默认值为 `ibtmp1:12M:autoextend`，表示 InnoDB 将使用名为 ibtmp1 的临时数据文件，初始大小为 12MB，并且该文件会根据需要自动扩展，以存储额外的临时数据。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+| innodb_data_file_path       | 指定 InnoDB 数据文件的存储路径和文件名，其默认值为 `ibdata1:12M:autoextend`，表示 InnoDB 将使用名为 ibtmp1 的临时数据文件，初始大小为 12MB，并且该文件会根据需要自动扩展，以存储额外的临时数据。。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+| innodb_data_home_dir        | 设置 InnoDB 数据文件的根目录。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+| delayed_insert_limit             | 用于限制使用 INSERT DELAYED 选项的插入操作数量。其默认值为 `100`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| delayed_insert_timeout           | 用于设置延迟插入超时时间，超过此时间的插入将被放弃。其默认值为 `300`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| delayed_queue_size               | 用于设置延迟插入队列的大小。其默认值为 `1000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| eq_range_index_dive_limit        | 用于控制优化器在处理等值范围查询时是否进行索引潜水（index dive）。其默认值为 `200`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| innodb_stats_auto_recalc         | 用于开启或关闭自动 recalculation 的选项。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### 临时文件相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| max_tmp_tables                  | 限制用户会话可以同时持有的临时表的最大数量。其默认值为 `32`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。  </p></main> |
+
+### 集群相关
+
+| 变量名 |  功能描述 |
+|-------|-----------|
+| [ob_compatibility_mode](300.global-system-variable/6300.ob_compatibility_mode-global.md)   | 用于指定租户的兼容模式。     |
+| [ob_route_policy](300.global-system-variable/9300.ob_route_policy-global.md)  | 用于设置 OBServer 节点内部选择数据副本的路由策略。    |
+| [performance_schema](300.global-system-variable/10800.performance_schema-global.md)       | 用于向客户端声明是否支持 Performance 信息的查询，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 8.0，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| [resource_manager_plan](300.global-system-variable/11400.resource_manager_plan-global.md)   | 用于激活资源管理计划。指定不同计划，会使用不同 CPU 的额度来限定资源组下的用户活动。 |
+| [license](300.global-system-variable/3500.license-global.md)   | 用于查看 license 的类型。     |
+| [server_uuid](300.global-system-variable/14400.server_uuid-global.md)               | 用于查看 OBServer 节点 UUID。              |
+| [default_storage_engine](300.global-system-variable/2350.default_storage_engine-global.md)               | 用于查看 OBServer 节点的默认存储引擎。  |
+
+### 目录路径相关
+
+| 变量名 |        功能描述         |
+|------------|---------------------|
+| [datadir](300.global-system-variable/2100.datadir-global.md)          | 用于查看数据存储的本地磁盘路径。    |
+| [plugin_dir](300.global-system-variable/10900.plugin_dir-global.md)       | 用于查看存放插件 DLL 的路径。   |
+| [secure_file_priv](300.global-system-variable/11500.secure_file_priv-global.md) | 控制导入或导出到文件时可以访问的路径。 |
+| [ob_enable_hash_group_by](300.global-system-variable/6600.ob_enable_hash_group_by-global.md)  | 用于设置是否打开 Hash Group by 的路径。 |
+
+### MyISAM 存储引擎相关
+
+| 变量名   | 功能描述  |
+|----------|----------|
+| skip_external_locking      | 用于是否禁用 MyISAM 表的外部锁定机制。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| myisam_mmap_size      | 用于内存映射压缩 MyISAM 文件的最大内存量，其默认值为 `18446744073709551615`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+
+### 内存相关
+
+|          变量名          |               功能描述               |
+|------------------------------|----------------------------------|
+| [ob_sql_work_area_percentage](300.global-system-variable/9500.ob_sql_work_area_percentage-global.md)        | 用于 SQL 执行的租户内存百分比限制。             |
+| [ob_sql_audit_percentage](300.global-system-variable/9400.ob_sql_audit_percentage-global.md)            | 用于设置 SQL Audit 内存上限占当前租户内存的百分比。  |
+| [ob_reserved_meta_memory_percentage](300.global-system-variable/9200.ob_reserved_meta_memory_percentage-global.md) | 用于设置租户预留内存的比例，主要存储 Meta 相关的结构信息。 |
+| [ob_temp_tablespace_size_percentage](300.global-system-variable/9800.ob_temp_tablespace_size_percentage-global.md) | 用于租户磁盘中临时表空间大小的百分比限制。            |
+| range_alloc_block_size               | 用于设置范围优化时分配的块的大小。其默认值为 `4096`，单位为字节。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### NDB 存储引擎相关
+
+| 变量名                                            | 功能描述                                                      |
+|---------------------------------------------------|---------------------------------------------------------------|
+| ndb_allow_copying_alter_table                     | 是否允许 `ALTER TABLE` 语句和其他 DDL 语句对表使用复制操作。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>         |
+| ndb_autoincrement_prefetch_sz                     | 指定自增值的预取数量，该值可以影响自增列的性能和并发访问的能力。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| ndb_blob_read_batch_bytes                         | 配置 NDB Cluster 中批量读取 BLOB 数据的大小，单位为字节。其默认值为 `65536`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>       |
+| ndb_blob_write_batch_bytes                        | 配置 NDB Cluster 中批量写入 BLOB 数据的大小，单位为字节。其默认值为 `65536`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| ndb_cache_check_time                              | 指定在每个 NDB 节点上检查缓存是否需要刷新的时间间隔，单位为毫秒。其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_clear_apply_status                            | 指定是否清除应用状态。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndb_data_node_neighbour                           | 定义数据节点的邻居关系。其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_default_column_format                         | 定义表默认的列格式，是以固定长度格式存储还是以可变长度格式存储。其默认值为 `FIXED`，表示以固定长度格式存储。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_deferred_constraints                          | 控制是否延迟对表进行约束检查，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndb_distribution                                  | 指定 NDB 表的默认分布方式，是以哈希键值进行分区还是以线性哈希进行分区。其默认值为 `KEYHASH`，表示使用哈希键值分区。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_eventbuffer_free_percent                      | 指定 NDB Cluster 事件缓存中的空闲空间百分比。其默认值为 `20`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_eventbuffer_max_alloc                         | 指定事件缓存最大可分配的内存大小，单位为字节。其默认值为 `0`，表示无限制。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_extra_logging                                 | 用于在 MySQL 错误日志中记录指定的 NDB 存储引擎的信息。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_force_send                                    | 是否强制立即将缓存发送到 NDB，无需等待其他线程。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| ndb_fully_replicated                              | 确定新表是否完全复制。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                    |
+| ndb_index_stat_enable                             | 是否使用 NDB 索引统计信息收集功能。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_index_stat_option                             | 指定 NDB 索引统计信息生成的选项。其默认值为 `loop_checkon=1000ms,loop_idle=1000ms,loop_busy=100ms,update_batch=1,read_batch=4,idle_batch=32,check_batch=32,check_delay=1m,delete_batch=8,clean_delay=0,error_batch=4,error_delay=1m,evict_batch=8,evict_delay=1m,cache_limit=32M,cache_lowpct=90`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| ndb_join_pushdown                                 | 控制是否启用存储引擎中的连接下推优化功能。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_log_binlog_index                              | 控制是否将 epochs 到 binlog 中位置的映射插入到 ndb_binlog_index 表中。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>        |
+| ndb_log_empty_epochs                              | 控制是否将未更改的 epoch 事务写入 binlog 中。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_log_empty_update                              | 控制是否将未更改的 update 事务写入 binlog 中。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                 |
+| ndb_log_exclusive_reads                            | 确定是否使用 Exclusive 锁来记录主键的读取。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>            |
+| ndb_log_update_as_write                            | 控制源上的更新是以更新（OFF）还是写入（ON）的方式写入 binlog 中。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                   |
+| ndb_log_update_minimal                            | 控制 NDB Cluster 的日志记录行为。值为 `ON`，表示 NDB Cluster 仅记录更新操作的最小化信息；值为 `OFF`，表示 NDB Cluster 会记录整个行的更改。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| ndb_log_updated_only                              | 控制 Mysqld 在将更新写入 binlog 时，是只写入更新的行还是写入完整行。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndb_optimization_delay                            | 指定在 NDB 表上使用 OPTIMIZE TABLE 语句时，每组行之间等待的时间，单位为微秒。其默认值为 `10`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndb_read_backup                                   | 指定是否允许从之后创建的任何 NDB 表的任意片段副本中读取数据。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_recv_thread_activation_threshold              | 指定接收线程的激活阈值。其默认值为 `8`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_recv_thread_cpu_mask                          | 指定接收线程运行的 CPU 掩码。其默认值为空字符串。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_report_thresh_binlog_epoch_slip               | 指定在报告 binlog 时间戳跳跃之前，允许的最大跳跃大小。其默认值为 `10`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndb_report_thresh_binlog_mem_usage                | 指定在发送报告前，binlog 剩余可用内存的百分比阈值，即当 binlog 的剩余可用内存低于该值时，系统将会发送报告。其默认值为 `10`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_row_checksum                                  | 指定表行的校验和值。值为 `1` 时，表示会计算并保存每行数据的校验和值；值为 `0` 时，表示不进行表行数据的校验和检测。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndb_show_foreign_key_mock_tables                  | 是否显示外键依赖关系的模拟表。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| ndb_slave_conflict_role                           | 指定该节点在循环复制（主-主）设置中的角色。其默认值为 `NONE`，表示未定义或未配置。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_use_exact_count                               | 指定是否强制 NDB 在 `SELECT count（*）` 查询计划期间使用记录计数来加速此类查询。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_use_transactions                              | 控制是否启用 NDB 事务支持。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>      |
+| ndbinfo_max_bytes                                 | 仅用于测试和调试。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndbinfo_max_rows                                  | 仅用于测试和调试。其默认值为 `10`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndbinfo_offline                                   | 是否将 `ndbinfo` 数据库置为离线状态。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndbinfo_show_hidden                               | 是否在 MySQL 客户端中显示 `ndbinfo` 数据库的底层内部表。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| server_id_bits                                    | 在 32 位 server_id 中实际标识服务器的最低有效位数。其默认值为 `32`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| ndbinfo_database                    | 用于指定用于 NDB 信息的数据库。其默认值为 `ndbinfo`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndbinfo_table_prefix                | 用于设置 NDB 信息表的前缀。其默认值为 `ndb$`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndbinfo_version                     | 用于设置 NDB 信息表的版本。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_batch_size                      | 用于设置 NDB 的批处理大小，其默认值为 `32768`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_cluster_connection_pool         | 用于设置 NDB 集群的连接池大小。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_cluster_connection_pool_nodeids | 用于指定要连接的 NDB 节点的 ID。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_log_apply_status                | 用于设置 NDB 日志应用状态。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_log_bin                         | 设置 NDB 是否启用二进制日志。其默认值为 `ON`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_log_fail_terminate              | 设置在日志故障时是否终止操作。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_log_orig                        | 用于是否保留原始日志数据。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_log_transaction_id              | 用于记录 NDB 日志中的事务 ID。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_optimized_node_selection        | 用于启用优化以选择事务节点。其默认值为 `3`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| Ndb_system_name                     | 用于指定 NDB 系统的名称。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_use_copying_alter_table         | 用于设置在 NDB 中使用复制的 ALTER TABLE 操作。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_version                         | 用于设置 NDB 存储引擎的版本。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_version_string                  | 用于设置 NDB 存储引擎的版本字符串。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_wait_connected                  | 用于设置是否在连接时阻塞等待。其默认值为 `30`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_wait_setup                      | 用于设置是否在 NDB 设置时阻塞等待。其默认值为 `30`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| ndb_batch_size                    | 用于设置 NDB 的批处理大小，其默认值为 `32768`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+
+### 权限相关
+
+|   变量名   |                 功能描述                  |
+|----------------|---------------------------------------|
+| [activate_all_roles_on_login](300.global-system-variable/200.activate_all_roles_on_login-global.md)     | 用于控制在登录时是否默认自动启用所有 Roles。  |
+| [automatic_sp_privileges](300.global-system-variable/650.automatic_sp_privileges-global.md)     | 用于设置在存储过程中是否被自动授予 ALTER 和 EXECUTE 的权限。  |
+
+### 全文索引相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| innodb_ft_enable_diag_print     | 用于启用或禁用 InnoDB 全文索引的调试输出。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。  </p></main> |
+| innodb_ft_num_word_optimize     | 规定在进行 OPTIMIZE TABLE 操作时，需要操作的最小分词个数。其默认值为 `2000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。  </p></main> |
+| innodb_ft_result_cache_limit    | 用于设置 InnoDB 全文索引结果缓存的大小。其默认值为 `2000000000`，单位为字节。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。  </p></main> |
+| innodb_ft_server_stopword_table | 用于设置 InnoDB 全文索引的服务器停用词表。其默认值为 `NULL`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。  </p></main> |
+| innodb_optimize_fulltext_only   | 用于控制 OPTIMIZE TABLE 语句在包含 FULLTEXT 索引的 InnoDB 表上的行为。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。  </p></main> |
+| innodb_ft_cache_size            | 设置 InnoDB 全文索引缓存的大小。其默认值为 `8000000`，单位为字节。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+| innodb_ft_sort_pll_degree       | 用于全文索引排序的并行线程数，其默认值为 `2`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+| innodb_ft_total_cache_size      | 设置 InnoDB 全文索引的总缓存大小，其默认值为 `640000000`，单位为字节。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+| ft_stopword_file            | 用于指定停用词处理的文件路径。其默认值为 `built-in`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+
+
+### Runtime Filter 相关
+
+|  变量名 | 功能描述 |
+|--------|---------|
+| [runtime_filter_type](300.global-system-variable/16100.runtime_filter_type-global.md) | 用于设置租户级别的 Runtime Filter 类型。 |
+| [runtime_filter_wait_time_ms](300.global-system-variable/16200.runtime_filter_wait_time_ms-gloabl.md) | 用于设置 Runtime Filter 的最大等待时间。 |
+| [runtime_filter_max_in_num](300.global-system-variable/16300.runtime_filter_max_in_num-global.md) | 用于设置 Runtime In Filter 的 NDV （某个列中不同值的个数）个数。 |
+| [runtime_bloom_filter_max_size](300.global-system-variable/16400.runtime_bloom_filter_max_size-global.md) | 用于设置 Runtime Bloom Filter 的最大使用内存，单位为字节。|
+
+### 时区和日期相关
+
+|    变量名        |     功能描述         |
+|-----------------|----------------------------------------|
+| [lc_time_names](300.global-system-variable/3400.lc_time_names-global.md)             |   用于控制显示日期和月份名称和缩写的语言。            |
+| [time_zone](300.global-system-variable/12600.system_time_zone-global.md)             | 用于设置当前租户会话使用的时区，支持 `'+08:00'` 的 Offset 形式和 `Asia/Shanghai` 的地域形式取值。         |
+| [system_time_zone](300.global-system-variable/12600.system_time_zone-global.md)      | 用于设置服务器机器系统时区。                         |
+| [error_on_overlap_time](300.global-system-variable/2500.error_on_overlap_time-global.md) | 用于设置夏令时重叠区时间发生歧义时是否作报错处理。              |
+| [nls_territory](300.global-system-variable/5800.nls_territory-global.md)         | 表示数据库国际化支持中的当前地域，与 `nls_language` 结合使用。   |
+| [nls_date_language](300.global-system-variable/4900.nls_date_language-global.md)     | 表示数据库国际化支持中的日期默认语言。        |
+| [nls_calendar](300.global-system-variable/4400.nls_calendar-global.md)          | 用于控制数据库使用的日历系统。            |
+| [ob_timestamp_service](300.global-system-variable/9900.ob_timestamp_service-global.md)  | 用于指定使用何种时间戳服务。 |
+| default_week_format                  | 用于设置函数使用的默认模式值 WEEK()，用于计算周的第几天。其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| show_old_temporals | 用于控制是否显示旧的时间戳列。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| date_format                          | 用于设置默认的日期格式。其默认值为 `%Y-%m-%d`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| datetime_format                      | 用于设置默认的日期时间格式。其默认值为 `%Y-%m-%d %H:%i:%s`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| language                             | 用于设置 MySQL 使用的语言。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| lc_messages_dir                      | 用于设置错误消息使用的语言。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+
+
+### 视图相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| updatable_views_with_limit        | 用于控制是否在有 LIMIT 子句的视图上执行 UPDATE 或 DELETE 操作的。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### 事务及事务日志相关
+
+|    变量名        |       功能描述        |
+|----------------|-------------------------|
+| [autocommit](300.global-system-variable/600.autocommit-global.md)                | 用于设置是否自动提交事务。   |
+| [tx_isolation](300.global-system-variable/13200.tx_isolation-global.md)              | 用于设置事务隔离级别。     |
+| [ob_proxy_set_trx_executed](400.session-system-variable/8900.ob_proxy_set_trx_executed-session.md) | 用于设置用户是否通过 obproxy 发送 `START TRANSACTION Syntax` 给 OBServer。 |
+| [ob_early_lock_release](300.global-system-variable/6600.ob_early_lock_release-global.md)     | 用于控制事务是否开启提前解锁（ ELR ）功能。<main id="notice" type='explain'><h4>说明</h4><p>该变量从 V2.2.30 版本开始废弃。ELR 产品行为调整为受租户级别配置项 <code>enable_early_lock_release</code> 控制。</p></main>|
+| [ob_trx_idle_timeout](300.global-system-variable/10100.ob_trx_idle_timeout-global.md)       | 用于设置事务空闲超时时间，即事务中两条语句之间的执行间隔超过该值时超时。                   |
+| [transaction_isolation](300.global-system-variable/13000.transaction_isolation-global.md)     | 用于设置事务的隔离级别。    |
+| [transaction_read_only](300.global-system-variable/13100.transaction_read_only-global.md)     | 用于控制是否只允许开启只读事务。|
+| [ob_trx_lock_timeout](300.global-system-variable/10200.ob_trx_lock_timeout-global.md)       | 用于设置事务的等锁超时时长。           |
+| [tx_read_only](300.global-system-variable/13300.tx_read_only-global.md) | 用于设置是否为只读事务。|
+| [ob_trx_timeout](300.global-system-variable/10300.ob_trx_timeout-global.md)  | 用于设置事务超时时间。|
+| gtid_executed                    | 用于存储已提交过的所有事务的集合以及已由语句设置的 GTID，其默认值为 `空值`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| gtid_owned                       | 用于存储当前正在使用的所有 GTID 的列表，以及拥有它们的线程的 ID。其默认值为 `空值`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| completion_type                  | 用于设置服务器在处理语句完成时事务类型的选择，其默认值为 `NO_CHAIN`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| transaction_alloc_block_size     | 用于设置分配给每个事务的初始内存块大小，其默认值为 `8192`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| transaction_prealloc_size        | 用于设置预先分配的每个事务的内存块大小，其默认值为 `4069`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| transaction_write_set_extraction | 用于设置生成标识与事务相关写入的算法类型。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### 审计相关
+
+|  变量名   |            功能描述            |
+|---------------|----------------------------|
+| [ob_enable_sql_audit](300.global-system-variable/7300.ob_enable_sql_audit-global.md) | 用于控制当前租户是否开启 SQL Audit 功能。 |
+
+### 升级相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| avoid_temporal_upgrade      | 用于管理时效性数据（如日期和时间）的升级行为。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。  </p></main> |
+
+### 数据类型相关
+
+|    变量名     |             功能描述             |
+|-------------------|-------------------------------------|
+| [nls_length_semantics](300.global-system-variable/5300.nls_length_semantics-global.md)    | 表示 CHAR、VARCHAR2 类型的 Length 语义。             |
+| [nls_nchar_conv_excp](300.global-system-variable/5500.nls_nchar_conv_excp-global.md)     | 用于控制 NCHAR/NVARCHAR2 与 CHAR/VARCHAR2 之间转换丢失数据时是否报错。        |
+| [nls_numeric_characters](300.global-system-variable/5600.nls_numeric_characters-global.md)  | 用于控制 Number 和字符串转换中字符串中小数分隔符和千分位分隔符的字符。     |
+| [nls_currency](300.global-system-variable/4700.nls_currency-global.md)            | 用于设置数字格式元素 `L` 的本地货币符号。       |
+| [nls_iso_currency](300.global-system-variable/5100.nls_iso_currency-global.md)        | 用于设置数字格式元素 `C` 的本地货币符号。       |
+| [nls_dual_currency](300.global-system-variable/5000.nls_dual_currency-global.md)       | 用于设置数字格式元素 `U` 的本地货币符号。       |
+| [nls_date_format](300.global-system-variable/4800.nls_date_format-global.md)         | 用于控制 date 类型转 str 的格式，以及 str 隐式转 date 的格式。  |
+| [nls_timestamp_format](300.global-system-variable/5900.nls_timestamp_format-global.md)    | 用于控制 Timestamp 或 Timestamp 中 ltz 类型转 str 的格式，以及 str 隐式转 Timestamp 或 Timestamp 中 ltz 的格式。 |
+| [nls_timestamp_tz_format](300.global-system-variable/6000.nls_timestamp_tz_format-global.md) | 用于控制 Timestamp tz 类型转 str 的格式，以及 str 隐式转 Timestamp tz 的格式。 |
+| [explicit_defaults_for_timestamp](300.global-system-variable/2600.explicit_defaults_for_timestamp-global.md) | 用于指定 timestamp 数据类型在处理默认值和空值时是否启用非标准行为。       |
+| [log_row_value_options](300.global-system-variable/3500.log_row_value_options-global.md)  | 用于控制 Lob 是否使用部分更新。 |
+| [ob_default_lob_inrow_threshold](300.global-system-variable/6390.ob_default_lob_inrow_threshold-global.md)  | 用于指定建表时，表中 LOB 字段的默认行内存储阈值。 |
+
+### SQL/PL 相关
+
+| 变量名 | 功能描述 |
+|-------|----------|
+| [connect_timeout](300.global-system-variable/1900.connect_timeout-global.md)  | 用于设置连接超时时间。  |
+| [ob_pl_block_timeout](300.global-system-variable/8300.ob_pl_block_timeout-global.md)  | 用于设置 PL 的最大超时时间。   |
+| [cursor_sharing](300.global-system-variable/2000.cursor_sharing-global.md) | 用于判断处理 SQL 时是否进行参数化。      |
+| profiling | 用于启用或禁用语句分析功能，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>      |
+| profiling_history_size | 用于设置保存查询性能信息的历史记录数量，其默认值为 `15`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>       |
+| have_profiling | 用于检测是否支持查询性能分析，其默认值为 `NO`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>      |
+| [innodb_strict_mode](300.global-system-variable/3100.innodb_strict_mode-global.md)  | 用于设置特定语法的 SQL 检查模式。  |
+| [max_connections](300.global-system-variable/3800.max_connections-global.md) | 用于设置整个租户的最大连接数。|
+| [sql_mode](300.global-system-variable/11700.sql_mode-global.md)      | 用于设置 SQL 模式，不同的 SQL 模式对于插入等行为有很大影响。      |
+| [sql_quote_show_create](300.global-system-variable/11800.sql_quote_show_create-global.md) |用于设置是否为 `SHOW CREATE TABLE` 和 `SHOW CREATE DATABASE` 语句启动引用标识符。|
+| [sql_throttle_current_priority](300.global-system-variable/12100.sql_throttle_current_priority-global.md) | 用于设置限流优先级，只有 `sql_throttle_current_priority` 小于 `sql_throttle_priority` 的那些 session 上的请求才会被限流。 |
+| [sql_throttle_priority](300.global-system-variable/12300.sql_throttle_priority-global.md)      | 用于设置限流优先级。  |
+| [sql_throttle_rt](300.global-system-variable/12400.sql_throttle_rt-global.md)    | 用于指定 RT 值。    |
+| [max_allowed_packet](300.global-system-variable/3700.max_allowed_packet-global.md)      | 用于设置最大网络包大小。                             |
+| [max_user_connections](300.global-system-variable/4000.max_user_connections-global.md) | 用于指定单个用户可以向 OBServer 节点建立的连接数，设置为 `0` 时表示不限制连接数。 |
+| [max_sp_recursion_depth](300.global-system-variable/3900.max_sp_recursion_depth-global.md)  | 用于设置可以递归调用任一指定存储过程的最大层次。                          |
+| [sql_select_limit](300.global-system-variable/12000.sql_select_limit-global.md)        | 用于设置一个 Select 查询允许返回的最大行数。                        |
+|[max_connections](300.global-system-variable/3800.max_connections-global.md) | 用于设置整个租户的最大连接数。 |
+| [ob_enable_blk_nestedloop_join](300.global-system-variable/6500.ob_enable_blk_nestedloop_join-global.md)  | 用于设置是否允许打开 block nested loop join。 |
+| [parallel_max_servers](300.global-system-variable/10600.parallel_max_servers-global.md)  | 用于设置每台 Server 上并行执行（Parallel eXecution，PX）线程池中的最大线程数。 |
+| [innodb_stats_persistent](300.global-system-variable/3130.innodb_stats_persistent-global.md)| 用于控制是否将 InnoDB 索引统计信息持久化到磁盘上。|
+| [ob_enable_parameter_anonymous_block](../200.system-variable/300.global-system-variable/6570.ob-enable-parameter-anonymous-block-global.md)|用于是否开启全局的匿名块参数化功能。|
+| parser_max_mem_size                  | 用于设置解析器可以使用的最大内存量。其默认值为 `18446744073709551615`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+
+### 锁相关
+
+| 变量名   | 功能描述  |
+|----------|----------|
+| innodb_deadlock_detect      | 用于设置是否禁用死锁检测，其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_lock_wait_timeout      | 用于设置 InnoDB 事务等待锁的最大时间（单位为秒），其默认值为 `50`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_print_all_deadlocks      | 用于设置是否将用户事务中所有死锁的 InnoDB 信息记录在错误日志中，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_table_locks      | 用于设置 InnoDB 表级锁定的行为，其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_write_lock_count      | 用于限制允许获得写锁的次数，以防止写锁在高并发写入场景下过多占用锁资源。其默认值为 `18446744073709551615`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| metadata_locks_cache_size      | 设置元数据锁的缓存大小，其默认值为 `1024`，单位为字节。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+| metadata_locks_hash_instances  | 指定元数据锁哈希表的实例数量，其默认值为 `8`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                         |
+
+### 统计信息相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| innodb_stats_include_delete_marked   | 用于设置是否在统计计算中包含被标记为删除的行。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| innodb_stats_method                  | 用于设置 InnoDB 统计信息的计算方法。其默认值为 `nulls_equal`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| innodb_stats_on_metadata             | 用于控制通过 INFORMATION_SCHEMA 获取表和列统计信息的方式。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| innodb_stats_persistent              | 用于设置统计信息是否持久化存储。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| innodb_stats_persistent_sample_pages | 用于设置持久化统计信息的采样页面数量。其默认值为 `20`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| innodb_stats_sample_pages            | 用于设置 InnoDB 统计信息样本页面的数量。其默认值为 `8`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| innodb_stats_transient_sample_pages  | 用于设置及时统计信息样本页面的数量。其默认值为 `8`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+
+### 系统日志相关
+
+|   变量名   |                 功能描述                  |
+|----------------|---------------------------------------|
+| [binlog_row_image](300.global-system-variable/700.binlog_row_image-global.md)     | 用于控制是否记录全列日志。                         |
+| [ob_log_level](300.global-system-variable/8000.ob_log_level-global.md)         | 用于设置 session 级的日志级别，如果不指定则使用系统中的日志级别。 |
+| [tracefile_identifier](400.session-system-variable/12900.tracefile_identifier-session.md) | 用于在日志中增加指定内容，便于筛选行迭代跟踪日志。             |
+| master_verify_checksum                                  | 控制是否启用 Checksum 校验，默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| binlog_cache_size                                       | 仅用于设置事务缓存的大小，单位为字节，默认值为 `32768`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| binlog_direct_non_transactional_updates                 | 启用该变量会导致对非事务性表的更新直接写入 binlog，而不是写入事务缓存，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| binlog_error_action                                     | 控制服务器遇到错误时的行为，默认值为 `ABORT_SERVER`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| binlog_group_commit_sync_delay                          | 设置 binlog 提交后等待多长时间，才会将 binlog 文件同步到磁盘上，单位为微秒，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| binlog_group_commit_sync_no_delay_count                 | 指定等待延迟提交的最大事务数，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| binlog_max_flush_queue_time                             | 该变量值对系统没有任何影响，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| binlog_order_commits                                    | 当在复制源服务器上启用该变量时，向存储引擎发出的事务提交指令将在单个线程上序列化。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| binlog_stmt_cache_size                                  | 该变量用于指定 binlog 的缓存大小，以便容纳事务期间发出的非事务语句。其默认值为 `32768`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| binlog_transaction_dependency_history_size              | 指定保存在内存中并用于查找上次修改指定行的事务的行哈希数的上限。其默认值为 `25000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| binlog_transaction_dependency_tracking                  | 指定依赖项信息的来源，源使用该信息确定哪些事务可由副本的多线程应用程序并行执行，默认值为 `COMMIT_ORDER`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| expire_logs_days                                        | 设置 binlog 文件保留的时间，单位为天，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| log_bin_trust_function_creators                         | 控制是否可以信任存储函数创建者不会创建导致不安全事件写入 binlog 的存储函数，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| log_bin_use_v1_row_events                               | 控制是否正在使用版本 2 的 binlog，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| log_builtin_as_identified_by_password                   | 该变量影响用户管理语句的 binlog，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| max_binlog_cache_size                                   | 指定 binlog 能够使用的最大缓存大小，单位为字节。当事务所需的字节数超过该变量所指定的值时，服务器将会生成多语句事务需要超过 `max_binlog_cache_size` 字节的存储错误。其默认值为 `18446744073709500416`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| max_binlog_size                                         | 用于控制 binlog 文件的大小，它定义了 binlog 文件的最大容量，单位为字节。如果对 binlog 的写入导致当前日志文件大小超过该变量指定的值时，服务器会自动关闭当前 binlog 文件，并创建一个新的 binlog 文件来继续记录后续的数据库操作。其默认值为 `1073741824`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| max_binlog_stmt_cache_size                              | 指定在事务内执行非事务语句所需要使用的缓存大小，单位为字节，默认值为 `18446744073709547520`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| sync_binlog                                             | 用于控制服务器将 binlog 同步到磁盘的频率，默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| binlog_direct_non_transactional_updates                 | 启用该变量会导致对非事务性表的更新直接写入 binlog，而不是写入事务缓存，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| log_statements_unsafe_for_binlog                  | 是否将 error code 1592 信息记录到错误日志里。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| binlog_gtid_simple_recovery                       | 控制服务器在启动或重启在搜索 GTID 期间如何迭代 binlog 文件。其默认值为 `1`，表示 `gtid_executed` 和 `gtid_purged` 的值将在启动时根据最新和最旧的 binlog 文件中的 `previous_gtids_log_event` 的值进行计算。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| log_bin_basename                                  | binlog 文件的完整路径名。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| log_bin_index                                     | binlog 索引文件的名称和路径。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| log_slave_updates                                 | 对于副本服务器从其主服务器的 binlog 中接收到的更新，副本服务器是否将这些更新记录到自己的 binlog 中。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+
+### 系统服务器相关
+
+| 变量名                                            | 功能描述                                                      |
+|---------------------------------------------------|---------------------------------------------------------------|
+| join_buffer_size                                  | 指定用于纯索引扫描、范围索引扫描以及不使用索引而执行全表扫描的联接的缓冲区的最小大小，单位为字节，默认值为 `262144`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_join_size                                     | 用于限制 Join 操作中允许的最大行数，默认值为 `18446744073709547520`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_length_for_sort_data                          | 指定索引值大小的截断值，用于确定使用哪种文件排序算法，默认值为 `1024`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_prepared_stmt_count                           | 用于限制服务器中预处理语句的条数，默认值为 `16382`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_sort_length                                   | 对数值进行排序时所使用的字节数，默认值为 `1024`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>|
+| min_examined_row_limit                            | 指定检查的行数大于等于多少行时会记录到慢查询日志中，即检查少于该变量指定的行数的查询不会记录到慢查询日志中，默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| multi_range_count                                 | 指定查询语句中 Range 范围的最大个数，默认值为 `256`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| query_alloc_block_size                            | 为语句解析和执行期间创建的对象所分配的内存块的大小，单位为字节，默认值为 `8192`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| query_prealloc_size                               | 用于语句解析和执行的固定缓冲区的大小，单位为字节，默认值为 `8192`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slow_query_log                                    | 控制是否启用慢查询日志，默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| slow_query_log_file                               | 指定慢查询日志的文件名，默认值为 `/usr/local/mysql/data/obrd-slow.log`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| sort_buffer_size                                  | 指定执行排序时使用的缓冲区大小，单位为字节，默认值为 `262144`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| sql_buffer_result                                  | 控制是否将 `SELECT` 语句的结果放入临时表中，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| flush           | 用于设置将 SQL 语句的修改持久化写入到磁盘中，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| flush_time      | 用于设置服务器在指定的秒数间隔内自动刷新所有表到磁盘，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| myisam_data_pointer_size                          | 设置当未指定 `MAX_ROWS` 选项时，创建的 MyISAM 表的默认指针大小，单位为字节。其默认值为 `6`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| myisam_max_sort_file_size                         | 指定在重新创建 MyISAM 索引时（在 `REPAIR TABLE`、`ALTER TABLE` 或 `LOAD DATA` 期间）所允许使用的临时文件的最大大小，单位为字节。其默认值为 `9223372036853720064`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| myisam_repair_threads                             | 指定修复 MyISAM 表时的并发线程数。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>         |
+| myisam_sort_buffer_size                           | 指定在 REPAIR TABLE 期间对 MyISAM 索引进行排序或使用 CREATE INDEX （或 ALTER TABLE）创建索引时所分配的缓存大小，单位为字节。其默认值为 `8388608`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| myisam_stats_method                               | 指定在收集 MyISAM 表索引值分布的统计信息时，服务器对 NULL 值的计算方法。其默认值为 `nulls_unequal`，表示将 NULL 值视为普通值，与其他值一样对待。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| myisam_use_mmap                                   | 是否使用内存映射来读写和写入 MyISAM 表。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| preload_buffer_size                               | 指定在预加载索引时的缓存大小，单位为字节。其默认值为 `32768`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>       |
+| read_buffer_size                                  | 指定在读取数据时间可使用的缓存大小，单位为字节。其默认值为 `131072`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>      |
+| read_rnd_buffer_size                              | 指定从 MyISAM 表中读取数据时的缓存大小，同时对于任何存储引擎，也用于多范围的读取优化，单位为字节。其默认值为 `262144`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| sync_frm                                          | 是否将 InnoDB 表的元数据信息同步到磁盘上的 `.frm` 文件中。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| table_open_cache                                  | 所有线程同时可打开的表的数量。其默认值为 `2000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| internal_tmp_disk_storage_engine                  | 指定磁盘上内部临时表的存储引擎。 其默认值为 `INNODB`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| keep_files_on_create                              | 当未使用 `DATA DIRECTORY` 或 `INDEX DIRECTORY` 选项来指定数据文件或索引文件的存放位置时，该变量用于控制服务器在创建 MyISAM 表时，是否保留对应目录下已存在的文件。其默认值为 `OFF`，表示覆盖已存在的文件。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| max_heap_table_size                               | 指定用户创建的内存表允许增长到的最大大小，单位为字节。其默认值为 `16777216`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| bulk_insert_buffer_size                           | 指定批量插入数据时的缓存大小，单位为字节/线程。其默认值为 `8388608`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| general_log_file                                  | 指定普通查询的日志文件的名称。其默认值格式为 `host_name.log`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| host_cache_size                                   | 指定主机缓存的大小。其默认值为 `279`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| log_error_verbosity                               | 定义服务器在将错误、警告以及注释信息写入错误日志时的详细程度。其默认值为 `3`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| log_output                                        | 指定普通查询日志和慢速查询日志的输出目标。其默认值为 `FILE`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| log_queries_not_using_indexes                     | 是否将未使用索引的查询记录到慢查询日志。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| log_slow_admin_statements                         | 是否将慢速管理语句 ALTER TABLE、ANALYZE TABLE、CHECK TABLE、CREATE INDEX、DROP INDEX、OPTIMIZE TABLE和REPAIR TABLE 等记录到慢查询日志。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| log_syslog                                        | 是否将错误日志记录到系统日志。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| log_syslog_facility                               | 错误日志输出写入到系统日志的工具。其默认值为 `daemon`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| log_syslog_include_pid                            | 是否将错误日志输出中的服务进程 ID 写入系统日志。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| log_syslog_tag                                    | 在写入系统日志的错误日志输出中，指定要添加到服务器标识符的标签。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| log_throttle_queries_not_using_indexes            | 每分钟最多向慢查询日志里写入的语句数量。其默认值为 `0`，表示不限制。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| log_timestamps                                    | 控制错误日志、普通日志以及慢查询日志写入文件的时间戳的时区。其默认值为 `UTC`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| log_warnings                                      | 指定将额外的告警信息记录到出错日志的记录级别。其默认值为 `2`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| max_delayed_threads                               | 处理 INSERT DELAYED 语句允许创建的最大线程数。其默认值为 `20`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| offline_mode                                      | 是否将服务器设置为离线模式。其默认值为 `0`，表示不设置为离线模式。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| require_secure_transport                          | 客户端与服务器端的连接是否需要使用某种形式的安全传输。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                 |
+| slow_launch_time                                  | 创建线程的时间超过该值时，就会导致状态变量 Slow_launch_threads 的值增加，单位为秒。其默认值为 `2`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| sql_log_off                                       | 启用（OFF）或禁用（ON）当前会话的普通查询日志记录。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| thread_cache_size                                 | 线程缓存中可容纳的最大线程数。其默认值为 `9`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| thread_pool_high_priority_connection              | 控制线程池是否为高优先级连接保留空闲线程。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| thread_pool_max_unused_threads                    | 线程池中允许的最大未使用线程数。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                 |
+| thread_pool_prio_kickup_timer                     | 等待语句移动到高优先级队列之前所需的时间，单位为毫秒。其默认值为 `1000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| thread_pool_stall_limit                           | 一条语句在开始执行后必须完成的时间，单位为 10 毫秒。其默认值为 `6`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                 |
+| have_statement_timeout                            | 是否启用语句执行的超时功能。其默认值为 `ON`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>|
+| old                                               | 一个兼容性变量，用于解决兼容性问题。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>|
+| version_tokens_session_number                     | 内部使用的变量。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>     |
+| back_log                                          | 当服务器正在处理连接请求时，能够保存在等待连接请求队列中的最大数量。其默认值为 `80`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| basedir                                           |  安装根目录的路径名。其默认值为 `/usr/local/mysql/`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| bind_address                                      | 服务器在监听 TCP/IP 客户端连接时所绑定的 IP 地址。其默认值为 `*`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| core_file                                         | 当发生致命错误时，服务器在退出前是否需要生成一个核心文件。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| have_compress                                     | 用于实现 COMPRESS() 和 UNCOMPRESS() 函数所需的 zlib 压缩库是否可用。其默认值为 `ON`，表示可用。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| ignore_db_dirs                                    | 以逗号分隔的名称列表，这些名称在数据目录中不被视为数据库目录。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| init_file                                         | 指定一个文件名，该文件中包含服务器在启动时执行的 SQL 语句。其默认值为 `null`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| large_files_support                               | 服务器是否支持处理大文件。其默认值为 `1`，表示支持。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| large_pages                                       | 是否启用大页面支持功能。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| large_page_size                                   | 如果启用了大页面支持功能，此变量用于指定内存页面的大小，单位为字节。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| locked_in_memory                                  | 服务器是否锁定在内存中。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| log_error                                         | 错误日志文件的输出目标。其默认值为 `./obrd.16c.vd3-s2h6-n3.err`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>     |
+| named_pipe                                        | 服务器是否允许客户端使用命名管道连接。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| named_pipe_full_access_group                      | 当支持命名管道连接时，指定哪个 Windows 用户组有权限使用命名管道连接。其默认值为 `empty string`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| open_files_limit                                  | 服务器可用的文件描述符的个数。其默认值为 `655360`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                  |
+| shared_memory                                     | 服务器是否允许客户端使用共享内存连接。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| shared_memory_base_name                           | 指定用于共享内存连接的共享内存的名称。其默认值为 `MYSQL`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| skip_name_resolve                                 | 控制检查客户端连接时是否解析主机名。其默认值为 `OFF`，表示需要解析主机名。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| skip_networking                                   | 控制服务器是否允许使用 TCP/IP 连接。其默认值为 `OFF`，表示禁用 TCP/IP 连接。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| thread_handling                                   | 服务器用于处理客户端连接的线程模型。其默认值为 `one-thread-per-connection`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| thread_pool_algorithm                             | 控制线程池插件所使用的算法。其默认值为 `0`，表示使用保守的低并发算法。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| thread_pool_size                                  | 用于设置线程池中线程组的个数。其默认值为 `16`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| thread_stack                                      | 每个线程的堆栈大小。其默认值为 `262144`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| tls_version                                       | 服务器允许使用哪些协议进行加密连接。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+
+### X Plugin 相关
+
+| 变量名                                            | 功能描述                                                      |
+|---------------------------------------------------|---------------------------------------------------------------|
+| mysqlx_connect_timeout                            | X 插件等待从新连接的客户端接收第一个数据包的时间，单位为秒，默认值为 `30`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| mysqlx_idle_worker_thread_timeout                 | 指定空闲工作线程在被终止之前可以保持空闲状态的时间，单位为秒，默认值为 `60`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| mysqlx_max_allowed_packet                         | X 插件可以接收的网络数据包的最大大小，单位为字节，默认值为 `67108864`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| mysqlx_max_connections                            | X 插件可以接受的最大并发客户端连接数，默认值为 `100`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| mysqlx_min_worker_threads                         | X 插件用于处理客户端请求的最小工作线程数，默认值为 `2`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| mysqlx_bind_address                               | 指定 X 插件监听 TCP/IP 连接的网络地址。其默认值为 `*`，表示接受所有服务器主机上的 TCP/IP 连接。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| mysqlx_port                                       | 指定 X 插件监听 TCP/IP 连接的网络端口。其默认值为 `33060`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                 |
+| mysqlx_port_open_timeout                          | 指定 X 插件等待 TCP/IP 端口空闲的时间，单位为秒。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| mysqlx_socket                                     | 指定 X 插件用于连接的 Unix socket 文件的路径。其默认值为 `/tmp/mysqlx.sock`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| mysqlx_ssl_ca                                     | 指定 X 插件使用的 SSL 证书颁发机构（CA）文件的路径名。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| mysqlx_ssl_capath                                 | 指定 X 插件使用的 SSL 证书颁发机构（CA）证书文件的目录路径。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| mysqlx_ssl_cert                                   | 指定 X 插件使用的 SSL 证书文件的路径名。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>|
+| mysqlx_ssl_cipher                                 | 指定 X 插件所使用的 SSL 加密的加密算法列表。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| mysqlx_ssl_crl                                    | 指定 X 插件所使用的包含证书吊销列表文件的文件名。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>|
+| mysqlx_ssl_crlpath                                | 指定 X 插件所使用的包含证书吊销列表文件的目录路径。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| mysqlx_ssl_key                                    | 指定 X 插件使用的 SSL 证书密钥文件的路径名。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+
+
+### 性能模式相关
+
+| 变量名                                            | 功能描述                                                      |
+|---------------------------------------------------|---------------------------------------------------------------|
+| performance_schema_show_processlist               | 该变量控制使用哪种 SHOW PROCESSLIST 的实现方式，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>|
+| performance_schema_accounts_size                         | 指定表 `accounts` 中的行数。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| performance_schema_digests_size                          | 指定表 `events_statements_summary_by_digest` 中的最大行数。其默认值为 `10000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| performance_schema_events_stages_history_long_size       | 指定表 `events_stages_history_long` 中的行数。其默认值为 `10000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_events_stages_history_size            | 指定表 `events_stages_history` 中每个线程的行数。其默认值为 `10`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_events_statements_history_long_size   | 指定表 `events_statements_history_long` 中的行数。其默认值为 `10000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_events_statements_history_size        | 指定表 `events_statements_history` 中每个线程的行数。其默认值为 `10`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                   |
+| performance_schema_events_transactions_history_long_size | 指定表 `events_transactions_history_long` 中的行数。其默认值为 `10000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_events_transactions_history_size      | 指定表 `events_transactions_history` 中每个线程的行数。其默认值为 `10`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_events_waits_history_long_size        | 指定表 `events_waits_history_long` 中的行数。其默认值为 `10000`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_events_waits_history_size             | 指定表 `events_waits_history` 中每个线程的行数。其默认值为 `10`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_hosts_size                            | 指定表 `hosts` 中的行数。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_cond_classes                      | 指定条件采集器的最大数量。其默认值为 `80`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_max_cond_instances                    | 指定可采集的条件对象的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_digest_length                     | 指定标准化形式的 SQL 语句在存入性能模式时的最大长度，单位为字节。其默认值为 `1024`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                |
+| performance_schema_max_file_classes                      | 指定文件采集器的最大数量。其默认值为 `80`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_max_file_handles                      | 指定可打开的文件对象的最大数量。其默认值为 `32768`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_file_instances                    | 指定可采集的文件对象的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| performance_schema_max_index_stat                        | 性能模式维护的统计信息中的最大索引数。其默认值为 `-1`，表示自动调整大小。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_memory_classes                    | 指定内存采集器的最大数量。其默认值为 `320`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                   |
+| performance_schema_max_metadata_locks                    | 指定元数据锁采集器的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| performance_schema_max_mutex_classes                     | 指定互斥采集器的最大数量。其默认值为 `200`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_mutex_instances                   | 指定可采集的互斥对象的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| performance_schema_max_prepared_statements_instances     | 指定表 `prepared_statements_instances` 中的最大行数。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_max_program_instances                 | 性能模式维护的统计信息中的最大存储程序数。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_max_rwlock_classes                    | 指定 rwlock 采集器的最大数量。其默认值为 `50`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_rwlock_instances                  | 指定可采集的 rwlock 对象的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>   |
+| performance_schema_max_socket_classes                    | 指定 socket 采集器的最大数量。其默认值为 `10`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_socket_instances                  | 指定可采集的 socket 对象的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>    |
+| performance_schema_max_sql_text_length                   | 指定 `events_statements_current`、`events_statements_history` 和 `events_statents_history_long` 等语句事件表的`SQL_TEXT` 列中可存储的 SQL 语句的最大长度，单位为字节。其默认值为 `1024`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_stage_classes                     | 指定阶段采集器的最大数量。其默认值为 `150`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_statement_classes                 | 指定语句采集器的最大数量。其默认值为 `193`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>                  |
+| performance_schema_max_statement_stack                   | 性能模式维护的统计信息中，嵌套存储程序调用的最大深度。其默认值为 `10`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_max_table_handles                     | 指定可打开的表对象的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_max_table_instances                   | 指定可采集的表对象的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_max_table_lock_stat                   | 性能模式维护的锁统计信息中的表的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_max_thread_classes                    | 指定线程采集器的最大数量。其默认值为 `50`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_max_thread_instances                  | 指定可采集的线程对象的最大数量。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_session_connect_attrs_size            | 每个线程保留的用于保存连接属性键值对的预分配内存量，单位为字节。其默认值为 `512`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| performance_schema_setup_actors_size                     | 指定表 `setup_actors` 中的行数。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_setup_objects_size                    | 指定表 `setup_objects` 中的行数。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+| performance_schema_users_size                            | 指定表 `users` 中的行数。其默认值为 `-1`，表示自动缩放。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>  |
+
+### 外键相关
+
+|   变量名    |    功能描述  |
+|--------------------|----------------------|
+| [foreign_key_checks](300.global-system-variable/2700.foreign_key_checks-global.md) | 用于设置是否在 DML/DDL 中检查外建约束。 |
+
+### 优化器相关
+
+|           变量名           |              功能描述              |
+|--------------------------------|--------------------------------|
+| [optimizer_capture_sql_plan_baselines](300.global-system-variable/10400.optimizer_capture_sql_plan_baselines-global.md) | 用于控制是否自动捕获新计划到 Plan Baseline。  |
+| [optimizer_use_sql_plan_baselines](300.global-system-variable/10500.optimizer_use_sql_plan_baselines-global.md)     | 用于控制优化器是否会使用 Plan Baseline 计划。 |
+| [parallel_degree_policy](300.global-system-variable/10560.parallel_degree_policy-global.md) | 用于设置并行度选择策略。 |
+| [parallel_degree_limit](300.global-system-variable/10550.parallel_degree_limit-global.md) | 用于设置在使用 Auto DOP 策略时，优化器选择并行度的上限值。 |
+| [parallel_min_scan_time_threshold](300.global-system-variable/10650.parallel_min_scan_time_threshold-global.md) | 设置对基表扫描进行并行处理的最小评估执行时间。 |
+| [optimizer_dynamic_sampling](300.global-system-variable/10450.optimizer_dynamic_sampling-global.md) | 用于控制动态采样的等级。 |
+| [optimizer_features_enable](300.global-system-variable/10460.optimizer_features_enable-global.md) | 用于启用不同 OceanBase 版本优化器功能。 |
+| [ob_enable_transformation](300.global-system-variable/7500.ob_enable_transformation-global.md)        | 用于设置是否开启 SQL 优化器的改写功能。                        |
+|[range_index_dive_limit](../200.system-variable/300.global-system-variable/11110.range_index_dev_limit.md)|用于指示优化器使用存储层估行时的 range 数量限制。|
+|[partition_index_dive_limit](../200.system-variable/300.global-system-variable/10750.partition_index_dive_limit-global.md)|用于指示优化器使用存储层估行时分区数量限制。|
+
+### 自增列相关
+
+|    变量名     |   功能描述     |
+|--------------|----------------|
+| [auto_increment_increment](300.global-system-variable/400.auto_increment_increment-global.md)| 用于设置自增步长，仅用于 MySQL 客户端登录。     |
+| [auto_increment_offset](300.global-system-variable/500.auto_increment_offset-global.md)   | 用于确定 `AUTO_INCREMENT` 列值的起点。   |
+| [identity](400.session-system-variable/2900.identity-session.md)    | `identity` 和变量 `last_insert_id` 是同义词，可以通过 `select @@identity` 查询。 |
+| [sql_auto_is_null](300.global-system-variable/11600.sql_auto_is_null-global.md)    | 用于控制是否获取最后插入行的自增列值。  |
+| [auto_increment_cache_size](300.global-system-variable/300.auto_increment_cache_size-global.md)   | 用于设置缓存的自增值个数。       |
+| [div_precision_increment](300.global-system-variable/2400.div_precision_increment-global.md)        | 用于设置除法结果精度在被除数精度基础上的增量，是 MySQL 兼容功能。     |
+
+### 字符集和字符串相关
+
+|     变量名     | 功能描述  |
+|--------------------|--------------------------------------------|
+| [character_set_client](300.global-system-variable/900.character_set_client-global.md)    | 用于设置客户端发送语句的字符集。             |
+| [character_set_connection](300.global-system-variable/1000.character_set_connection-global.md) | 用于设置收到语句后应转换的字符集。           |
+| [character_set_database](300.global-system-variable/1100.character_set_database-global.md)   | 用于设置默认数据库的字符集。       |
+| [character_set_results](300.global-system-variable/1300.character_set_results-global.md)    | 用于设置服务器在将结果集或错误消息发送回客户端之前应转换为的字符集。       |
+| [character_set_server](300.global-system-variable/1400.character_set_server-global.md)     | 用于设置服务器字符集。  |
+| [character_set_system](300.global-system-variable/1500.character_set_system-global.md)     | 用于查看服务器使用的字符集。            |
+| [collation_connection](300.global-system-variable/1600.collation_connection-global.md)     | 用于设置连接使用的字符集和字符序。   |
+| [collation_database](300.global-system-variable/1700.collation_database-global.md)       | 用于设置创建数据库默认字符集和字符序。 |
+| [collation_server](300.global-system-variable/1800.collation_server-global.md)         | 用于设置服务器默认字符集和字符序。   |
+| [character_set_filesystem](300.global-system-variable/1200.character_set_filesystem-global.md) | 用于设置文件系统字符集类型。      |
+| [sql_warnings](300.global-system-variable/12500.sql_warnings-global.md)             | 用于在出现告警时控制单行 INSERT 语句是否生成信息字符串。     |
+| [init_connect](300.global-system-variable/3000.init_connect-global.md)         | 用于设置服务器为每个连接的客户端执行的字符串，该字符串由一条或多条 SQL 语句组成，用分号分隔。  |
+| [nls_sort](300.global-system-variable/5700.nls_sort-global.md)                 | 表示字符串值的排序规则。  |
+| [nls_comp](300.global-system-variable/4600.nls_comp-global.md)                 | 表示字符串值的比较规则。   |
+| [nls_characterset](300.global-system-variable/4500.nls_characterset-global.md)         | 用于查看数据库中 CHAR、VARCHAR2、CLOB 等数据类型的默认字符集。 |
+| [nls_nchar_characterset](300.global-system-variable/5400.nls_nchar_characterset-global.md)   | 表示数据库默认字符集，用于 NCHAR、NVARCHAR2、NCLOB 等数据类型。    |
+| default_collation_for_utf8mb4      | 用于设置 utf8mb4 字符集的默认字符序，其默认值为 `utf8mb4_general_ci`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+|  have_symlink                 | 用于设置是否支持符号链接，其默认值为 `YES`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| character_sets_dir                   | 用于指定字符集文件的目录。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+
+### 组复制相关
+
+| 变量名                                                   | 功能描述                                                      |
+|---------------------------------------------------------|---------------------------------------------------------------|
+| group_replication_allow_local_disjoint_gtids_join       | 当服务器中具有组中不存在的本地事务时，是否允许其加入该组。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| group_replication_allow_local_lower_version_join        | 当服务器所使用的 MySQL Server 版本低于组中其他成员的 MySQL Server 版本时，是否允许其加入该组。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>           |
+| group_replication_auto_increment_increment              | 自动设置复制组中的每个成员的自增列的步长值，以确保在多主模式的组中，每个组成员的自增列值有序且不重叠。其默认值为 `7`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>       |
+| group_replication_bootstrap_group                       | 指定使用当前服务器来 Bootstrap 组，该变量只能在一个服务器上设置，并且只能在首次时在 Bootstrap 组或重新 Bootstrap 组时在其中一个服务器上设置。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| group_replication_components_stop_timeout                | 组复制关闭时，等待每个组件的超时时间，单位为秒。其默认值为 `2`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| group_replication_compression_threshold                  | 组成员之间发送消息的阈值。当超过该阈值后，将会对组成员之间发送的消息进行压缩。其默认值为 `1000000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_enforce_update_everywhere_checks       | 在任何时候启用或禁用多主更新的严格一致性检查。其默认值为 `OFF`，表示禁用检查。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| group_replication_exit_state_action                      | 设置当服务器实例因异常而脱离组时，组复制的行为方式。其默认值为 `READ_ONLY`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| group_replication_flow_control_applier_threshold         | 指定触发流量控制的应用程序队列中等待事务的个数。其默认值为 `25000`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_flow_control_certifier_threshold       | 指定触发流控制的验证者队列中的等待事务的个数。其默认值为 `25000`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_flow_control_mode                      | 指定流控制所使用的模式。其默认值为 `QUOTA`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_force_members                          | 指定成员的地址列表，格式为 `host1:port1,host2:port2`。该变量用于强制建立一个新的组。设置成功后，被排除的成员（该变量中未指定的成员）将不会接收到新的视图消息并且还会被阻塞（阻塞写入操作）。其默认值为空。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>      |
+| group_replication_group_name                             | 指定当前服务器所属的组复制的组名。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_group_seeds                            | 指定种子成员的地址列表，格式为 `host1:port1,host2:port2`。其默认值为空。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| group_replication_gtid_assignment_block_size             | 指定为每个成员保留的连续 GTID 数。其默认值为 `1000000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_ip_whitelist                           | 指定允许哪些主机（IP 地址或主机名）连接到组，被允许访问的地址称为白名单地址。其默认值为 `AUTOMATIC`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_local_address                          | 组复制成员用于提供给组中其他成员连接访问的网络地址。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| group_replication_member_weight                          | 为组成员指定一个百分比权重，该权重值用于在发生故障转移时影响成员被选为主节点的机会（仅对处于单主模式的组有意义）。当处于单主模式的组中，其主节点脱离组时，权重值越高的成员越优先被选中为主节点。其默认值为 `50`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| group_replication_poll_spin_loops                        | 设置组复制通信线程在等待传入更多的网络消息之前，需要等待通信引擎互斥锁(mutex)被释放的次数。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_recovery_complete_at                   | 设置在分布式恢复过程中，完成状态传输之后应用缓存事务的策略。默认值为 `TRANSACTIONS_APPLIED`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| group_replication_recovery_reconnect_interval            | 当一个新的服务器尝试加入到组，由于某些原因导致无法找到可用的 Donor 进行分布式恢复时，会尝试重新连接去寻找可用的 Donor，该变量用于设置重新连接的间隔时间，单位为秒。其默认值为 `60`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_recovery_retry_count                   | 当一个新的服务器尝试加入到组，由于某些原因导致无法找到可用的 Donor 进行分布式恢复时，会尝试重新连接去寻找可用的 Donor，该变量用于设置重新连接寻找可用 Donor 的次数。其默认值为 `10`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| group_replication_recovery_ssl_ca                        | 指定用于分布式恢复连接的受信任 SSL 证书颁发机构列表的文件的路径。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_recovery_ssl_capath                     | 指定用于分布式恢复连接的受信任的 SSL 证书颁发机构颁发的证书的目录路径。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_recovery_ssl_cert                       | 指定用于建立分布式恢复所需的安全连接的 SSL 证书文件的名称。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_recovery_ssl_cipher                     | 指定允许用于 SSL 加密的加密算法列表，可用的加密算法取决于编译 MySQL Server 时使用的 ssl lib 库版本，不同的 ssl lib 库支持的加密算法有所不同。其默认值为空。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| group_replication_recovery_ssl_crl                        | 指定包含证书吊销列表文件的文件名。其默认值为空。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_recovery_ssl_crlpath                    | 指定包含证书吊销列表文件的目录路径。其默认值为空。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_recovery_ssl_key                        | 指定用于建立分布式恢复所需的安全连接的 SSL 密钥文件的名称。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_recovery_ssl_verify_server_cert         | 指定在分布式恢复过程中，是否校验 Donor 证书中的服务器通用名称。其默认值为 `OFF`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_recovery_use_ssl                        | 指定组复制成员在进行分布式恢复时，用于分布式恢复的连接通道是否需要使用SSL。其默认值为 `OFF`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_single_primary_mode                     | 指定组复制是否以单主模式运行，并且自动挑选一台服务器来处理读/写工作负载。如果设置为 `ON`，则表示可读写的主节点只有一个，其他组成员均为辅助节点；如果设置为 `OFF`，则表示关闭单主模式，即启用多主模式，多主模式中通常情况下所有的组成员都是可读写的主节点。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_ssl_mode                                | 指定组复制成员之间 SSL 连接的安全状态。其默认值为 `DISABLED`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_start_on_boot                           | 指定在服务器启动时是否启动组复制，默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_transaction_size_limit                  | 指定组复制内可接收的最大事务的大小限制，单位为字节，其默认值为 `150000000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_unreachable_majority_timeout            | 指定当组成员遇到网络分区而与组中大多数成员失联时，其脱离组之前的等待时间，单位为秒。其默认值为 `0`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+## Session 级别
+
+### 安全相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| [block_encryption_mode](300.global-system-variable/800.block_encryption_mode-global.md)           | 用于指定在函数 aes_encrypt 和 aes_decrypt 中使用的加密算法。   |
+| net_retry_count                      | 用于设置网络重试的次数。其默认值为 `10`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| old_passwords                        | 用于控制函数使用的密码哈希方法。其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| disconnect_on_expired_password       | 用于设置在密码过期时是否断开连接。其默认值为 `ON`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>|
+| external_user                        | 用于指定连接到 MySQL 的外部用户。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| have_crypt                           | 用于设置 MySQL 是否支持 crypt() 函数。其默认值为 `YES`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| proxy_user                           | 用于指定代理用户，用于身份验证等。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### 版本信息相关
+
+|         变量名          |                   功能描述                    |
+|-----------------------------|-------------------------------------------|
+| [ob_enable_transmission_checksum](300.global-system-variable/7600.ob_enable_transmission_checksum-global.md) | 用于设置 obproxy 和 OBServer 节点之间是否进行数据包校验和，设置后实时生效。 |
+| [ob_last_schema_version](400.session-system-variable/7900.ob_last_schema_version-session.md)            | 用于设置该 session 中最新使用的 Schema 版本号。          |
+| [ob_proxy_global_variables_version](400.session-system-variable/8700.ob_proxy_global_variables_version-session.md) | 用于设置 OBServer 节点返回给 OBproxy 所需的全局变量的最新版本信息。 |
+| new                                 | 用于设置在 MySQL 4.0 版本中是否启用某些 4.1 版本的行为，并保留以提供向后兼容性。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| version_tokens_session              | 用于设置会话级别的版本标记。其默认值为 `NULL`，表示任何服务器版本列表均匹配。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### 插件管理相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| plugin_load                        | 用于设置在启动时加载的插件列表。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| plugin_load_add                    | 用于设置在运行时添加的插件。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### Debug 相关
+
+|   变量名   |     功能描述 |
+|----------------|---------|
+| debug          | 用于设置调试选项，其默认值为 `d:t:i:o,/tmp/mysqld.trace`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| [ob_global_debug_sync](400.session-system-variable/7800.ob_global_debug_sync-session.md) | 用于 Debug 时设置同步点，设置此变量会影响所有 session。 |
+
+### 读写/查询相关
+
+|    变量名     |                      功能描述                       |
+|-------------------|-------------------------------------------------|
+| [cte_max_recursion_depth](300.global-system-variable/1950.cte_max_recursion_depth-global.md)  | 用于设置公共表表达式（CTE）的最大递归深度。服务器会终止执行任何超过此 CTE 值的操作。 |
+| [is_result_accurate](400.session-system-variable/3300.is_result_accurat-session.md)      | 当查询带有 `topk` 提示时，`is_result_accurate` 表示结果是否正确。 |
+| [net_read_timeout](300.global-system-variable/4200.net_read_timeout-global.md)          | 用于中断读之前等待连接的其它数据的秒数。     |
+| [net_write_timeout](300.global-system-variable/4300.net_write_timeout-global.md)         | 用于设置中断写之前等待块写入连接的秒数。     |
+| [ob_enable_aggregation_pushdown](300.global-system-variable/6700.ob_enable_aggregation_pushdown-global.md)  | 用于设置是否允许聚合操作下压。 |
+| [ob_enable_index_direct_select](300.global-system-variable/7000.ob_enable_index_direct_select-global.md)   | 用于设置是否允许用户直接查询索引表。|
+| [ob_enable_jit](300.global-system-variable/7100.ob_enable_jit-global.md)                   | 用于设置 JIT 执行引擎模式。              |
+| [ob_query_timeout](300.global-system-variable/9000.ob_query_timeout-global.md)        | 用于设置查询超时时间。 |
+| [ob_read_consistency](300.global-system-variable/9100.ob_read_consistency-global.md) | 用于设置读一致性级别。    |
+| big_tables                          | 用于是否开启使用大表查询，开启后可以使用 MyISAM 大表特性。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_prune_level               | 用于控制查询优化器的行为，优化器会根据对每个表访问的行数的估计，跳过一些不必要的查询计划，从而减少查询编译时间。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_search_depth              | 用于设置优化器搜索查询执行计划的深度。其默认值为 `62`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_switch                    | 用于设置优化器的行为选项，以启用或禁用特定功能。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_trace                     | 用于启用查询优化器的跟踪功能，用于调试和分析查询执行计划。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_trace_features            | 用于指定在优化器跟踪中要包括的特性。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| optimizer_trace_limit               | 用于设置优化器最大跟踪条目数。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+|  optimizer_trace_max_mem_size       | 用于设置优化器跟踪最大内存使用量。其默认值为 `16384`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| range_optimizer_max_mem_size        | 用于设置范围优化器的最大内存使用量。其默认值为 `8388608`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| show_create_table_verbosity         | 用于设置创建表时是否显示行格式。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| sql_big_selects                     | 用于是否启用大查询。其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+
+### 副本相关
+
+|  变量名  | 功能描述 |
+|---------|----------|
+| [ob_create_table_strict_mode](300.global-system-variable/6100.ob_create_table_strict_mode-global.md)   | 用于设置建表的严格模式。 |
+| [ob_default_replica_num](300.global-system-variable/6400.ob_default_replica_num-global.md) | 用于设置每个集群中表的默认副本数。 |
+| [recyclebin](300.global-system-variable/11300.recyclebin-global.md) | 用于设置是否开启回收站功能。 |
+| master_info_repository                                  | 指定副本是将元数据记录到系统数据库 InnoDB 的表 mysql 中，还是作为数据目录中的文件。其默认值为 `FILE`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+
+### GTID 功能相关
+
+| 变量名   | 功能描述  |
+|----------|----------|
+|  gtid_next     | 用于手动指定下次事务的 GTID 值，其默认值为 `AUTOMATIC`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### 回收站相关
+
+|     变量名     |      功能描述      |
+|----------|----------------|
+| [ob_enable_truncate_flashback](300.global-system-variable/7700.ob_enable_truncate_flashback-global.md)    | 用于设置是否启用表截断的闪回。 |
+
+### 缓存相关
+
+|          变量名           |             功能描述             |
+|-------------------------------|------------------------------|
+| [ob_enable_plan_cache](300.global-system-variable/7200.ob_enable_plan_cache-global.md)                | 用于控制 PL cache 模块是否开启。        |
+| [ob_enable_plan_cache](300.global-system-variable/7200.ob_enable_plan_cache-global.md)                | 用于设置是否打开 Plan Cache。         |
+| [ob_bnl_join_cache_size](300.global-system-variable/6100.ob_bnl_join_cache_size-global.md)          | 用于设置 Batch Nested Loop Join（BNLJ）操作中单次缓存的数据量。 |
+
+### 函数相关
+
+|    变量名     |   功能描述     |
+|--------------|----------------|
+| [group_concat_max_len](300.global-system-variable/2800.group_concat_max_len-global.md)    | 用于设置允许的 `GROUP_CONCAT()` 函数结果的最大长度。         |
+| [interactive_timeout](300.global-system-variable/3200.interactive_timeout-global.md)       | 用于设置服务器关闭交互式连接前等待活动的秒数。  |
+| [wait_timeout](300.global-system-variable/13700.wait_timeout-global.md)              | 用于设置服务器关闭非交互连接之前等待活动的秒数。 |
+
+### 会话相关
+
+| 变量名   | 功能描述  |
+|----------|----------|
+|  session_track_gtids            | 用于控制服务器是否将 GTID 返回给客户端，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+|  session_track_transaction_info | 用于控制服务器是否跟踪当前会话中的事务状态，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### InnoDB 存储引擎相关
+
+| 变量名 |  功能描述 |
+|-------|-----------|
+| [innodb_strict_mode](300.global-system-variable/3100.innodb_strict_mode-global.md)   | 用于设置特定语法的 SQL 检查模式。     |
+| information_schema_stats_expiry       | 用于设置服务器从存储引擎获取数据并替换缓存中数据的秒数，其默认值为 `86400`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| low_priority_updates      | 用于设置是否控制 INSERT、UPDATE、DELETE 和 REPLACE 语句的优先级。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_error_count      | 用于设置服务器能够存储在诊断上下文中的错误、警告和通知的最大数量，其默认值为 `64`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_insert_delayed_threads      | 用于设置执行 INSERT DELAYED 语句的最大线程数，其默认值为 `20`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| eq_range_index_dive_limit         | 用于控制优化器在处理等值范围查询时是否进行索引潜水（index dive）。其默认值为 `200`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### 集群相关
+
+| 变量名 |  功能描述 |
+|-------|-----------|
+| [default_storage_engine](300.global-system-variable/2350.default_storage_engine-global.md)               | 用于查看 OBServer 节点的默认存储引擎。  |
+| [ob_capability_flag](400.session-system-variable/6200.ob_capability_flag-session.md)   | 是 OBServer 节点能够提供的能力，用于和 Proxy 连接时进行能力协商，告知 Proxy 当前 OBServer 节点支持哪些功能，不支持哪些功能。 |
+| [ob_compatibility_mode](300.global-system-variable/6300.ob_compatibility_mode-global.md)   | 用于指定租户的兼容模式。     |
+| [ob_proxy_partition_hit](400.session-system-variable/8800.ob_proxy_partition_hit-session.md)  | 用于设置 obproxy 是否将 SQL 语句请求的数据发送到这些数据主 Partition 所在的 OBServer 节点上。  |
+| [ob_org_cluster_id](400.session-system-variable/8200.ob_org_cluster_id-session.md)               | 用于设置 OceanBase 集群的 `CLUSTER_ID`。              |
+| [ob_route_policy](300.global-system-variable/9300.ob_route_policy-global.md)  | 用于设置 OBServer 节点内部选择数据副本的路由策略。   |
+| slave_allow_batching                                    | 控制是否开启复制线程的批量更新。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### 目录路径相关
+
+| 变量名 |        功能描述         |
+|------------|---------------------|
+| [ob_enable_hash_group_by](300.global-system-variable/6600.ob_enable_hash_group_by-global.md)  | 用于设置是否打开 Hash Group by 的路径。 |
+
+### 内存相关
+
+|          变量名          |               功能描述               |
+|------------------------------|----------------------------------|
+| [ob_temp_tablespace_size_percentage](300.global-system-variable/9800.ob_temp_tablespace_size_percentage-global.md) | 用于租户磁盘中临时表空间大小的百分比限制。            |
+| range_alloc_block_size            | 用于设置范围优化时分配的块的大小。其默认值为 `4096`，单位为字节。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### NDB 存储引擎相关
+
+| 变量名                                            | 功能描述                                                      |
+|---------------------------------------------------|---------------------------------------------------------------|
+| ndb_allow_copying_alter_table                     | 是否允许 `ALTER TABLE` 语句和其他 DDL 语句对表使用复制操作。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>               |
+| ndb_autoincrement_prefetch_sz                     | 用于指定自增值的预取数量，该值可以影响自增列的性能和并发访问的能力。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| ndb_blob_read_batch_bytes                         | 用于配置 NDB Cluster 中批量读取 BLOB 数据的大小，单位为字节。其默认值为 `65536`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>       |
+| ndb_blob_write_batch_bytes                        | 用于配置 NDB Cluster 中批量写入 BLOB 数据的大小，单位为字节。其默认值为 `65536`。   <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| ndb_deferred_constraints                          | 控制是否延迟对表进行约束检查，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndb_force_send                                    | 是否强制立即将缓存发送到 NDB，无需等待其他线程。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| ndb_fully_replicated                              | 确定新表是否完全复制。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                    |
+| ndb_index_stat_enable                             | 是否在查询优化中使用 NDB 索引统计信息。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_index_stat_option                             | 指定 NDB 索引统计信息生成的选项。其默认值为 `loop_checkon=1000ms,loop_idle=1000ms,loop_busy=100ms,update_batch=1,read_batch=4,idle_batch=32,check_batch=32,check_delay=1m,delete_batch=8,clean_delay=0,error_batch=4,error_delay=1m,evict_batch=8,evict_delay=1m,cache_limit=32M,cache_lowpct=90`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| ndb_join_pushdown                                 | 控制是否启用存储引擎中的连接下推优化功能。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_log_binlog_index                              | 控制是否将 epochs 到 binlog 中位置的映射插入到 ndb_binlog_index 表中。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>        |
+| ndb_log_exclusive_reads                            | 确定是否使用 Exclusive 锁来记录主键的读取。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>            |
+| ndb_row_checksum                                 | 指定表行的校验和值。值为 `1` 时，表示会计算并保存每行数据的校验和值；值为 `0` 时，表示不进行表行数据的校验和检测。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndb_table_no_logging                              | 控制 NDB 表的日志记录行为。值为 `ON` 时，表示使用 NDB 存储引擎创建或更改的所有表处于无日志状态。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_table_temporary                               | 指定使用 NDB 存储引擎时临时表的行为。值为 `ON` 时，会导致 NDB 表不被写入磁盘。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_use_exact_count                               | 指定是否强制 NDB 在 `SELECT count（*）` 查询计划期间使用记录计数来加速此类查询。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| ndb_use_transactions                              | 控制是否启用 NDB 事务支持。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>      |
+| ndbinfo_max_bytes                                 | 仅用于测试和调试。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| ndbinfo_max_rows                                  | 仅用于测试和调试。其默认值为 `10`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| ndbinfo_show_hidden                               | 是否在 MySQL 客户端中显示 `ndbinfo` 数据库的底层内部表。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### Runtime Filter 相关
+
+|  变量名 | 功能描述 |
+|--------|---------|
+| [runtime_bloom_filter_max_size](300.global-system-variable/16400.runtime_bloom_filter_max_size-global.md) | 用于设置 Runtime Bloom Filter 的最大使用内存，单位为字节。|
+| [runtime_filter_max_in_num](300.global-system-variable/16300.runtime_filter_max_in_num-global.md) | 用于设置 Runtime In Filter 的 NDV （某个列中不同值的个数）个数。 |
+| [runtime_filter_type](300.global-system-variable/16100.runtime_filter_type-global.md) | 用于设置租户级别的 Runtime Filter 类型。 |
+| [runtime_filter_wait_time_ms](300.global-system-variable/16200.runtime_filter_wait_time_ms-gloabl.md) | 用于设置 Runtime Filter 的最大等待时间。 |
+
+### 时区和日期相关
+
+|    变量名        |     功能描述         |
+|-----------------|----------------------------------------|
+| [lc_time_names](300.global-system-variable/3400.lc_time_names-global.md)             |   用于控制显示日期和月份名称和缩写的语言。            |
+| [timestamp](300.global-system-variable/2600.explicit_defaults_for_timestamp-global.md)             | `TIMESTAMP` 是时间戳，单位为秒，该变量影响 `select now(6)`的结果。               |
+| [nls_calendar](300.global-system-variable/4400.nls_calendar-global.md)          | 用于控制数据库使用的日历系统。            |
+| [nls_language](400.session-system-variable/5200.nls_language-session.md)          | 表示数据库国际化支持中的默认语言，用于提示信息、日期、月份名以及 `NLS_SORT` 和`NLS_DATE_LANGUAGE` 的默认值。 |
+| [error_on_overlap_time](300.global-system-variable/2500.error_on_overlap_time-global.md) | 用于设置夏令时重叠区时间发生歧义时是否作报错处理。              |
+| [nls_territory](300.global-system-variable/5800.nls_territory-global.md)         | 表示数据库国际化支持中的当前地域，与 `nls_language` 结合使用。   |
+| [time_zone](300.global-system-variable/12600.system_time_zone-global.md)             | 用于设置当前租户会话使用的时区，支持 `'+08:00'` 的 Offset 形式和 `Asia/Shanghai` 的地域形式取值。         |
+| show_old_temporals                | 用于控制是否显示旧的时间戳列。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| date_format                                        | 用于设置默认的日期格式。其默认值为 `%Y-%m-%d`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| datetime_format                   | 用于设置默认的日期时间格式。其默认值为 `%Y-%m-%d %H:%i:%s`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+
+### 视图相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| updatable_views_with_limit        | 用于控制是否在有 LIMIT 子句的视图上执行 UPDATE 或 DELETE 操作的。其默认值为 `1`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### 事务及事务日志相关
+
+|    变量名        |       功能描述        |
+|----------------|-------------------------|
+| [autocommit](300.global-system-variable/600.autocommit-global.md)                | 用于设置是否自动提交事务。   |
+| [ob_proxy_set_trx_executed](400.session-system-variable/8900.ob_proxy_set_trx_executed-session.md) | 用于设置用户是否通过 obproxy 发送 `START TRANSACTION Syntax` 给 OBServer。 |
+| [ob_trace_info](400.session-system-variable/10000.ob_trace_info-session.md)        | 用于透传 Trace 信息，该信息最终可透持久化到 REDO 日志中。   |
+| [nls_date_language](300.global-system-variable/4900.nls_date_language-global.md)     | 表示数据库国际化支持中的日期默认语言。        |
+| [ob_trx_idle_timeout](300.global-system-variable/10100.ob_trx_idle_timeout-global.md)       | 用于设置事务空闲超时时间，即事务中两条语句之间的执行间隔超过该值时超时。                   |
+| [ob_trx_lock_timeout](300.global-system-variable/10200.ob_trx_lock_timeout-global.md)       | 用于设置事务的等锁超时时长。           |
+| [ob_trx_timeout](300.global-system-variable/10300.ob_trx_timeout-global.md)  | 用于设置事务超时时间。|
+| [transaction_isolation](300.global-system-variable/13000.transaction_isolation-global.md)     | 用于设置事务的隔离级别。    |
+| [transaction_read_only](300.global-system-variable/13100.transaction_read_only-global.md)     | 用于控制是否只允许开启只读事务。|
+| [tx_isolation](300.global-system-variable/13200.tx_isolation-global.md)              | 用于设置事务隔离级别。     |
+| [tx_read_only](300.global-system-variable/13300.tx_read_only-global.md) | 用于设置是否为只读事务。|
+| gtid_owned                       | 用于存储当前会话使用和拥有的单个 GTID，其默认值为 `空值`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main> |
+| transaction_alloc_block_size     | 用于设置分配给每个事务的初始内存块大小，其默认值为 `8192`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| transaction_allow_batching       | 用于设置同一事务内是否启用语句批处理，其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| transaction_prealloc_size        | 用于设置预先分配的每个事务的内存块大小，其默认值为 `4069`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| transaction_write_set_extraction | 用于设置生成标识与事务相关写入的算法类型。其默认值为 `OFF`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### 数据类型相关
+
+|    变量名     |             功能描述             |
+|-------------------|-------------------------------------|
+| [explicit_defaults_for_timestamp](300.global-system-variable/2600.explicit_defaults_for_timestamp-global.md) | 用于指定 timestamp 数据类型在处理默认值和空值时是否启用非标准行为。       |
+| [nls_currency](300.global-system-variable/4700.nls_currency-global.md)            | 用于设置数字格式元素 `L` 的本地货币符号。       |
+| [nls_date_format](300.global-system-variable/4800.nls_date_format-global.md)         | 用于控制 date 类型转 str 的格式，以及 str 隐式转 date 的格式。  |
+| [nls_dual_currency](300.global-system-variable/5000.nls_dual_currency-global.md)       | 用于设置数字格式元素 `U` 的本地货币符号。       |
+| [nls_iso_currency](300.global-system-variable/5100.nls_iso_currency-global.md)        | 用于设置数字格式元素 `C` 的本地货币符号。       |
+| [nls_length_semantics](300.global-system-variable/5300.nls_length_semantics-global.md)    | 表示 CHAR、VARCHAR2 类型的 Length 语义。             |
+| [nls_nchar_conv_excp](300.global-system-variable/5500.nls_nchar_conv_excp-global.md)     | 用于控制 NCHAR/NVARCHAR2 与 CHAR/VARCHAR2 之间转换丢失数据时是否报错。        |
+| [nls_numeric_characters](300.global-system-variable/5600.nls_numeric_characters-global.md)  | 用于控制 Number 和字符串转换中字符串中小数分隔符和千分位分隔符的字符。     |
+| [nls_timestamp_format](300.global-system-variable/5900.nls_timestamp_format-global.md)    | 用于控制 Timestamp 或 Timestamp 中 ltz 类型转 str 的格式，以及 str 隐式转 Timestamp 或 Timestamp 中 ltz 的格式。 |
+| [nls_timestamp_tz_format](300.global-system-variable/6000.nls_timestamp_tz_format-global.md) | 用于控制 Timestamp tz 类型转 str 的格式，以及 str 隐式转 Timestamp tz 的格式。 |
+| [ob_default_lob_inrow_threshold](300.global-system-variable/6390.ob_default_lob_inrow_threshold-global.md)  | 用于指定建表时，表中 LOB 字段的默认行内存储阈值。 |
+
+
+### SQL/PL 相关
+
+| 变量名 | 功能描述 |
+|-------|----------|
+| [cursor_sharing](300.global-system-variable/2000.cursor_sharing-global.md) | 用于判断处理 SQL 时是否进行参数化。      |
+| have_profiling | 用于检测是否支持查询性能分析，其默认值为 `NO`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询，但无法设置。</p></main>      |
+| [max_sp_recursion_depth](300.global-system-variable/3900.max_sp_recursion_depth-global.md)  | 用于设置可以递归调用任一指定存储过程的最大层次。                          |
+| [ob_enable_blk_nestedloop_join](300.global-system-variable/6500.ob_enable_blk_nestedloop_join-global.md)  | 用于设置是否允许打开 block nested loop join。 |
+| [ob_pl_block_timeout](300.global-system-variable/8300.ob_pl_block_timeout-global.md)  | 用于设置 PL 的最大超时时间。   |
+| profiling | 用于启用或禁用语句分析功能，其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>      |
+| profiling_history_size | 用于设置保存查询性能信息的历史记录数量，其默认值为 `15`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>       |
+| [sql_mode](300.global-system-variable/11700.sql_mode-global.md)      | 用于设置 SQL 模式，不同的 SQL 模式对于插入等行为有很大影响。      |
+| [sql_quote_show_create](300.global-system-variable/11800.sql_quote_show_create-global.md) |用于设置是否为 `SHOW CREATE TABLE` 和 `SHOW CREATE DATABASE` 语句启动引用标识符。|
+| [sql_safe_updates](300.global-system-variable/11900.sql_safe_updates-global.md)                | 用于设置是否启用 MySQL 的 SQL 安全模式，默认为关闭。 |
+| [sql_select_limit](300.global-system-variable/12000.sql_select_limit-global.md)        | 用于设置一个 Select 查询允许返回的最大行数。                        |
+| [sql_throttle_current_priority](300.global-system-variable/12100.sql_throttle_current_priority-global.md) | 用于设置限流优先级，只有 `sql_throttle_current_priority` 小于 `sql_throttle_priority` 的那些 session 上的请求才会被限流。 |
+| [ob_enable_parameter_anonymous_block](../200.system-variable/300.global-system-variable/6570.ob-enable-parameter-anonymous-block-global.md)|用于是否开启当前会话的匿名块参数化功能。|
+| parser_max_mem_size               | 用于设置解析器可以使用的最大内存量。其默认值为 `18446744073709551615`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+
+### 锁相关
+
+| 变量名   | 功能描述  |
+|----------|----------|
+| innodb_lock_wait_timeout      | 用于设置 InnoDB 事务等待锁的最大时间（单位为秒），其默认值为 `50`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| innodb_table_locks      | 用于设置 InnoDB 表级锁定的行为，其默认值为 `ON`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### 随机数相关
+
+| 变量名 | 功能描述 |
+|-------|---------|
+| rand_seed1                       | 用于设置随机数生成器的种子值。其默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+| rand_seed2                       | 用于设置随机数生成器的附加种子值。其默认值为 ``。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                         |
+
+### 系统日志相关
+
+|   变量名   |                 功能描述                  |
+|----------------|---------------------------------------|
+| [binlog_row_image](300.global-system-variable/700.binlog_row_image-global.md)     | 用于控制是否记录全列日志。                         |
+| [ob_enable_show_trace](400.session-system-variable/7400.ob_enable_show_trace-session.md)  | 用于设置是否使用 Show Trace 日志。                    |
+| [tracefile_identifier](400.session-system-variable/12900.tracefile_identifier-session.md) | 用于在日志中增加指定内容，便于筛选行迭代跟踪日志。             |
+| [ob_log_level](300.global-system-variable/8000.ob_log_level-global.md)         | 用于设置 session 级的日志级别，如果不指定则使用系统中的日志级别。 |
+
+### 系统服务器相关
+
+| 变量名                                                   | 功能描述                                                      |
+|---------------------------------------------------------|---------------------------------------------------------------|
+| pseudo_slave_mode                                       | 设置服务器是否转换为模拟从库模式，默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| pseudo_thread_id                                        | 设置会话线程的 ID，默认值为 `2147483647`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| rbr_exec_mode                                           | 设置会话线程的模式为 IDEMPOTENT 模式还是 STRICT 模式，默认值为
+`STRICT`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| insert_id                                         | 该变量定义的值将被后续的 `INSERT` 或 `ALTER TABLE` 语句使用，用于插入 AUTO_INCREMENT 值。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| join_buffer_size                                  | 指定用于纯索引扫描、范围索引扫描以及不使用索引而执行全表扫描的联接的缓冲区的最小大小，单位为字节，默认值为 `262144`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_join_size                                     | 用于限制 Join 操作中允许的最大行数，默认值为 `18446744073709547520`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_length_for_sort_data                          | 指定索引值大小的截断值，用于确定使用哪种文件排序算法，默认值为 `1024`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| max_sort_length                                   | 对数值进行排序时所使用的字节数，默认值为 `1024`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| min_examined_row_limit                            | 设置检查的行数大于等于多少行时会记录到慢查询日志中，即检查少于该变量指定的行数的查询不会记录到慢查询日志中，默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| multi_range_count                                 | 指定查询语句中 Range 范围的最大个数，默认值为 `256`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| query_alloc_block_size                            | 为语句解析和执行期间创建的对象所分配的内存块的大小，单位为字节，默认值为 `8192`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| query_prealloc_size                               | 用于语句解析和执行的固定缓冲区的大小，单位为字节，默认值为 `8192`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| sort_buffer_size                                  | 指定执行排序时使用的缓冲区大小，单位为字节，默认值为 `262144`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| sql_buffer_result                                 | 控制是否将 `SELECT` 语句的结果放入临时表中，默认值为 `0`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+| myisam_repair_threads                             | 指定修复 MyISAM 表时的并发线程数。其默认值为 `1`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                   |
+| myisam_sort_buffer_size                           | 指定在 REPAIR TABLE 期间对 MyISAM 索引进行排序或使用 CREATE INDEX （或 ALTER TABLE）创建索引时所分配的缓存大小，单位为字节。其默认值为 `8388608`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| myisam_stats_method                               | 指定在收集 MyISAM 表索引值分布的统计信息时，服务器对 NULL 值的计算方法。其默认值为 `nulls_unequal`，表示将 NULL 值视为普通值，与其他值一样对待。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| preload_buffer_size                               | 预加载索引时所分配的缓存的大小，单位为字节。其默认值为 `32768`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                |
+| read_buffer_size                                  | 指定在读取数据时间可使用的缓存大小，单位为字节。其默认值为 `131072`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| read_rnd_buffer_size                              | 指定从 MyISAM 表中读取数据时的缓存大小，同时对于任何存储引擎，也用于多范围的读取优化，单位为字节。其默认值为 `262144`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| keep_files_on_create                              | 当未使用 `DATA DIRECTORY` 或 `INDEX DIRECTORY` 选项来指定数据文件或索引文件的存放位置时，该变量用于控制服务器在创建 MyISAM 表时，是否保留对应目录下已存在的文件。其默认值为 `OFF`，表示覆盖已存在的文件。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| max_heap_table_size                               | 指定用户创建的内存表允许增长到的最大大小，单位为字节。其默认值为 `16777216`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| bulk_insert_buffer_size                          | 指定批量插入数据时的缓存大小，单位为字节/线程。其默认值为 `8388608`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| max_delayed_threads                               | 处理 INSERT DELAYED 语句允许创建的最大线程数。其默认值为 `20`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+| sql_log_off                                       | 启用（OFF）或禁用（ON）当前会话的普通查询日志记录。其默认值为 `OFF`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| thread_pool_high_priority_connection              | 控制线程池是否为高优先级连接保留空闲线程。其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| version_tokens_session_number                     | 内部使用的变量，其默认值为 `0`。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>                  |
+
+### 外键相关
+
+|   变量名    |    功能描述  |
+|--------------------|----------------------|
+| [foreign_key_checks](300.global-system-variable/2700.foreign_key_checks-global.md) | 用于设置是否在 DML/DDL 中检查外建约束。 |
+
+### 优化器相关
+
+|           变量名           |              功能描述              |
+|--------------------------------|--------------------------------|
+| [ob_enable_transformation](300.global-system-variable/7500.ob_enable_transformation-global.md)        | 用于设置是否开启 SQL 优化器的改写功能。                        |
+| [optimizer_capture_sql_plan_baselines](300.global-system-variable/10400.optimizer_capture_sql_plan_baselines-global.md) | 用于控制是否自动捕获新计划到 Plan Baseline。  |
+| [optimizer_features_enable](300.global-system-variable/10460.optimizer_features_enable-global.md) | 用于启用不同 OceanBase 版本优化器功能。 |
+| [optimizer_use_sql_plan_baselines](300.global-system-variable/10500.optimizer_use_sql_plan_baselines-global.md)     | 用于控制优化器是否会使用 Plan Baseline 计划。 |
+
+### 自增列相关
+
+|    变量名     |   功能描述     |
+|--------------|----------------|
+| [auto_increment_increment](300.global-system-variable/400.auto_increment_increment-global.md)| 用于设置自增步长，仅用于 MySQL 客户端登录。     |
+| [auto_increment_offset](300.global-system-variable/500.auto_increment_offset-global.md)   | 用于确定 `AUTO_INCREMENT` 列值的起点。   |
+| [identity](400.session-system-variable/2900.identity-session.md)    | `identity` 和变量 `last_insert_id` 是同义词，可以通过 `select @@identity` 查询。 |
+| [last_insert_id](400.session-system-variable/3400.last_insert_id-session.md)   | 用于返回本 session 最后一次插入的自增字段值。   |
+| [div_precision_increment](300.global-system-variable/2400.div_precision_increment-global.md)        | 用于设置除法结果精度在被除数精度基础上的增量，是 MySQL 兼容功能。     |
+| [sql_auto_is_null](300.global-system-variable/11600.sql_auto_is_null-global.md)    | 用于控制是否获取最后插入行的自增列值。  |
+
+### 字符集和字符串相关
+
+|     变量名     | 功能描述  |
+|--------------------|--------------------------------------------|
+| [character_set_client](300.global-system-variable/900.character_set_client-global.md)    | 用于设置客户端发送语句的字符集。             |
+| [character_set_database](300.global-system-variable/1100.character_set_database-global.md)   | 用于设置默认数据库的字符集。       |
+| [character_set_filesystem](300.global-system-variable/1200.character_set_filesystem-global.md) | 用于设置文件系统字符集类型。      |
+| [character_set_results](300.global-system-variable/1300.character_set_results-global.md)    | 用于设置服务器在将结果集或错误消息发送回客户端之前应转换为的字符集。       |
+| [character_set_server](300.global-system-variable/1400.character_set_server-global.md)     | 用于设置服务器字符集。  |
+| [character_set_system](300.global-system-variable/1500.character_set_system-global.md)     | 用于查看服务器使用的字符集。            |
+| [collation_connection](300.global-system-variable/1600.collation_connection-global.md)     | 用于设置连接使用的字符集和字符序。   |
+| [collation_database](300.global-system-variable/1700.collation_database-global.md)       | 用于设置创建数据库默认字符集和字符序。 |
+| [collation_server](300.global-system-variable/1800.collation_server-global.md)         | 用于设置服务器默认字符集和字符序。   |
+| [nls_comp](300.global-system-variable/4600.nls_comp-global.md)                 | 表示字符串值的比较规则。   |
+| [nls_sort](300.global-system-variable/5700.nls_sort-global.md)                 | 表示字符串值的排序规则。  |
+| [sql_warnings](300.global-system-variable/12500.sql_warnings-global.md)             | 用于在出现告警时控制单行 INSERT 语句是否生成信息字符串。     |
+| default_collation_for_utf8mb4      | 用于设置 utf8mb4 字符集的默认字符序，其默认值为 `utf8mb4_general_ci`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main> |
+
+### 组复制相关
+
+| 变量名                                                   | 功能描述                                                      |
+|---------------------------------------------------------|---------------------------------------------------------------|
+| group_replication_force_members                          | 指定成员的地址列表，格式为 `host1:port1,host2:port2`。该变量用于强制建立一个新的组。设置成功后，被排除的成员（该变量中未指定的成员）将不会接收到新的视图消息并且还会被阻塞（阻塞写入操作）。其默认值为空。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>      |
+| group_replication_group_name                             | 指定当前服务器所属的组复制的组名。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_gtid_assignment_block_size             | 指定为每个成员保留的连续 GTID 数。其默认值为 `1000000`。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_ip_whitelist                           | 指定允许哪些主机（IP 地址或主机名）连接到组，被允许访问的地址称为白名单地址。其默认值为 `AUTOMATIC`。  <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_local_address                          | 组复制成员用于提供给组中其他成员连接访问的网络地址。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>     |
+| group_replication_recovery_ssl_ca                        | 指定用于分布式恢复连接的受信任 SSL 证书颁发机构列表的文件的路径。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_recovery_ssl_capath                     | 指定用于分布式恢复连接的受信任的 SSL 证书颁发机构颁发的证书的目录路径。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_recovery_ssl_cert                       | 指定用于建立分布式恢复所需的安全连接的 SSL 证书文件的名称。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_recovery_ssl_cipher                     | 指定允许用于 SSL 加密的加密算法列表，可用的加密算法取决于编译 MySQL Server 时使用的 ssl lib 库版本，不同的 ssl lib 库支持的加密算法有所不同。其默认值为空。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>    |
+| group_replication_recovery_ssl_crl                        | 指定包含证书吊销列表文件的文件名。其默认值为空。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>   |
+| group_replication_recovery_ssl_crlpath                    | 指定包含证书吊销列表文件的目录路径。其默认值为空。<main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |
+| group_replication_recovery_ssl_key                        | 指定用于建立分布式恢复所需的安全连接的 SSL 密钥文件的名称。其默认值为空。 <main id="notice" type='explain'><h4>说明</h4><p>该变量仅用于兼容 MySQL 5.7，相关功能并不支持，可以查询及设置，设置行为不报错但不生效。</p></main>  |

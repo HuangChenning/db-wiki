@@ -1,0 +1,37 @@
+---
+title: CLEAR_IDENTIFIER
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686723.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# CLEAR_IDENTIFIER
+
+`CLEAR_IDENTIFIER` 过程将当前会话的标识设置为 `NULL`。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 语法
+
+```sql
+DBMS_SESSION.CLEAR_IDENTIFIER;
+```
+
+## 使用说明
+
+`CLEAR_IDENTIFIER` 过程可由 `PUBLIC` 执行。
+
+## 示例
+
+```sql
+BEGIN
+  DBMS_SESSION.CLEAR_IDENTIFIER;
+END;
+```

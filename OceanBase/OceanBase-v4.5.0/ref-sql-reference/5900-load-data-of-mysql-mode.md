@@ -1,0 +1,819 @@
+---
+title: LOAD DATA
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479542.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# LOAD DATA
+
+## 概述
+
+该语句用于从外部导入数据。OceanBase 数据库提供两种形式的 `LOAD DATA`，执行路径与适用场景不同：
+
+* **LOAD DATA INFILE**：兼容 MySQL 语法，仅支持 CSV 格式，通过 `INFILE`、`LOCAL` 或 `REMOTE_OSS` 指定文件来源（服务器端、客户端本地或 OSS）。
+* **LOAD DATA FROM**：**推荐使用**。通过 URL 外表读取数据，支持 CSV、PARQUET、ORC、ODPS 等多种格式，执行路径与 INFILE 形式不同，更适合 AP 等批量导入场景。
+
+两种形式的语法、参数和诊断方式差异较大，请按实际使用形式查阅下面对应章节。
+
+## 通用注意事项
+
+* 带有触发器（Trigger）的表禁止使用 <code>LOAD DATA</code> 语句。
+
+* 要从外部文件导入数据，您需要具有 <code>FILE</code> 权限及以下设置：
+
+  * 加载服务器端文件时，需要提前设置系统变量 <a href="../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/12000.secure_file_priv-global.md">secure_file_priv</a>，配置导入或导出文件时可以访问的路径。
+  * 加载客户端本地文件时，需要在启动 MySQL/[OBClient](https://www.oceanbase.com/softwarecenter-cloud) 客户端时添加 <code>--local-infile[=1]</code> 选项来启用从本地文件系统加载数据的功能。
+
+* 使用指定分区旁路导入时需要注意，目标表不能是复制表，且不能含有自增列、标识列和全局索引。
+
+* 为提高导入效率，建议您先创建基础表，导入完成后再创建索引。若有全局索引，请务必在导入完成后再创建，否则可能报错 `not support`。
+
+## 一、LOAD DATA INFILE
+
+本形式兼容 MySQL 的 `LOAD DATA` 语法，**仅支持 CSV 格式**。可加载服务器端文件（`INFILE`）、客户端本地文件（`LOCAL`）或 OSS 文件（`REMOTE_OSS`）。导入流程：解析文件 → 分发数据 → 插入数据。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>执行 <code>LOAD DATA LOCAL INFILE</code> 时，系统会自动添加 <code>IGNORE</code> 选项。</li><li>如果需要导入的文件在 OBServer 的本地磁盘，请直连 OBServer 执行本语句，请勿通过 Proxy 执行。</li></ul></p>
+</main>
+
+### LOAD DATA INFILE 语法
+
+```sql
+LOAD DATA
+    [/*+ PARALLEL(N) [load_batch_size(M)] [APPEND | direct(bool, int, [load_mode])] | NO_DIRECT */]
+    [REMOTE_OSS | LOCAL] INFILE 'file_name'
+    [REPLACE | IGNORE]
+    INTO TABLE table_name [PARTITION(PARTITION_OPTION)]
+    [CHARACTER SET 'charset_name']
+    [COMPRESSION [=] {AUTO|NONE|GZIP|DEFLATE|ZSTD}]
+    [{FIELDS | COLUMNS}
+        [TERMINATED BY 'string']
+        [[OPTIONALLY] ENCLOSED BY 'char']
+        [ESCAPED BY 'char']
+    ]
+    [LINES
+        [STARTING BY 'string']
+        [TERMINATED BY 'string']
+    ]
+    [IGNORE number {LINES | ROWS}]
+    [(column_name_var
+        [, column_name_var] ...)]
+    [SET col_name = {expr | DEFAULT}
+        [, col_name = {expr | DEFAULT}] ...]
+
+load_mode:
+    'full'
+    | 'inc_replace'
+
+PARTITION_OPTION:
+    partition_option_list
+    | subpartition_option_list
+```
+
+### LOAD DATA INFILE / SELECT INTO OUTFILE：Location 对象支持
+
+#### 概述
+
+`LOAD DATA INFILE` 与 `SELECT INTO OUTFILE` 支持通过 **Location 对象**指定文件路径，并支持在未显式填写 AK/SK 时，按规则 **自动匹配** Location 对象。
+
+#### LOAD DATA INFILE
+
+##### 自动匹配机制
+
+当导入路径为 **OSS** 且未显式指定 AK/SK 时，系统会将路径与当前用户有权限的 Location 对象自动匹配，采用 **最长路径匹配** 原则选取对应的 AK/SK。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该功能要求 Location 对象类型必须为 <strong>OSS 路径</strong>。</p>
+</main>
+
+##### 语法示例
+
+使用 `@location_name 'relative_path'` 方式指定路径（`@` 后为 Location 对象名，字符串为相对于该对象路径的子路径）：
+
+```sql
+LOAD DATA REMOTE_OSS INFILE @oss_t 'load_data_test.csv'
+INTO TABLE load_table
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n';
+```
+
+其中 `@oss_t` 为 Location 对象名，`'load_data_test.csv'` 为相对于该对象路径的子路径。
+
+#### SELECT INTO OUTFILE
+
+##### 自动匹配机制
+
+当导出路径为 **对象存储或 HDFS** 且未显式指定 AK/SK 时，系统会将路径与当前用户有权限的 Location 对象自动匹配，采用 **最长路径匹配** 原则选取对应的 AK/SK。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>Location 对象类型不限，支持 OSS、HDFS 等。</p>
+</main>
+
+##### 语法示例
+
+使用 `@location_name 'relative_path'` 方式指定路径：
+
+```sql
+SELECT *
+INTO OUTFILE @oss_t 'select_into_test.csv'
+FORMAT = (
+    TYPE = 'CSV',
+    FIELD_DELIMITER = ',',
+    LINE_DELIMITER = '\n'
+)
+FROM export_table;
+```
+
+其中 `@oss_t` 为 Location 对象名，`'select_into_test.csv'` 为相对于该对象路径的子路径。
+
+### 参数解释（仅适用于 INFILE 形式）
+
+|                参数                |            描述                   |
+|----------------------------------|-------------------------------------------|
+| parallel(N)                      | 加载数据的并行度，默认为 4。建议取值范围为 [0, 租户最大 CPU 数]。   |
+| load_batch_size(M)               | 指定每次插入的批量大小，`M` 默认为 `100`。推荐取值范围为 [100,1000]。   |
+| APPEND \| direct() \|NO_DIRECT   | 使用 Hint 启用旁路导入功能。<main id="notice" type='notice'><h4>注意</h4><p>在执行旁路导入任务的过程中，不建议同时进行 OceanBase 数据库的升级操作，因为这可能导致旁路导入任务失败。</p></main> <ul><li>`APPEND` Hint 默认等同于使用的 `direct(true, 0)`，同时可以实现在线收集统计信息（`GATHER_OPTIMIZER_STATISTICS` Hint）的功能。</li><li>`direct()` 参数解释如下：<ul><li><code>bool</code>：表示写入的数据是否需要排序，<code>true</code> 表示需要排序，<code>false</code> 表示不需要排序。<main id="notice" type='explain'><h4>说明</h4><p>在有序文件和备份数据（已按主键排序）导入的场景中，可设置 <code>need_sort</code> 的取值为 <code>false</code> 跳过排序流程；若数据未按主键排序且未显式开启排序（<code>need_sort</code> 的取值为 <code>true</code>）时，会触发错误。</p></main></li><li><code>int</code>：表示最大容忍的错误行数。</li><li><code>load_mode</code>：可选参数，表示旁路导入的模式。取值须使用英文单引号包起来，取值如下：<ul><li><code>full</code>：默认值，表示全量导入。<main id="notice" type='notice'><h4>注意</h4><p>对于带唯一索引的全量旁路导入，当出现重复唯一索引键时，暂时不支持 <code>REPLACE</code> 或 <code>IGNORE</code> 关键字，也不支持设置容错行。</p></main></li><li><code>inc</code>：表示增量导入，支持 <code>INSERT</code> 和 <code>IGNORE</code> 语义。</li><li><code>inc_replace</code>：表示增量导入，但不检查主键是否重复，相当于 <code>REPLACE</code> 语义的增量导入。<main id="notice" type='notice'><h4>注意</h4><p>当 <code>load_mode</code> 取值为 <code>inc_replace</code> 时，<code>LOAD DATA</code> 语句中不允许有 <code>REPLACE</code> 或 <code>IGNORE</code> 关键字。</p></main></li></ul></li></ul></li><li><code>NO_DIRECT</code>：控制单条 SQL 强制不走旁路导入，只要输入的 SQL 带有该 Hint，则整个语句忽略其他旁路导入的 Hint，执行普通导入。</li></ul> 更多使用 `LOAD DATA` 旁路导入的信息，参见 [使用 LOAD DATA 语句旁路导入数据/文件](../../../../../620.obap/300.obap-data-collection/300.obap-import-data/20.bypass-import/200.full-bypass-import.md)。|
+| REMOTE_OSS \| LOCAL | 可选项，<ul><li> <code>REMOTE_OSS</code> 用于指定是否从对象存储上读取数据，如果使用了此参数，必须是一个对象存储的地址，支持阿里云的 OSS（<code>oss://</code>）、AWS 的 S3（<code>s3://</code>）及兼容 S3 的对象存储，如 OBS、GCS 等（均使用 <code>s3://</code>）。  </li><li> <code>LOCAL</code> 用于指定是否从客户端的本地文件系统读取数据。如果不使用 `LOCAL` 参数，那么将从服务器端（OBServer 节点）的文件系统读取数据。</li></ul>有关该参数的详细说明，参见 [使用 LOAD DATA 语句旁路导入数据/文件](../../../../../620.obap/300.obap-data-collection/300.obap-import-data/20.bypass-import/200.full-bypass-import.md)。 |
+| file_name                        | 指定输入文件的路径和文件名。 <code>file_name</code> 有以下格式：<ul><li>导入文件在 OBServer 节点或客户端：<code>/\$PATH/\$FILENAME</code>。</li><li>导入文件在 OSS 上：<code>oss://\$PATH/\$FILENAME/?host=\$HOST&access_id=\$ACCESS_ID&access_key=\$ACCESSKEY</code>。</li></ul>     参数解释如下：<ul><li><code>\$PATH</code>：指定了存储桶中的文件路径，表示文件所在的目录。</li><li><code>\$FILENAME</code>：指定了文件的名称，表示要访问的具体文件。</li><li><code>\$HOST</code>：指定了 OSS 服务的主机名或 CDN 加速的域名，即要访问的 OSS 服务的地址。</li><li><code>\$ACCESS_ID</code>：指定了访问 OSS 服务所需的 Access Key ID，用于身份验证。</li><li><code>\$ACCESSKEY</code>：指定了访问 OSS 服务所需的 Access Key Secret，用于身份验证。</li></ul>    <main id="notice" type='explain'> <h4>说明</h4> <p>在导入 OSS 上的文件时，需要确保以下信息：<ul><li>确保访问 OSS 存储桶和文件的权限。你需要拥有足够的权限来读取指定的存储桶和文件。这通常需要在 OSS 控制台或通过 OSS API 设置访问权限，并将访问密钥（Access Key ID 和 Access Key Secret）配置为具有适当权限的凭据。</li><li>确保数据库服务器可以通过网络连接到指定的 <code>$HOST</code> 地址，以访问 OSS 服务。如果使用的是 OSS 服务的 CDN 加速域名，还需要确保 CDN 配置正确，并且网络连接正常。</li></ul></p> </main>  |
+| REPLACE \| IGNORE                | 如果遇到唯一键冲突，`REPLACE` 表示覆盖冲突行，`IGNORE` 表示忽略冲突行。`LOAD DATA` 通过表的主键来判断数据是否重复，如果表不存在主键，则 `REPLACE` 与 `IGNORE` 选项没有区别。缺省时，遇到重复数据的时候，`LOAD DATA` 会将出现错误的数据记录到日志文件中。 <main id="notice" type='notice'><h4>注意</h4><p><ul><li>在 MySQL 模式中执行 <code>LOAD DATA LOCAL INFILE</code> 命令时，系统会自动添加 <code>IGNORE</code> 选项。这种行为提供了与 MySQL 数据库更好的兼容性。</li><li>使用 <code>REPLACE</code> 或者 <code>IGNORE</code> 子句的情况下，如果并行度大于 <code>1</code>，发生冲突的行最后插入的记录可能与串行执行的结果不同。如果需要严格保证冲突记录的插入结果，请不要指定该语句的并行度（或将并行度设置为 <code>1</code>）。</li></ul></p></main> |
+| table_name                       | 导入数据的表的名称。<ul><li>支持分区表与非分区表。</li><li>支持指定表任意列数目。</li></ul>  |
+| CHARACTER SET 'charset_name'    | 可选项，指定导入源文件所使用的字符集。若不指定，系统默认按 UTF-8 解析源文件。 |
+| PARTITION_OPTION                   | 指定分区旁路导入时的分区名：<ul><li>partition_option_list：一级分区列表，同时插入多个分区时以逗号（,）分隔。 </li> <li>subpartition_option_list：二级分区列表，同时插入多个分区时以逗号（,）分隔。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>指定分区只支持旁路导入，不支持普通的 LOAD DATA，即如果没添加旁路导入的 Hint 或者没有设置旁路导入的配置项，执行 LOAD DATA 时指定分区是不生效的。</p></main>|
+| COMPRESSION                      | 指定压缩文件格式，其中<ul><li><code>AUTO</code>：根据文件名后缀自动探测压缩算法。<br>在使用 <code>AUTO</code> 参数时，不同的后缀名有对应的压缩格式。<ul><li><code>.gz</code>：对应 GZIP 压缩文件。</li><li><code>.deflate</code>：对应 DEFLATE 压缩文件。</li><li><code>.zst/.zstd</code>：对应 ZSTD 压缩文件。</li></ul></li><li><code>NONE</code>：表示文件没有压缩。</li><li><code>GZIP</code>：GZIP 压缩文件。</li><li><code>DEFLATE</code>：不带元数据的GZIP压缩文件。</li><li><code>ZSTD</code>：ZSTD 压缩文件。</li></ul>可以明确文件的压缩格式或者让程序根据文件名后缀来探测压缩格式。|
+| FIELDS \| COLUMNS                | 指定字段的格式。 <ul><li> `ENCLOSED BY`：设置导出值的修饰符。  </li> <li> `TERMINATED BY`：设置导出列的结束符。 </li> <li>`ESCAPED BY`：设置导出值忽略的字符。</li></ul>    |
+| LINES STARTING BY                | 指定行起始符。   |
+| LINES TERMINATED BY              | 指定行结束符。  |
+| IGNORE number { LINES \| ROWS } | 忽略前几行，`LINES` 表示文件的前几行，`ROWS` 表示由字段分隔符指定的前几行数据。缺省时，会将输入文件中的字段逐个与表中的列进行对应。如果输入文件中并没有包含所有的列，那么缺少的列按照以下的规则会被默认填充：  <ul><li> 字符类型：空字符串。   </li> <li> 数值类型：0。    </li> <li> 日期类型：`0000-00-00`。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>多文件导入时，与单文件导入行为同理。</p></main>    |
+| column_name_var                  | 可选项，指定导入的列名。若需在文件中表示空值，请使用 <code>\N</code>。  |
+| SET col_name = {expr \| DEFAULT} | 可选项，为未从文件中读取的列指定表达式或默认值。例如 <code>SET dates=CURRENT_TIMESTAMP</code> 表示将 <code>dates</code> 列设为当前时间戳。  |
+
+**支持格式**：本形式仅支持 **CSV** 格式。
+
+**旁路与非旁路**：可通过 Hint 启用旁路导入以提升性能，详见 [使用 LOAD DATA 语句旁路导入数据/文件](../../../../../620.obap/300.obap-data-collection/300.obap-import-data/20.bypass-import/200.full-bypass-import.md)。
+
+### 多文件旁路导入时通配符的规则（仅 INFILE 形式）
+
+为便于多文件导入，引入文件通配符功能，适用于服务器端和 OSS 文件导入，不适用于客户端文件导入。
+
+* **服务器端通配符使用**
+
+  * **匹配规则：** 匹配文件名：`load data /*+ parallel(20) direct(true, 0) */ infile '/xxx/test.*.csv' replace into table t1 fields terminated by '|';`；匹配目录、同时匹配目录和文件名类似。
+  * **注意事项：** 必须存在至少一个匹配的文件，否则返回错误码 4027；只支持 POSIX 的 GLOB 函数能支持的通配符。
+
+* **云对象存储服务（OSS）中通配符使用**：匹配文件名：`load data /*+ parallel(20) direct(true, 0) */ remote_oss infile 'oss://xxx/test.*.csv?host=xxx&access_id=xxx&access_key=xxx' replace into table t1 fields terminated by '|';`。不支持目录匹配；文件名通配符只支持 `*` 和 `?`。
+
+## 二、LOAD DATA FROM（推荐）
+
+本形式通过 URL 外表读取数据，**支持 CSV、PARQUET、ORC、ODPS 等多种格式**，执行路径与 INFILE 形式不同，适合 AP 等批量导入场景，为当前主推方式。执行时等价于 `INSERT INTO ... SELECT ...`：`LOAD DATA FROM FILES(...) INTO TABLE table_name` 等价于 `INSERT INTO table_name SELECT * FROM FILES(...)`，Hint 与 [INSERT 语句](200-insert-of-oracle-mode.md) 一致。
+
+### LOAD DATA FROM 语法
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>本形式在执行时等价于 <code>INSERT INTO table_name SELECT ... FROM url_table_function_expr</code>，因此语句中的 Hint 与 <a href="https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480988">INSERT 语句</a> 一致（如 <code>direct</code>、<code>parallel</code> 等），不再使用 INFILE 形式专用的 <code>load_batch_size</code> 等参数。</p>
+</main>
+
+```sql
+LOAD DATA
+    [/*+ insert_hint */]
+    [REPLACE | IGNORE]
+    FROM { url_table_function_expr |
+         ( SELECT expression_list FROM url_table_function_expr ) }
+    INTO TABLE table_name
+    [PARTITION(PARTITION_OPTION)]
+    [(column_name_var [, column_name_var] ...)]
+    [LOG ERRORS
+        [INTO 'logfile_string']
+        [REJECT LIMIT {integer | UNLIMITED}]
+        [BADFILE 'badfile_string']]
+
+url_table_function_expr:
+
+  FILES (
+    LOCATION = '<string>',
+    {
+      FORMAT = (
+        TYPE = 'CSV',
+        LINE_DELIMITER = '<string>' | <expr>,
+        FIELD_DELIMITER = '<string>' | <expr>,
+        PARSE_HEADER = { TRUE | FALSE },
+        ESCAPE = '<character>' | <expr>,
+        FIELD_OPTIONALLY_ENCLOSED_BY = '<character>' | <expr>,
+        ENCODING = 'charset',
+        NULL_IF = ('<string>' | <expr>, '<string>' | <expr> ...),
+        SKIP_HEADER = <int>,
+        SKIP_BLANK_LINES = { TRUE | FALSE },
+        TRIM_SPACE = { TRUE | FALSE },
+        EMPTY_FIELD_AS_NULL = { TRUE | FALSE }
+      )
+      | FORMAT = ( TYPE = 'PARQUET' | 'ORC' )
+    },
+    [PATTERN = '<regex_pattern>']
+  )
+  | SOURCE (
+      TYPE = 'ODPS',
+      ACCESSID = '<string>',
+      ACCESSKEY = '<string>',
+      ENDPOINT = '<string>',
+      TUNNEL_ENDPOINT = '<string>',
+      PROJECT_NAME = '<string>',
+      SCHEMA_NAME = '<string>',
+      TABLE_NAME = '<string>',
+      QUOTA_NAME = '<string>',
+      COMPRESSION_CODE = '<string>'
+    )
+
+PARTITION_OPTION:
+    partition_option_list
+    | subpartition_option_list
+```
+
+### 参数解释（仅适用于 LOAD DATA FROM 形式）
+
+| 参数 | 描述 |
+|------|------|
+| Hint | 与 [INSERT 语句](200-insert-of-oracle-mode.md) 的 Hint 一致（本形式执行等价于 INSERT INTO ... SELECT ...）。 |
+| url_table_function_expr | 通过 FILES 或 SOURCE 指定数据来源与格式。 |
+| table_name、PARTITION_OPTION | 与 INFILE 形式相同。 |
+| column_name_var | 可选项，指定导入的列名。 |
+| LOG ERRORS | 可选项，用于开启导入过程中的错误诊断，详见下文 [log_errors](#log_errors)。 |
+
+**支持格式**：CSV、PARQUET、ORC（通过 FILES）；ODPS（通过 SOURCE）。
+
+**旁路与非旁路**：可通过 Hint 启用旁路导入，详见 [使用 LOAD DATA 语句旁路导入数据/文件](../../../../../620.obap/300.obap-data-collection/300.obap-import-data/20.bypass-import/200.full-bypass-import.md)。
+
+**诊断**：使用 `LOG ERRORS`、`REJECT LIMIT`、`BADFILE` 可记录失败行；使用 `READ_ERROR_LOG` 查看错误日志，详见下文 [log_errors](#log_errors)。
+
+### FILES
+
+`FILES` 关键字由 `LOCATION` 子句、 `FORMAT` 子句和 `PATTERN` 子句构成。
+
+* `LOCATION` 子句用于指定外表文件存放的路径。通常外表的数据文件存放于单独一个目录中，文件夹中可以包含子目录，在创建表时，外表会自动收集该目录中的所有文件。
+
+  * 本地 LOCATION 格式为 `LOCATION = '[file://] local_file_path'`，其中 `local_file_path` 可以为相对路径，也可以为绝对路径。如果填写的是相对路径，则当前目录必须为 OceanBase 数据库的安装目录；`secure_file_priv` 用于配置 OBServer 节点有权限访问的文件路径。`local_file_path` 只能是 `secure_file_priv` 路径的子路径。
+
+  * 远程 Location 格式如下：
+
+    * `LOCATION = '{oss|S3}://$ACCESS_ID:$ACCESS_KEY@$HOST:s3_region/remote_file_path'` ，其中 `$ACCESS_ID`、`$ACCESS_KEY` 和 `$HOST` 为访问 OSS 和 S3 所需配置的访问信息，`s3_region` 为使用 S3 时选择的区域信息，这些敏感的访问信息会以加密的方式存放在数据库的系统表中
+    * `LOCATION = 'hdfs://$ {hdfs_namenode_address}:${port}/PATH.localhost'` 而 `port` 指的是 HDFS 的端口号，`PATH` 指 HDFS 中的目录路径。
+      * 带 kerberos 认证：`LOCATION = 'hdfs://localhost:port/user?principal=xxx&keytab=xxx&krb5conf=xxx&configs=xxx'`。
+        其中：
+        * `principal`：指登录认证用户。
+        * `keytab`：用户认证的密钥文件路径。
+        * `krb5conf`：用户使用 kerberos 环境的描述文件路径。
+        * `configs`：额外的 HDFS 配置项，默认为空，但是如果是 kerberos 环境，则通常该配置项有值，需要进行配置，例如：`dfs.data.transfer.protection=authentication,privacy`，指定数据传输保护级别为 `authentication` 和 `privacy`。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>使用对象存储路径时，对象存储路径的各项参数由 <code>&</code> 符号进行分隔，请确保您输入的参数值中仅包含英文字母大小写、数字、<code>\/-_$+=</code> 以及通配符。如果您输入了上述以外的其他字符，可能会导致设置失败。</p>
+    </main>
+
+* `FORMAT` 子句用于指定读取文件格式相关的属性，支持 CSV/PARQUET/ORC 三种文件格式。
+
+  * 当 **TYPE = 'CSV'** 时，包含以下字段：
+
+    * `LINE_DELIMITER`：指定 CSV 文件的行分隔符，默认为 `LINE_DELIMITER='\n'`。
+    * `FIELD_DELIMITER`：可选项，指定 CSV 文件的列分隔符，默认为 `FIELD_DELIMITER='\t'`。
+    * `PARSE_HEADER`：可选项，指定 CSV 文件的第一行是否为每列的列名。默认为 `FALSE`，表示不指定 CSV 文件的第一行为每列的列名。
+    * `ESCAPE`：指定 CSV 文件的转义符号，只能为 1 个字节，默认为 `ESCAPE ='\'`。
+    * `FIELD_OPTIONALLY_ENCLOSED_BY`：可选项，指定 CSV 文件中包裹字段值的符号，默认为空。使用此选项表示只对部分类型的字段（如 CHAR, VARCHAR, TEXT, JSON 等）加包裹符。
+    * `ENCODING`：指定文件的字符集编码格式，如果不指定，默认值为 `UTF8MB4`。
+    * `NULL_IF`：指定被当作 `NULL` 处理的字符串。默认值为空。
+    * `SKIP_HEADER`：跳过文件头，并指定跳过的行数。
+    * `SKIP_BLANK_LINES`：指定是否跳过空白行。默认值为 `FALSE`，表示不跳过空白的行。
+    * `TRIM_SPACE`：指定是否删除文件中字段的头部和尾部空格。默认值为 `FALSE`，表示不删除文件中字段头尾的空格。
+    * `EMPTY_FIELD_AS_NULL`：指定是否将空字符串当作 `NULL` 处理。默认值为 `FALSE`，表示不将空字符串当做 `NULL` 处理。
+
+  * 当 **TYPE = 'PARQUET/ORC'** 时，无其他额外字段。
+
+* `PATTERN` 子句指定一个正则模式串，用于过滤 `LOCATION` 目录下的文件。对于每个 LOCATION 目录下的文件路径，如果能够匹配该模式串，外表会访问这个文件，否则外表会跳过这个文件。如果不指定该参数，则默认可以访问 `LOCATION` 目录下的所有文件。
+
+### SOURCE
+
+`SOURCE` 关键字不包含其他子句，此时 **TYPE = 'ODPS'** 且有以下字段：
+
+* `ACCESSID`：指定 ODPS 用户的 ID。
+* `ACCESSKEY`：指定 ODPS 用户的密码。
+* `ENDPOINT`：指定 ODPS 服务的连接地址。
+* `TUNNEL_ENDPOINT`：指定 Tunnel 数据传输服务的连接地址。
+* `PROJECT_NAME`：指定需要查询的表所在的 Project。
+* `SCHEMA_NAME`：可选项，指定需要查询表的 SCHEMA。
+* `TABLE_NAME`：指定需要查询的表名。
+* `QUOTA_NAME`：可选项，选择是否使用指定的 Quota。
+* `COMPRESSION_CODE`：可选项，指定数据源的压缩格式，支持 `ZLIB`、`ZSTD`、`LZ4`、`ODPS_LZ4` 四种压缩格式，不设置表示不开启压缩。
+
+### log_errors
+
+* `LOG ERRORS`：表示开启导入过程中的错误诊断，允许将失败的行记录下来，而不是让整个操作因第一个错误而终止。配合 `REJECT LIMIT` 子句，可以控制允许的错误行数。
+
+* `INTO 'logfile_string'`：可选项，用于设置错误信息还会被写入目标目录中的文件。当不指定 `INTO 'logfile_string'` 时，错误信息只记录于 `warning buffer` 中，可以通过 `show warnings` 查看。`logfile_string` 表示存放错误信息的目录，格式如下：
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p><code>INTO 'logfile_string'</code> 参数从 V4.4.0 版本开始支持。</p>
+  </main>
+
+  * 当错误信息存放在本地时，`logfile_string` 格式为 `[file://] local_file_path`，其中 `local_file_path` 可以为相对路径，也可以为绝对路径。如果填写的是相对路径，则当前目录必须为 OceanBase 数据库的安装目录；`secure_file_priv` 用于配置 OBServer 节点有权限访问的文件路径。`local_file_path` 只能是 `secure_file_priv` 路径的子路径。
+
+  * 当错误信息存放在远端时（参考创建外表语法中 Location 的部分），`logfile_string` 格式如下：
+
+    * `{oss\|s3}://$ACCESS_ID:$ACCESS_KEY@$HOST:s3_region/remote_file_path`，其中 `$ACCESS_ID`、`$ACCESS_KEY` 和 `$HOST` 为访问阿里云 OSS、AWS S3 以及兼容 S3 协议的对象存储所需配置的访问信息，`s3_region` 为使用 S3 时选择的区域信息，这些敏感的访问信息会以加密的方式存放在数据库的系统表中。
+    * `hdfs://localhost:port/PATH`，其中 `localhost` 指的是 HDFS 的地址，`port` 指的是 HDFS 的端口号，PATH 指 HDFS 中的目录路径。带 kerberos 认证的地址为：`hdfs://localhost:port/user?principal=xxx&keytab=xxx&krb5conf=xxx&configs=xxx`。
+
+  OceanBase 数据库支持设置租户配置项设置诊断日志的压缩算法和单个诊断日志文件的大小，详细介绍参见 [load_data_diagnosis_log_compression](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/4220.load_data_diagnosis_log_compression.md) 和 [load_data_diagnosis_log_max_size](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/4230.load_data_diagnosis_log_max_size.md)。
+
+* `REJECT LIMIT`: 可选项，用于设置允许的最大错误行数：
+
+  * 默认值为 0：表示不允许任何错误行，遇到第一个错误时操作失败。
+  * `integer`：单机允许的最大错误行数。例如，10 表示一台机器上遇到的错误最多为 10 行。
+  * `UNLIMITED`: 允许无限数量的错误行。
+
+* `BADFILE 'badfile_string'`：指定错误数据文件存放的路径。`badfile_string` 取值格式同 `logfile_string` 的格式。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p><code>BADFILE 'badfile_string'</code> 参数从 V4.4.0 版本开始支持。</p>
+  </main>
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p><ul><li>不指定 <code>LOG ERRORS</code> 子句行为为正常导入行为，即遇到第一个错误就直接报错。</li><li>指定了 <code>LOG ERRORS</code> 子句但是没有指定 <code>REJECT LIMIT</code> 子句, 相当于指定了 <code>LIMIT</code> 为 0 的诊断，会在遇到第一个错误时操作失败，但是会记录遇到的第一个错误，并且错误码也是诊断相关错误，即 “reject limit reached”。</p>
+</main>
+
+#### 查看错误日志
+
+OceanBase 数据库支持如下 SQL 语句查看导出的错误日志信息：
+
+```sql
+SELECT * FROM READ_ERROR_LOG('diagnosis_log_path');
+```
+
+其中 `diagnosis_log_path` 表示错误日志的路径。该 SQL 语句在执行时等价于如下的读取 URL 外表语句：
+
+```sql
+SELECT *
+FROM FILES (
+    LOCATION = 'diagnosis_log_path/'
+    FORMAT(
+        TYPE = 'csv'
+        FIELD_DELIMITER = ','
+        FIELD_OPTIONALLY_ENCLOSED_BY = '\',
+        PARSE_HEADER  = true
+        )
+    [, PATTERN = 'filename']
+);
+```
+
+**示例如下：**
+
+1. 指定的 log 路径结果为文件名时（不以 `/` 结尾）。
+
+   ```sql
+   SELECT * FROM READ_ERROR_LOG('diagnosis/log/path/filename');
+   ```
+
+   该 SQL 语句对应的 URL 外表语句如下（文件名会被作为 pattern 来过滤文件）：
+
+   ```sql
+   SELECT *
+   FROM FILES (
+       LOCATION = 'diagnosis/log/path/',
+       FORMAT (
+           TYPE = 'csv'
+           FIELD_DELIMITER = ','
+           FIELD_OPTIONALLY_ENCLOSED_BY = '\',
+           PARSE_HEADER = true
+           ),
+       PATTERN = 'filename'
+   );
+   ```
+
+2. 指定的 log 路径结果为文件夹时（以 `/` 结尾）。
+
+   ```sql
+   SELECT * FROM READ_ERROR_LOG('diagnosis/log/path/');
+   ```
+
+   该 SQL 语句对应的 URL 外表语句如下（不会使用 pattern）：
+
+   ```sql
+   SELECT *
+   FROM FILES (
+       LOCATION = 'diagnosis/log/path/',
+       FORMAT (
+           TYPE = 'csv'
+           FIELD_DELIMITER = ','
+           FIELD_OPTIONALLY_ENCLOSED_BY = '\',
+           PARSE_HEADER = true
+           )
+   );
+   ```
+
+## 示例
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><code>LOAD DATA</code> 加载数据时支持使用 <code>\N</code> 代表 <code>NULL</code>。</p>
+</main>
+
+### 一、LOAD DATA INFILE 示例
+
+#### 从服务器端文件导入数据
+
+**示例 1：服务器端文件导入数据。**
+
+1. 设置全局安全路径。
+
+   ```shell
+   obclient> SET GLOBAL secure_file_priv = "/"
+   Query OK, 0 rows affected
+   obclinet> \q
+   Bye
+   ```
+
+   <main id="notice" type='explain'>
+     <h4>说明</h4>
+     <p>由于 <code>secure_file_priv</code> 是 <code>GLOBAL</code> 变量，所以需要执行 <code>\q</code> 退出使之生效。</p>
+   </main>
+
+2. 重连数据库后，从外部文件导入数据。
+
+   ```shell
+   obclient> LOAD DATA INFILE 'test.sql' INTO TABLE t1;
+   Query OK, 0 rows affected
+   ```
+
+**示例 2：使用 `APPEND` Hint 启用旁路导入功能。**
+
+```shell
+LOAD DATA /*+ PARALLEL(4) APPEND */
+   INFILE '/home/admin/a.csv'
+   INTO TABLE t;
+```
+
+**示例 3：指定源文件字符集导入。**
+
+当源文件为 GBK 等非 UTF-8 编码时，需使用 `CHARACTER SET` 指定源文件字符集，否则可能因编码不匹配导致中文等字符导入报错（如 `ERROR 1366 (HY000): Incorrect string value`）。
+
+```shell
+obclient> LOAD DATA INFILE '/tmp/t1.csv' INTO TABLE t1 CHARACTER SET 'gbk' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n';
+Query OK, 2 rows affected
+```
+
+源文件为 UTF-8 编码时，可指定 `CHARACTER SET 'utf8mb4'`。
+
+```shell
+obclient> LOAD DATA INFILE '/tmp/t1.csv' INTO TABLE t1 CHARACTER SET 'utf8mb4' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n';
+Query OK, 2 rows affected
+```
+
+### 二、LOAD DATA FROM 示例
+
+**示例 4：导入 CSV 格式文件（FROM FILES）。**
+
+* 导入 `test1.csv` 文件的全部列。
+
+  ```shell
+  load data  /*+ direct(true,0) parallel(2)*/
+  from files(
+    location = "data/csv",
+    format = (
+      type = 'csv',
+      field_delimiter = ',',
+      parse_header = true,
+      skip_blank_lines = true
+    ),
+    pattern = 'test1.csv')
+  into table t1;
+  ```
+
+* 读取 `data/csv` 路径下的 `test1.csv` 文件的 `c1`、`c2` 列，并将它们导入到表 `t1` 的 `col1`、`col2` 列中。
+
+  ```shell
+  load data  /*+ direct(true,0) parallel(2)*/
+  from (
+    select c1, c2 from files(
+        location = 'data/csv'
+          format = (
+          type = 'csv',
+          field_delimiter = ',',
+          parse_header = true,
+          skip_blank_lines = true
+        ),
+        pattern = 'test1.csv'))
+  into table t1 (col1, col2);
+  ```
+
+**示例 5：导入 PARQUET 格式文件。**
+
+```shell
+load data  /*+ direct(true,0) parallel(2)*/
+from files(
+  location = "data/parquet",
+  format = ( type = 'PARQUET'),
+  pattern = 'test1.parquet')
+into table t1;
+```
+
+**示例 6：导入 ORC 格式文件。**
+
+```shell
+load data  /*+ direct(true,0) parallel(2)*/
+from files(
+  location = "data/orc",
+  format = ( type = 'ORC'),
+  pattern = 'test1.orc')
+into table t1;
+```
+
+**示例 7：导入 ODPS 格式文件。**
+
+```shell
+load data  /*+ direct(true,0) parallel(2)*/
+from source (
+  type = 'ODPS',
+  accessid = '$ODPS_ACCESSID',
+  accesskey = '******',
+  endpoint= '$ODPS_ENDPOINT',
+  project_name = 'example_project',
+  schema_name = '',
+  table_name = 'example_table',
+  quota_name = '',
+  compression_code = '')
+into table t1;
+```
+
+#### 从客户端（本地）文件导入数据
+
+**示例 1：从本地文件导入数据至 OceanBase 数据库表中。**
+
+1. 打开终端或命令提示符窗口，并输入以下命令来启动客户端。
+
+   ```shell
+   obclient --local-infile -hxxx.xxx.xxx.xxx -P2881 -uroot@mysql001 -p****** -A -Dtest
+   ```
+
+   返回结果如下：
+
+   ```shell
+   Welcome to the OceanBase.  Commands end with ; or \g.
+   Your OceanBase connection id is 3221719526
+   Server version: OceanBase 4.2.2.0 (r100000022023121309-f536833402c6efe9364d5a4b61830a858ef24d82) (Built Dec 13 2023 09:58:18)
+
+   Copyright (c) 2000, 2018, OceanBase and/or its affiliates. All rights reserved.
+
+   Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+   obclient [test]>
+   ```
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>为了使用 <code>LOAD DATA LOCAL INFILE</code> 功能，请使用 V2.2.4 或之后的版本的 OBClient 客户端。如果您没有要求版本的 OBClient 客户端，也可以使用 MySQL 客户端来连接数据库。</p>
+    </main>
+
+2. 在客户端中，执行 `LOAD DATA LOCAL INFILE` 语句来加载本地数据文件。
+
+   ```shell
+   obclient [test]> LOAD DATA LOCAL INFILE '/home/admin/test_data/tbl1.csv' INTO TABLE tbl1 FIELDS TERMINATED BY ',';
+   ```
+
+   返回结果如下：
+
+   ```shell
+   Query OK, 3 rows affected
+   Records: 3  Deleted: 0  Skipped: 0  Warnings: 0
+   ```
+
+**示例 2：通过设置 COMPRESSION 直接导入压缩文件。**
+
+```shell
+LOAD DATA LOCAL INFILE '/your/file/lineitem.tbl.gz'
+    INTO TABLE lineitem
+    COMPRESSION GZIP
+    FIELDS TERMINATED BY '|';
+```
+
+**示例 3：通过 PARTITION 指定分区旁路导入。**
+
+* 指定一级分区旁路导入
+
+```shell
+load data /*+ direct(true,0) parallel(2) load_batch_size(100) */
+infile "$FILE_PATH"
+into table t1 partition(p0, p1)
+fields terminated by '|' enclosed by '' lines starting by '' terminated by '\n';
+```
+
+* 指定二级分区旁路导入
+
+```shell
+load data /*+ direct(true,0) parallel(2) load_batch_size(100) */
+infile "$FILE_PATH"
+into table t1 partition(p0sp0, p1sp1)
+fields terminated by '|' enclosed by '' lines starting by '' terminated by '\n';
+```
+
+#### 从 OSS 文件导入数据
+
+**示例 1：使用 `direct(bool, int)` Hint 启用旁路导入功能，旁路导入文件可在 OSS 上。**
+
+```shell
+load data /*+ parallel(1) direct(false,0)*/ remote_oss infile 'oss://antsys-oceanbasebackup/backup_rd/xiaotao.ht/lineitem2.tbl?host=***.oss-cdn.***&access_id=***&access_key=***' into table lineitem fields terminated by '|' enclosed by '' lines starting by '' terminated by '\n';
+```
+
+#### 从服务器端文件以 URL 外表方式导入数据（含 LOG ERRORS 诊断）
+
+<main id="notice" type='notice'>
+<h4>注意</h4>
+<p>示例中涉及 IP 的命令做了脱敏处理，在验证时应根据自己机器真实 IP 填写。</p>
+</main>
+
+以下将以外部文件的位置在服务器（OBServer 节点）和在 OceanBase 数据库 MySQL 模式中创建外表为例，步骤如下：
+
+1. 在 OBServer 节点中创建目录，其中 `/home/admin/test_csv` 目录下存放外部数据，`/home/admin/test_into` 目录下存放错误信息，`/home/admin/test_badfile` 目录下存放错误数据文件。
+
+   ```shell
+   [admin@xxx /home/admin]# mkdir -p /home/admin/{test_csv,test_into,test_badfile}
+   ```
+
+2. 准备外部文件，在 `/home/admin/test_csv` 目录下，创建文件 `type_cast.csv`。
+
+   ```shell
+   [admin@xxx /home/admin/test_csv]# vi type_cast.csv
+   ```
+
+   文件的内容如下：
+
+   ```shell
+   1,2,3
+   2,4,af
+   3,4,5
+   ds,6,32
+   4,5,6
+   5,2,3
+   6,v4,af
+   7,4,5
+   kj,a6,32
+   8,5,6
+   ```
+
+3. 设置导入的文件路径。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>由于安全原因，设置系统变量 <code>secure_file_priv</code> 时，只能通过本地 Socket 连接数据库执行修改该全局变量的 SQL 语句。更多信息，请参见 <a href="../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/12000.secure_file_priv-global.md">secure_file_priv</a>。</p>
+    </main>
+
+   1. 执行以下命令，登录到 OBServer 节点所在的机器。
+
+      ```shell
+      ssh admin@10.10.10.1
+      ```
+
+   2. 执行以下命令，通过本地 Unix Socket 连接方式连接租户 `mysql001`。
+
+      ```shell
+      obclient -S /home/admin/oceanbase/run/sql.sock -uroot@mysql001 -p******
+      ```
+
+   3. 执行以下 SQL 命令，设置导入导出为无限制。
+
+      ```sql
+      SET GLOBAL secure_file_priv = "/";
+      ```
+
+4. 重新连接租户 `mysql001`。
+
+   示例如下：
+
+   ```shell
+   obclient -h10.10.10.1 -P2881 -uroot@mysql001 -p****** -A -Ddb_test
+   ```
+
+5. 创建表 `test_tbl1`。
+
+   ```sql
+   CREATE TABLE test_tbl1(col1 INT, col2 INT, col3 INT);
+   ```
+
+6. 设置诊断日志使用的压缩算法为 `AUTO`。
+
+   ```sql
+   ALTER SYSTEM SET load_data_diagnosis_log_compression = 'AUTO';
+   ```
+
+   更多有关设置诊断日志使用的压缩算法的介绍信息，参见 [load_data_diagnosis_log_compression](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/4220.load_data_diagnosis_log_compression.md)。
+
+7. 设置最大日志文件大小为 1 KB。当导出的日志大小大于 1 KB 时，会自动生成第二个文件并继续导出。
+
+   ```sql
+   ALTER SYSTEM SET load_data_diagnosis_log_max_size = '1K';
+   ```
+
+   更多有关设置单个诊断日志文件大小的介绍信息，参见 [load_data_diagnosis_log_max_size](../../../../800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/4230.load_data_diagnosis_log_max_size.md)。
+
+8. 使用 `LOAD DATA` 语句导入 URL 外表语法向表 `test_tbl1` 导入数据，并指定错误诊断，存储错误日志的目录为 `/home/admin/test_into/`，存储错误数据文件存放的目录为 `/home/admin/test_badfile/`。
+
+   ```sql
+   LOAD DATA FROM FILES(
+       LOCATION = '/home/admin/test_csv/',
+       FORMAT = (
+           TYPE = 'csv',
+           FIELD_DELIMITER = ','),
+       PATTERN = 'type_cast.csv')
+       INTO TABLE test_tbl1
+       LOG ERRORS
+           INTO '/home/admin/test_into/'
+           REJECT LIMIT UNLIMITED
+           BADFILE '/home/admin/test_badfile/';
+   ```
+
+   返回结果如下：
+
+   ```shell
+   Query OK, 6 rows affected, 4 warnings
+   Records: 6  Deleted: 0  Skipped: 0  Warnings: 4
+   ```
+
+9. 通过 `read_error_log` 语句查看报错日志内容。
+
+   ```sql
+   SELECT * FROM READ_ERROR_LOG('/home/admin/test_into/');
+   ```
+
+   返回结果如下：
+
+   ```shell
+   +------------+---------------+-------------+-------------------------------------------------------------------------------------------------------------------+
+   | ERROR CODE | FILE NAME     | LINE NUMBER | ERROR MESSAGE                                                                                                     |
+   +------------+---------------+-------------+-------------------------------------------------------------------------------------------------------------------+
+   | -4226      | type_cast.csv | 4           | fail to scan file type_cast.csv at line 4 for column "db_test"."test_tbl1"."col1", error: Incorrect integer value |
+   | -4226      | type_cast.csv | 9           | fail to scan file type_cast.csv at line 9 for column "db_test"."test_tbl1"."col1", error: Incorrect integer value |
+   | -4226      | type_cast.csv | 7           | fail to scan file type_cast.csv at line 7 for column "db_test"."test_tbl1"."col2", error: Incorrect integer value |
+   | -4226      | type_cast.csv | 2           | fail to scan file type_cast.csv at line 2 for column "db_test"."test_tbl1"."col3", error: Incorrect integer value |
+   +------------+---------------+-------------+-------------------------------------------------------------------------------------------------------------------+
+   4 rows in set
+   ```
+
+10. 查看 `test_tbl1` 的数据。
+
+    ```sql
+    SELECT * FROM test_tbl1;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+------+------+
+    | col1 | col2 | col3 |
+    +------+------+------+
+    |    1 |    2 |    3 |
+    |    3 |    4 |    5 |
+    |    4 |    5 |    6 |
+    |    5 |    2 |    3 |
+    |    7 |    4 |    5 |
+    |    8 |    5 |    6 |
+    +------+------+------+
+    6 rows in set
+    ```
+
+11. 通过 URL 外表查看 bad 文件内容。
+
+    ```sql
+    SELECT *
+    FROM FILES (
+        LOCATION = '/home/admin/test_badfile/',
+        FORMAT (
+            TYPE = 'csv',
+            FIELD_DELIMITER = ','),
+        PATTERN = 'data.bad');
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+------+------+
+    | c1   | c2   | c3   |
+    +------+------+------+
+    | ds   | 6    | 32   |
+    | kj   | a6   | 32   |
+    | 6    | v4   | af   |
+    | 2    | 4    | af   |
+    +------+------+------+
+    4 rows in set
+    ```
+
+## 相关文档
+
+* 更多有关连接 OceanBase 数据库的信息，请参见 [连接方式概述](../../../../../300.develop/100.application-development-of-mysql-mode/100.connect-to-oceanbase-database-of-mysql-mode/100.connection-methods-overview-of-mysql-mode.md)。
+* 更多有关使用 `LOAD DATA` 语句的示例信息，请参见 [使用 LOAD DATA 语句导入数据](../../../../../500.data-migration/700.migrate-data-from-csv-file-to-oceanbase-database/200.use-the-load-command-to-load-the-csv-data-file-to-the-oceanbase-database.md)
+* 更多有关使用 `LOAD DATA` 旁路导入的示例信息，请参见 [使用 LOAD DATA 语句旁路导入数据](../../../../../620.obap/300.obap-data-collection/300.obap-import-data/20.bypass-import/200.full-bypass-import.md)

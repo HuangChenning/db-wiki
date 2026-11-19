@@ -1,0 +1,31 @@
+---
+title: clog_transport_compress_func
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479014.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# clog_transport_compress_func
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<ul><li>由于 V4.0.0 暂未支持事务日志的压缩功能，该配置项从 V4.0.0 版本开始删除。</li>
+<li>从 V4.1.0 版本开始，OceanBase 数据库重新支持事务日志的压缩功能。在 V4.1.0 及之后版本中，使用租户级配置项 <code>log_transport_compress_func</code> 来配置事务日志内部传输时使用的压缩算法。有关配置项 <code>log_transport_compress_func</code> 的详细介绍，参见 <a href="../400.tenant-level-configuration-items/5000.log_transport_compress_func.md">log_transport_compress_func</a>。</li></ul>
+</main>
+
+## 功能描述
+
+`clog_transport_compress_func` 用于设置事务日志内部传输时使用的压缩算法。
+
+## 属性说明
+
+|      **属性**      |               **描述**                                    |
+|------------------|-------------------------------------------------------------------------------------------------------------------------|
+| 参数类型             | String                 |
+| 默认值              | lz4_1.0                                |
+| 取值范围             | <ul><li> none</li>   <li> lz4_1.0</li>   <li> snappy_1.0</li>   <li> zlib_1.0</li>   <li> zstd_1.0</li>   <li> zstd_1.3.8</li></ul>    |
+| 是否重启 OBServer 节点生效 | 否                |

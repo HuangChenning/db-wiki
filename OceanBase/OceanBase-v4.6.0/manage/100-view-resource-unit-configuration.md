@@ -1,0 +1,64 @@
+---
+title: "查看资源规格"
+book: "管理数据库"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005682949.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 查看资源规格
+
+创建资源池前，需要查看资源规格，以便选择合适的资源模版。
+
+## 操作步骤
+
+资源单元可以理解为服务器资源的使用模版。通过查询视图可以获知当前集群中已经存在的资源单元的配置信息。
+
+查看方法如下：
+
+1. 使用 `root` 用户登录集群的 `sys` 租户。
+
+2. 执行以下语句，查看集群中所有的资源规格。
+
+   ```shell
+   obclient> SELECT * FROM oceanbase.DBA_OB_UNIT_CONFIGS\G
+   ```
+
+   查询结果如下：
+
+   ```shell
+   *************************** 1. row ***************************
+         UNIT_CONFIG_ID: 1
+                   NAME: sys_unit_config
+            CREATE_TIME: 2026-03-16 16:30:17.372372
+            MODIFY_TIME: 2026-03-16 16:30:17.372372
+                MAX_CPU: 4
+                MIN_CPU: 4
+            MEMORY_SIZE: 5368709120
+          LOG_DISK_SIZE: 9663676416
+         DATA_DISK_SIZE: NULL
+               MAX_IOPS: 9223372036854775807
+               MIN_IOPS: 9223372036854775807
+            IOPS_WEIGHT: 4
+      MAX_NET_BANDWIDTH: 9223372036854775807
+   NET_BANDWIDTH_WEIGHT: 4
+   *************************** 2. row ***************************
+         UNIT_CONFIG_ID: 1001
+                   NAME: unit001
+            CREATE_TIME: 2026-03-16 16:31:47.795384
+            MODIFY_TIME: 2026-03-16 16:31:47.795384
+                MAX_CPU: 2
+                MIN_CPU: 2
+            MEMORY_SIZE: 6442450944
+          LOG_DISK_SIZE: 19327352832
+         DATA_DISK_SIZE: NULL
+               MAX_IOPS: 9223372036854775807
+               MIN_IOPS: 9223372036854775807
+            IOPS_WEIGHT: 2
+      MAX_NET_BANDWIDTH: 9223372036854775807
+   NET_BANDWIDTH_WEIGHT: 2
+   2 rows in set
+   ```

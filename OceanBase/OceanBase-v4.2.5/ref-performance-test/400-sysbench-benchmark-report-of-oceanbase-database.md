@@ -1,0 +1,108 @@
+---
+title: "OceanBase Sysbench 性能测试报告"
+book: "性能测试"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001499640.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-test
+---
+
+# OceanBase Sysbench 性能测试报告
+
+## 测试环境 (阿里云 ECS)
+
+* 硬件配置  
+
+    | 服务类型 | ECS 类型 | 实例数 | 机器核心数 | 内存 |
+    | --- | --- | --- | --- | --- |
+    | OceanBase 数据库 | ecs.g7.8xlarge | 3 | 32C | 128G <br>每台机器系统盘 300G，再挂载两块 400G 云盘作为 clog 盘和 Data 盘，性能级别为 PL1|
+    | Sysbench | ecs.c7.4xlarge | 1 | 16c | 32g |
+    | ODP | ecs.c7.16xlarge | 1 | 64C | 128G |
+
+* 租户规格
+
+    ```sql
+    CREATE RESOURCE UNIT sysbench_unit max_cpu 26, memory_size '100g'
+    CREATE RESOURCE POOL sysbench_pool unit = 'sysbench_unit', unit_num = 1, zone_list=('zone1','zone2','zone3');
+    CREATE TENANT sysbench_tenant resource_pool_list=('sysbench_pool'),  zone_list('zone1', 'zone2', 'zone3'), primary_zone=RANDOM, locality='F@zone1,F@zone2,F@zone3' set variables ob_compatibility_mode='mysql', ob_tcp_invited_nodes='%';
+    ```
+
+* 软件版本  
+
+    | 服务类型 | 软件版本 |
+    | --- | --- |
+    | OceanBase 数据库 | <ul><li>企业版：OceanBase 4.2.2.0</li><li>社区版：OceanBase_CE 4.2.2.0 </li></ul> |
+    | ODP | OceanBase 4.2.1 |
+    | Sysbench | 1.0.20 |
+    | OS | CentOS Linux release 7.9.2009 (Core) |
+
+## 测试方案
+
+1. 通过 obd 部署 OceanBase 集群，ODP 单独部署在一台机器上。
+
+2. OceanBase 集群规模为 1：1：1，部署成功后先新建跑 Sysbench 测试的租户及用户（sys 租户是管理集群的内置系统租户，请勿直接使用 sys 租户进行测试），设置租户的 `primary_zone` 为 RANDOM，RANDOM 表示新建表分区的 leader 随机到这 3 台机器。
+
+3. 启动 Sysbench 客户端，进行 `point_select`、`read_write`、`read_only` 和 `write_only` 测试。
+
+4. 每轮测试 `--time` 设置为 60s，线程数取值可以为 `32/64/128/256/512/1024`。
+
+### 测试规格
+
+```shell
+--mysql-db=test 
+--table_size=1000000 
+--tables=30 
+--threads=32/64/128/256/512/1024 
+--report-interval=10
+--time=60
+--db-ps-mode=disable
+--rand-type=uniform
+```
+
+## 测试结果
+
+### Point Select 性能
+
+| Threads | V4.2.2 QPS | V4.2.2 95% Latency (ms) |
+| --- | --- | --- |
+| 32 | 150002.69 | 0.24 |
+| 64 | 279256.71 | 0.27 |
+| 128 | 489197.56 | 0.30 |
+| 256 | 791088.58 | 0.46 |
+| 512 |  1041150.67 | 0.83 |
+| 1024 | 1053486.24 | 2.18 |
+
+### Read Only 性能
+
+| Threads | V4.2.2 QPS | V4.2.2 95% Latency (ms) |
+| --- | --- | --- |
+| 32 | 131753.27 | 4.18 |
+| 64 | 241825.11 | 4.65 |
+| 128 | 414202.92 | 5.57 |
+| 256 | 638432.40 | 7.30 |
+| 512 | 798094.11 | 15.00 |
+| 1024 | 798567.76 | 34.95 |
+
+### Write Only 性能
+
+| Threads | V4.2.2 QPS | V4.2.2 95% Latency (ms) |
+| --- | --- | --- |
+| 32 | 46505.45 | 6.09 |
+| 64 | 88264.25 | 5.99 |
+| 128 | 153548.94 | 6.43 |
+| 256 | 227430.99 | 8.74 |
+| 512 | 292273.10 | 14.46 |
+| 1024 | 324863.22 | 35.59 |
+
+### Read Write 性能
+
+| Threads | V4.2.2 QPS | V4.2.2 95% Latency (ms) |
+| --- | --- | --- |
+| 32 | 83309.88 | 9.56 |
+| 64 | 151101.81 | 10.27 |
+| 128 | 268784.90 | 11.65 |
+| 256 | 394488.45 | 15.00 |
+| 512 | 523029.07 | 31.37 |
+| 1024 | 598383.5 | 50.11 |

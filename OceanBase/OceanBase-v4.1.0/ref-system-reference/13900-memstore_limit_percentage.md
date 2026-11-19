@@ -1,0 +1,30 @@
+---
+title: memstore_limit_percentage
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699330.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# memstore_limit_percentage
+
+memstore_limit_percentage 用于设置租户使用 MemStore 的内存占其总可用内存的百分比。
+
+
+|      **属性**      |  **描述**   |
+|------------------|-----------|
+| 参数类型             | 整型        |
+| 默认值              | 50        |
+| 取值范围             | \[1, 99\] |
+| 是否重启 OBServer 节点生效 | 否         |
+
+
+
+memstore_limit_percentage 配置项用于计算 Memstore_limit 的值：
+
+memstore_limit_percentage = memstore_limit / memory_size
+
+其中，memory_size 为创建租户时指定的值。

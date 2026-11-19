@@ -1,0 +1,53 @@
+---
+title: DBA_OB_DATABASES
+book: "系统视图"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004477382.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# DBA_OB_DATABASES
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+展示本租户的数据库元信息。
+
+## 字段说明
+
+|     字段名称      |       类型       | 是否可以为 NULL |             描述             |
+|---------------|----------------|------------|----------------------------|
+| DATABASE_NAME | VARCHAR2(128)  | NO         | 数据库名                       |
+| IN_RECYCLEBIN | VARCHAR2(3)    | NO         | 数据库是否在回收站中：<ul><li>YES</li><li>NO</li></ul> |
+| COLLATION     | VARCHAR2(128)  | NO         | 数据库缺省 COLLATION            |
+| READ_ONLY     | VARCHAR2(3)    | NO   | OCP 获取数据库的只读状态：<ul><li>YES：只读</li><li>NO：可读/写</li></ul> |
+| COMMENT       | VARCHAR2(2048) | NO         | 数据库的描述                     |
+| TABLEGROUP_NAME | VARCHAR2(128)  | NO       | DataBase 绑定的表组名称 <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.4.1 版本开始引入。</p></main>|
+
+## 查询示例
+
+用户租户查询本租户的数据库元信息。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.DBA_OB_DATABASES WHERE DATABASE_NAME = 'SYS'\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+  DATABASE_NAME: SYS
+  IN_RECYCLEBIN: NO
+      COLLATION: utf8mb4_bin
+      READ_ONLY: NO
+        COMMENT: oracle sys schema
+TABLEGROUP_NAME: NULL
+1 row in set
+```

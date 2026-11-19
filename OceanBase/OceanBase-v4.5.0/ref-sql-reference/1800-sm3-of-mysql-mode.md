@@ -1,0 +1,34 @@
+---
+title: SM3
+book: "SQL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480656.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# SM3
+
+## 声明
+
+```javascript
+SM3(str)
+```
+
+## 说明
+
+SM3 是中国国家密码管理局发布的一种哈希值计算方法，返回值为 32 位十六进制数字组成的字符串。
+
+## 示例
+
+```javascript
+obclient> SELECT SM3(1);
++------------------------------------------------------------------+
+| sm3(1)                                                           |
++------------------------------------------------------------------+
+| cbdddb8e8421b23498480570d7d75330538a6882f5dfdc3b64115c647f3328c4 |
++------------------------------------------------------------------+
+1 row in set
+```

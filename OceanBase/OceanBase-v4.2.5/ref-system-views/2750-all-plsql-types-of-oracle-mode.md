@@ -1,0 +1,107 @@
+---
+title: ALL_PLSQL_TYPES
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500967.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# ALL_PLSQL_TYPES
+
+<main id="notice" >
+    <h4>说明</h4>
+    <p>该视图从 V4.2.5 版本开始引入。</p>
+  </main>
+
+## 功能描述
+
+展示当前用户可访问的所有 PL/SQL 数据类型的信息。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该视图仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 字段说明
+
+|         **字段名称**          |     **类型**     | **是否可以为 NULL** |**描述**|
+|---------------------------|---|---|--------------------------------------------|
+| OWNER          | VARCHAR2(128) | YES  | 包含 PL/SQL 类型的所有者的用户名。 |
+| TYPE_NAME      | VARCHAR2(136) | NO   | PL/SQL 类型的名称。 |
+| PACKAGE_NAME   | VARCHAR2(128) | YES  | PL/SQL 类型所属的包的名称。 |
+| TYPE_OID       | RAW(16)       | NO   | PL/SQL 类型的对象标识符。 |
+| TYPECODE       | VARCHAR2(58)  | NO   | PL/SQL 类型的代码。 |
+| ATTRIBUTES     | NUMBER(38)    | NO   | PL/SQL 类型所包含的属性数量。 |
+| CONTAINS_PLSQL | VARCHAR2(3)   | NO   | PL/SQL 类型是否包含 PL/SQL 代码。 |
+
+## 查询示例
+
+查看当前用户可访问的所有 PL/SQL 数据类型的信息。
+
+```sell
+obclient> SELECT * FROM SYS.ALL_PLSQL_TYPES;
+```
+
+查询结果如下：
+
+```shell
++-------+------------------------+--------------+--------------------------+---------------+------------+----------------+
+| OWNER | TYPE_NAME              | PACKAGE_NAME | TYPE_OID                 | TYPECODE      | ATTRIBUTES | CONTAINS_PLSQL |
++-------+------------------------+--------------+--------------------------+---------------+------------+----------------+
+| SYS   | <ADT_1>                | STANDARD     | 020000C1501400000FE0D838 | PL/SQL RECORD |          1 | NO             |
+| SYS   | <RECORD_1>             | STANDARD     | 020000C15014000010E0D838 | PL/SQL RECORD |          1 | NO             |
+| SYS   | <TUPLE_1>              | STANDARD     | 020000C15014000011E0D838 | PL/SQL RECORD |          1 | NO             |
+| SYS   | <VARRAY_1>             | STANDARD     | 020000C15014000012E0D838 | COLLECTION    |          0 | NO             |
+| SYS   | <V2_TABLE_1>           | STANDARD     | 020000C15014000013E0D838 | COLLECTION    |          0 | NO             |
+| SYS   | <TABLE_1>              | STANDARD     | 020000C15014000014E0D838 | COLLECTION    |          0 | NO             |
+| SYS   | <COLLECTION_1>         | STANDARD     | 020000C15014000015E0D838 | COLLECTION    |          0 | NO             |
+| SYS   | <TYPED_TABLE>          | STANDARD     | 020000C15014000017E0D838 | COLLECTION    |          0 | YES            |
+| SYS   |  SYS$INT_V2TABLE       | STANDARD     | 020000C15014000019E0D838 | COLLECTION    |          0 | NO             |
+| SYS   |  SYS$BULK_ERROR_RECORD | STANDARD     | 020000C1501400001AE0D838 | PL/SQL RECORD |          2 | NO             |
+| SYS   |  SYS$REC_V2TABLE       | STANDARD     | 020000C1501400001BE0D838 | COLLECTION    |          0 | YES            |
+| SYS   | <ASSOC_ARRAY_1>        | STANDARD     | 020000C1501400001CE0D838 | COLLECTION    |          0 | NO             |
+| SYS   | CHARARR                | DBMS_OUTPUT  | 020000C15014000001E0D839 | COLLECTION    |          0 | NO             |
+| SYS   | DBMSOUTPUT_LINESARRAY  | DBMS_OUTPUT  | 020000C15014000002E0D839 | COLLECTION    |          0 | NO             |
+| SYS   | VARCHAR2A              | DBMS_SQL     | 020000C15414000001B86D1C | COLLECTION    |          0 | NO             |
+| SYS   | VARCHAR2S              | DBMS_SQL     | 020000C15414000002B86D1C | COLLECTION    |          0 | NO             |
+| SYS   | DESC_REC               | DBMS_SQL     | 020000C15414000003B86D1C | PL/SQL RECORD |         11 | NO             |
+| SYS   | DESC_TAB               | DBMS_SQL     | 020000C15414000004B86D1C | COLLECTION    |          0 | YES            |
+| SYS   | DESC_REC2              | DBMS_SQL     | 020000C15414000005B86D1C | PL/SQL RECORD |         11 | NO             |
+| SYS   | DESC_TAB2              | DBMS_SQL     | 020000C15414000006B86D1C | COLLECTION    |          0 | YES            |
+| SYS   | DESC_REC3              | DBMS_SQL     | 020000C15414000007B86D1C | PL/SQL RECORD |         13 | NO             |
+| SYS   | DESC_TAB3              | DBMS_SQL     | 020000C15414000008B86D1C | COLLECTION    |          0 | YES            |
+| SYS   | NUMBER_TABLE           | DBMS_SQL     | 020000C15414000009B86D1C | COLLECTION    |          0 | NO             |
+| SYS   | VARCHAR2_TABLE         | DBMS_SQL     | 020000C1541400000AB86D1C | COLLECTION    |          0 | NO             |
+| SYS   | DATE_TABLE             | DBMS_SQL     | 020000C1541400000BB86D1C | COLLECTION    |          0 | NO             |
+| SYS   | BLOB_TABLE             | DBMS_SQL     | 020000C1541400000CB86D1C | COLLECTION    |          0 | NO             |
+| SYS   | CLOB_TABLE             | DBMS_SQL     | 020000C1541400000DB86D1C | COLLECTION    |          0 | NO             |
+| SYS   | UROWID_TABLE           | DBMS_SQL     | 020000C1541400000EB86D1C | COLLECTION    |          0 | NO             |
+| SYS   | BINARY_FLOAT_TABLE     | DBMS_SQL     | 020000C1541400000FB86D1C | COLLECTION    |          0 | NO             |
+| SYS   | BINARY_DOUBLE_TABLE    | DBMS_SQL     | 020000C15414000010B86D1C | COLLECTION    |          0 | NO             |
+| SYS   | UNCL_ARRAY             | DBMS_UTILITY | 020000C1561400000124380C | COLLECTION    |          0 | NO             |
+| SYS   | NAME_ARRAY             | DBMS_UTILITY | 020000C1561400000224380C | COLLECTION    |          0 | NO             |
+| SYS   | QUOTED_NAME_ARRAY      | DBMS_UTILITY | 020000C1561400000324380C | COLLECTION    |          0 | NO             |
+| SYS   | LNAME_ARRAY            | DBMS_UTILITY | 020000C1561400000424380C | COLLECTION    |          0 | NO             |
+| SYS   | MAXNAME_ARRAY          | DBMS_UTILITY | 020000C1561400000524380C | COLLECTION    |          0 | NO             |
+| SYS   | DBLINK_ARRAY           | DBMS_UTILITY | 020000C1561400000624380C | COLLECTION    |          0 | NO             |
+| SYS   | INDEX_TABLE_TYPE       | DBMS_UTILITY | 020000C1561400000724380C | COLLECTION    |          0 | NO             |
+| SYS   | NUMBER_ARRAY           | DBMS_UTILITY | 020000C1561400000824380C | COLLECTION    |          0 | NO             |
+| SYS   | INSTANCE_RECORD        | DBMS_UTILITY | 020000C1561400000924380C | PL/SQL RECORD |          2 | NO             |
+| SYS   | INSTANCE_TABLE         | DBMS_UTILITY | 020000C1561400000A24380C | COLLECTION    |          0 | YES            |
+| SYS   | NUMARRAY               | DBMS_STATS   | 020000C1561400000124382A | COLLECTION    |          0 | NO             |
+| SYS   | DATEARRAY              | DBMS_STATS   | 020000C1561400000224382A | COLLECTION    |          0 | NO             |
+| SYS   | CHARARRAY              | DBMS_STATS   | 020000C1561400000324382A | COLLECTION    |          0 | NO             |
+| SYS   | RAWARRAY               | DBMS_STATS   | 020000C1561400000424382A | COLLECTION    |          0 | NO             |
+| SYS   | FLTARRAY               | DBMS_STATS   | 020000C1561400000524382A | COLLECTION    |          0 | NO             |
+| SYS   | DBLARRAY               | DBMS_STATS   | 020000C1561400000624382A | COLLECTION    |          0 | NO             |
++-------+------------------------+--------------+--------------------------+---------------+------------+----------------+
+46 rows in set
+```
+
+## 相关视图或文档
+
+* 查看当前租户下的所有 PL/SQL 数据类型的信息：[DBA_PLSQL_TYPES](16350.dba-plsql-types-oracle-mode.md)
+* 查看当前用户拥有的所有 PL/SQL 数据类型的信息：[USER_PLSQL_TYPES](26850.user-plsql-type-of-oracle-mode.md)

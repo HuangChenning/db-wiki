@@ -1,0 +1,89 @@
+---
+title: oceanbase.CDB_OB_ZONE_MAJOR_COMPACTION
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001501180.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# oceanbase.CDB_OB_ZONE_MAJOR_COMPACTION
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+系统租户下展示所有租户各个 Zone 的合并信息。
+
+## 字段说明
+
+|       字段名称        |      类型      | 是否可以为 NULL |         描述         |
+|-------------------|--------------|------------|----------------------------------------------|
+| TENANT_ID              | bigint(20) | NO         | 租户 ID            |
+| ZONE              | varchar(128) | NO         | Zone 名称            |
+| BROADCAST_SCN | bigint(20) unsigned   | NO         | 广播的合并版本号           |
+| LAST_SCN      | bigint(20) unsigned   | NO         | 上一次合并的版本号          |
+| LAST_FINISH_TIME  | timestamp(6)   | NO         | 上一次合并结束时间          |
+| START_TIME        | timestamp(6)   | NO         | 合并开始时间             |
+| STATUS            | varchar(10)  | NO         | <ul><li> `IDLE`：没有在合并中  </li><li>`COMPACTING`：正在合并中 </li></ul>    |
+
+## 查询示例
+
+系统租户查询所有租户各个 Zone 的合并信息。
+
+```shell
+obclient [oceanbase]> SELECT * FROM oceanbase.CDB_OB_ZONE_MAJOR_COMPACTION;
+```
+
+查询结果如下所示：
+
+```shell
++-----------+-------+---------------------+---------------------+----------------------------+----------------------------+------------+
+| TENANT_ID | ZONE  | BROADCAST_SCN       | LAST_SCN            | LAST_FINISH_TIME           | START_TIME                 | STATUS     |
++-----------+-------+---------------------+---------------------+----------------------------+----------------------------+------------+
+|         1 | zone1 | 1736445603362416000 | 1736445603362416000 | 2025-01-10 02:02:17.252947 | 2025-01-10 02:00:03.403496 | IDLE       |
+|      1001 | zone1 | 1736445600816385000 | 1736445600816385000 | 2025-01-10 02:03:14.949900 | 2025-01-10 02:00:00.862396 | IDLE       |
+|      1002 | zone1 | 1736474754101535000 | 1736445604784833000 | 2025-01-10 02:03:18.264375 | 2025-01-10 10:05:54.190295 | COMPACTING |
+|      1003 | zone1 | 1736445604438949000 | 1736445604438949000 | 2025-01-10 02:02:38.148380 | 2025-01-10 02:00:04.468472 | IDLE       |
+|      1004 | zone1 | 1736474754113143000 | 1736445603654676000 | 2025-01-10 02:02:16.603847 | 2025-01-10 10:05:54.176065 | COMPACTING |
+|      1009 | zone1 | 1736445600541986000 | 1736445600541986000 | 2025-01-10 02:03:14.573029 | 2025-01-10 02:00:00.572544 | IDLE       |
+|      1010 | zone1 | 1736474754124224000 | 1736445604569016000 | 2025-01-10 02:01:37.485964 | 2025-01-10 10:05:54.223059 | COMPACTING |
+|      1015 | zone1 | 1736445603595594000 | 1736445603595594000 | 2025-01-10 02:03:47.522524 | 2025-01-10 02:00:03.630661 | IDLE       |
+|      1016 | zone1 | 1736359203243332000 | 1736359203243332000 | 2025-01-09 02:05:33.677564 | 2025-01-09 02:01:59.460165 | IDLE       |
++-----------+-------+---------------------+---------------------+----------------------------+----------------------------+------------+
+9 rows in set
+```
+
+## 相关视图或文档
+
+* 查看所有租户的合并全局信息：[CDB_OB_MAJOR_COMPACTION](9800.o-cdb_ob_major_compaction-of-sys-tenant.md)
+
+* 查看 Tablet 级的合并基础统计信息：
+
+  * [GV$OB_MERGE_INFO](../300.performance-view-of-sys-tenant/700.gv-merge_info-of-sys-tenant.md)
+
+  * [V$OB_MERGE_INFO](../300.performance-view-of-sys-tenant/30800.v-merge_info-of-sys-tenant.md)
+
+* 查看 Tablet 级的合并的详细历史信息：
+
+  * [GV$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-sys-tenant/3400.gv-ob_tablet_compaction_history-of-sys-tenant.md)
+  * [V$OB_TABLET_COMPACTION_HISTORY](../300.performance-view-of-sys-tenant/33800.v-ob_tablet_compaction_history-of-sys-tenant.md)
+
+* 合并相关的操作，参见以下文档：
+
+  * [自动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/200.automatic-merge-triggering.md)
+
+  * [定时触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/300.scheduled-trigger-merge.md)
+
+  * [自适应合并](../../../200.system-management/500.manage-data-storage/200.merge-management/320.adaptive-compavtion.md)
+
+  * [手动触发合并](../../../200.system-management/500.manage-data-storage/200.merge-management/400.manually-trigger-a-merge.md)
+
+  * [手动控制合并](../../../200.system-management/500.manage-data-storage/200.merge-management/500.manually-control-a-merge.md)
+
+  * [查看合并信息](../../../200.system-management/500.manage-data-storage/200.merge-management/500.view-merge-process.md)

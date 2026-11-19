@@ -1,0 +1,35 @@
+---
+title: sql_safe_updates
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685226.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# sql_safe_updates
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该变量从 V2.2.77 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`sql_safe_updates` 用于设置是否启用 MySQL 的 SQL 安全模式，默认为关闭。
+
+<main id="notice" type='explain'>
+<h4>说明</h4>
+<p>该变量仅用于兼容，OceanBase 数据库当前暂未实现该变量的功能。</p>
+</main>
+
+## 属性说明
+
+| **属性**  |               **描述**                 |
+|---------|------------------------------------------|
+| 参数类型    | Bool                                  |
+| 默认值     | 0                                     |
+| 取值范围    | <ul><li>0：表示 FALSE，即关闭 </li><li>1：表示 TRUE，即开启 </li></ul>    |
+| 生效范围    | <ul><li>Global   </li><li>Session </li></ul>   |

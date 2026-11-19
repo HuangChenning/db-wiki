@@ -1,0 +1,156 @@
+---
+title: "管理历史统计信息"
+book: "性能调优"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005287966.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 管理历史统计信息
+
+统计信息历史管理功能主要是指统计信息状态发生改变时（统计信息被重新收集、设置、删除、导入、锁定等），会将统计信息发生改变之前的统计信息状态保存到统计信息历史记录表中，统计信息历史记录表可以查询某张表的一个历史统计信息改变情况，同时也能够恢复指定历史版本的统计信息。
+
+## 统计信息历史表及视图
+
+OceanBase 数据库优化器使用如下视图来保存统计信息历史记录：
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>当前 OceanBase 数据库社区版仅支持 <code>DBA_TAB_STATS_HISTORY</code> 、 <code>DBA_TAB_COL_STATISTICS</code> 和 <code>DBA_TAB_HISTOGRAMS</code>  视图</p>
+  </main>
+
+* `ALL_TAB_STATS_HISTORY`、`DBA_TAB_STATS_HISTORY` 和 `USER_TAB_STATS_HISTORY` 用于保存表级的历史统计信息。
+
+* `ALL_TAB_COL_STATISTICS`、`DBA_TAB_COL_STATISTICS` 和 `USER_TAB_COL_STATISTICS` 用于保存列级的基本历史统计信息。
+
+* `ALL_TAB_HISTOGRAMS`、`DBA_TAB_HISTOGRAMS` 和 `USER_TAB_HISTOGRAMS` 用于保存列级的直方图历史统计信息。
+
+表的字段基本上和保存统计信息的内部表字段一致，不同点是会多一个 `savtime` 列，用于记录统计信息状态发生改变的时间，同时可以通过如下的视图来查询统计信息历史变化情况。
+
+|                                                视图名称                                                |               描述               |
+|----------------------------------------------------------------------------------------------------|--------------------------------|
+| ALL_TAB_STATS_HISTORY DBA_TAB_STATS_HISTORY USER_TAB_STATS_HISTORY |  用于查询统计信息历史变化。 |
+| sys.ALL_VIRTUAL_TABLE_STAT_V2_HISTORY_REAL_AGENT                                                   | 用于查询表级的统计信息历史的虚表。              |
+| sys.ALL_VIRTUAL_COLUMN_STAT_V2_HISTORY_REAL_AGENT                                                  | 用于查询列级的基本统计信息历史的虚表。            |
+| sys.ALL_VIRTUAL_HISTOGRAM_STAT_V2_HISTORY_REAL_AGENT                                               | 用于查询列级的直方图信息历史的虚表。             |
+
+## 统计信息历史管理相关函数
+
+目前支持如下历史管理相关函数：
+
+* `restore_table_stats` 恢复指定时刻的表级历史统计信息。
+
+* `restore_schema_stats` 恢复指定时刻的 Schema 级历史统计信息。
+
+* `purge_stats` 删除指定时刻之前的历史统计信息。
+
+* `alter_stats_history_retention` 修改历史统计信息的的保留间隔时间，默认保留间隔时间为 31 天。
+
+* `get_stats_history_retention` 获取当前历史统计信息的保留间隔时间。
+
+* `get_stats_history_availability` 获取当前可用的最早历史统计信息时间，无法恢复指定时间早于这个时间的历史统计信息。
+
+具体的定义如下：
+
+```sql
+PROCEDURE restore_table_stats (
+  ownname               VARCHAR2,
+  tabname               VARCHAR2,
+  as_of_timestamp       TIMESTAMP WITH TIME ZONE,
+  restore_cluster_index BOOLEAN DEFAULT FALSE,
+  force                 BOOLEAN DEFAULT FALSE,
+  no_invalidate         BOOLEAN DEFAULT FALSE
+);
+
+PROCEDURE restore_schema_stats (
+  ownname               VARCHAR2,
+  as_of_timestamp       TIMESTAMP WITH TIME ZONE,
+  force                 BOOLEAN DEFAULT FALSE,
+  no_invalidate         BOOLEAN DEFAULT FALSE
+);
+
+PROCEDURE purge_stats(
+  before_timestamp      TIMESTAMP WITH TIME ZONE
+);
+
+PROCEDURE alter_stats_history_retention(
+  retention             NUMBER
+);
+
+FUNCTION get_stats_history_retention RETURN NUMBER;
+
+FUNCTION get_stats_history_availability RETURN TIMESTAMP WITH TIME ZONE;
+```
+
+参数解释如下表所示。
+
+|          参数           |          解释           |
+|-----------------------|-----------------------|
+| ownname               | <ul><li>Oracle 模式：用户名。如果用户名设置为 `NULL`，会默认使用当前登录用户名。</li><li>MySQL 模式：表所在数据库名称。                  |
+| tabname               | 表名称。                  |
+| as_of_timestamp       | 指定恢复时间。               |
+| restore_cluster_index | 该参数暂未实现，不可用。          |
+| force                 | 强制恢复，并忽略加锁。默认是 False。 |
+| no_invalidate         | 该参数暂未实现，不可用。          |
+
+## 统计信息历史清理策略
+
+目前 OceanBase 数据库支持两种方式清理统计信息历史：自动清理和手动清理。
+
+### 自动清理统计信息历史
+
+由于 OceanBase 是分布式数据库，无法在 Server 中直接为新创建的租户自动设置清理任务。因此，需要在租户创建后，或在将低版本 Server 升级至新版本后，手动使用 DBMS_SCHEDULER.CREATE_JOB 创建定时任务，以实现自动清理功能。
+
+```sql
+##设置一个从现在开始，每隔一天执行自动清理统计信息历史的任务
+DECLARE
+BEGIN
+   DBMS_SCHEDULER.CREATE_JOB(job_name => 'PRUGE_STATS',
+                             job_type => 'PL/SQL Block',
+                             job_action => 'call dbms_stats.purge_stats(NULL);',
+                             repeat_interval => 'FREQ=DAILY;INTERVAL=1',
+                             enabled => TRUE);
+END;
+/
+```
+
+默认的清理任务间隔是 31 天，即当一个表在 31 天内没有被更新（也就是说，该表的统计信息在这段时间内没有被重新收集或更新），在第 31 天时，该表的历史统计信息会被清理掉。您可以通过 `dbms_stats.alter_stats_history_retention()` 去设置，有效范围值为 \[0,365000\]。如果设置为 0，则表示清除所有历史统计信息，后续也不在记录。
+
+### 手动清理统计信息历史
+
+手动清理是指显示调用 `dbms_stats.purge_stats()` 命令去执行清理。该方法可以适用于特定时间点需要快速清理的场景。
+
+## 示例
+
+* 获取当前历史统计信息的保留间隔时间。
+
+  ```sql
+  SELECT dbms_stats.get_stats_history_retention() FROM DUAL;
+  ```
+
+* 获取当前可用的最早历史统计信息时间。
+
+  ```sql
+  SELECT dbms_stats.get_stats_history_availability() FROM DUAL;
+  ```
+
+* 修改历史统计信息的保留间隔时间为 15 天。
+
+  ```sql
+  CALL dbms_stats.alter_stats_history_retention(15);
+  ```
+
+* 指定恢复用户名 `test` 下的 `tbl1` 表在某个时刻下的统计信息。
+
+  ```sql
+  CALL dbms_stats.restore_schema_stats('test', 'tbl1', to_timestamp('2021-09-26 19:02:12.675729', 'YYYY-MM-DD HH24:MI:SS.FF'));
+  ```
+
+* 手动清理指定时刻的历史统计信息。
+
+  ```sql
+  CALL dbms_stats.purge_stats(to_timestamp('2021-09-26 19:02:12.675729', 'YYYY-MM-DD HH24:MI:SS.FF'));
+  ```

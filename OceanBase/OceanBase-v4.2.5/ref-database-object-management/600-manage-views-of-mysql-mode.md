@@ -1,0 +1,246 @@
+---
+title: "管理视图"
+book: "数据库对象管理"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500104.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 管理视图
+
+本节主要介绍如何创建、修改和删除视图。
+视图用来展示表的查询结果。大部分能使用表的地方，都可以使用视图。如果经常访问的数据分布在多个表里时，使用视图是最好的方法。
+
+## 创建普通视图
+
+您可以使用 `CREATE VIEW` 语句来创建普通视图。创建后，可以对该视图执行 DML 语句。
+
+### 语法
+
+MySQL 模式下，创建视图的 SQL 语法如下：
+
+```sql
+CREATE [OR REPLACE] VIEW view_name [(column_name_list)]
+    AS select_stmt
+    [view_check_option];
+
+column_name_list:
+    column_name [, column_name ...]
+
+view_check_option:
+    WITH [LOCAL | CASCADED] CHECK OPTION
+```
+
+字段说明：
+
+* `OR REPLACE`：表示如果要创建的视图名称已存在，则使用新的定义重新创建视图。
+
+* `select_stmt`：定义视图的 `SELECT` 语句，该语句中的信息可以从基表或其他视图中选取。
+
+* `column_name_list`：与基表一样，视图必须具有唯一的列名，不能重复。缺省情况下，由 `SELECT` 语句检索的列名将用作视图列名。
+
+  如果想为视图列定义明确的名称，可使用可选的 `column_name_list` 子句，ID 之间使用逗号分隔。`column_name_list` 中的名称数目必须等于 `SELECT`语句检索的列数。
+
+  `SELECT` 语句检索的列可以是对表列的简单引用。也可以是使用函数、常量值、运算符等的表达式。
+  
+* `WITH CHECK OPTION` 子句用于防止系统对 `select_statement` 中 `WHERE` 子句为真的行以外的行进行插入或更新操作。在使用 `WITH CHECK OPTION` 子句创建视图时，可以通过添加 `CASCADED` 或 `LOCAL` 关键字来明确检查的范围。
+
+  * 如果使用 `LOCAL` 关键字，则检查视图的 `WHERE`子句，然后将检查递归到基础视图并应用相同的规则。
+
+  * 如果使用 `CASCADED` 关键字，则检查视图的 `WHERE` 子句，然后将检查递归到底层视图，向它们添加 `WITH CASCADED CHECK OPTION`（底层视图的定义保持不变），并应用相同的规则。
+
+  * 如果没有在 `WITH CHECK OPTION` 中指定 `CASCADED` 或 `LOCAL` 关键字，则默认使用 `CASCADED` 关键字。
+
+  * 如果不使用 `WITH CHECK OPTION` 子句，则在创建视图时，系统不检查视图的 `WHERE` 子句，然后将检查递归到底层视图，并应用相同的规则。
+
+  * 对于 V4.2.5 版本，从 V4.2.5 BP7 版本开始支持视图过滤条件（`where_clause`）包含子查询时指定 `WITH CHECK OPTION` 子句。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>当过滤条件中使用 <code>WITH CHECK OPTION</code> 子句时：<ul><li>MySQL 模式应确保创建语句不能是 “不可更新视图”。</li><li>视图定义中暂不支持使用 <code>JOIN</code> 操作。</li></ul></p>
+    </main>
+
+### 示例
+
+```shell
+obclient> CREATE VIEW stock_item
+    AS SELECT /*+ leading(s) use_merge(i) */
+           i_price,
+           i_name,
+           i_data,
+           s_i_id,
+           s_w_id,
+           s_order_cnt,
+           s_ytd,
+           s_remote_cnt,
+           s_quantity,
+           s_data,
+           s_dist_01,
+           s_dist_02,
+           s_dist_03,
+           s_dist_04,
+           s_dist_05,
+           s_dist_06,
+           s_dist_07,
+           s_dist_08,
+           s_dist_09,
+           s_dist_10
+       FROM stok s, item i
+       WHERE s.s_i_id = i.i_id;
+```
+
+## 修改普通视图
+
+您可以使用 `CREATE OR REPLACE VIEW` 语句来对普通视图进行修改。
+
+修改视图 `stock_item`。
+
+```shell
+obclient> CREATE OR REPLACE VIEW stock_item
+    AS SELECT /*+ leading(s) use_merge(i) */
+           i_price,
+           i_name,
+           i_data,
+           s_i_id,
+           s_w_id,
+           s_order_cnt,
+           s_ytd,
+           s_remote_cnt,
+           s_quantity,
+           s_data,
+           s_dist_01,
+           s_dist_02,
+           s_dist_03,
+           s_dist_04,
+           s_dist_05,
+           s_dist_06,
+           s_dist_07,
+           s_dist_08,
+           s_dist_09,
+           s_dist_10
+       FROM stok s, item i
+       WHERE s.s_i_id = i.i_id;
+```
+
+## 删除视图
+
+您可以使用 `DROP VIEW` 语句删除一个或多个视图，删除视图并不会删除视图所引用的表。
+
+如果当前视图被其他视图所引用，则视图删除后将会导致依赖当前视图的其他视图的查询失败。
+
+删除视图时，需确保当前用户具备该视图的 `DROP` 权限。
+
+### 语法
+
+MySQL 模式下，删除视图的 SQL 语法如下：
+
+```sql
+DROP VIEW [IF EXISTS] view_name_list;
+
+view_name_list:
+    view_name [, view_name_list]
+```
+
+字段说明：
+
+* 使用 `IF EXISTS` 关键字可以防止由于视图不存在而出错。
+
+* 如果 `view_name_list` 中包含一部分存在和一部分不存在的视图，执行可能报错但是存在的视图依然会被删除。
+
+### 示例
+
+删除视图 `V1`。
+
+```sql
+obclient> DROP VIEW V1;
+```
+
+## 检查视图
+
+可以使用 `CHECK TABLE` 语句检查数据库中的视图是否存在，或者检查视图引用对象是否有效。
+
+有关 `CHECK TABLE` 语句的详细信息，参见 [CHECK TABLE](../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2050.check-table-of-mysql-mode.md)。
+
+**示例如下：**
+
+1. 当视图 `v_test_tbl1` 不存在时，查看检查视图 `v_test_tbl1` 的返回信息。
+
+    ```shell
+    obclient> CHECK TABLE v_test_tbl1;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------------------+-------+----------+----------------------------------------+
+    | Table            | Op    | Msg_type | Msg_text                               |
+    +------------------+-------+----------+----------------------------------------+
+    | test.v_test_tbl1 | check | Error    | Table 'test.v_test_tbl1' doesn't exist |
+    | test.v_test_tbl1 | check | status   | Operation failed                       |
+    +------------------+-------+----------+----------------------------------------+
+    2 rows in set
+    ```
+
+2. 创建表 `test_tbl1`。
+
+    ```shell
+    obclient> CREATE TABLE test_tbl1(col1 INT, col2 VARCHAR(18));
+    ```
+
+3. 创建视图 `v_test_tbl1`。
+
+    ```shell
+    obclient> CREATE OR REPLACE VIEW v_test_tbl1
+        AS SELECT *
+           FROM test_tbl1;
+    ```
+
+4. 再次检查视图 `v_test_tbl1`，查看返回信息。
+
+    ```shell
+    obclient> CHECK TABLE v_test_tbl1;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------------------+-------+----------+----------+
+    | Table            | Op    | Msg_type | Msg_text |
+    +------------------+-------+----------+----------+
+    | test.v_test_tbl1 | check | status   | OK       |
+    +------------------+-------+----------+----------+
+    1 row in set
+    ```
+
+5. 删除表 `test_tbl1`。
+
+    ```shell
+    obclient> DROP TABLE test_tbl1;
+    ```
+
+6. 再次检查视图 `v_test_tbl1`，查看返回信息。
+
+    ```sql
+    obclient> CHECK TABLE v_test_tbl1;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------------------+-------+----------+------------------------------------------------------------------------------------------------------------------------------------+
+    | Table            | Op    | Msg_type | Msg_text                                                                                                                           |
+    +------------------+-------+----------+------------------------------------------------------------------------------------------------------------------------------------+
+    | test.v_test_tbl1 | check | Error    | View 'test.v_test_tbl1' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them |
+    | test.v_test_tbl1 | check | error    | Corrupt                                                                                                                            |
+    +------------------+-------+----------+------------------------------------------------------------------------------------------------------------------------------------+
+    2 rows in set
+    ```
+
+## 相关文档
+
+* [CREATE VIEW](../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2900.create-view-of-mysql-mode.md)
+
+* [DROP VIEW](../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/4100.drop-view-of-mysql-mode.md)

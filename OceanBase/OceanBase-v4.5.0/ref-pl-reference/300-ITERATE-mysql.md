@@ -1,0 +1,68 @@
+---
+title: ITERATE
+book: "PL 参考"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004478421.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# ITERATE
+
+`ITERATE` 语句用于跳过当前循环迭代的剩余部分，继续下一次循环迭代。
+
+## 语法
+
+```sql
+ITERATE label
+```
+
+## 参数解释
+
+| **参数名称** | **说明** |
+|--------------|----------|
+| label | 循环标签名称，指定要跳转到的循环。 |
+
+`ITERATE` 只能出现在 `LOOP`、`REPEAT` 和 `WHILE` 语句中。`ITERATE` 语句会跳过当前迭代的剩余部分，直接开始下一次循环迭代。
+
+## 示例
+
+在 LOOP 循环中使用 ITERATE 跳过某些迭代。
+
+```sql
+obclient> DELIMITER //
+
+obclient> CREATE PROCEDURE iterate_example()
+    BEGIN
+        DECLARE i INT DEFAULT 0;
+        DECLARE sum_result INT DEFAULT 0;
+        loop_label: LOOP
+            SET i = i + 1;
+            IF i % 2 = 0 THEN
+                ITERATE loop_label;
+            END IF;
+            SET sum_result = sum_result + i;
+            IF i >= 10 THEN
+                LEAVE loop_label;
+            END IF;
+        END LOOP loop_label;
+        SELECT sum_result;
+    END //
+
+obclient> DELIMITER ;
+
+obclient> CALL iterate_example();
+```
+
+查询结果如下：
+
+```sql
++------------+
+| sum_result |
++------------+
+|         36 |
++------------+
+1 row in set
+```

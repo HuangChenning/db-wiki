@@ -1,0 +1,22 @@
+---
+title: balancer_task_timeout
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001702079.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# balancer_task_timeout
+
+`balancer_task_timeout` 用于设置负载均衡等后台任务的超时时间。
+
+
+|      **属性**      |    **描述**    |
+|------------------|--------------|
+| 参数类型             | 时间类型         |
+| 默认值              | 20m，表示 20 分钟 |
+| 取值范围             | \[1s, +∞)    |
+| 是否重启 OBServer 节点生效 | 否            |

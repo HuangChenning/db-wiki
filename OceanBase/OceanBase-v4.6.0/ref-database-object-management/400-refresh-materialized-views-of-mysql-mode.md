@@ -1,0 +1,960 @@
+---
+title: "刷新物化视图"
+book: "数据库对象管理"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685859.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-database-object-management
+---
+
+# 刷新物化视图
+
+更新基表的数据可能会导致物化视图的数据与基表的数据不一致，为了维护物化视图的数据，OceanBase 数据库会通过刷新物化视图来实现。
+
+OceanBase 数据库支持的物化视图刷新策略支持全量刷新和增量刷新，并且支持手动调度刷新和自动调度刷新。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>刷新物化视图也会自动更新其所有索引。</p>
+</main>
+
+## 全量刷新
+
+OceanBase 数据库使用异地刷新的方式进行全量刷新，即创建一个隐藏表，在隐藏表上执行刷新语句，然后切换原表和隐藏表。因此，全量刷新操作需要额外的空间，并且会全量重建索引（如果有的话）。
+
+### 全量刷新注意事项
+
+* 全量刷新可能是一个非常耗时的过程，尤其是在需要读取和处理大量数据的情况下。因此，在执行全量刷新之前，您应该始终考虑处理全量刷新所需的时间。
+* 当前基表的列与物化视图对应的列类型匹配，就符合全量刷新的条件。如果不匹配，将无法进行全量刷新。
+* 如果一个物化视图进行了全量刷新，那么依赖它的物化视图（嵌套物化视图）在后续进行增量刷新前必须先进行一次全量刷新，否则会报错。
+
+## 增量刷新
+
+增量刷新的物化视图目前支持单表非聚合、单表聚合、多表关联、多表关联聚合、集合查询（`UNION ALL`）的 SQL 语句，对于不满足这五类场景的 SQL 语句，暂不支持增量刷新，增量刷新 SQL 语句要求详见下述介绍。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>
+    <ul>
+      <li>增量刷新（<code>REFRESH FAST</code>）利用物化视图日志中的记录信息来确定需要增量刷新的内容，OceanBase 数据库支持物化视图日志自动管理功能，系统默认自动创建对应的 mlog 或更新已存在的 mlog 表定义使其包含新建物化视图依赖的列，详细信息参见 <a href="200.materialized-views-log-of-mysql-mode.md">物化视图日志</a> 下自动管理物化视图日志章节。</li>
+      <li>本文的示例都使用物化视图日志自动管理功能，如果需要手动创建物化视图日志，手动创建物化视图日志详细信息，参见 <a href="200.materialized-views-log-of-mysql-mode.md">物化视图日志</a> 下手动管理物化视图日志章节。</li>
+    </ul>
+  </p>
+</main>
+
+### 单表非聚合增量刷新
+
+#### 单表非聚合增量刷新示例
+
+1. 创建表 `tbl1`。
+
+    ```sql
+    CREATE TABLE tbl1 (col1 INT PRIMARY KEY, col2 INT, col3 INT, col4 INT);
+    ```
+
+2. 基于表 `tbl1` 创建增量刷新的物化视图 `mv_tbl1`。
+
+    ```sql
+    CREATE MATERIALIZED VIEW mv_tbl1
+        REFRESH FAST ON DEMAND
+        AS SELECT col1, col2
+           FROM tbl1;
+    ```
+
+### 单表聚合增量刷新
+
+单表聚合增量刷新基本要求如下：
+
+* `FROM` 表必须为基表，不能为内联视图、普通视图等。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>由于嵌套物化视图不支持实时物化视图，所以在 <code>FROM</code> 表为物化视图时，无法使用实时物化视图。</p>
+    </main>
+
+* `FROM` 表仅存在一张表。
+* `FROM` 表上创建有 mlog，且使视图中使用列均在 mlog 中存在。
+* 视图定义中不存在子查询。
+* 不支持窗口函数。
+* 视图定义中不存在 `ROLLUP`、`HAVING`、`DISTINCT`、`ORDER BY`、`LIMIT`、`FETCH` 等子句。
+* 如果查询中包含 `DISTINCT`，那么可增量更新的物化视图中的输出列应该是唯一的，因此在这种情况下，可以直接禁止使用 `DISTINCT`，或者将其移除。
+* 不带 `GROUP BY` 的语句必须是标量聚合（Scalar Aggregate）。
+* 对于 `GROUP BY` 场景的物化视图，支持 `SUM` 和 `COUNT` 等聚合函数，且聚合函数中只能使用简单的列。`GROUP BY` 的要求如下：
+
+    1. `GROUP BY` 子句必须是标准的 `GROUP BY` 语法，不支持 `ROLLUP` 和 `HAVING`。
+    2. `SELECT` 子句中必须包含所有的 `GROUP BY` 列。
+    3. 聚合函数不包含 `DISTINCT` 关键字。
+
+* 使用 `MIN`/`MAX` 函数的物化视图不支持实时物化视图。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>OceanBase 数据库 <code>MIN</code>/<code>MAX</code> 聚合函数参数支持非基本列，<code>GROUP BY</code> 列中支持使用非基本列。</p>
+    </main>
+
+#### 单表聚合增量刷新示例
+
+1. 创建表 `test_tbl1`。
+
+    ```sql
+    CREATE TABLE test_tbl1 (col1 INT PRIMARY KEY, col2 INT, col3 INT, col4 INT);
+    ```
+
+2. 创建刷新方法是增量刷新的物化视图。
+
+    * 创建名为 `mv1_test_tbl1` 的物化视图。指定物化视图的刷新方法为增量刷新，并且可以根据需要手动触发刷新操作；物化视图的查询部分是从表 `test_tbl1` 中选择 `col2` 列，并计算 `sum(col3)` 的聚合结果，分组依据是 `col2` 列的值。
+
+      ```sql
+      CREATE MATERIALIZED VIEW mv1_test_tbl1
+        REFRESH FAST ON DEMAND
+        AS SELECT col2, sum(col3) sum_col3
+           FROM test_tbl1
+           GROUP BY col2;
+      ```
+
+    * 创建名为 `mv2_test_tbl1` 的物化视图。指定物化视图的刷新方法为增量刷新，并且可以根据需要手动触发刷新操作；物化视图的查询部分是从表 `test_tbl1` 中选择 `col2` 和 `col3` 列，并计算 `sum(col3)` 的聚合结果。
+
+      ```sql
+      CREATE MATERIALIZED VIEW mv2_test_tbl1
+        REFRESH FAST ON DEMAND
+        AS SELECT col2, col3, sum(col3) sum_col3
+           FROM test_tbl1
+           GROUP BY col2, col3;
+      ```
+
+    * 创建名为 `mv3_test_tbl1` 的物化视图。指定物化视图的刷新方法为增量刷新，并且可以根据需要手动触发刷新操作；物化视图的查询部分是从表 `test_tbl1` 中选择 `col2` 列，并计算 `sum(col3)`、`avg(col3)` 等聚合结果，同时还计算了一些自定义的列 `calcol1` 和 `calcol2`，分组依据是 `col2` 列的值。
+
+      ```sql
+      CREATE MATERIALIZED VIEW mv3_test_tbl1
+        REFRESH FAST ON DEMAND
+        AS SELECT col2, sum(col3) sum_col3, avg(col3) avg_col3, avg(col3) * sum(col3)/col2 calcol1, col2+sum(col3) calcol2
+           FROM test_tbl1
+           GROUP BY col2;
+      ```
+
+    * 创建名为 `mv4_test_tbl1` 的物化视图。指定物化视图的刷新方法为增量刷新，并且可以根据需要手动触发刷新操作；物化视图的查询部分是从表 `test_tbl1` 中选择 `col2` 列，并计算 `sum(col3)`、`count(col3*col3)`、`sum(col3*col3)` 和 `STDDEV(col3)` 的聚合结果，分组依据是 `col2` 列的值。
+
+      ```sql
+      CREATE MATERIALIZED VIEW mv4_test_tbl1
+        REFRESH FAST ON DEMAND
+        AS SELECT col2, sum(col3) sum_col3, count(col3*col3) cnt_col3_2, sum(col3*col3) sum_col3_2, STDDEV(col3) stddev_col3
+           FROM test_tbl1
+           GROUP BY col2;
+      ```
+
+    * 创建名为 `mv5_test_tbl1` 的物化视图。指定物化视图的刷新方法为增量刷新，并且可以根据需要手动触发刷新操作；物化视图的查询部分是从表 `test_tbl1` 中选择 `col1` 和 `col2` 列，并计算每组中 `col3` 的最小值与 `col4` 的最大值的和，按 `col1` 和 `col2` 的组合对数据进行分组。
+
+        ```sql
+        CREATE MATERIALIZED VIEW mv5_test_tbl1
+            REFRESH FAST ON DEMAND
+            AS SELECT
+                col1,
+                col2,
+                MIN(col3) + MAX(col4) AS min_max_val
+                FROM test_tbl1
+                GROUP BY col1, col2;
+        ```
+
+    * 在 `GROUP BY` 中使用非基本列。
+
+      1. 创建表 `m_tbl1`。
+
+          ```shell
+          obclient> CREATE TABLE m_tbl1(col1 INT PRIMARY KEY, col2 DATETIME, col3 INT, col4 INT, col5 INT, col6 INT);
+          ```
+
+      2. 创建单表聚合增量刷新的物化视图 `m_tbl1_mv1`。
+
+          ```shell
+          obclient> CREATE MATERIALIZED VIEW m_tbl1_mv1
+              REFRESH FAST ON DEMAND
+              AS SELECT
+                  col3,
+                  DATE(col2) gby_2,
+                  MAX(col4) max_c4,
+                  MIN(col5 + col6) min_c5_c6
+              FROM m_tbl1
+              GROUP BY col3, DATE(col2);
+          ```
+
+### 多表连接增量刷新
+
+多表连接增量刷新基本要求如下：
+
+1. `FROM` 表必须为基表，不能为内联视图等。
+2. `FROM` 表至少包含两张表。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p><ul><li>OceanBase 数据库物化视图的增量刷新功能支持多表外连接（<code>LEFT JOIN</code>/<code>RIGHT JOIN</code>）。</li><li>外连接使用限制：连接树需要是等价于 <code>INNER JOIN</code> 在先，<code>LEFT JOIN</code> 在后的左深连接树。</li><li>若增量刷新物化视图的 <code>SELECT</code> 子句包含 <code>LEFT JOIN</code> 算子，则禁止在创建时指定主键（<code>PRIMARY KEY</code>）或唯一索引（<code>UNIQUE INDEX</code>），以避免因约束冲突引发的刷新异常。</li><li>带有外连接的聚合物化视图不支持实时物化视图。</li></ul></p>
+    </main>
+
+3. 视图定义中不存在子查询。
+4. 视图定义中不存在 `ROLLUP`、`HAVING`、`WINDOW FUNCTION`、`DISTINCT`、`ORDER BY`、`LIMIT` 和 `FETCH` 等子句。
+5. 视图定义中不能使用 `ROWNUM`、`RAND` 和 `SYSDATE` 等不稳定输出值的表达式。
+
+#### 多表连接增量刷新示例
+
+1. 创建基表 `tb1` 和 `tb2`。
+
+    ```sql
+    CREATE TABLE tb1(c1 INT PRIMARY KEY, c2 INT, c3 INT);
+    ```
+
+    ```sql
+    CREATE TABLE tb2(c1 INT PRIMARY KEY, c4 INT, c5 INT);
+    ```
+
+2. 创建表 `tb1` 和表 `tb2` 连接的增量刷新的物化视图 `mv1_tb1_tb2`。
+
+    ```sql
+    CREATE MATERIALIZED VIEW mv1_tb1_tb2
+      REFRESH FAST
+      AS SELECT tb1.c1, tb1.c2, tb2.c4
+        FROM tb1 JOIN tb2 ON tb1.c1=tb2.c1;
+    ```
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><ul><li>为了使简单连接物化视图在增量刷新和实时物化视图中获得较好的性能，推荐按照以下方式为物化视图及其依赖基表创建索引：<ol><li>为每张表的连接键创建索引，用于提升增量更新和实时物化视图中表的连接性能。</li><li>为物化视图中各基表主键列创建索引。</li></ol></li><li>随着物化视图中 <code>JOIN</code> 表数量的增加，物化视图的增量刷新性能和实时物化视图查询性能通常会有所下降。</li></ul></p>
+</main>
+
+**为物化视图及其依赖基表创建索引示例如下：**
+
+1. （可选）使用以下语句删除相关测试数据。
+
+    如果没有以下数据库对象可以跳过此步骤。
+
+    ```sql
+    DROP TABLE IF EXISTS t1;
+    DROP TABLE IF EXISTS t2;
+    DROP MATERIALIZED VIEW rt_mv1;
+    ```
+
+2. 使用以下语句创建表 `t1` 和索引 `idx_t1_c2`。
+
+    ```sql
+    CREATE TABLE t1(c1 INT PRIMARY KEY AUTO_INCREMENT, c2 INT, c3 INT, c4 INT, c5 INT);
+    CREATE INDEX idx_t1_c2 ON t1(c2);
+    ```
+
+3. 使用以下语句创建表 `t2` 和索引 `idx_t2_c3`。
+
+    ```sql
+    CREATE TABLE t2(c1 INT PRIMARY KEY AUTO_INCREMENT, c2 INT, c3 INT, c4 INT, c5 INT);
+    CREATE INDEX idx_t2_c3 ON t2(c3);
+    ```
+
+4. 使用以下语句创建实时物化视图 `rt_mv1`。
+
+    ```sql
+    CREATE MATERIALIZED VIEW rt_mv1
+      NEVER REFRESH
+      ENABLE ON QUERY COMPUTATION
+      DISABLE QUERY REWRITE
+      AS SELECT t1.c1 AS t1_c1, t2.c1 AS t2_c1, t1.c2 AS t1_c2, t2.c2 AS t2_c2, t1.c3 AS t1_c3, t2.c3 AS t2_c3 
+          FROM t1, t2
+          WHERE t1.c2 = t2.c3;
+    ```
+
+5. 使用以下语句为物化视图中各基表主键列创建索引。
+
+    ```sql
+    CREATE INDEX idx_mv_t1_c1 ON rt_mv1(t1_c1);
+    CREATE INDEX idx_mv_t2_c1 ON rt_mv1(t2_c1);
+    ```
+
+### 多表聚合增量刷新
+
+多表聚合增量刷新基本要求如下：
+
+* 多表聚合增量刷新基本要求是上述 [单表聚合增量刷新](#单表聚合增量刷新) 和 [多表连接增量刷新](#多表连接增量刷新) 基本要求的并集。
+* 支持带有外连接的聚合物化视图的增量刷新。关于外连接的限制与非聚合的外连接物化视图相同，关于聚合部分的限制与内连接的聚合物化视图相同，不过带有外连接的聚合物化视图不支持 `MIN`/`MAX` 聚合函数，以及不支持实时物化视图。
+
+#### 多表聚合增量刷新示例
+
+1. 创建基表 `t3` 和 `t4`。
+
+    ```sql
+    CREATE TABLE t3(c1 INT, c2 INT, c3 INT, c4 INT, PRIMARY KEY(c1));
+    ```
+
+    ```sql
+    CREATE TABLE t4(c1 INT, c2 INT, c3 INT, c4 INT, PRIMARY KEY(c1));
+    ```
+
+2. 创建表 `t3` 和表 `t4` 连接聚合增量刷新的实时物化视图 `mv1_t3_t4`。
+
+    ```sql
+    CREATE MATERIALIZED VIEW mv1_t3_t4
+      REFRESH FAST
+      ENABLE ON QUERY COMPUTATION
+      AS SELECT t3.c1,
+          SUM(t4.c4) sum_c4,
+          AVG(t4.c4) avg_c4
+        FROM t3, t4
+        WHERE t3.c2 = t4.c3
+        GROUP BY t3.c1;
+    ```
+
+### 集合查询增量刷新
+
+集合物化视图支持物化视图使用 `UNION ALL` 集合查询，并可以进行增量刷新。增量刷新的集合物化视图允许集合分支中使用除外连接物化视图外的所有可以增量刷新的物化视图。
+
+集合查询增量刷新基本要求如下：
+
+* 带有集合查询的物化视图不支持实时物化视图。
+* 顶层查询为 `UNION ALL`，视图定义中不包含子查询，不存在 `ORDER BY`/`LIMIT`/`FETCH` 等子句。
+* `UNION ALL` 各分支相同投影位置的输出列类型需相同，不支持强行通过 `CAST` 将子分支的列类型转换为一致的类型。
+
+    例如，多表连接物化视图要求各连接表主键出现在 `SELECT` 中，这些 `SELECT` 输出列不能由于 `UNION ALL` 而添加额外 `CAST`。
+
+* `UNION ALL` 各分支相同投影位置存在相同类型/值不同的常量，常量作为标识列区分各分支。
+
+#### 集合查询增量刷新示例
+
+1. 创建基表 `ua_tbl1` 和 `ua_tbl2`。
+
+    ```sql
+    CREATE TABLE ua_tbl1 (col1 INT PRIMARY KEY, col2 INT, col3 INT, col4 INT);
+    ```
+
+    ```sql
+    CREATE TABLE ua_tbl2 (col1 INT PRIMARY KEY, col2 INT, col3 INT, col4 INT);
+    ```
+
+2. 创建集合查询增量刷新的物化视图 `mv_ua_tbl1_tbl2`。
+
+    ```sql
+    CREATE MATERIALIZED VIEW mv_ua_tbl1_tbl2
+        REFRESH FAST ON DEMAND
+        AS SELECT
+            a.col1 as a_c1,
+            b.col1 as b_c1,
+            a.col2 val
+        FROM ua_tbl1 a
+                INNER JOIN ua_tbl2 b
+                ON a.col2 = b.col3
+        UNION ALL
+        SELECT
+            col1 a_c1,
+            col2 b_c1,
+            count(*) val
+        FROM ua_tbl1
+        GROUP BY col1, col2;
+    ```
+
+## 物化视图刷新并行度控制机制
+
+OceanBase 数据库支持对物化视图刷新操作的并行度进行控制：
+
+* 刷新并行度：
+
+  * 显式指定刷新并行度：如果在物化视图定义中通过 `REFRESH ... PARALLEL n` 指定了刷新并行度，执行刷新操作时，以显式指定的值为准。
+  * 未显式指定刷新并行度：如果未显式指定刷新并行度，则系统将以当前会话中设置的 `mview_refresh_dop` 系统变量的值作为默认并行度，用于控制刷新操作的并发程度。
+
+### 查看物化视图并行度信息
+
+* 使用视图 [DBA_MVIEWS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5000.o-dba_mviews-of-mysql-mode.md) 查询为物化视图设定的后台刷新并行度。
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>视图 <code>DBA_MVIEWS</code> 查看物化视图并行度只能查看针对物化视图指定的的并行度。<ul><li>字段 <code>REFRESH_DOP</code> 为非 0 时，物化视图后台刷新任务将使用 <code>REFRESH_DOP</code> 对应的并行度。</li><li>当 <code>REFRESH_DOP</code> 为 0 时，将使用设置 Global（全局）级别的 <code>mview_refresh_dop</code> 的值。</li></ul></p>
+    </main>
+
+* 使用视图 [DBA_MVREF_RUN_STATS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5200.o-dba_mvref_run_stats-of-mysql-mode.md) 查询物化视图的历史刷新并行度。
+
+**示例如下：**
+
+1. 创建物化视图 `mv0_t1`。
+
+    ```sql
+    obclient> CREATE MATERIALIZED VIEW mv0_t1
+        REFRESH COMPLETE ON DEMAND
+        START WITH sysdate()
+            NEXT sysdate() + INTERVAL 10 SECOND
+        AS
+        SELECT c1, c2
+        FROM t1;
+        ```
+
+2. 查看物化视图 `mv0_t1` 设定的后台刷新并行度。
+
+    ```sql
+    obclient> SELECT OWNER, MVIEW_NAME,REFRESH_DOP
+        FROM oceanbase.DBA_MVIEWS
+        WHERE OWNER = 'db_test'
+        AND MVIEW_NAME = 'mv0_t1';
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +---------+------------+-------------+
+    | OWNER   | MVIEW_NAME | REFRESH_DOP |
+    +---------+------------+-------------+
+    | db_test | mv0_t1     |           0 |
+    +---------+------------+-------------+
+    1 row in set
+    ```
+
+3. 修改物化视图 `mv0_t1` 刷新并行度为 8。
+
+    ```sql
+    obclient> ALTER MATERIALIZED VIEW mv0_t1 REFRESH PARALLEL 8;
+    ```
+
+4. 查看物化视图 `mv0_t1` 设定的后台刷新并行度。
+
+    ```sql
+    obclient> SELECT OWNER, MVIEW_NAME,REFRESH_DOP
+        FROM oceanbase.DBA_MVIEWS
+        WHERE OWNER = 'db_test'
+        AND MVIEW_NAME = 'mv0_t1';
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +---------+------------+-------------+
+    | OWNER   | MVIEW_NAME | REFRESH_DOP |
+    +---------+------------+-------------+
+    | db_test | mv0_t1     |           8 |
+    +---------+------------+-------------+
+    1 row in set
+    ```
+
+### 设置 mview_refresh_dop
+
+`mview_refresh_dop` 是 OceanBase 数据库中的一个系统变量，用于控制物化视图刷新操作的默认并行度。通过合理设置其值，可以显著提升刷新效率，优化数据库性能。
+
+当设置 `mview_refresh_dop` 为 0 或 1 时，表示不使用并行刷新能力。有关系统变量 `mview_refresh_dop` 的详细介绍信息，参见 [mview_refresh_dop](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/4050.mview_refresh_dop-global.md)。
+
+**示例如下：**
+
+* 将当前 Session 并行度设置为 5。
+
+    ```sql
+    SET mview_refresh_dop = 5;
+    ```
+
+* 将全局 Session 并行度设置为 5。
+
+    ```sql
+    SET GLOBAL mview_refresh_dop = 5;
+    ```
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>设置 Global 级别的变量对当前 Session 无效，需要重新登录建立新的 Session 才会生效。</p>
+    </main>
+
+## 手动刷新物化视图
+
+当物化视图的刷新模式是 `ON DEMAND`，可以使用 `DBMS_MVIEW.REFRESH` 进行手动刷新。对于定义为增量刷新的物化视图，手动刷新时可以指定为全量刷新。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>物化视图的所有者和租户管理员用户才可以执行刷新操作。</p>
+</main>
+
+**语法格式如下：**
+
+```sql
+DBMS_MVIEW.REFRESH (
+    mv_name                IN    VARCHAR(65535)
+    [, method              IN    VARCHAR(65535) DEFAULT NULL]
+    [, refresh_parallel    IN    INT DEFAULT 0]
+    [, nested              IN    BOOLEAN DEFAULT FALSE]
+    [, async               IN    BOOLEAN DEFAULT FALSE]
+```
+
+**参数说明如下：**
+
+|       **参数**      |       **说明**        |
+|---------------------|-----------------------|
+| mv_name             | 需要刷新的物化视图名称。|
+| method              | 定义了物化视图的刷新策略，可在创建物化视图时指定默认的策略。可选方法包括：<ul><li>`F` 或 `f`：快速刷新。</li><li>`?`：强制刷新。</li><li>`C` 或 `c`：全量刷新。</li><li>`A` 或 `a`：始终刷新，等价于 `C`。</li></ul>|
+| refresh_parallel    | 刷新操作的并发度，即同时执行刷新操作的线程数。|
+| nested              | 指定嵌套物化视图的刷新模式。取值如下：<ul><li>`FALSE`：默认值，表示独立刷新嵌套物化视图。</li><li>`TRUE`：表示级联刷新嵌套物化视图。</li></ul>|
+| async               | 指定是否进行异步刷新。取值如下：<ul><li>`FALSE`：默认值，表示需要刷新任务完成后才返回。</li><li>`TRUE`：表示调用 `REFRESH` 后创建后台刷新任务立刻返回。</li></ul>|
+
+更多 `DBMS_MVIEW.REFRESH` 介绍信息，参见 [DBMS_MVIEW.REFRESH](../../../../600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/9950.dbms-mview-mysql/300.refresh-mysql.md)。
+
+**示例如下：**
+
+1. 向表 `test_tbl1` 中插入 `3` 条数据。
+
+    ```sql
+    INSERT INTO test_tbl1 VALUES (1, 1, 1, 1),(2, 2, 2, 2),(3, 3, 3, 3);
+    ```
+
+2. 查看物化视图 `mv1_test_tbl1` 信息。
+
+    ```sql
+    SELECT * FROM mv1_test_tbl1;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    Empty set
+    ```
+
+3. 使用 `DBMS_MVIEW.REFRESH` 手动刷新物化视图 `mv1_test_tbl1`。
+
+    * 使用物化视图设置的刷新选项刷新物化视图：
+
+        ```sql
+        CALL DBMS_MVIEW.REFRESH('mv1_test_tbl1');
+        ```
+
+    * 指定刷新选项刷新物化视图：
+
+        ```sql
+        CALL DBMS_MVIEW.REFRESH('mv1_test_tbl1', 'c');
+        ```
+
+4. 再次查看物化视图 `mv1_test_tbl1` 信息。
+
+    ```sql
+    SELECT * FROM mv1_test_tbl1;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+------+----------+----------+
+    | col2 | cnt  | cnt_col3 | sum_col3 |
+    +------+------+----------+----------+
+    |    1 |    1 |        1 |        1 |
+    |    2 |    1 |        1 |        2 |
+    |    3 |    1 |        1 |        3 |
+    +------+------+----------+----------+
+    3 rows in set
+    ```
+
+### 手动刷新物化视图刷新并行度
+
+对于手动刷新物化视图，可以通过设置系统变量 [mview_refresh_dop](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/4050.mview_refresh_dop-global.md) 为物化视图刷新操作设置默认并行度。
+
+也可以在调用 [DBMS_MVIEW.REFRESH](../../../../600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/9950.dbms-mview-mysql/300.refresh-mysql.md) 函数时，通过指定 `refresh_parallel` 显式设置本次刷新的并行度。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>如果未显式指定并行度，且 <code>mview_refresh_dop</code> 变量为 0 或 1 时，不开启并行刷新。</p>
+</main>
+
+**示例如下：**
+
+1. 将当前 Session 并行度设置为 5。
+
+    ```sql
+    SET mview_refresh_dop = 5;
+    ```
+
+2. 手动刷新物化视图：
+
+   * 显式指定刷新并行度为 8，本次刷新并行度为 8。
+
+       ```sql
+       CALL DBMS_MVIEW.REFRESH('mv1', 'c', 8);
+       ```
+
+   * 未显式指定刷新并行度，以 Session 变量值为准，本次刷新并行度为 5。
+
+       ```sql
+       CALL DBMS_MVIEW.REFRESH('mv1', 'c');
+       ```
+
+## 自动刷新物化视图
+
+创建物化视图的时候，如果指定了`START WITH datetime_expr` 和 `NEXT datetime_expr` 子句，当满足要求时，系统会为物化视图创建后台自动刷新任务。
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>可以通过视图 <code>DBA_SCHEDULER_JOBS</code> 查看物化视图后台刷新的任务情况。更多查看物化视图信息，参见 <a href="600.view-materialized-views-of-mysql-mode.md">查询物化视图</a>。</p>
+</main>
+
+### 自动刷新物化视图刷新并行度
+
+在后台自动刷新物化视图时，可以通过以下两种方式来指定并行度：
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>下述并行度优先级依次降低。</p>
+</main>
+
+1. 创建物化视图时指定刷新并行度。
+
+    **示例如下：**
+
+    ```sql
+    CREATE MATERIALIZED VIEW mv_t1
+        REFRESH COMPLETE PARALLEL 8 ON DEMAND
+            START WITH sysdate() NEXT sysdate() + INTERVAL 10 SECOND
+        AS
+        SELECT c1, c2
+        FROM t1;
+    ```
+
+2. 设置全局 Session 变量 `mview_refresh_dop` 作为刷新并行度。
+
+    自动刷新操作通过内部 Session 进行刷新，需要设置 Global（全局）级别的 [mview_refresh_dop](../../../../800.configuration-items-and-system-variables/200.system-variable/300.global-system-variable/4050.mview_refresh_dop-global.md) 才能对后台 Session 生效。
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>如果创建物化视图时未显式指定并行度，且 <code>mview_refresh_dop</code> 变量为 0 或 1 时，后台刷新任务不开启并行刷新。</p>
+    </main>
+
+    **示例如下：**
+
+    1. 将全局 Session 并行度设置为 5。
+
+        ```sql
+        SET GLOBAL mview_refresh_dop = 5;
+        ```
+
+    2. 创建物化视图：
+
+       * 创建物化视图时指定刷新并行度为 8，后台刷新任务会使用 8 作为刷新并行度。
+
+           ```sql
+           CREATE MATERIALIZED VIEW mv1_t1
+               REFRESH COMPLETE PARALLEL 8 ON DEMAND
+                    START WITH sysdate() NEXT sysdate() + INTERVAL 10 SECOND
+               AS
+               SELECT c1, c2
+               FROM t1;
+           ```
+
+       * 创建物化视图时未指定刷新并行度，后台刷新任务会使用变量 `mview_refresh_dop` 的值 5 作为刷新并行度。
+
+           ```sql
+           CREATE MATERIALIZED VIEW mv2_t1
+               REFRESH COMPLETE ON DEMAND
+                    START WITH sysdate() NEXT sysdate() + INTERVAL 10 SECOND
+               AS
+               SELECT c1, c2
+               FROM t1;
+           ```
+
+## 嵌套物化视图刷新
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>OceanBase 数据库支持基于无主键的物化视图创建嵌套物化视图。</p>
+</main>
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>嵌套物化视图不支持创建为实时物化视图，即创建嵌套物化视图时不支持指定 <code>ENABLE ON QUERY COMPUTATION</code> 子句。</p>
+</main>
+
+### 嵌套物化视图的刷新规则
+
+嵌套物化视图所支持的刷新方式和非嵌套物化视图一样，都包括全量与增量刷新。虽然刷新一个嵌套物化视图只需要用到其所直接依赖的用户表与物化视图（以及它们的 mlog），但是由于嵌套物化视图是基于其他物化视图所构建，因此其数据的一致性会依赖于其他物化视图。这意味着如果想通过刷新来让某个嵌套物化视图的数据保持最新，需要先保证其所依赖的其他物化视图数据是最新的，即需要先对它们进行刷新。
+
+例如下图，物化视图 `mv1` 基于表 `tbl1` 和表 `tbl2` 构建，物化视图 `mv2` 则基于物化视图 `mv1` 和表 `tbl3` 构建，物化视图 `mv3` 基于物化视图 `mv1` 和物化视图 `mv2` 构建。按照物化视图 `mv1`、物化视图 `mv2`、物化视图 `mv3` 的顺序进行刷新的情况下，可以保证嵌套物化视图整体数据的一致性。否则如果先刷新物化视图 `mv2`，再刷新物化视图 `mv1`，则物化视图 `mv2` 的数据并不是最新（落后于物化视图 `mv1`）；同理，如果先刷新物化视图 `mv3`，再刷新物化视图 `mv2`，则物化视图 `mv3` 的数据也不是最新（落后于物化视图 `mv2`）。
+
+![1](img/982b94a810be6559.png)
+
+OceanBase 数据库嵌套物化视图支持级联刷新。级联刷新分为级联非一致性刷新和级联一致性刷新：
+
+* **级联非一致性刷新**：自底向上刷新嵌套物化视图依赖的所有物化视图，每个物化视图的刷新没有数据一致性的保证，依赖的基表读取的数据位点不一致。级联非一致刷新适用于批量同步的方式，比如业务方定时从上游同步数据，数据同步完成后通过级联非一致刷新即可保持物化视图的最终一致性。
+
+* **级联一致性刷新**：快照一致性级联刷新，保证整个级联刷新完成后，上层看到的所依赖的所有基表的数据位点都是一致的。级联一致刷新适用于实时同步数据的场景，我们保证了每次级联刷新完成后，物化视图中的数据快照处于相同位点。
+
+### 嵌套物化视图刷新示例
+
+如果一个物化视图进行了全量刷新，那么依赖它的物化视图在后续进行增量刷新前必须先进行一次全量刷新，否则会报错。
+
+**示例如下：**
+
+1. 创建表 `tbl1` 并插入一条数据。
+
+    ```sql
+    CREATE TABLE tbl1(id INT, name VARCHAR(30), PRIMARY KEY(id));
+    ```
+
+    ```sql
+    INSERT INTO tbl1 VALUES (1, 'jack');
+    ```
+
+2. 创建表 `tbl2` 并插入一条数据。
+
+    ```sql
+    CREATE TABLE tbl2(id INT, age INT, PRIMARY KEY(id));
+    ```
+
+    ```sql
+    INSERT INTO tbl2 VALUES (1, 21);
+    ```
+
+3. 基于 `tbl1` 和 `tbl2` 创建物化视图 `mv1`。
+
+    ```sql
+    CREATE MATERIALIZED VIEW mv1 (PRIMARY KEY (id1, id2))
+        REFRESH FAST ON DEMAND
+        AS SELECT tbl1.id id1, tbl2.id id2, tbl1.NAME, tbl2.AGE
+            FROM tbl1, tbl2
+            WHERE tbl1.id = tbl2.id;
+    ```
+
+4. 基于物化视图 `mv1` 创建物化视图（嵌套物化视图） `mv2`。
+
+    ```sql
+    CREATE MATERIALIZED VIEW mv2
+        REFRESH FAST
+        AS SELECT COUNT(*) cnt, COUNT(AGE) age_cnt, SUM(AGE) age_sum
+            FROM mv1;
+    ```
+
+5. 查看物化视图 `mv1` 的数据。
+
+    ```sql
+    SELECT * FROM mv1;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+------+------+------+
+    | id1  | id2  | NAME | AGE  |
+    +------+------+------+------+
+    |    1 |    1 | jack |   21 |
+    +------+------+------+------+
+    1 row in set
+    ```
+
+6. 查看物化视图 `mv2` 的数据。
+
+    ```sql
+    SELECT * FROM mv2;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+---------+---------+
+    | cnt  | age_cnt | age_sum |
+    +------+---------+---------+
+    |    1 |       1 |      21 |
+    +------+---------+---------+
+    1 row in set
+    ```
+
+7. 向表 `tbl1` 和表 `tbl2` 中各插入一条数据。
+
+    ```sql
+    INSERT INTO tbl1 VALUES (2, 'rose');
+    ```
+
+    ```sql
+    INSERT INTO tbl2 VALUES (2, 19);
+    ```
+
+8. 增量刷新物化视图 `mv1`。
+
+    ```sql
+    CALL dbms_mview.refresh('mv1', 'f');
+    ```
+
+9. 查看物化视图 `mv1` 的数据。
+
+    ```sql
+    SELECT * FROM mv1;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+------+------+------+
+    | id1  | id2  | NAME | AGE  |
+    +------+------+------+------+
+    |    1 |    1 | jack |   21 |
+    |    2 |    2 | rose |   19 |
+    +------+------+------+------+
+    2 rows in set
+    ```
+
+10. 增量刷新物化视图 `mv2`。
+
+    ```sql
+    CALL dbms_mview.refresh('mv2', 'f');
+    ```
+
+11. 查看物化视图 `mv2` 的数据。
+
+    ```sql
+    SELECT * FROM mv2;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+---------+---------+
+    | cnt  | age_cnt | age_sum |
+    +------+---------+---------+
+    |    2 |       2 |      40 |
+    +------+---------+---------+
+    1 row in set
+    ```
+
+12. 再次向表 `tbl1` 和表 `tbl2` 中各插入一条数据。
+
+    ```sql
+    INSERT INTO tbl1 VALUES (3, 'mary');
+    ```
+
+    ```sql
+    INSERT INTO tbl2 VALUES (3, 25);
+    ```
+
+13. 全量刷新物化视图 `mv1`。
+
+    ```sql
+    CALL dbms_mview.refresh('mv1', 'c');
+    ```
+
+14. 再次查看物化视图 `mv1` 的数据。
+
+    ```sql
+    SELECT * FROM mv1;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+------+------+------+
+    | id1  | id2  | NAME | AGE  |
+    +------+------+------+------+
+    |    1 |    1 | jack |   21 |
+    |    2 |    2 | rose |   19 |
+    |    3 |    3 | mary |   25 |
+    +------+------+------+------+
+    3 rows in set
+    ```
+
+15. 再次增量刷新物化视图 `mv2`。
+
+    ```sql
+    CALL dbms_mview.refresh('mv2', 'f');
+    ```
+
+    返回结果如下：
+
+    ```shell
+    ERROR 9760 (HY000): cannot fast refresh materialized view
+    ```
+
+    <main id="notice" type='notice'>
+      <h4>注意</h4>
+      <p>由于 <code>mv1</code> 经历过全量刷新，因此直接对 <code>mv2</code> 进行增量刷新会报错，必须先进行一次全量刷新。</p>
+    </main>
+
+16. 再次查看物化视图 `mv2` 的数据。
+
+    ```sql
+    SELECT * FROM mv2;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+---------+---------+
+    | cnt  | age_cnt | age_sum |
+    +------+---------+---------+
+    |    2 |       2 |      40 |
+    +------+---------+---------+
+    1 row in set
+    ```
+
+17. 全量刷新物化视图 `mv2`。
+
+    ```sql
+    CALL dbms_mview.refresh('mv2', 'c');
+    ```
+
+18. 再次查看物化视图 `mv2` 的数据。
+
+    ```sql
+    SELECT * FROM mv2;
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +------+---------+---------+
+    | cnt  | age_cnt | age_sum |
+    +------+---------+---------+
+    |    3 |       3 |      65 |
+    +------+---------+---------+
+    1 row in set
+    ```
+
+## 物化视图刷新监控信息
+
+OceanBase 数据库支持对物化视图的刷新操作进行监控，提供当前及历史刷新任务的执行状态和性能数据。这些监控信息有助于评估刷新效率、识别潜在性能瓶颈，并为后续调优提供依据。
+
+监控功能说明：
+
+* 报告功能：提供物化视图刷新操作的当前及历史概览，包括每次刷新的实际耗时等关键指标，便于跟踪和监控刷新性能。
+* 诊断功能：通过详尽的刷新记录和性能数据，可以深入分析物化视图刷新延迟或性能下降的原因。例如，可判断是由于系统负载增加，还是因数据变更量增大导致刷新时间变长。
+
+### 分层诊断报告（REFRESH_REPORT）
+
+OceanBase 数据库支持子程序 `DBMS_MVIEW.REFRESH_REPORT`，用于生成单次物化视图刷新任务的分层诊断报告，帮助用户进行性能调优和问题排查。
+
+该报告以 `XML`/`JSON` 格式输出，更多有关分层诊断报告的介绍信息，参见 [REFRESH_REPORT](../../../../600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/9950.dbms-mview-mysql/500.refresh_report-mysql.md)。
+
+**示例如下：**
+
+通过 `refresh_id` 获取 `XML` 格式的诊断报告。
+
+```shell
+obclient> SELECT DBMS_MVIEW.REFRESH_REPORT(refresh_id=> 100023);
+```
+
+## 统计信息的收集
+
+为了提升查询性能和优化执行计划，OceanBase 支持对表和索引的数据分布情况进行统计信息的收集。对于物化视图，也可以通过类似机制收集其数据分布情况，从而帮助数据库更好地进行查询优化。
+
+可以通过以下方式来收集物化视图的统计信息：
+
+* 使用 `ANALYZE TABLE` 语句，详细信息参见 [ANALYZE](../../../../500.sql-reference/100.sql-syntax/200.common-tenant-of-mysql-mode/600.sql-statement-of-mysql-mode/2000.analyze-of-mysql-mode.md)。
+* 调用 `DBMS_STATS.GATHER_TABLE_STATS('database_name', 'table_name')` 系统过程来收集统计信息，详细信息参见 [GATHER_TABLE_STATS](../../../../600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/15900.dbms-stats-mysql/1700.gather-table-stats-mysql.md)。
+
+**示例如下：**
+
+收集物化视图 `mv2` 表的统计信息。
+
+```shell
+obclient> ANALYZE TABLE mv2 UPDATE HISTOGRAM ON cnt,age_cnt,age_sum WITH 15 BUCKETS;
+```
+
+## 物化视图相关视图
+
+| **视图名** | **功能描述** |
+|------------|--------------|
+| [DBA_MVIEWS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5000.o-dba_mviews-of-mysql-mode.md) | 展示物化视图信息。|
+| [DBA_MVREF_STATS_SYS_DEFAULTS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5500.o-dba_mvref_stats_sys_defaults-of-mysql-mode.md) | 物化视图刷新历史统计属性的系统范围默认值。|
+| [DBA_MVREF_STATS_PARAMS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5400.o-dba_mvref_stats_params-of-mysql-mode.md) | 展示与每个物化视图关联的刷新统计信息属性。|
+| [DBA_MVREF_RUN_STATS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5200.o-dba_mvref_run_stats-of-mysql-mode.md) | 展示物化视图的每次刷新运行的信息，每次运行均由 REFRESH_ID 标识。|
+| [DBA_MVREF_STATS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5300.o-dba_mvref_stats-of-mysql-mode.md) | 展示物化视图刷新的基本计时统计信息。|
+| [DBA_MVREF_CHANGE_STATS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5100.o-dba_mvref_change_stats-of-mysql-mode.md) | 展示物化视图刷新相关的统计信息。|
+| [DBA_MVREF_STMT_STATS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/5600.o-dba_mvref_stmt_stats-of-mysql-mode.md) | 展示刷新语句关联的信息。|
+| [DBA_SCHEDULER_JOBS](../../../../700.system-views/400.system-view-of-mysql-mode/200.dictionary-view-of-mysql-mode/14100.o-dba_scheduler_jobs-of-mysql-mode.md) | 展示数据库中所有调度程序作业的信息。|
+
+## 相关文档
+
+* [物化视图概述](100.materialized-views-overview-of-mysql-mode.md)
+* [物化视图日志](200.materialized-views-log-of-mysql-mode.md)
+* [创建物化视图](300.create-materialized-views-of-mysql-mode.md)
+* [物化视图查询改写](500.materialized-views-rewrite-of-mysql-mode.md)
+* [查询物化视图](600.view-materialized-views-of-mysql-mode.md)
+* [删除物化视图](700.delete-materialized-views-of-mysql-mode.md)
+* [物化视图资源隔离](800.materialized-views-resource-isolation-of-mysql-mode.md)
+* [物化视图异常诊断](../../../../../600.manage/1000.troubleshooting/1100.mv-abnormal-diagnosis.md)

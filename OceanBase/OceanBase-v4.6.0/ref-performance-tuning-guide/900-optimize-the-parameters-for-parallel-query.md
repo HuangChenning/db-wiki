@@ -1,0 +1,63 @@
+---
+title: "并行查询的参数调优"
+book: "性能调优"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685098.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# 并行查询的参数调优
+
+并行查询（PX）的参数（变量或配置项）决定了并行查询的速度，主要包括并行度和 `EXCHANGE` 相关参数。
+
+## 并行度变量
+
+并行度相关变量主要决定每个查询并发时的 Worker 个数。
+
+|        **变量名称**         |         **描述**         |  **取值范围**   |           **默认值**           |         **配置建议**        |
+|-------------------------|-----------------------------|-------------|-----------------------------|-------------------------------------|
+| parallel_servers_target | 当准备排队之前，检查查询要求的并行度和已统计的 Worker 总和是否超过该值。如果超过该值，则查询需要排队，否则查询继续执行。 | \[0, 9223372036854775807\] | 0（目前会根据 CPU 个数计算得到，以实际大小为准） | 主要是控制 PX 场景下，当准备进行并行查询时，如果没有足够 Worker 处理该查询，决定是否继续进行还是排队等待。 |
+
+可以通过 `SHOW VARIABLES` 来查看这些变量的值，如下例所示：
+
+```sql
+obclient> SHOW VARIABLES LIKE '%paral%';
+
++-------------------------+-------+
+| Variable_name           | Value |
++-------------------------+-------+
+| parallel_servers_target | 4     |
++-------------------------+-------+
+1 rows in set 
+```
+
+## EXCHANGE（Shuffle）配置项
+
+`EXCHANGE`（Shuffle）配置项主要用于控制 DFO（Distributed Function Operator）之间数据传输时的内存管理和数据重分布策略，也就是数据进行 Shuffle 时的内存控制。OceanBase 数据库将数据传输封装成了叫做 DTL（Data Transfer layer）的模块。
+
+|    **配置项名称**     |      **描述**           |  **取值范围**   |         **默认值**       |          **配置建议**        |
+|-----------------|------------------------------|-------------|------------------------------|--------------------------|
+| dtl_buffer_size | 控制 `EXCHANGE` 算子之间（即 Transmit 和 Receive 之间）发送数据时，每次发送数据的 Buffer 的大小。即当数据达到了该值上限才进行发送，减少每行传输的代价。 | \[4k, 2M\] | 64K | PX 场景下，`EXCHANGE` 之间发送数据依赖于该配置项大小，一般不需要调整该配置项，如果是为了减少发送数据次数等可以尝试进行修改，一般不建议修改该值大小。 |
+
+可以通过 `SHOW PARAMETERS` 来查看配置项的值，如下例所示：
+
+```SQL
+obclient> SHOW PARAMETERS LIKE '%dtl%'\G
+*************************** 1. row ***************************
+      zone: zone1
+  svr_type: observer
+    svr_ip: 172.xx.xxx.xxx
+  svr_port: 2882
+      name: dtl_buffer_size
+ data_type: CAPACITY
+     value: 64K
+      info: to be removed
+   section: OBSERVER
+     scope: CLUSTER
+    source: DEFAULT
+edit_level: DYNAMIC_EFFECTIVE
+1 row in set
+```

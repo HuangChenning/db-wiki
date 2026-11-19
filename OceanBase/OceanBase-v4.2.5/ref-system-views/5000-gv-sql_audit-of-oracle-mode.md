@@ -1,0 +1,259 @@
+---
+title: "GV$OB_SQL_AUDIT"
+book: "系统视图"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001500702.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-views
+---
+
+# GV$OB_SQL_AUDIT
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该视图从 V4.0.0 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+视图 `GV$OB_SQL_AUDIT` 用于展示所有 OBServer 节点上每一次 SQL 请求的来源、执行状态等统计信息。该视图是按照租户拆分的，除了系统租户，其他租户不能跨租户查询。
+
+## 字段说明
+
+|  **字段名称**  | **类型**   | **是否可以为 NULL** |      **描述**     |
+|-------------------------|---------------------|----------------|----------|
+| SVR_IP                  | VARCHAR2(46)    | NO             | IP 地址               |
+| SVR_PORT                | NUMBER(38)      | NO             | 端口号                 |
+| REQUEST_ID              | NUMBER(38)      | NO             | 请求的 ID 号            |
+| SQL_EXEC_ID             | NUMBER(38)      | NO             | 本次执行的 ID            |
+| TRACE_ID                | VARCHAR2(128)   | NO             | 该语句的 trace_id       |
+| SID                     | NUMBER(38)      | NO             | 对于 V4.2.x 版本：<ul><li> V4.2.5 BP4 之前版本：<br>在所有连接方式（直连模式/ODP 模式）下，该字段均表示 Server Session ID。</li><li> V4.2.5 BP4 及之后版本：<ul><li>在直连模式下：<br>该字段表示 Server Session ID。</li> <li>在 ODP 模式下：</li><ul><li>当 ODP 中的配置项 <code>client_session_id_version = 2</code> 时，该字段表示 Client Session ID。 </li> <li>当 <code>client_session_id_version = 1</code> 时，该字段表示 Server Session ID。</li></ul></ul></li></ul>       |
+| CLIENT_IP               | VARCHAR2(46)    | NO             | <ul><li>当客户端通过 ODP 与 OBServer 节点连接时，表示转发请求的 ODP 的 IP </li><li> 当客户端直接与 OBServer 节点连接时，表示发送请求的客户端的 IP </li></ul>   |
+| CLIENT_PORT             | NUMBER(38)      | NO             | 发送请求的客户端端口号         |
+| TENANT_ID               | NUMBER(38)      | NO             | 租户 ID  <main id="notice" type='explain'><h4>说明</h4><p>从 V4.2.3 版本开始，该字段的含义变更为与 <code>EFFECTIVE_TENANT_ID</code> 字段的含义相同。</p></main>         |
+| EFFECTIVE_TENANT_ID     | NUMBER(38)      | NO             | 租户 ID               |
+| TENANT_NAME             | VARCHAR2(64)    | NO             | 租户名称           |
+| USER_ID                 | NUMBER(38)      | NO             | 发送请求的用户 ID          |
+| USER_NAME               | VARCHAR2(64)    | NO             | 发送请求的用户名称           |
+| USER_GROUP              | NUMBER(38)      | YES            | 用户所属资源组 ID          |
+| USER_CLIENT_IP          | VARCHAR2(32)    | NO             | 发送请求的客户端的 IP        |
+| DB_ID                   | NUMBER(38)      | NO             | 数据库 ID              |
+| DB_NAME                 | VARCHAR2(128)   | NO             | 数据库名称               |
+| SQL_ID                  | VARCHAR2(32)    | NO             |  该 SQL 的 ID <main id="notice" type='explain'><h4>说明</h4><p>从 V4.2.3 版本开始，针对 CALL 语句执行的 PL 请求和通过匿名块执行的 PL 请求，该字段会展示为实际生成的 MD5 编码。</p></main>   |
+| QUERY_SQL               | CLOB            | NO             | 实际的 SQL 语句。<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.5 BP2 版本开始只支持 SYS 租户查看。          |
+| PLAN_ID                 | NUMBER(38)      | NO             | 执行计划 ID             |
+| AFFECTED_ROWS           | NUMBER(38)      | NO             | 影响行数                |
+| RETURN_ROWS             | NUMBER(38)      | NO             | 返回行数                |
+| PARTITION_CNT           | NUMBER(38)      | NO             | 该请求涉及的分区数           |
+| RET_CODE                | NUMBER(38)      | NO             | 执行结果返回码： <ul><li>0：表示没有错误，语句成功执行 </li><li>其他返回码：表示 OceanBase 错误码。</li></ul>有关错误码的详细介绍，请参见 [错误码](../../../900.error-code/700.error-code-of-oracle-mode/100.use-error-information-of-oracle-mode.md)                              |
+| QC_ID                   | NUMBER(38)      | NO             | 并行执行场景下，调度器 ID      |
+| DFO_ID                  | NUMBER(38)      | NO             | 并行执行场景下，当前执行的子计划 ID |
+| SQC_ID                  | NUMBER(38)      | NO             | 并行执行场景下，本地协调器 ID    |
+| WORKER_ID               | NUMBER(38)      | NO             | 并行执行场景下，工作线程 ID     |
+| EVENT                   | VARCHAR2(64)    | YES             | 最长等待事件名称            |
+| P1TEXT                  | VARCHAR2(64)    | YES             | 等待事件参数 1            |
+| P1                      | NUMBER(38)      | YES             | 等待事件参数 1 的值         |
+| P2TEXT                  | VARCHAR2(64)    | YES             | 等待事件参数 2            |
+| P2                      | NUMBER(38)      | YES             | 等待事件参数 2 的值         |
+| P3TEXT                  | VARCHAR2(64)    | YES             | 等待事件参数 3            |
+| P3                      | NUMBER(38)      | YES             | 等待事件参数 3 的值         |
+| LEVEL                   | NUMBER(38)      | YES             | 等待事件的级别             |
+| WAIT_CLASS_ID           | NUMBER(38)      | YES             | 等待事件所属的 Class ID    |
+| WAIT_CLASS#             | NUMBER(38)      | YES             | 等待事件所属的 Class 的下标   |
+| WAIT_CLASS              | VARCHAR2(64)    | YES             | 等待事件所属的 Class 名称    |
+| STATE                   | VARCHAR2(19)    | YES             | 等待事件的状态             |
+| WAIT_TIME_MICRO         | NUMBER(38)      | YES             | 该等待事件所等待的时间，单位：微秒   |
+| TOTAL_WAIT_TIME_MICRO   | NUMBER(38)      | YES             | 执行过程所有等待的总时间，单位：微秒  |
+| TOTAL_WAITS             | NUMBER(38)      | YES             | 执行过程总等待的次数          |
+| RPC_COUNT               | NUMBER(38)      | YES             | 发送 RPC 个数           |
+| PLAN_TYPE               | NUMBER(38)      | NO             | 执行计划类型：<ul><li>local </li><li>remote </li><li>distribute </li></ul>  |
+| IS_INNER_SQL            | NUMBER(38)      | NO             | 是否为内部 SQL 请求        |
+| IS_EXECUTOR_RPC         | NUMBER(38)      | NO             | 当前请求是否为 RPC 请求      |
+| IS_HIT_PLAN             | NUMBER(38)      | NO             | 是否命中 plan_cache     |
+| REQUEST_TIME            | NUMBER(38)      | NO             | 开始执行时间点，单位：微秒             |
+| ELAPSED_TIME            | NUMBER(38)      | NO             | 接收到请求到执行结束所消耗的总时间，单位：微秒   |
+| NET_TIME                | NUMBER(38)      | NO             | 发送 RPC 到接收到请求的时间，单位：微秒    |
+| NET_WAIT_TIME           | NUMBER(38)      | NO             | 接收到请求到进入队列的时间，单位：微秒       |
+| QUEUE_TIME              | NUMBER(38)      | NO             | 请求在队列的等待时间，单位：微秒          |
+| DECODE_TIME             | NUMBER(38)      | NO             | 出队列后 Decode 的时间，单位：微秒     |
+| GET_PLAN_TIME           | NUMBER(38)      | NO             | 开始 Process 到获得计划的时间，单位：微秒 |
+| EXECUTE_TIME            | NUMBER(38)      | NO             | 计划执行所消耗的时间，单位：微秒          |
+| APPLICATION_WAIT_TIME   | NUMBER(38)      | YES             | 所有 Application 类事件的总时间，单位：微秒  |
+| CONCURRENCY_WAIT_TIME   | NUMBER(38)      | YES             | 所有 Concurrency 类事件的总时间，单位：微秒  |
+| USER_IO_WAIT_TIME       | NUMBER(38)      | YES             | 所有 user_io 类事件的总时间，单位：微秒  |
+| SCHEDULE_TIME           | NUMBER(38)      | YES             | 所有 Schedule 类事件的时间，单位：微秒  |
+| ROW_CACHE_HIT           | NUMBER(38)      | YES             | 行缓存命中次数             |
+| BLOOM_FILTER_CACHE_HIT  | NUMBER(38)      | YES             | Bloom Filter 缓存命中次数 |
+| BLOCK_CACHE_HIT         | NUMBER(38)      | YES             | 块缓存命中次数             |
+| DISK_READS              | NUMBER(38)      | YES             | 物理读次数               |
+| RETRY_CNT               | NUMBER(38)      | NO             | 重试次数                |
+| TABLE_SCAN              | NUMBER(38)      | NO             | 判断该请求是否含全表扫描        |
+| CONSISTENCY_LEVEL       | NUMBER(38)      | NO             | 一致性级别，取值如下：<ul><li>`-1`：无效</li> <li>`1`：指定读存储在 SSTable 中的数据</li><li>`2`：弱一致性读</li><li>`3`：强一致性读</li></ul>               |
+| MEMSTORE_READ_ROW_COUNT | NUMBER(38)      | YES             | Memstore 中的读行数      |
+| SSSTORE_READ_ROW_COUNT  | NUMBER(38)      | YES             | Ssstore 中连读的行数      |
+| DATA_BLOCK_READ_CNT     | bigint(20)      | YES             | 访问的数据微块数量     |
+| DATA_BLOCK_CACHE_HIT    | bigint(20)      | YES             | 命中数据微块 cache 数量     |
+| INDEX_BLOCK_READ_CNT    | bigint(20)      | YES             | 访问的中间层微块数量     |
+| INDEX_BLOCK_CACHE_HIT   | bigint(20)      | YES             | 命中中间层微块 cache 数量     |
+| BLOCKSCAN_BLOCK_CNT     | bigint(20)      | YES             | 单边扫描的数据微块数量     |
+| BLOCKSCAN_ROW_CNT       | bigint(20)      | YES             | 单边扫描的数据行数     |
+| PUSHDOWN_STORAGE_FILTER_ROW_CNT  | bigint(20)   | YES             | 下压存储filter过滤后行数     |
+| REQUEST_MEMORY_USED     | NUMBER(38)      | NO             | 该请求消耗的内存            |
+| EXPECT_WORKER_COUNT     | NUMBER(38)      | NO             | 请求期望的工作线程数          |
+| USED_WORKER_COUNT       | NUMBER(38)      | NO             | 请求实际使用的工作线程数        |
+| SCHED_INFO              | VARCHAR2(16384) | YES            | 请求的调度信息             |
+| PS_CLIENT_STMT_ID       | bigint(20)          | NUMBER(38)   | 该字段用于记录请求对应的客户端 Prepare ID： <ul><li> `-1`：表示当前的SQL语句没有使用预处理语句（PS）协议。即，该语句是直接执行的，没有经过预处理步骤。 </li><li> 非 `-1`：表示当前的SQL语句使用了预处理语句（PS）协议，并且这个值是预处理语句在客户端对该语句返回的唯一标志。该值用于在后续操作中引用之前预处理的SQL语句。</li></ul>    |
+| PS_INNER_STMT_ID        | bigint(20)          | NUMBER(38)   | 该字段用于记录请求对应的内部（数据库内部）Prepare ID： <ul><li> `-1`：表示当前的SQL语句没有使用预处理语句（PS）协议。即，该语句是直接执行的，没有经过预处理步骤。</li><li> 非 `-1`：表示当前的SQL语句使用了预处理语句（PS）协议，并且这个值是预处理语句在客户端对该语句返回的唯一标志。该值用于在后续操作中引用之前预处理的SQL语句。</li></ul>    |
+| TX_ID                   | bigint(20)      | NO             | 请求对应的事务 ID |
+| SNAPSHOT_VERSION        | bigint(20)      | NO             | SQL语句使用的读快照版本 |
+| REQUEST_TYPE            | NUMBER(38)      | NO             | 请求对应的类型：<ul><li>`0`：表示非法。</li> <li>`1`：表示是一个内部请求。</li> <li>`2`：表示是一个本地请求，例如 Local 计划。</li> <li>`3`：表示远程请求。</li> <li>`4`：表示分布式请求。</li> <li>`5`：表示 SQL 的 Prepare 请求。</li> <li>`6`：表示 SQL 得到 Execute Stmt 请求。</li> <li>`7`：表示 SQL 得到 Fetch 请求。</li> <li>`8`：表示 SQL 得到 `send_piece` 请求。</li> <li>`9`：表示 SQL 得到 `get_piece` 请求。</li> <li>`10`：表示 SQL 得到 `send_long_data` 请求。</li> <li>`11`：表示当前 SQL 是 PL 调用的内部 SQL。</li></ul>|
+| IS_BATCHED_MULTI_STMT   | NUMBER(38)      | NO             | 是否进行 Batch Multi Stmt 的优化                                                         |
+| OB_TRACE_INFO           | VARCHAR2(4096)  | NO             | 用户设置的 Trace 信息      |
+| PLAN_HASH               | NUMBER(38)      | NO             | 执行计划的 Hash 值        |
+| PARAMS_VALUE            | CLOB            | NO             | PS 绑定的参数值           |
+| RULE_NAME               | VARCHAR2(256)   | NO             | 规则名称  <main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.1.0 版本开始引入。</p></main>  |
+| TX_INTERNAL_ROUTING     | NUMBER          | NO             | 表示当前事务是否启用了事务路由：<ul><li>0：未启用事务路由，语句只能路由到事务开始时的 OBServer 节点上。  </li><li>1：启用事务路由，事务内的语句可以由代理 Proxy 按照最优的方式路由。 </li></ul><main id="notice" type='explain'><h4>说明</h4><ul><li>该字段从 V4.1.0 版本开始引入。</li><li>OBProxy 从 V4.1.0 版本开始支持该功能。</li></ul></main>  |
+| TX_STATE_VERSION        | NUMBER(38)      | NO             | 当事务路由开启后，执行语句后事务状态若发生变化，则版本号递增；若未发生变化，则版本号不变<main id="notice" type='explain'><h4>说明</h4><ul><li>该字段从 V4.1.0 版本开始引入。</li><li>OBProxy 从 V4.1.0 版本开始支持该功能。</li></ul></main>  |
+| FLT_TRACE_ID            | VARCHAR2(1024)  | NO             | 表示该条记录全链路追踪的 trace_id，如果为空，则说明没有被全链路追踪监控。该字段是Uuid，不同于 Trace。其表示形式类似于：`000600d6-a5de-038c-6c80-df07e4e79149`<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.1 版本开始引入。</p></main> |
+| PL_TRACE_ID             | VARCHAR2(128)   | YES             | 当前 SQL 语句外层 PL 的 Trace ID (如果没有外层 PL 则该值 NULL)<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.2 版本开始引入。</p></main>      |
+| PLSQL_EXEC_TIME         |  NUMBER(38)     | NO             | PL 执行的耗时（不包括 SQL 执行时间），单位：微秒<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.2 版本开始引入。</p></main>     |
+| FORMAT_SQL_ID                   | VARCHAR2(32)        | NO   |  表示该条记录通过 Format SQL text 生成的 MD5 值<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.3 版本开始引入。</p></main>    |
+| NETWORK_WAIT_TIME               | NUMBER(38)          | YES  |  所有 Network 类事件的总时间，单位为微秒<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.3 版本开始引入。</p></main>    |
+| STMT_TYPE                       | VARCHAR2(128)       | YES  |  DML 类型会按需返回：<ul><li>DDL 类型会返回 <code>DDL_STMT</code>。</li><li>DCL 类型会返回 <code>DCL_STMT</code>。</li><li>TCL 类型会返回 <code>TCL_STMT</code>。</li><li>其他则会返回 <code>OTHER_STMT</code>。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.3 版本开始引入。</p></main>    |
+| TOTAL_MEMSTORE_READ_ROW_COUNT   | NUMBER(38)          | NO   |  整个工作过程中从 MemStore 读出的总行数（仅在展示 query_text 的线程中显示该变量）<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.3 版本开始引入。</p></main>    |
+| TOTAL_SSSTORE_READ_ROW_COUNT    | NUMBER(38)          | NO   |  整个工作过程中从 SSSTORE 读出的总行数（仅在展示 query_text 的线程中显示该变量）<main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.3 版本开始引入。</p></main>    |
+| PROXY_USER                      | VARCHAR2(128)        | YES  |<ul><li>代理用户登录场景，返回代理用户的名称。</li><li>非代理用户登录场景，显示为空。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.3 版本开始引入。</p></main> |
+| SEQ_NUM |NUMBER(38)| NO | 事务中的语句序号。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.5 版本开始引入，字段默认为 NULL。</p></main>|
+| PLSQL_COMPILE_TIME              | NUMBER(38)          | NO   |  PL 编译用时。 </li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.5 BP2 版本开始引入，字段默认为 NULL。</p></main>   |
+| USER_CLIENT_PORT                | NUMBER(38)          | NO   | 用于展示客户端端口号。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.5 BP2 版本开始引入，字段默认为 NULL。</p></main>     |
+| TRANS_STATUS                    | VARCHAR2(256)        | NO   | 用于展示显示开启事务或隐式开启事务或不开启事务。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>该字段从 V4.2.5 BP2 版本开始引入，字段默认为 NULL。</p></main>  |
+| TX_TABLE_READ_CNT                    | bigint(20)        | NO   | 查询读事务状态表的次数。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP8 版本开始引入。</p></main>  |
+| OUTROW_LOB_CNT                   | bigint(20)        | NO   | 查询过程中，读取到的 outrow lob 列的数量。</li></ul><main id="notice" type='explain'><h4>说明</h4><p>对于 V4.2.5 版本，该字段从 V4.2.5 BP8 版本开始引入。</p></main>  |
+
+
+## 查询示例
+
+查询所有 OBServer 节点的每一次 SQL 请求的来源、执行状态等统计信息。
+
+```shell
+obclient [SYS]> SELECT * FROM SYS.GV$OB_SQL_AUDIT WHERE ROWNUM <= 1\G
+```
+
+查询结果如下：
+
+```shell
+*************************** 1. row ***************************
+                         SVR_IP: 172.xx.xxx.xxx
+                       SVR_PORT: 2882
+                     REQUEST_ID: 110855
+                    SQL_EXEC_ID: 886176
+                       TRACE_ID: YB42AC1E87E4-00062A8B794ADFEA-0-0
+                            SID: 3222235558
+                      CLIENT_IP: 0.0.0.0
+                    CLIENT_PORT: 0
+                      TENANT_ID: 1004
+            EFFECTIVE_TENANT_ID: 1004
+                    TENANT_NAME: sys
+                        USER_ID: 200001
+                      USER_NAME: root
+                     USER_GROUP: 0
+                 USER_CLIENT_IP: 0.0.0.0
+                          DB_ID: 201001
+                        DB_NAME: oceanbase
+                         SQL_ID: 735537F7B5DB7C4E0E946C9B26108560
+                      QUERY_SQL: NULL
+                        PLAN_ID: 434
+                  AFFECTED_ROWS: 0
+                    RETURN_ROWS: 0
+                  PARTITION_CNT: 1
+                       RET_CODE: 0
+                          QC_ID: 0
+                         DFO_ID: 0
+                         SQC_ID: 0
+                      WORKER_ID: 0
+                          EVENT: NULL
+                         P1TEXT: NULL
+                             P1: 0
+                         P2TEXT: NULL
+                             P2: 0
+                         P3TEXT: NULL
+                             P3: 0
+                          LEVEL: 0
+                  WAIT_CLASS_ID: 100
+                    WAIT_CLASS#: 0
+                     WAIT_CLASS: OTHER
+                          STATE: MAX_WAIT TIME ZERO
+                WAIT_TIME_MICRO: 0
+          TOTAL_WAIT_TIME_MICRO: 0
+                    TOTAL_WAITS: 0
+                      RPC_COUNT: 0
+                      PLAN_TYPE: 1
+                   IS_INNER_SQL: 1
+                IS_EXECUTOR_RPC: 0
+                    IS_HIT_PLAN: 1
+                   REQUEST_TIME: 1735633919399301
+                   ELAPSED_TIME: 207
+                       NET_TIME: 0
+                  NET_WAIT_TIME: 0
+                     QUEUE_TIME: 0
+                    DECODE_TIME: 0
+                  GET_PLAN_TIME: 113
+                   EXECUTE_TIME: 94
+          APPLICATION_WAIT_TIME: 0
+          CONCURRENCY_WAIT_TIME: 0
+              USER_IO_WAIT_TIME: 0
+                  SCHEDULE_TIME: 0
+                  ROW_CACHE_HIT: 0
+         BLOOM_FILTER_CACHE_HIT: 0
+                BLOCK_CACHE_HIT: 0
+                     DISK_READS: 0
+                      RETRY_CNT: 0
+                     TABLE_SCAN: 0
+              CONSISTENCY_LEVEL: 3
+        MEMSTORE_READ_ROW_COUNT: 1
+         SSSTORE_READ_ROW_COUNT: 0
+            DATA_BLOCK_READ_CNT: 0
+           DATA_BLOCK_CACHE_HIT: 0
+           INDEX_BLOCK_READ_CNT: 0
+          INDEX_BLOCK_CACHE_HIT: 0
+            BLOCKSCAN_BLOCK_CNT: 0
+              BLOCKSCAN_ROW_CNT: 0
+PUSHDOWN_STORAGE_FILTER_ROW_CNT: 0
+            REQUEST_MEMORY_USED: 2169344
+          EXPECTED_WORKER_COUNT: 0
+              USED_WORKER_COUNT: 0
+                     SCHED_INFO: NULL
+              PS_CLIENT_STMT_ID: -1
+               PS_INNER_STMT_ID: -1
+                          TX_ID: 0
+               SNAPSHOT_VERSION: 1735633919374794000
+                   REQUEST_TYPE: 1
+          IS_BATCHED_MULTI_STMT: 0
+                  OB_TRACE_INFO: NULL
+                      PLAN_HASH: 1170003787160719964
+                   PARAMS_VALUE: NULL
+                      RULE_NAME: NULL
+            TX_INTERNAL_ROUTING: 0
+               TX_STATE_VERSION: 0
+                   FLT_TRACE_ID: NULL
+                    PL_TRACE_ID: NULL
+                PLSQL_EXEC_TIME: 0
+                  FORMAT_SQL_ID: NULL
+              NETWORK_WAIT_TIME: 0
+                      STMT_TYPE: SELECT
+  TOTAL_MEMSTORE_READ_ROW_COUNT: 1
+   TOTAL_SSSTORE_READ_ROW_COUNT: 0
+                     PROXY_USER: NULL
+                        SEQ_NUM: 1
+             PLSQL_COMPILE_TIME: 0
+               USER_CLIENT_PORT: 0
+                   TRANS_STATUS: Transaction not opened
+1 row in set (0.016 sec)
+```
+
+## 相关视图或文档
+
+* [V$OB_SQL_AUDIT](35600.v-sql_audit-of-oracle-mode.md)
+* [全链路追踪](../../../../600.manage/900.daily-inspection/900.full-link-detection/100.full-link-diagnosis-overview.md)

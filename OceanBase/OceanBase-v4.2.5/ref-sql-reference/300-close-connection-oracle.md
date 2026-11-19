@@ -1,0 +1,32 @@
+---
+title: CLOSE_CONNECTION
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001809535.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# CLOSE_CONNECTION
+
+`CLOSE_CONNECTION` 用于关闭 SMTP 连接，从而导致 SMTP 操作终止，仅用于在 data session 过程中取消电子邮件。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库 Oracle 模式。</p>
+  </main>
+
+## 语法
+
+```sql
+UTL_SMTP.CLOSE_CONNECTION (
+   c     IN OUT NOCOPY connection);
+```
+
+## 参数解释
+
+| **参数** |         **解释**         |
+|--------|------------------------|
+|c|SMTP 连接。|

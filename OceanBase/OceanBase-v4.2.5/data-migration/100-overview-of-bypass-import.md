@@ -1,0 +1,42 @@
+---
+title: "旁路导入概述"
+book: "数据迁移"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001499522.html"
+tags:
+  - oceanbase
+  - distributed
+  - data-migration
+---
+
+# 旁路导入概述
+
+OceanBase 数据库支持旁路导入的方式向数据库插入数据，即 OceanBase 数据库支持向 `data` 文件中直接写入数据的功能。旁路导入可以绕过 SQL 层的接口，直接在 `data` 文件中直接分配空间并插入数据，从而提高数据导入的效率。
+
+## 使用场景
+
+* **数据迁移与同步**：需将大规模数据从其他数据库（如 MySQL、Oracle 或旧版 OceanBase 数据库）迁移到 OceanBase V4.x 集群。
+
+  * **优势**：传统 SQL 接口在海量数据迁移时性能受限，旁路导入可绕过 SQL 层直接写入数据文件，提升迁移效率；支持 **异构数据库迁移**，例如从 MySQL 迁移时可通过旁路导入快速加载数据。
+
+* **传统 ETL 流程优化**：当数据在源端进行了抽取和转化之后，在装载到目标端时，通常需要在短时间内加载大量的数据，使用旁路导入技术，会提升数据导入的性能。
+
+  * **优势**：旁路导入可将最终数据直接写入 OceanBase 数据库的底层数据文件，避免通过 SQL 接口逐条插入的性能瓶颈；对于 **ELT 流程**（Extract-Load-Transform），旁路导入同样适用，可先高效加载数据，再进行后续分析。
+
+* **文件或外部数据源快速加载**：从 CSV、Parquet 等文件或 Hadoop、Kafka 等外部数据源批量加载数据到 OceanBase 数据库。
+
+  * **优势**：支持 **分布式并行加载**，数据按分区分片后同时写入多个节点。
+
+## 注意事项
+
+* 旁路导入会把所有的已有的数据都写一遍。如果原表数据量太大，或者导入的数据量太少，都不合适使用旁路导入。
+* 执行快速删除列操作过程中的表，暂不支持旁路导入。
+* 旁路导入过程中会产生临时文件，当导入的数据量比较大时，临时文件占用的磁盘空间比较大，需要关注磁盘的占用空间，避免旁路导入产生的临时文件将磁盘空间打爆，当旁路导入的 `并发度 >= 8` 时，系统会对产生临时文件做压缩，减少临时文件的空间占用。
+
+## 功能列表
+
+目前 OceanBase 数据库支持以下语句进行旁路导入：
+
+* [LOAD DATA](../1100.bypass-import/200.use-load-data-statement-to-bypass-import-data.md)
+
+* [INSERT INTO SELECT](../1100.bypass-import/300.use-insert-into-select-statement-to-bypass-import-data.md)

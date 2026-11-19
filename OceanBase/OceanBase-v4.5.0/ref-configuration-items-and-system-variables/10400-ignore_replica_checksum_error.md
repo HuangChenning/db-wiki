@@ -1,0 +1,30 @@
+---
+title: ignore_replica_checksum_error
+book: "配置项和系统变量"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004479214.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# ignore_replica_checksum_error
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项因可能导致忽视副本校验和检查，从而引发严重问题，故从 V4.0.0 版本开始删除。</p>
+</main>
+
+## 功能描述
+
+`ignore_replica_checksum_error` 用于设置是否忽略多副本间校验和检查发生的错误。
+
+## 属性说明
+
+|    **属性**      |            **描述**   |
+|------------------|-----------------------|
+| 参数类型             | Bool   |
+| 默认值               | False      |
+| 取值范围             | <ul><li>True：分开存储</li><li>False：不分开存储</li></ul>    |
+| 是否重启 OBServer 节点生效    | 否     |

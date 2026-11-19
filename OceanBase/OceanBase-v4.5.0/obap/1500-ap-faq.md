@@ -1,0 +1,406 @@
+---
+title: AP FAQ
+book: OceanBase AP
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005153341.html"
+tags:
+  - oceanbase
+  - distributed
+  - obap
+---
+
+# AP FAQ
+
+## 列存 FAQ
+
+### 列存是什么？
+
+OceanBase 列存是将磁盘静态数据保存为列存，内存修改数据保存为行存的一种数据存储形态，兼顾了扫描性能、事务处理能力。
+
+对于分析类查询，列存可以极大地提升查询性能，也是OceanBase做好 HTAP 的一项不可缺少的功能。经典 AP 数据库，列存数据通常是静态的，很难被原地更新，而 OceanBase 的 LSM Tree 架构中 SSTable 是静态的，天然适合列存的实现；MemTable 是动态的，仍然是行存，对于事务处理不会造成额外影响，这样我们可以一定程度上兼顾 TP 类和 AP 类查询的性能。
+
+### “列存索引”是什么？
+
+OceanBase 数据库还支持列存索引的概念，不同于“对列存建索引”。列存索引指的是索引表的结构是列存格式。
+
+例如，我们已经有行存表 `t6` ，希望对 `c3` 求和且性能最好，这时可以对 `c3` 建一个列存索引：
+
+```sql
+create table t6(
+   c1 TINYINT,
+   c2 SMALLINT,
+   c3 MEDIUMINT
+);
+
+create /*+ parallel(2) */ index idx1 on t6(c3) with column group (each column);
+```
+
+除此之外，我们还支持更多索引创建方式：
+
+* 支持索引中冗余行存。
+
+  ```sql
+  create index idx1 on t1(c2) storing(c1) with column group(all columns, each column);
+  alter table t1 add index idx1 (c2) storing(c1) with column group(all columns, each column);
+  ```
+
+* 支持索引中纯列存。
+
+  ```sql
+  create index idx1 on t1(c2) storing(c1) with column group(each column);
+  alter table t1 add index idx1 (c2) storing(c1) with column group(each column);
+  ```
+
+在数据库索引中使用 `STORING` 子句的目的是存储额外的非索引列数据到索引中。这可以为特定的查询提供性能优化，既可以避免回表，也可以降低索引排序的代价。当查询仅需要访问存储在索引中的列，而不需要回表查询原始行时，可以大幅提升查询效率。
+
+### 列存表与列存副本常见问题
+
+#### 列存表和列存副本有何区别？它们之间的关系是什么？
+
+二者描述的是**不同维度**：
+
+* **列存表**：指 **表级存储形态**（行存、纯列存、行列混存等），由 `WITH COLUMN GROUP` 或租户级 `default_table_store_format` 等决定。数据物理上存放在租户的 **F（全能）/R（只读）副本** 上；在这些副本上，MemTable/转储仍为行组织，基线可按列存或行列冗余组织，读路径会融合增量与基线。在 F/R 上执行符合语义的路径时，**默认可获得与副本角色一致的强一致读**（与事务、隔离级别等有关）。
+
+* **列存副本（C 副本）**：指 **一种独立的副本类型**，通常放在独立 Zone；**不参与 Paxos 选举与投票**，通过日志异步追平 F/R，本地 **major 层以列存为主** 承载用户表数据。同一逻辑表可以 **F/R 上是一种存储形态（例如行存或行列混存）、C 副本上是列存形态**，用于 AP 与 TP **资源隔离**。
+
+**关系**：二者独立。可以在**没有** C 副本的租户上创建列存表（数据仅存在于 F/R 的列存或混存形态）；也可以在有 C 副本的租户里，**F/R 上行存表、C 副本上同一表以列存形态** 提供只读分析；列存表与 C 副本也可同时存在，按架构需求组合。
+
+* **读一致性**：C 副本相对日志源存在追平滞后。**OceanBase V4.6.0 之前**，经独立 ODP 等方式访问 C 副本的分析查询通常按 **弱读** 规划更普遍。**V4.6.0 起** 支持在 C 副本上按会话配置 **强读或弱读**（如 `ob_read_consistency`），并由 `ap_query_route_policy` 等控制是否尝试列存计划。
+
+#### 是不是需要有列存副本，才能创建**列存表**？能不能在 Full 副本上创建列存表？
+
+**不需要列存副本，也可以在 Full（F）副本上创建列存表。**
+
+列存表是表级的存储格式配置，通过建表时 `WITH COLUMN GROUP` 或租户级配置项 `default_table_store_format` 指定。只要租户有 F/R 副本即可：在任意 Locality（例如仅 `F@zone1, F@zone2`）下，都可以创建列存表或行列混存表，数据会按列存（或行列冗余）形态存储在 F/R 副本上。列存副本（C 副本）是可选的独立部署形态，用于 TP/AP 物理或逻辑隔离及只读分析流量，与「能否创建列存表」无依赖关系。
+
+#### OceanBase 支持直接创建一张**纯列存表**吗？还是必须基于行存表？
+
+**支持直接创建纯列存表，不必须基于行存表。**
+
+建表时指定 `WITH COLUMN GROUP (each column)` 即可得到纯列存表（仅列存基线，无行存基线）。例如：
+
+```sql
+CREATE TABLE t (pk INT PRIMARY KEY, c1 INT, c2 INT) WITH COLUMN GROUP (each column);
+```
+
+分区表中，主键列会额外保留一份行存用于点查，但整体仍视为纯列存表。也可以先建行存表，再通过 `ALTER TABLE ... ADD COLUMN GROUP (each column);` 等 DDL 转为列存表。详见本文「如何创建一个列存表？」。
+
+#### 列存和行存间的数据一致性如何保证？如果是异步，延时多少？
+
+**分两种场景：**
+
+* **列存表（在 F/R 副本上）**：基线为列存或行列混存布局，增量为行组织（MemTable/转储），读取时融合增量与基线，在 F/R 默认语义下**强一致**，无额外跨副本滞后。
+* **列存副本（C 副本）**：C 副本不参与 Paxos，通过**异步日志**追赶 F/R 并回放，数据相对日志源**存在滞后**。**V4.6.0 之前**，访问 C 副本的分析读多为**弱一致**规划。**V4.6.0 起**可在 C 副本上配置 **强读**：强读会等待副本追到可读点，延迟高于弱读。若要求**与 TP 完全同一份日志、无 C 副本滞后**，分析仍宜优先在 **F/R 上的列存表或行列混存表** 上完成。
+
+#### 如何分离 TP、AP 的流量？如果 AP 故障，有容灾手段吗？
+
+**流量分离：**
+
+* **无 C 副本**：TP 与 AP 共用同一套 F/R 副本和访问入口，通过优化器自动选择行存/列存路径；**不做** TP/AP 机柜或链路级物理隔离。
+* **有 C 副本（OceanBase V4.6.0 之前）**：典型做法是 TP 走访问 F/R 的入口（强读/写）；AP 走**独立 ODP**，在 ODP 侧配置弱读并将请求路由到 C 副本（如 `proxy_primary_zone_name`、`route_target_replica_type = 'ColumnStore'`、`init_sql='set @@ob_route_policy = COLUMN_STORE_ONLY'` 等），实现 TP/AP 与 C 副本的链路隔离。运维与副本管理参见 [使用列存副本](../600.manage/300.replica-management/150.the-use-of-columnstore-replica.md)。
+* **有 C 副本（V4.6.0 及以上）**：除上述 **独立 ODP（方式一）** 外，还可 **直连 OBServer**（或经未做列存专线配置的普通 ODP），通过 **`ap_query_route_policy` 等**由优化器自动尝试列存计划（**方式二**），不必再为 C 副本单独维护一套 ODP 路由项。
+
+**AP（C 副本）侧容灾与限制：**
+
+* C 副本**不能**恢复为 Leader；**物理恢复不支持恢复 C 副本**（租户 Locality 中若含 C 副本，恢复会失败）；主库未部署 C 副本时，备库也不建议部署 C 副本。
+* 若 C 副本所在 Zone 或 ODP 故障，AP 查询可**回退到 F/R 副本**：将 AP 客户端改为连接主 ODP 或调整路由，使分析请求在 F/R 上以强读执行（会与 TP 共享资源）。
+* 从 V4.3.5 BP1 起支持部署**多个 C 副本**（建议最多 3 个），可在多 Zone 部署 C 副本，通过 ODP 路由（方式一）或配合自动路由（方式二）分散 AP 读负载，实现冗余与高可用。
+
+### 如何创建一个列存表？
+
+首先，创建行列混存表。
+
+- 非分区表：
+
+```sql
+create table t1(
+   c1 TINYINT,
+   c2 SMALLINT,
+   c3 MEDIUMINT
+) with column group (all columns, each column);
+```
+
+- 分区表：
+
+```sql
+create table t2(
+   pk int,
+   c1 int,
+   c2 int,
+   primary key (pk)
+)
+partition by hash(pk) partitions 4
+with column group (all columns, each column);
+```
+
+创建行列混合的列存表的时候，总是会用到 `with column group (all columns, each column)` 语法，它表示的意思如下：
+
+- `all columns`：把所有列聚合在一起成组，看成一个宽列，一行一行存储。这其实就和原来的行存是一致的。
+- `each column`：表中的每一列分别使用列格式来存储。
+
+`all columns`、`each column` 一起出现，意味着默认创建列存表后同时冗余行存, 每个副本存储两份基线数据。不过值得注意的是，每张表无论多少份基线数据，在 memtable 和转储里的增量数据，依然是共享同一份。
+
+其次，创建纯列存表。
+
+- 非分区表：
+
+```sql
+create table t3(
+   c1 TINYINT,
+   c2 SMALLINT,
+   c3 MEDIUMINT
+) with column group (each column);
+```
+
+- 分区表：
+
+```sql
+create table t4(
+   pk1 int,
+   pk2 int,
+   c1 int,
+   c2 int,
+   primary key (pk1, pk2)
+)
+partition by hash(pk1) partitions 4
+with column group (each column);
+```
+
+对于 t4 表，会针对 pk1、pk2、c1、c2 分别建一个列存，同时还会针对 (pk1, pk2）组合建一个行存。
+
+### 如何让租户创建出来的表，默认就是列存表？
+
+设置一个租户级配置项即可：
+
+```sql
+alter system set default_table_store_format = "column";
+```
+
+相应地，也可以把默认建表做成行存，或者行存列存双份：
+
+```sql
+alter system set default_table_store_format = "row";   //行存
+alter system set default_table_store_format = "compound"; //行存列存双份数据
+```
+
+### 列存版推荐配置是什么？
+
+```sql
+# 设置 collation 为 utf8mb4_bin，性能瞬间提升 15%
+set global collation_connection = utf8mb4_bin;
+set global collation_server = utf8mb4_bin;
+
+set global ob_query_timeout= 10000000000;
+set global ob_trx_timeout= 100000000000;
+set global ob_sql_work_area_percentage=30;
+set global max_allowed_packet=67108864;
+# 建议是cpu的10倍
+set global parallel_servers_target=1000;
+set global parallel_degree_policy = auto;
+set global parallel_min_scan_time_threshold = 10;
+# 限制 parallel_degree_policy = auto 时的最大 dop
+# 出现较大 dop 可能导致性能问题。下面的值建议设为 cpu_count * 2
+set global parallel_degree_limit = 0;
+
+alter system set compaction_low_thread_score = cpu_count;
+alter system set compaction_mid_thread_score = cpu_count;
+alter system set default_table_store_format = "column";
+```
+
+<main id="notice" type='notice'>
+  <h4>说明</h4>
+  <p>上述代码中 <code>cpu_count</code> 表示创建租户时指定的 <code>min_cpu</code>。</p>
+</main>
+
+
+### 如何判断是否走到了列存？
+
+扫描走行存时，explain 中显示的是 `TABLE FULL SCAN`，走到列存时，显示的是 `COLUMN TABLE FULL SCAN`。以访问下面的 t5 表为例：
+
+```sql
+create table t5(
+   c1 TINYINT,
+   c2 SMALLINT,
+   c3 MEDIUMINT,
+   c4 INT,
+   c5 INT,
+   PRIMARY KEY(c1, c2)
+) with column group(all columns, each column);
+
+OceanBase(admin@test)>explain select c1,c2 from t5;
++------------------------------------------------------------------------+
+| Query Plan                                                             |
++------------------------------------------------------------------------+
+| ===============================================                        |
+| |ID|OPERATOR       |NAME|EST.ROWS|EST.TIME(us)|                        |
+| -----------------------------------------------                        |
+| |0 |TABLE FULL SCAN|t5  |1       |3           |                        |
+| ===============================================                        |
+| Outputs & filters:                                                     |
+| -------------------------------------                                  |
+|   0 - output([t5.c1], [t5.c2]), filter(nil), rowset=16                 |
+|       access([t5.c1], [t5.c2]), partitions(p0)                         |
+|       is_index_back=false, is_global_index=false,                      |
+|       range_key([t5.c1], [t5.c2]), range(MIN,MIN ; MAX,MAX)always true |
++------------------------------------------------------------------------+
+11 rows in set (0.011 sec)
+
+OceanBase(admin@test)>explain select c1 from t5;
++------------------------------------------------------------------------+
+| Query Plan                                                             |
++------------------------------------------------------------------------+
+| ======================================================                 |
+| |ID|OPERATOR              |NAME|EST.ROWS|EST.TIME(us)|                 |
+| ------------------------------------------------------                 |
+| |0 |COLUMN TABLE FULL SCAN|t5  |1       |3           |                 |
+| ======================================================                 |
+| Outputs & filters:                                                     |
+| -------------------------------------                                  |
+|   0 - output([t5.c1]), filter(nil), rowset=16                          |
+|       access([t5.c1]), partitions(p0)                                  |
+|       is_index_back=false, is_global_index=false,                      |
+|       range_key([t5.c1], [t5.c2]), range(MIN,MIN ; MAX,MAX)always true |
++------------------------------------------------------------------------+
+11 rows in set (0.003 sec)
+```
+
+
+### 列存表允许增删列吗？
+
+* 允许增加列和删列。
+
+* 支持 Varchar 列字符数改大、改小。
+
+* 列存支持多种 Offline DDL，和行存表无异。
+
+有关列存修改的详细信息请参见[表行存列存转换（MySQL 模式）](../700.reference/300.database-object-management/100.manage-object-of-mysql-mode/200.manage-tables-of-mysql-mode/600.change-table-of-mysql-mode.md)和[表行存列存转换（Oracle 模式）](../700.reference/300.database-object-management/200.manage-object-of-oracle-mode/100.manage-tables-of-oracle-mode/600.change-table-of-oracle-mode.md)。
+
+### 列存表的查询有何特点？
+
+* 冗余行存表中，列存表查询逻辑默认采用 Range Scan 走列存模式，而 Point Get 查询则会回退到行存模式。
+
+* 纯列存表中，任何查询都采用列存模式。
+
+### 列存支持事务吗，对事务大小有什么限制？
+
+和行存表一样，支持事务，并且事务大小无限制，具备高一致性。
+
+### 列存表的日志同步、备份恢复等有什么特别之处吗？
+
+没有任何特别之处，和行存表一致。同步的日志都是行存模式。
+
+### 是否支持将行存表用 DDL 变成列存表？
+
+支持。通过加列存、删行存实现。相关语法示例如下：
+
+```sql
+create table t1( pk1 int, c2 int, primary key (pk1));
+
+alter table t1 add column group(all columns, each column);
+alter table t1 drop column group(all columns, each column);
+
+alter table t1 add column group(each column);
+alter table t1 drop column group(each column);
+```
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p><code>alter table t1 drop column group(all columns, each column);</code> 执行后，不用担心没有任何 Group 来承载数据，所有列会被放到一个叫做 <code>DEFAUTL COLUMN GROUP</code> 的默认 Group 中。</p>
+</main>
+
+
+### 列存里支持多个列集合在一起吗？
+
+在 OceanBase 数据库 V4.3.0 版本中，仅支持**要么每个列独立存储，要么所有列一起作为行存储**。暂不支持任选若干列集合在一起存储。
+
+### 列存支持更新吗，以及 MemTable 里的结构是怎样的？
+
+在 OceanBase 数据库中，增删改操作都在内存里完成，数据以行存的形式保存在 MemTable 里；而基线数据是只读的，以列存的形式保存在磁盘上。当读取一列数据时，会实时地融合 MemTable 中的行存数据和磁盘里的列存数据，输出给用户。这意味着，**OceanBase 数据库支持强一致读列存，不会有数据延迟**。写入 MemTable 的数据支持转储，转储数据依然以行存的形式保存。合并后，行存数据和基线列存数据融合，形成新的基线列存数据。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>对于列存表来说，如果存在大量的更新操作，并且没有及时合并，查询性能会受到影响。因此，推荐在批量导入数据后发起一次合并操作，以获得最优的查询性能。而少量更新操作对性能影响不大。</p>
+</main>
+
+![列存更新操作](img/1bc62ecbfac79bb4.jpg)
+
+### 列存表的查询有何特点？
+
+冗余行存表中，列存表查询逻辑默认 range scan 走列存模式, point get 仍回退到行存模式。
+
+纯列存表中，任何查询都走列存模式。
+
+### 支持对列存的某一列建索引吗？
+
+支持。OceanBase 数据库不区分是对列存建索引，还是对行存建索引，创建的索引结构是一样的。
+
+对列存某一列或几列建索引的意义在于可以构造一个覆盖索引，提升点查询性能，或者对特定列做排序以提升排序性能。
+
+### 最多支持多少列？
+
+目前一个列存表最多支持 4096 列。
+
+### 使用列存有什么注意事项？
+
+**第一**：批量导入数据后，建议做一次合并，读性能可以更优。导完数据后租户内触发一次合并，保证数据全部进入基线，租户内执行 `alter system major freeze;` 然后在系统租户执行 `select STATUS from CDB_OB_MAJOR_COMPACTION where TENANT_ID = 租户ID;` 判断合并是否完成，当 `STATUS` 变为 `IDLE` 即表示合并完成。
+
+**第二**：合并后，推荐做一次统计信息收集。收集统计信息方法如下：
+
+- 在业务租户一键对所有表收集统计信息，启动16个线程并发收集：
+
+  ```sql
+  CALL DBMS_STATS.GATHER_SCHEMA_STATS ('db', granularity=>'auto', degree=>16);
+  ```
+
+- 观测统计信息进度可以通过视图 `GV$OB_OPT_STAT_GATHER_MONITOR`。
+
+**第三**：可以使用全量旁路导入逻辑批量导入数据，使用这种方式导入数据的表无需做合并，就能达到最优列存扫描性能。支持全量旁路导入的工具包括 obloader、原生 load data 命令。
+
+**第四**：对于非大宽表场景，不使用列存也可能达到和列存相当的性能。这得益于 OceanBase 行存版本中微块级别的行列混合存储架构（遇到这种情况，不用惊讶）。
+
+**第五**：大数据量表，cold run 和 hot run 性能有区别。
+
+**第六**：优化器会根据代价估算，自动选择对列数据的访问使用行存还是列存。
+
+**第七**：列存表合并速度会变慢。
+
+### 列存表的日志同步、备份恢复等有什么特别之处吗？
+
+没有任何特别之处，和行存表一致。同步的日志都是行存模式。
+
+## 数据导入/迁移 FAQ
+
+### 什么是旁路导入？如何做旁路导入？
+
+旁路导入是一种加快数据导入，并且能够加速数据查询的数据导入方式。大表数据导入，推荐使用旁路导入方式。目前，`load data` 命令、`insert into select` 语句支持旁路导入。旁路导入的详细使用方式参见[旁路导入概述](300.obap-data-collection/300.obap-import-data/20.bypass-import/100.overview-of-bypass-import.md)。
+
+### 支持使用 FlinkCDC 从其它数据库同步数据到 OceanBase 吗？
+
+支持。参见官网文档 [使用 FlinkCDC 从 MySQL 同步数据到 OceanBase](../500.data-migration/200.migrate-data-from-mysql-database-to-oceanbase-database/600.use-flink-cdc-to-migrate-data-from-mysql-database-to-oceanbase-database.md)。
+
+### 是否支持 Flink Connector 访问 OceanBase？
+
+支持。详见 https://github.com/oceanbase/flink-connector-oceanbase。
+
+## 性能调优 FAQ
+
+### 还有哪些可以进一步提升 AP Query 性能的方法？
+
+根据一些实践经验得知，首先如果不是有特殊排序要求，建表时候字符集不要使用 utf8mb4，而是使用 binary，可以提升性能。例如：
+
+```sql
+create table t5(c1 TINYINT, c2 VARVHAR(50)) CHARSET=binary with column group (each column);
+```
+
+其次，如用户或者业务可以接受， mysql 租户建表时指定 utf8mb4_bin 字符集，建表时带上：`CHARSET = utf8mb4 collate=utf8mb4_bin`
+
+此外，增加 UNIT 的 IOPS，可以加速旁路导入。
+
+### 面向列存的优化器，有什么特点？
+
+面相列存的优化器，相对于面相行存优化器，增加了：
+
+- 优化器自主选择行、列存的能力。
+- Hint 控制行、列存选择的能力（表级别）。
+- 适配了列存的计划代价计算。
+- 增加了列存的晚期物化优化。

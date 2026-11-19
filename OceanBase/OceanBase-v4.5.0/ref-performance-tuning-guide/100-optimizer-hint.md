@@ -1,0 +1,1399 @@
+---
+title: Optimizer Hint
+book: "性能调优"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004480377.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-performance-tuning-guide
+---
+
+# Optimizer Hint
+
+Hint 机制可以使优化器生成指定的执行计划。
+
+一般情况下，优化器会为用户查询选择最佳的执行计划，不需要用户使用 Hint 指定。但在某些场景下，优化器生成的执行计划可能不满足用户的要求，这时就需要用户使用 Hint 来指定生成某种执行计划。
+
+## Hint 语法
+
+Hint 从语法上看是一种特殊的 SQL 注释，所不同的是在注释的左标记后（"/\*"符号）增加了一个"+"。 既然是注释，如果服务器端无法识别 SQL 语句中的 Hint，优化器会选择忽略用户 Hint 而使用默认的计划生成逻辑结构。另外，Hint 只影响优化器生成计划的逻辑结构，而不影响 SQL 语句的语义。
+
+```sql
+{ DELETE | INSERT | SELECT | UPDATE | REPLACE } /*+ [hint_text][,hint_text]... */
+```
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>如果使用 MySQL 的 C 客户端执行带 Hint 的 SQL 语句，需要使用 <code>-c</code> 选项登录，否则 MySQL 客户端会将 Hint 作为注释从用户 SQL 语句中去除，导致系统无法收到用户 Hint。</p>
+  </main>
+
+### Hint 参数
+
+Hint 相关参数名称、语义和语法如下表所示。
+
+|           **名称**            |               **语法**                      |               **语义**                     |
+|-----------------------------|-----------------------------------------------------|----------------|
+| NO_REWRITE                  | NO_REWRITE                                                     | 禁止 SQL 改写。 |
+| READ_CONSISTENCY            | READ_CONSISTENCY (WEAK\[STRONGFROZEN\])                        | 读一致性设置（弱/强）。  |
+| INDEX_HINT                  | /\*+ INDEX(table_name index_name) \*/                          | 设置表索引。 |
+| QUERY_TIMEOUT               | QUERY_TIMEOUT(INTNUM)                                          | 设置超时时间。|
+| LOG_LEVEL                   | LOG_LEVEL(\['\]log_level\['\])   | 设置日志级别，当设置模块级别语句时候，以第一个单引号（'）作为开始，第二个单引号（'）作为结束；例如'DEBUG'。   |
+| LEADING                     | LEADING(\[qb_name\] TBL_NAME_LIST)                              | 设置联接顺序。 |
+| ORDERED                     | ORDERED                                                         | 设置按照 SQL 中的顺序进行联接。   |
+| FULL                        | FULL(\[qb_name\] TBL_NAME)                                      | 设置表访问路径为主表等价于 `INDEX(TBL_NAME PRIMARY)`。    |
+| USE_PLAN_CACHE              | USE_PLAN_CACHE(NONE\[DEFAULT\])                                 | 设置是否使用计划缓存： <ul><li> `NONE`：表示不使用计划缓存。</li>   <li> `DEFAULT`：表示按照服务器本身的设置来决定是否使用计划缓存。</li></ul>    |
+| USE_MERGE                   | USE_MERGE(\[qb_name\] TBL_NAME_LIST)                            | 设置指定表在作为右表时使用 Merge Join。    |
+| USE_HASH                    | USE_HASH(\[qb_name\] TBL_NAME_LIST)                             | 设置指定表在作为右表时使用 Hash Join。   |
+| NO_USE_HASH                 | NO_USE_HASH(\[qb_name\] TBL_NAME_LIST)                          | 设置指定表在作为右表时不使用 Hash Join。  |
+| USE_NL                      | USE_NL(\[qb_name\] TBL_NAME_LIST)                               | 设置指定表在作为右表时使用 Nested Loop Join。  |
+| USE_BNL                     | USE_BNL(\[qb_name\] TBL_NAME_LIST)                              | 设置指定表在作为右表时使用 Block Nested Loop Join  |
+| USE_HASH_AGGREGATION        | USE_HASH_AGGREGATION(\[qb_name\])                               | 设置聚合算法为 Hash。例如 Hash Group By 或者 Hash Distinct。    |
+| NO_USE_HASH_AGGREGATION     | NO_USE_HASH_AGGREGATION(\[qb_name\])                            | 设置 Aggregate 方法不使用 Hash Aggregate，使用 Merge Group By 或者 Merge Distinct。|
+| USE_LATE_MATERIALIZATION    | USE_LATE_MATERIALIZATION                                        | 设置使用晚期物化。|
+| NO_USE_LATE_MATERIALIZATION | NO_USE_LATE_MATERIALIZATION                                     | 设置不使用晚期物化。|
+| TRACE_LOG                   | TRACE_LOG                                                       | 设置收集 Trace 记录用于 `SHOW TRACE` 展示。   |
+| QB_NAME                     | QB_NAME( NAME )                                                 | 设置 Query Block 的名称。|
+| PARALLEL                    | PARALLEL(INTNUM)                                                | 设置分布式执行并行度。|
+| TOPK                        | TOPK(PRECISION MINIMUM_ROWS)                                    | 设置模糊查询的精度和最小行数。 其中 `PRECSION` 为整型，取值范围\[0，100\]，表示模糊查询的行数百分比；`MINIMUM_ROWS` 为最小返回行数。         |
+| MAX_CONCURRENT | MAX_CONCURRENT(n) | 限制这个 SQL 文本的并发数。|
+| UNION_MERGE <main id="notice" type='notice'><h4>注意</h4><p>OceanBase 数据库从 V4.4.1 版本开始移除 <code>UNION_MERGE</code> Hint，不再支持 <code>UNION_MERGE</code> Hint 语句。</p></main>| UNION_MERGE(table_name index_name_list)                         | 设置对应的 Index Merge 计划。|
+| PUSH_SUBQ                   | PUSH_SUBQ[(@qb_name)]                                           | 用于指示优化器尽早执行未改写成连接的子查询。|
+| NO_PUSH_SUBQ                | NO_PUSH_SUBQ[(@qb_name)]                                        | 是 `PUSH_SUBQ` 的反向操作，用于优化器将未改写成连接的子查询放在最后执行。|
+| OPT_PARAM                   | OPT_PARAM(parameter_name [,] parameter_value)                   | 指定在查询级别更新一些优化器相关的配置项/系统变量。|
+| INDEX_MERGE                 | INDEX_MERGE([@query_block_name] tbl_name [index_name [,index_name]...])     | 用于控制指定的表使用 index merge 计划。 <main id="notice" type='notice'><h4>注意</h4><p><ul><li>当指定的表后没有 <code>index_name</code> 参数的时候，表示控制指定的表使用 index merge 计划。</li><li>当指定的表后有 <code>index_name</code> 参数的时候，表示控制指定的表使用指定的索引（Index）生成 index merge 计划。</li></ul></p></main>|
+| NO_INDEX_MERGE              | NO_INDEX_MERGE([@query_block_name] tbl_name [index_name [,index_name]...])  | 用于控制指定的表不使用指定的索引生成 index merge 计划。 <main id="notice" type='notice'><h4>注意</h4><p><ul><li>当指定的表后没有 <code>index_name</code> 参数的时候，表示不使用 index merge 计划。</li><li>当指定的表后有 <code>index_name</code> 参数的时候，表示不使用指定的索引（Index）来生成 index merge 计划。</li></ul></p></main>|
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <ul>
+    <li><code>QB_NAME</code> 语法是: <code>@NAME</code></li>
+    <li><code>TBL_NAME</code> 语法是: <code>[db_name.]relation_name [qb_name]</code></li>
+    </ul>
+  </main>
+
+## QB_NAME 参数
+
+在 DML 语句中，每一个 `query_block` 都会有一个 `QB_NAME`（Query Block Name），可以由用户指定，也可以由系统自动生成。在用户没有用 Hint 指定 `QB_NAME` 的时候，系统会按照 `SEL$1`、`SEL$2`、`UPD$1`、`DEL$1` 方式从左到右（实际也是 Resolver 的解析顺序）依次生成。
+
+通过 `QB_NAME` 可以精确定位到每一个表，也可以在某处指定任意 Query Block 的行为。`TBL_NAME` 中的 `QB_NAME` 用于定位表，在 Hint 中最前面的 `QB_NAME` 用于定位 Hint 作用于哪一个 `query_block`。
+
+如下例所示，按照默认规则，会为 `SEL$1` 中的 `t1` 表选择 `t1_c1` 路径，为 `SEL$2` 中的 `t2` 表选择主表（Primary）访问。
+
+```sql
+obclient> CREATE TABLE t1(c1 INT, c2 INT, KEY t1_c1(c1));
+Query OK, 0 rows affected
+
+obclient> CREATE TABLE t2(c1 INT, c2 INT, KEY t2_c1(c1));
+Query OK, 0 rows affected
+
+obclient> EXPLAIN SELECT * FROM t1, (SELECT * FROM t2 WHERE c2 = 1 LIMIT 5)
+ WHERE t1.c1 = 1;
++-----------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                |
++-----------------------------------------------------------------------------------------------------------+
+| ======================================================================                                    |
+| |ID|OPERATOR                   |NAME           |EST.ROWS|EST.TIME(us)|                                    |
+| ----------------------------------------------------------------------                                    |
+| |0 |NESTED-LOOP JOIN CARTESIAN |               |1       |7           |                                    |
+| |1 |├─TABLE RANGE SCAN         |t1(t1_c1)      |1       |7           |                                    |
+| |2 |└─MATERIAL                 |               |1       |3           |                                    |
+| |3 |  └─SUBPLAN SCAN           |ANONYMOUS_VIEW1|1       |3           |                                    |
+| |4 |    └─TABLE FULL SCAN      |t2             |1       |3           |                                    |
+| ======================================================================                                    |
+| Outputs & filters:                                                                                        |
+| -------------------------------------                                                                     |
+|   0 - output([t1.c1], [t1.c2], [ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2]), filter(nil), rowset=16        |
+|       conds(nil), nl_params_(nil), use_batch=false                                                        |
+|   1 - output([t1.c1], [t1.c2]), filter(nil), rowset=16                                                    |
+|       access([t1.__pk_increment], [t1.c1], [t1.c2]), partitions(p0)                                       |
+|       is_index_back=true, is_global_index=false,                                                          |
+|       range_key([t1.c1], [t1.__pk_increment]), range(1,MIN ; 1,MAX),                                      |
+|       range_cond([t1.c1 = 1])                                                                             |
+|   2 - output([ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2]), filter(nil), rowset=16                          |
+|   3 - output([ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2]), filter(nil), rowset=16                          |
+|       access([ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2])                                                  |
+|   4 - output([t2.c1], [t2.c2]), filter([t2.c2 = 1]), rowset=16                                            |
+|       access([t2.c2], [t2.c1]), partitions(p0)                                                            |
+|       limit(5), offset(nil), is_index_back=false, is_global_index=false, filter_before_indexback[false],  |
+|       range_key([t2.__pk_increment]), range(MIN ; MAX)always true                                         |
++-----------------------------------------------------------------------------------------------------------+
+25 rows in set
+```
+
+如果 SQL 通过 Hint 来指定 `SEL$1` 的 `t1` 表走主表，`SEL$2` 的 `t2` 表走索引，示例如下：
+
+```sql
+obclient> EXPLAIN SELECT /*+INDEX(t1 PRIMARY) INDEX(@SEL$2 t2 t2_c1)*/ *
+        FROM t1 , (SELECT * FROM t2 WHERE c2 = 1 LIMIT 5)
+        WHERE t1.c1 = 1;
++----------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                               |
++----------------------------------------------------------------------------------------------------------+
+| ======================================================================                                   |
+| |ID|OPERATOR                   |NAME           |EST.ROWS|EST.TIME(us)|                                   |
+| ----------------------------------------------------------------------                                   |
+| |0 |NESTED-LOOP JOIN CARTESIAN |               |1       |3           |                                   |
+| |1 |├─TABLE FULL SCAN          |t1             |1       |3           |                                   |
+| |2 |└─MATERIAL                 |               |1       |7           |                                   |
+| |3 |  └─SUBPLAN SCAN           |ANONYMOUS_VIEW1|1       |7           |                                   |
+| |4 |    └─TABLE FULL SCAN      |t2(t2_c1)      |1       |7           |                                   |
+| ======================================================================                                   |
+| Outputs & filters:                                                                                       |
+| -------------------------------------                                                                    |
+|   0 - output([t1.c1], [t1.c2], [ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2]), filter(nil), rowset=16       |
+|       conds(nil), nl_params_(nil), use_batch=false                                                       |
+|   1 - output([t1.c1], [t1.c2]), filter([t1.c1 = 1]), rowset=16                                           |
+|       access([t1.c1], [t1.c2]), partitions(p0)                                                           |
+|       is_index_back=false, is_global_index=false, filter_before_indexback[false],                        |
+|       range_key([t1.__pk_increment]), range(MIN ; MAX)always true                                        |
+|   2 - output([ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2]), filter(nil), rowset=16                         |
+|   3 - output([ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2]), filter(nil), rowset=16                         |
+|       access([ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2])                                                 |
+|   4 - output([t2.c1], [t2.c2]), filter([t2.c2 = 1]), rowset=16                                           |
+|       access([t2.__pk_increment], [t2.c2], [t2.c1]), partitions(p0)                                      |
+|       limit(5), offset(nil), is_index_back=true, is_global_index=false, filter_before_indexback[false],  |
+|       range_key([t2.c1], [t2.__pk_increment]), range(MIN,MIN ; MAX,MAX)always true                       |
++----------------------------------------------------------------------------------------------------------+
+24 rows in set
+```
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>由于 <code>INDEX(t1 PRIMARY)</code> 本来就存在于 <code>SEL$1</code>，可以不用再指定 Hint 作用的 Query Block。</p>
+  </main>
+
+上述示例中 SQL 也可以写成如下方式：
+
+```sql
+SELECT /*+INDEX(t1 PRIMARY) INDEX(@SEL$2 t2@SEL$2 t2_c1)*/ * FROM t1 , (SELECT * FROM t2 WHERE c2 = 1 LIMIT 5) WHERE t1.c1 = 1;
+```
+
+或：
+
+```sql
+SELECT /*+INDEX(t1 PRIMARY)*/ * FROM t1 , (SELECT /*+INDEX(t2 t2_c1)*/ * FROM t2 WHERE c2 = 1 LIMIT 5) WHERE t1.c1 = 1;
+```
+
+或：
+
+```sql
+SELECT /*+INDEX(@SEL$1 t1 PRIMARY) INDEX(@SEL$2 t2 t2_c1)*/ * FROM t1 , (SELECT * FROM t2 WHERE c2 = 1 LIMIT 5) WHERE t1.c1 = 1;
+```
+
+对于该 Hint，可以通过 `EXPLAIN EXTENDED` 命令的执行结果中的 `Outline Data` 来查看它的所有信息。
+
+```sql
+obclient> EXPLAIN EXTENDED SELECT * FROM t1, (SELECT * FROM t2 WHERE c2 = 1 LIMIT 5)
+ WHERE t1.c1 = 1;
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                                                                         |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ======================================================================                                                                                             |
+| |ID|OPERATOR                   |NAME           |EST.ROWS|EST.TIME(us)|                                                                                             |
+| ----------------------------------------------------------------------                                                                                             |
+| |0 |NESTED-LOOP JOIN CARTESIAN |               |1       |7           |                                                                                             |
+| |1 |├─TABLE RANGE SCAN         |t1(t1_c1)      |1       |7           |                                                                                             |
+| |2 |└─MATERIAL                 |               |1       |3           |                                                                                             |
+| |3 |  └─SUBPLAN SCAN           |ANONYMOUS_VIEW1|1       |3           |                                                                                             |
+| |4 |    └─TABLE FULL SCAN      |t2             |1       |3           |                                                                                             |
+| ======================================================================                                                                                             |
+| Outputs & filters:                                                                                                                                                 |
+| -------------------------------------                                                                                                                              |
+|   0 - output([t1.c1(0x7f20d7035330)], [t1.c2(0x7f20d70358b0)], [ANONYMOUS_VIEW1.c1(0x7f20d7035be0)], [ANONYMOUS_VIEW1.c2(0x7f20d7035f10)]), filter(nil), rowset=16 |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                                                 |
+|   1 - output([t1.c1(0x7f20d7035330)], [t1.c2(0x7f20d70358b0)]), filter(nil), rowset=16                                                                             |
+|       access([t1.__pk_increment(0x7f20d7036b10)], [t1.c1(0x7f20d7035330)], [t1.c2(0x7f20d70358b0)]), partitions(p0)                                                |
+|       is_index_back=true, is_global_index=false,                                                                                                                   |
+|       range_key([t1.c1(0x7f20d7035330)], [t1.__pk_increment(0x7f20d7036b10)]), range(1,MIN ; 1,MAX),                                                               |
+|       range_cond([t1.c1(0x7f20d7035330) = 1(0x7f20d7034b70)])                                                                                                      |
+|   2 - output([ANONYMOUS_VIEW1.c1(0x7f20d7035be0)], [ANONYMOUS_VIEW1.c2(0x7f20d7035f10)]), filter(nil), rowset=16                                                   |
+|   3 - output([ANONYMOUS_VIEW1.c1(0x7f20d7035be0)], [ANONYMOUS_VIEW1.c2(0x7f20d7035f10)]), filter(nil), rowset=16                                                   |
+|       access([ANONYMOUS_VIEW1.c1(0x7f20d7035be0)], [ANONYMOUS_VIEW1.c2(0x7f20d7035f10)])                                                                           |
+|   4 - output([t2.c1(0x7f20d7033a10)], [t2.c2(0x7f20d7033490)]), filter([t2.c2(0x7f20d7033490) = 1(0x7f20d7032cd0)]), rowset=16                                     |
+|       access([t2.c2(0x7f20d7033490)], [t2.c1(0x7f20d7033a10)]), partitions(p0)                                                                                     |
+|       limit(5), offset(nil), is_index_back=false, is_global_index=false, filter_before_indexback[false],                                                           |
+|       range_key([t2.__pk_increment(0x7f20d70365e0)]), range(MIN ; MAX)always true                                                                                  |
+| Used Hint:                                                                                                                                                         |
+| -------------------------------------                                                                                                                              |
+|   /*+                                                                                                                                                              |
+|                                                                                                                                                                    |
+|   */                                                                                                                                                               |
+| Qb name trace:                                                                                                                                                     |
+| -------------------------------------                                                                                                                              |
+|   stmt_id:0, stmt_type:T_EXPLAIN                                                                                                                                   |
+|   stmt_id:1, SEL$1                                                                                                                                                 |
+|   stmt_id:2, SEL$2                                                                                                                                                 |
+| Outline Data:                                                                                                                                                      |
+| -------------------------------------                                                                                                                              |
+|   /*+                                                                                                                                                              |
+|       BEGIN_OUTLINE_DATA                                                                                                                                           |
+|       LEADING(@"SEL$1" ("aabb"."t1"@"SEL$1" "ANONYMOUS_VIEW1"@"SEL$1"))                                                                                            |
+|       USE_NL(@"SEL$1" "ANONYMOUS_VIEW1"@"SEL$1")                                                                                                                   |
+|       USE_NL_MATERIALIZATION(@"SEL$1" "ANONYMOUS_VIEW1"@"SEL$1")                                                                                                   |
+|       INDEX(@"SEL$1" "aabb"."t1"@"SEL$1" "t1_c1")                                                                                                                  |
+|       FULL(@"SEL$2" "aabb"."t2"@"SEL$2")                                                                                                                           |
+|       OPTIMIZER_FEATURES_ENABLE('4.3.0.0')                                                                                                                         |
+|       END_OUTLINE_DATA                                                                                                                                             |
+|   */                                                                                                                                                               |
+| Optimization Info:                                                                                                                                                 |
+| -------------------------------------                                                                                                                              |
+|   t1:                                                                                                                                                              |
+|       table_rows:1                                                                                                                                                 |
+|       physical_range_rows:1                                                                                                                                        |
+|       logical_range_rows:1                                                                                                                                         |
+|       index_back_rows:1                                                                                                                                            |
+|       output_rows:1                                                                                                                                                |
+|       table_dop:1                                                                                                                                                  |
+|       dop_method:Table DOP                                                                                                                                         |
+|       avaiable_index_name:[t1_c1, t1]                                                                                                                              |
+|       unstable_index_name:[t1]                                                                                                                                     |
+|       stats version:0                                                                                                                                              |
+|       dynamic sampling level:0                                                                                                                                     |
+|       estimation method:[DEFAULT, STORAGE]                                                                                                                         |
+|   t2:                                                                                                                                                              |
+|       table_rows:1                                                                                                                                                 |
+|       physical_range_rows:1                                                                                                                                        |
+|       logical_range_rows:1                                                                                                                                         |
+|       index_back_rows:0                                                                                                                                            |
+|       output_rows:1                                                                                                                                                |
+|       table_dop:1                                                                                                                                                  |
+|       dop_method:Table DOP                                                                                                                                         |
+|       avaiable_index_name:[t2_c1, t2]                                                                                                                              |
+|       pruned_index_name:[t2_c1]                                                                                                                                    |
+|       stats version:0                                                                                                                                              |
+|       dynamic sampling level:0                                                                                                                                     |
+|       estimation method:[DEFAULT, STORAGE]                                                                                                                         |
+|   Plan Type:                                                                                                                                                       |
+|       LOCAL                                                                                                                                                        |
+|   Note:                                                                                                                                                            |
+|       Degree of Parallelisim is 1 because of table property                                                                                                        |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+79 rows in set
+```
+
+## Hint 使用规则
+
+Hint 的一般使用规则如下：
+
+* 对于没有指定 Query Block 的 Hint 表明作用于本 Query Block。
+
+  **示例 1：由于`t2` 表在 Query Block2，并且无法通过改写提升到 Query Block1，所以 Hint 无法生效。**
+
+  ```sql
+  obclient> EXPLAIN SELECT /*+INDEX(t2 t2_c1)*/ *
+          FROM t1 , (SELECT * FROM t2 WHERE c2 = 1 LIMIT 5)
+          WHERE t1.c1 = 1;
+  +-----------------------------------------------------------------------------------------------------------+
+  | Query Plan                                                                                                |
+  +-----------------------------------------------------------------------------------------------------------+
+  | ======================================================================                                    |
+  | |ID|OPERATOR                   |NAME           |EST.ROWS|EST.TIME(us)|                                    |
+  | ----------------------------------------------------------------------                                    |
+  | |0 |NESTED-LOOP JOIN CARTESIAN |               |1       |7           |                                    |
+  | |1 |├─TABLE RANGE SCAN         |t1(t1_c1)      |1       |7           |                                    |
+  | |2 |└─MATERIAL                 |               |1       |3           |                                    |
+  | |3 |  └─SUBPLAN SCAN           |ANONYMOUS_VIEW1|1       |3           |                                    |
+  | |4 |    └─TABLE FULL SCAN      |t2             |1       |3           |                                    |
+  | ======================================================================                                    |
+  | Outputs & filters:                                                                                        |
+  | -------------------------------------                                                                     |
+  |   0 - output([t1.c1], [t1.c2], [ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2]), filter(nil), rowset=16        |
+  |       conds(nil), nl_params_(nil), use_batch=false                                                        |
+  |   1 - output([t1.c1], [t1.c2]), filter(nil), rowset=16                                                    |
+  |       access([t1.__pk_increment], [t1.c1], [t1.c2]), partitions(p0)                                       |
+  |       is_index_back=true, is_global_index=false,                                                          |
+  |       range_key([t1.c1], [t1.__pk_increment]), range(1,MIN ; 1,MAX),                                      |
+  |       range_cond([t1.c1 = 1])                                                                             |
+  |   2 - output([ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2]), filter(nil), rowset=16                          |
+  |   3 - output([ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2]), filter(nil), rowset=16                          |
+  |       access([ANONYMOUS_VIEW1.c1], [ANONYMOUS_VIEW1.c2])                                                  |
+  |   4 - output([t2.c1], [t2.c2]), filter([t2.c2 = 1]), rowset=16                                            |
+  |       access([t2.c2], [t2.c1]), partitions(p0)                                                            |
+  |       limit(5), offset(nil), is_index_back=false, is_global_index=false, filter_before_indexback[false],  |
+  |       range_key([t2.__pk_increment]), range(MIN ; MAX)always true                                         |
+  +-----------------------------------------------------------------------------------------------------------+
+  25 rows in set
+  ```
+
+  **示例 2：如果优化器能够重新整合子查询与外层查询，从而只使用一个 Query Block，那么 Hint 可能生效。**
+
+  ```sql
+  obclient> EXPLAIN SELECT /*+INDEX(t2 t2_c1)*/ *
+          FROM t1 , (SELECT * FROM t2 WHERE c2 = 1)
+          WHERE t1.c1 = 1;
+  +------------------------------------------------------------------------------------+
+  | Query Plan                                                                         |
+  +------------------------------------------------------------------------------------+
+  | ================================================================                   |
+  | |ID|OPERATOR                   |NAME     |EST.ROWS|EST.TIME(us)|                   |
+  | ----------------------------------------------------------------                   |
+  | |0 |NESTED-LOOP JOIN CARTESIAN |         |1       |7           |                   |
+  | |1 |├─TABLE RANGE SCAN         |t1(t1_c1)|1       |7           |                   |
+  | |2 |└─MATERIAL                 |         |1       |7           |                   |
+  | |3 |  └─TABLE FULL SCAN        |t2(t2_c1)|1       |7           |                   |
+  | ================================================================                   |
+  | Outputs & filters:                                                                 |
+  | -------------------------------------                                              |
+  |   0 - output([t1.c1], [t1.c2], [t2.c1], [t2.c2]), filter(nil), rowset=16           |
+  |       conds(nil), nl_params_(nil), use_batch=false                                 |
+  |   1 - output([t1.c1], [t1.c2]), filter(nil), rowset=16                             |
+  |       access([t1.__pk_increment], [t1.c1], [t1.c2]), partitions(p0)                |
+  |       is_index_back=true, is_global_index=false,                                   |
+  |       range_key([t1.c1], [t1.__pk_increment]), range(1,MIN ; 1,MAX),               |
+  |       range_cond([t1.c1 = 1])                                                      |
+  |   2 - output([t2.c1], [t2.c2]), filter(nil), rowset=16                             |
+  |   3 - output([t2.c2], [t2.c1]), filter([t2.c2 = 1]), rowset=16                     |
+  |       access([t2.__pk_increment], [t2.c2], [t2.c1]), partitions(p0)                |
+  |       is_index_back=true, is_global_index=false, filter_before_indexback[false],   |
+  |       range_key([t2.c1], [t2.__pk_increment]), range(MIN,MIN ; MAX,MAX)always true |
+  +------------------------------------------------------------------------------------+
+  22 rows in set
+  ```
+
+对于上面的示例，如果优化器由于某些原因（比如子查询内部操作阻止了提升合并）无法将子查询 (`SELECT * FROM t2 WHERE c2 = 1`) 合并到外层查询，那么 t2 表仍然被视为子查询的一部分，因此外层查询中的 Hint 无效。
+
+如下示例，由于外层查询和子查询均引用了同一张表 t1，并且都试图利用 PRIMARY 索引，这可能会导致优化器在解释和处理 Hint 时遇到冲突，从而使得 Hint 可能无效。
+
+```sql
+obclient> EXPLAIN SELECT /*+INDEX(t1 PRIMARY)*/ *
+          FROM t1 , (SELECT * FROM t1 WHERE c1 = 1)
+          WHERE t1.c1 = 1;
++--------------------------------------------------------------------------+
+| Query Plan                                                               |
++--------------------------------------------------------------------------+
+| ================================================================         |
+| |ID|OPERATOR                   |NAME     |EST.ROWS|EST.TIME(us)|         |
+| ----------------------------------------------------------------         |
+| |0 |NESTED-LOOP JOIN CARTESIAN |         |1       |7           |         |
+| |1 |├─TABLE RANGE SCAN         |t1(t1_c1)|1       |7           |         |
+| |2 |└─MATERIAL                 |         |1       |7           |         |
+| |3 |  └─TABLE RANGE SCAN       |t1(t1_c1)|1       |7           |         |
+| ================================================================         |
+| Outputs & filters:                                                       |
+| -------------------------------------                                    |
+|   0 - output([t1.c1], [t1.c2], [t1.c1], [t1.c2]), filter(nil), rowset=16 |
+|       conds(nil), nl_params_(nil), use_batch=false                       |
+|   1 - output([t1.c1], [t1.c2]), filter(nil), rowset=16                   |
+|       access([t1.__pk_increment], [t1.c1], [t1.c2]), partitions(p0)      |
+|       is_index_back=true, is_global_index=false,                         |
+|       range_key([t1.c1], [t1.__pk_increment]), range(1,MIN ; 1,MAX),     |
+|       range_cond([t1.c1 = 1])                                            |
+|   2 - output([t1.c1], [t1.c2]), filter(nil), rowset=16                   |
+|   3 - output([t1.c1], [t1.c2]), filter(nil), rowset=16                   |
+|       access([t1.__pk_increment], [t1.c1], [t1.c2]), partitions(p0)      |
+|       is_index_back=true, is_global_index=false,                         |
+|       range_key([t1.c1], [t1.__pk_increment]), range(1,MIN ; 1,MAX),     |
+|       range_cond([t1.c1 = 1])                                            |
++--------------------------------------------------------------------------+
+23 rows in set
+```
+
+* 联接方法的 Hint 中指定的表如果找不到，则忽略该表，其他的指定依然生效；如果优化器不能生成指定的联接方法，就会选择其他方法，Hint 无效。
+
+* 联接顺序的 Hint 中如果存在表无法找到的情况，则该 Hint 完全失效。
+
+## 常用 Hint 及语法
+
+与其他数据库的行为相比，OceanBase 数据库优化器是动态规划的，已经考虑了所有可能的最优路径，Hint 主要作用是指定优化器的行为，并按照 Hint 执行 SQL 查询。
+
+### INDEX Hint
+
+`INDEX` Hint 的语法同时支持 MySQL 模式和 Oracle 模式。
+
+* `INDEX` Hint 的 Oracle 语法如下：
+
+```sql
+SELECT/*+INDEX(table_name index_name) */ * FROM table_name;
+```
+
+* `INDEX` Hint 的 MySQL 语法如下：
+
+```sql
+table_name [[AS] alias] [index_hint_list]
+
+index_hint_list:
+index_hint [, index_hint] ...
+
+index_hint:
+USE {INDEX|KEY}
+  [FOR {JOIN|ORDER BY|GROUP BY}] ([index_list])
+  | IGNORE {INDEX|KEY}
+  [FOR {JOIN|ORDER BY|GROUP BY}] (index_list)
+  | FORCE {INDEX|KEY}
+  [FOR {JOIN|ORDER BY|GROUP BY}] (index_list)
+
+index_list:
+index_name [, index_name] ...
+```
+
+Oracle 模式的语法中一个表只能指定一个 `INDEX`，而 MySQL 模式的语法可以指定多个。但是 OceanBase 数据库中 MySQL 模式的语法虽然支持指定多个 `INDEX`，但是对于 `USE` 和 `FORCE` 方式，只会用第一个 `INDEX` 生成 `PATH`，即使 SQL 语句中没有该 `INDEX` 的 `filter` 而导致全部扫描同时回表（即 OceanBase 数据库当前设计是认为写 Hint 的人比程序更明白那条路径是更好的）。`IGNORE` 类型会忽略所有指定的 `INDEX`。`USE`、`FORCE` 方式和 Oracle 的Hint 方式实际是一样的，如果该方式的 `INDEX` 不存在或者处于 `invalid` 状态，则 Hint 无效。对于 `IGNORE` 方式，如果将包括主表在内的所有 `INDEX` 忽略，则 Hint 无效。
+
+在 SQL 语句中，表名存在别名即 `table_name [AS] alias`，必须写表别名，才能使 `INDEX` 生效。示例如下：
+
+```sql
+obclient> create table t1(c1 int, c2 int, c3 int);
+Query OK, 0 rows affected
+
+obclient> create index idx1 on t1(c1);
+Query OK, 0 rows affected
+
+obclient> create index idx2 on t1(c2);
+Query OK, 0 rows affected
+
+obclient> insert into t1 with recursive cte(n) as (select 1 from dual union all select n+1 from cte where n < 1000) select n, mod(n, 3), n from cte;
+Query OK, 1 row affected
+
+obclient> analyze table t1 COMPUTE STATISTICS for all columns size 128;
+Query OK, 0 rows affected
+
+obclient> explain select * from t1 where c1 = 1 and c2 = 1;
++-----------------------------------------------------------------------------------+
+| Query Plan                                                                        |
++-----------------------------------------------------------------------------------+
+| ====================================================                              |
+| |ID|OPERATOR        |NAME    |EST.ROWS|EST.TIME(us)|                              |
+| ----------------------------------------------------                              |
+| |0 |TABLE RANGE SCAN|t1(idx1)|1       |7           |                              |
+| ====================================================                              |
+| Outputs & filters:                                                                |
+| -------------------------------------                                             |
+|   0 - output([t1.c1], [t1.c2], [t1.c3]), filter([t1.c2 = 1]), rowset=16           |
+|       access([t1.__pk_increment], [t1.c1], [t1.c2], [t1.c3]), partitions(p0)      |
+|       is_index_back=true, is_global_index=false, filter_before_indexback[false],  |
+|       range_key([t1.c1], [t1.__pk_increment]), range(1,MIN ; 1,MAX),              |
+|       range_cond([t1.c1 = 1])                                                     |
++-----------------------------------------------------------------------------------+
+12 rows in set
+
+-------生效的 index
+obclient> explain select /*+index(t idx2)*/ * from t1 t where c1 = 1 and c2 = 1;
++-----------------------------------------------------------------------------------+
+| Query Plan                                                                        |
++-----------------------------------------------------------------------------------+
+| ===================================================                               |
+| |ID|OPERATOR        |NAME   |EST.ROWS|EST.TIME(us)|                               |
+| ---------------------------------------------------                               |
+| |0 |TABLE RANGE SCAN|t(idx2)|1       |812         |                               |
+| ===================================================                               |
+| Outputs & filters:                                                                |
+| -------------------------------------                                             |
+|   0 - output([t.c1], [t.c2], [t.c3]), filter([t.c1 = 1]), rowset=16               |
+|       access([t.__pk_increment], [t.c1], [t.c2], [t.c3]), partitions(p0)          |
+|       is_index_back=true, is_global_index=false, filter_before_indexback[false],  |
+|       range_key([t.c2], [t.__pk_increment]), range(1,MIN ; 1,MAX),                |
+|       range_cond([t.c2 = 1])                                                      |
++-----------------------------------------------------------------------------------+
+12 rows in set
+
+-------不生效的 index
+obclient> explain select /*+index(t1 idx2)*/ * from t1 t where c1 = 1 and c2 = 1;
++-----------------------------------------------------------------------------------+
+| Query Plan                                                                        |
++-----------------------------------------------------------------------------------+
+| ===================================================                               |
+| |ID|OPERATOR        |NAME   |EST.ROWS|EST.TIME(us)|                               |
+| ---------------------------------------------------                               |
+| |0 |TABLE RANGE SCAN|t(idx1)|1       |7           |                               |
+| ===================================================                               |
+| Outputs & filters:                                                                |
+| -------------------------------------                                             |
+|   0 - output([t.c1], [t.c2], [t.c3]), filter([t.c2 = 1]), rowset=16               |
+|       access([t.__pk_increment], [t.c1], [t.c2], [t.c3]), partitions(p0)          |
+|       is_index_back=true, is_global_index=false, filter_before_indexback[false],  |
+|       range_key([t.c1], [t.__pk_increment]), range(1,MIN ; 1,MAX),                |
+|       range_cond([t.c1 = 1])                                                      |
++-----------------------------------------------------------------------------------+
+12 rows in set
+```
+
+根据示例结果，`c1 = 1` 过滤性优于 `c2 = 1`，INDEX Hint 不生效时使用优化器索引选择机制使用了 `IDX1`。
+
+### FULL Hint
+
+`FULL` Hint 的语法是用于指定表使用主表扫描，语法如下：
+
+```sql
+/*+ FULL(table_name)*/
+```
+
+`FULL` Hint 用于为指定表选择主表扫描，等价于 `INDEX` Hint `/*+ INDEX(table_name PRIMARY)*/`。
+
+### ORDERED Hint
+
+`ORDERED` Hint 可以指定按照 `FROM` 后面的表顺序作为联接顺序，语法如下：
+
+```sql
+ /*+ ORDERED */
+```
+
+如果指定该 Hint 后发生 SQL 改写，那么就按照改写后的 `stmt` 中 From Items 的顺序联接，因为改写时候 `sub_query` 会在 From Items 中对应位置填放新的 Table Item。
+
+### LEADING Hint
+
+`LEADING` Hint 可以指定表的联接顺序，语法如下：
+
+```sql
+ /*+ LEADING(table_name_list)*/
+```
+
+在 `table_name_list` 中可以使用 `()` 表示内部各表的联接优先级，指定复杂联接。示例如下：
+
+```sql
+obclient> EXPLAIN BASIC SELECT /*+LEADING(d c b a)*/ * FROM t1 a, t1 b, t1 c, t1 d;
++---------------------------------------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                                            |
++---------------------------------------------------------------------------------------------------------------------------------------+
+| =========================================                                                                                             |
+| |ID|OPERATOR                       |NAME|                                                                                             |
+| -----------------------------------------                                                                                             |
+| |0 |NESTED-LOOP JOIN CARTESIAN     |    |                                                                                             |
+| |1 |├─NESTED-LOOP JOIN CARTESIAN   |    |                                                                                             |
+| |2 |│ ├─NESTED-LOOP JOIN CARTESIAN |    |                                                                                             |
+| |3 |│ │ ├─TABLE FULL SCAN          |d   |                                                                                             |
+| |4 |│ │ └─MATERIAL                 |    |                                                                                             |
+| |5 |│ │   └─TABLE FULL SCAN        |c   |                                                                                             |
+| |6 |│ └─MATERIAL                   |    |                                                                                             |
+| |7 |│   └─TABLE FULL SCAN          |b   |                                                                                             |
+| |8 |└─MATERIAL                     |    |                                                                                             |
+| |9 |  └─TABLE FULL SCAN            |a   |                                                                                             |
+| =========================================                                                                                             |
+| Outputs & filters:                                                                                                                    |
+| -------------------------------------                                                                                                 |
+|   0 - output([a.c1], [a.c2], [a.c3], [b.c1], [b.c2], [b.c3], [c.c1], [c.c2], [c.c3], [d.c1], [d.c2], [d.c3]), filter(nil), rowset=256 |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                    |
+|   1 - output([b.c1], [b.c2], [b.c3], [c.c1], [c.c2], [c.c3], [d.c1], [d.c2], [d.c3]), filter(nil), rowset=256                         |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                    |
+|   2 - output([c.c1], [c.c2], [c.c3], [d.c1], [d.c2], [d.c3]), filter(nil), rowset=256                                                 |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                    |
+|   3 - output([d.c1], [d.c2], [d.c3]), filter(nil), rowset=256                                                                         |
+|       access([d.c1], [d.c2], [d.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([d.__pk_increment]), range(MIN ; MAX)always true                                                                      |
+|   4 - output([c.c1], [c.c2], [c.c3]), filter(nil), rowset=256                                                                         |
+|   5 - output([c.c1], [c.c2], [c.c3]), filter(nil), rowset=256                                                                         |
+|       access([c.c1], [c.c2], [c.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([c.__pk_increment]), range(MIN ; MAX)always true                                                                      |
+|   6 - output([b.c1], [b.c2], [b.c3]), filter(nil), rowset=256                                                                         |
+|   7 - output([b.c1], [b.c2], [b.c3]), filter(nil), rowset=256                                                                         |
+|       access([b.c1], [b.c2], [b.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([b.__pk_increment]), range(MIN ; MAX)always true                                                                      |
+|   8 - output([a.c1], [a.c2], [a.c3]), filter(nil), rowset=256                                                                         |
+|   9 - output([a.c1], [a.c2], [a.c3]), filter(nil), rowset=256                                                                         |
+|       access([a.c1], [a.c2], [a.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([a.__pk_increment]), range(MIN ; MAX)always true                                                                      |
++---------------------------------------------------------------------------------------------------------------------------------------+
+41 rows in set
+
+obclient> EXPLAIN BASIC SELECT /*+LEADING((d c) (b a))*/ * FROM  t1 a, t1 b, t1 c, t1 d;
++---------------------------------------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                                            |
++---------------------------------------------------------------------------------------------------------------------------------------+
+| =========================================                                                                                             |
+| |ID|OPERATOR                       |NAME|                                                                                             |
+| -----------------------------------------                                                                                             |
+| |0 |NESTED-LOOP JOIN CARTESIAN     |    |                                                                                             |
+| |1 |├─NESTED-LOOP JOIN CARTESIAN   |    |                                                                                             |
+| |2 |│ ├─TABLE FULL SCAN            |d   |                                                                                             |
+| |3 |│ └─MATERIAL                   |    |                                                                                             |
+| |4 |│   └─TABLE FULL SCAN          |c   |                                                                                             |
+| |5 |└─MATERIAL                     |    |                                                                                             |
+| |6 |  └─NESTED-LOOP JOIN CARTESIAN |    |                                                                                             |
+| |7 |    ├─TABLE FULL SCAN          |b   |                                                                                             |
+| |8 |    └─MATERIAL                 |    |                                                                                             |
+| |9 |      └─TABLE FULL SCAN        |a   |                                                                                             |
+| =========================================                                                                                             |
+| Outputs & filters:                                                                                                                    |
+| -------------------------------------                                                                                                 |
+|   0 - output([a.c1], [a.c2], [a.c3], [b.c1], [b.c2], [b.c3], [c.c1], [c.c2], [c.c3], [d.c1], [d.c2], [d.c3]), filter(nil), rowset=256 |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                    |
+|   1 - output([c.c1], [c.c2], [c.c3], [d.c1], [d.c2], [d.c3]), filter(nil), rowset=256                                                 |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                    |
+|   2 - output([d.c1], [d.c2], [d.c3]), filter(nil), rowset=256                                                                         |
+|       access([d.c1], [d.c2], [d.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([d.__pk_increment]), range(MIN ; MAX)always true                                                                      |
+|   3 - output([c.c1], [c.c2], [c.c3]), filter(nil), rowset=256                                                                         |
+|   4 - output([c.c1], [c.c2], [c.c3]), filter(nil), rowset=256                                                                         |
+|       access([c.c1], [c.c2], [c.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([c.__pk_increment]), range(MIN ; MAX)always true                                                                      |
+|   5 - output([a.c1], [a.c2], [a.c3], [b.c1], [b.c2], [b.c3]), filter(nil), rowset=256                                                 |
+|   6 - output([a.c1], [a.c2], [a.c3], [b.c1], [b.c2], [b.c3]), filter(nil), rowset=256                                                 |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                    |
+|   7 - output([b.c1], [b.c2], [b.c3]), filter(nil), rowset=256                                                                         |
+|       access([b.c1], [b.c2], [b.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([b.__pk_increment]), range(MIN ; MAX)always true                                                                      |
+|   8 - output([a.c1], [a.c2], [a.c3]), filter(nil), rowset=256                                                                         |
+|   9 - output([a.c1], [a.c2], [a.c3]), filter(nil), rowset=256                                                                         |
+|       access([a.c1], [a.c2], [a.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([a.__pk_increment]), range(MIN ; MAX)always true                                                                      |
++---------------------------------------------------------------------------------------------------------------------------------------+
+41 rows in set
+
+obclient> EXPLAIN BASIC SELECT /*+LEADING((d c b) a))*/ * FROM t1 a, t1 b, t1 c, t1 d;
++---------------------------------------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                                            |
++---------------------------------------------------------------------------------------------------------------------------------------+
+| =========================================                                                                                             |
+| |ID|OPERATOR                       |NAME|                                                                                             |
+| -----------------------------------------                                                                                             |
+| |0 |NESTED-LOOP JOIN CARTESIAN     |    |                                                                                             |
+| |1 |├─NESTED-LOOP JOIN CARTESIAN   |    |                                                                                             |
+| |2 |│ ├─NESTED-LOOP JOIN CARTESIAN |    |                                                                                             |
+| |3 |│ │ ├─TABLE FULL SCAN          |d   |                                                                                             |
+| |4 |│ │ └─MATERIAL                 |    |                                                                                             |
+| |5 |│ │   └─TABLE FULL SCAN        |c   |                                                                                             |
+| |6 |│ └─MATERIAL                   |    |                                                                                             |
+| |7 |│   └─TABLE FULL SCAN          |b   |                                                                                             |
+| |8 |└─MATERIAL                     |    |                                                                                             |
+| |9 |  └─TABLE FULL SCAN            |a   |                                                                                             |
+| =========================================                                                                                             |
+| Outputs & filters:                                                                                                                    |
+| -------------------------------------                                                                                                 |
+|   0 - output([a.c1], [a.c2], [a.c3], [b.c1], [b.c2], [b.c3], [c.c1], [c.c2], [c.c3], [d.c1], [d.c2], [d.c3]), filter(nil), rowset=256 |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                    |
+|   1 - output([b.c1], [b.c2], [b.c3], [c.c1], [c.c2], [c.c3], [d.c1], [d.c2], [d.c3]), filter(nil), rowset=256                         |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                    |
+|   2 - output([c.c1], [c.c2], [c.c3], [d.c1], [d.c2], [d.c3]), filter(nil), rowset=256                                                 |
+|       conds(nil), nl_params_(nil), use_batch=false                                                                                    |
+|   3 - output([d.c1], [d.c2], [d.c3]), filter(nil), rowset=256                                                                         |
+|       access([d.c1], [d.c2], [d.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([d.__pk_increment]), range(MIN ; MAX)always true                                                                      |
+|   4 - output([c.c1], [c.c2], [c.c3]), filter(nil), rowset=256                                                                         |
+|   5 - output([c.c1], [c.c2], [c.c3]), filter(nil), rowset=256                                                                         |
+|       access([c.c1], [c.c2], [c.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([c.__pk_increment]), range(MIN ; MAX)always true                                                                      |
+|   6 - output([b.c1], [b.c2], [b.c3]), filter(nil), rowset=256                                                                         |
+|   7 - output([b.c1], [b.c2], [b.c3]), filter(nil), rowset=256                                                                         |
+|       access([b.c1], [b.c2], [b.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([b.__pk_increment]), range(MIN ; MAX)always true                                                                      |
+|   8 - output([a.c1], [a.c2], [a.c3]), filter(nil), rowset=256                                                                         |
+|   9 - output([a.c1], [a.c2], [a.c3]), filter(nil), rowset=256                                                                         |
+|       access([a.c1], [a.c2], [a.c3]), partitions(p0)                                                                                  |
+|       is_index_back=false, is_global_index=false,                                                                                     |
+|       range_key([a.__pk_increment]), range(MIN ; MAX)always true                                                                      |
++---------------------------------------------------------------------------------------------------------------------------------------+
+41 rows in set
+```
+
+为确保按照用户指定的顺序进行联接，`LEADING` Hint 的检查比较严格，如果发现 Hint 指定的 `table_name` 不存在，`LEADING` Hint 失效；如果发现 Hint 中存在重复表，`LEADING` Hint 失效。如果在 Optimizer 联接期间，按 `table_id` 无法在 From Items 中找到对应的表，则可能发生改写，那么该表及后面的表指定的 `JOIN` 顺序失效，该表前面的 `JOIN` 顺序依然有效。
+
+### USE_MERGE Hint
+
+`USE_MERGE` 可以指定表在联接时候使用 Merge Join 算法，将所指定的表作为右表。语法如下：
+
+```sql
+ /*+ USE_MERGE(table_name_list) */
+```
+
+  <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>OceanBase 数据库中 Merge Join 必须有等值条件的 <code>join-condition</code>，因此无等值条件的两个表联接，<code>use_merge</code> 会无效。</p>
+  </main>
+
+关于 Merge Join 算法是否认为 A Merge Join B 等效于 B Merge Join A，当前并没有最后结论。按照代价模型，Merge Join 计算代价时是区分左右表的，这也增加了 Hint 的灵活性，所以当前 Merge Join 区分左右表，即 `use_merge` 仅对表作为右表的时候生效。
+
+### USE_NL Hint
+
+和 join 相关的 Hint 的基本结构如下：
+`join_hint_name ( @ qb_name table_name_list)`
+基本语义为，当联接的右表匹配 table_name_list 时，按照 Hint 语义生成计划。一般需要使用 `LEADING` Hint 指定联接顺序，使 table_name_list 中的表为右表，否则 Hint 会随着联接顺序变化而失效。
+
+其中 table_name_list 可有以下形式：
+
+* 单表 use_nl ( t1 ): 以 t1 为右表时使用 Nested Loop Join。
+* 多个单表 use_nl ( t1 t2 ... ): 以 t1 或 t2 等为右表时使用 Nested Loop Join。
+* 多表 use_nl ( (t1 t2) ): 以 t1 join t2 为右表时使用 Nested Loop Join，忽略 t1/t2 连接顺序和方法。
+* 多组表 use_nl ( t1 (t2 t3)  (t4 t5 t6) ... ): 以 t1 / t2 join t3 / t4 join t5 join t6 等表为右表时使用 Nested Loop Join。
+
+`USE_NL` 指定表作为右表，在联接的时候使用 Nested Loop Join 算法，语法如下：
+
+```sql
+/*+ USE_NL(table_name_list) */
+```
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t0(c1 INT, c2 INT, c3 INT);
+obclient> CREATE TABLE t1(c1 INT, c2 INT, c3 INT);
+obclient> CREATE TABLE t2(c1 INT, c2 INT, c3 INT);
+
+obclient> EXPLAIN EXTENDED SELECT /*+LEADING(t0 t1) USE_NL(t1)*/ *
+FROM t0, t1 WHERE t0.c1 = t1.c1;
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                                                                                                 |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ===================================================                                                                                                                                        |
+| |ID|OPERATOR           |NAME|EST.ROWS|EST.TIME(us)|                                                                                                                                        |
+| ---------------------------------------------------                                                                                                                                        |
+| |0 |NESTED-LOOP JOIN   |    |1       |3           |                                                                                                                                        |
+| |1 |├─TABLE FULL SCAN  |t0  |1       |3           |                                                                                                                                        |
+| |2 |└─MATERIAL         |    |1       |3           |                                                                                                                                        |
+| |3 |  └─TABLE FULL SCAN|t1  |1       |3           |                                                                                                                                        |
+| ===================================================                                                                                                                                        |
+| Outputs & filters:                                                                                                                                                                         |
+| -------------------------------------                                                                                                                                                      |
+|   0 - output([t0.c1(0x7f218dc21640)], [t0.c2(0x7f218dc21f00)], [t0.c3(0x7f218dc22230)], [t1.c1(0x7f218dc21980)], [t1.c2(0x7f218dc22560)], [t1.c3(0x7f218dc22890)]), filter(nil), rowset=16 |
+|       conds([t0.c1(0x7f218dc21640) = t1.c1(0x7f218dc21980)(0x7f218dc20e80)]), nl_params_(nil), use_batch=false                                                                             |
+|   1 - output([t0.c1(0x7f218dc21640)], [t0.c2(0x7f218dc21f00)], [t0.c3(0x7f218dc22230)]), filter(nil), rowset=16                                                                            |
+|       access([t0.c1(0x7f218dc21640)], [t0.c2(0x7f218dc21f00)], [t0.c3(0x7f218dc22230)]), partitions(p0)                                                                                    |
+|       is_index_back=false, is_global_index=false,                                                                                                                                          |
+|       range_key([t0.__pk_increment(0x7f218dc230f0)]), range(MIN ; MAX)always true                                                                                                          |
+|   2 - output([t1.c1(0x7f218dc21980)], [t1.c2(0x7f218dc22560)], [t1.c3(0x7f218dc22890)]), filter(nil), rowset=16                                                                            |
+|   3 - output([t1.c1(0x7f218dc21980)], [t1.c2(0x7f218dc22560)], [t1.c3(0x7f218dc22890)]), filter(nil), rowset=16                                                                            |
+|       access([t1.c1(0x7f218dc21980)], [t1.c2(0x7f218dc22560)], [t1.c3(0x7f218dc22890)]), partitions(p0)                                                                                    |
+|       is_index_back=false, is_global_index=false,                                                                                                                                          |
+|       range_key([t1.__pk_increment(0x7f218dc23420)]), range(MIN ; MAX)always true                                                                                                          |
+| Used Hint:                                                                                                                                                                                 |
+| -------------------------------------                                                                                                                                                      |
+|   /*+                                                                                                                                                                                      |
+|                                                                                                                                                                                            |
+|       LEADING(("t0" "t1"))                                                                                                                                                                 |
+|       USE_NL("t1")                                                                                                                                                                         |
+|   */                                                                                                                                                                                       |
+| Qb name trace:                                                                                                                                                                             |
+| -------------------------------------                                                                                                                                                      |
+|   stmt_id:0, stmt_type:T_EXPLAIN                                                                                                                                                           |
+|   stmt_id:1, SEL$1                                                                                                                                                                         |
+| Outline Data:                                                                                                                                                                              |
+| -------------------------------------                                                                                                                                                      |
+|   /*+                                                                                                                                                                                      |
+|       BEGIN_OUTLINE_DATA                                                                                                                                                                   |
+|       LEADING(@"SEL$1" ("cccc"."t0"@"SEL$1" "cccc"."t1"@"SEL$1"))                                                                                                                          |
+|       USE_NL(@"SEL$1" "cccc"."t1"@"SEL$1")                                                                                                                                                 |
+|       USE_NL_MATERIALIZATION(@"SEL$1" "cccc"."t1"@"SEL$1")                                                                                                                                 |
+|       FULL(@"SEL$1" "cccc"."t0"@"SEL$1")                                                                                                                                                   |
+|       FULL(@"SEL$1" "cccc"."t1"@"SEL$1")                                                                                                                                                   |
+|       OPTIMIZER_FEATURES_ENABLE('4.3.0.0')                                                                                                                                                 |
+|       END_OUTLINE_DATA                                                                                                                                                                     |
+|   */                                                                                                                                                                                       |
+| Optimization Info:                                                                                                                                                                         |
+| -------------------------------------                                                                                                                                                      |
+|   t0:                                                                                                                                                                                      |
+|       table_rows:1                                                                                                                                                                         |
+|       physical_range_rows:1                                                                                                                                                                |
+|       logical_range_rows:1                                                                                                                                                                 |
+|       index_back_rows:0                                                                                                                                                                    |
+|       output_rows:1                                                                                                                                                                        |
+|       table_dop:1                                                                                                                                                                          |
+|       dop_method:Table DOP                                                                                                                                                                 |
+|       avaiable_index_name:[t0]                                                                                                                                                             |
+|       stats version:0                                                                                                                                                                      |
+|       dynamic sampling level:1                                                                                                                                                             |
+|       estimation method:[DYNAMIC SAMPLING FULL]                                                                                                                                            |
+|   t1:                                                                                                                                                                                      |
+|       table_rows:1                                                                                                                                                                         |
+|       physical_range_rows:1                                                                                                                                                                |
+|       logical_range_rows:1                                                                                                                                                                 |
+|       index_back_rows:0                                                                                                                                                                    |
+|       output_rows:1                                                                                                                                                                        |
+|       table_dop:1                                                                                                                                                                          |
+|       dop_method:Table DOP                                                                                                                                                                 |
+|       avaiable_index_name:[t1]                                                                                                                                                             |
+|       stats version:0                                                                                                                                                                      |
+|       dynamic sampling level:1                                                                                                                                                             |
+|       estimation method:[DYNAMIC SAMPLING FULL]                                                                                                                                            |
+|   Plan Type:                                                                                                                                                                               |
+|       LOCAL                                                                                                                                                                                |
+|   Note:                                                                                                                                                                                    |
+|       Degree of Parallelisim is 1 because of table property                                                                                                                                |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+74 rows in set
+
+obclient> EXPLAIN EXTENDED SELECT /*+LEADING(t0 (t1 t2)) USE_NL((t1 t2))*/ *
+FROM t0, t1, t2 WHERE t0.c1 = t1.c1 AND t0.c1 = t2.c1;
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                                                                                                 |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| =====================================================                                                                                                                                      |
+| |ID|OPERATOR             |NAME|EST.ROWS|EST.TIME(us)|                                                                                                                                      |
+| -----------------------------------------------------                                                                                                                                      |
+| |0 |NESTED-LOOP JOIN     |    |1       |3           |                                                                                                                                      |
+| |1 |├─TABLE FULL SCAN    |t0  |1       |3           |                                                                                                                                      |
+| |2 |└─MATERIAL           |    |1       |5           |                                                                                                                                      |
+| |3 |  └─HASH JOIN        |    |1       |5           |                                                                                                                                      |
+| |4 |    ├─TABLE FULL SCAN|t1  |1       |3           |                                                                                                                                      |
+| |5 |    └─TABLE FULL SCAN|t2  |1       |3           |                                                                                                                                      |
+| =====================================================                                                                                                                                      |
+| Outputs & filters:                                                                                                                                                                         |
+| -------------------------------------                                                                                                                                                      |
+|   0 - output([t0.c1(0x7f217d422a30)], [t0.c2(0x7f217d424700)], [t0.c3(0x7f217d424a30)], [t1.c1(0x7f217d422d70)], [t1.c2(0x7f217d424d60)], [t1.c3(0x7f217d425090)],                         |
+|        [t2.c1(0x7f217d424180)], [t2.c2(0x7f217d4253c0)], [t2.c3(0x7f217d4256f0)]), filter(nil), rowset=16                                                                                  |
+|       conds([t0.c1(0x7f217d422a30) = t1.c1(0x7f217d422d70)(0x7f217d422270)]), nl_params_(nil), use_batch=false                                                                             |
+|   1 - output([t0.c1(0x7f217d422a30)], [t0.c2(0x7f217d424700)], [t0.c3(0x7f217d424a30)]), filter(nil), rowset=16                                                                            |
+|       access([t0.c1(0x7f217d422a30)], [t0.c2(0x7f217d424700)], [t0.c3(0x7f217d424a30)]), partitions(p0)                                                                                    |
+|       is_index_back=false, is_global_index=false,                                                                                                                                          |
+|       range_key([t0.__pk_increment(0x7f217d426110)]), range(MIN ; MAX)always true                                                                                                          |
+|   2 - output([t1.c1(0x7f217d422d70)], [t1.c2(0x7f217d424d60)], [t1.c3(0x7f217d425090)], [t2.c1(0x7f217d424180)], [t2.c2(0x7f217d4253c0)], [t2.c3(0x7f217d4256f0)]), filter(nil), rowset=16 |
+|   3 - output([t1.c1(0x7f217d422d70)], [t1.c2(0x7f217d424d60)], [t1.c3(0x7f217d425090)], [t2.c1(0x7f217d424180)], [t2.c2(0x7f217d4253c0)], [t2.c3(0x7f217d4256f0)]), filter(nil), rowset=16 |
+|       equal_conds([t1.c1(0x7f217d422d70) = t2.c1(0x7f217d424180)(0x7f217d4c2500)]), other_conds(nil)                                                                                       |
+|   4 - output([t1.c1(0x7f217d422d70)], [t1.c2(0x7f217d424d60)], [t1.c3(0x7f217d425090)]), filter(nil), rowset=16                                                                            |
+|       access([t1.c1(0x7f217d422d70)], [t1.c2(0x7f217d424d60)], [t1.c3(0x7f217d425090)]), partitions(p0)                                                                                    |
+|       is_index_back=false, is_global_index=false,                                                                                                                                          |
+|       range_key([t1.__pk_increment(0x7f217d426440)]), range(MIN ; MAX)always true                                                                                                          |
+|   5 - output([t2.c1(0x7f217d424180)], [t2.c2(0x7f217d4253c0)], [t2.c3(0x7f217d4256f0)]), filter(nil), rowset=16                                                                            |
+|       access([t2.c1(0x7f217d424180)], [t2.c2(0x7f217d4253c0)], [t2.c3(0x7f217d4256f0)]), partitions(p0)                                                                                    |
+|       is_index_back=false, is_global_index=false,                                                                                                                                          |
+|       range_key([t2.__pk_increment(0x7f217d426770)]), range(MIN ; MAX)always true                                                                                                          |
+| Used Hint:                                                                                                                                                                                 |
+| -------------------------------------                                                                                                                                                      |
+|   /*+                                                                                                                                                                                      |
+|                                                                                                                                                                                            |
+|       LEADING(("t0" ("t1" "t2")))                                                                                                                                                          |
+|       USE_NL(("t1" "t2"))                                                                                                                                                                  |
+|   */                                                                                                                                                                                       |
+| Qb name trace:                                                                                                                                                                             |
+| -------------------------------------                                                                                                                                                      |
+|   stmt_id:0, stmt_type:T_EXPLAIN                                                                                                                                                           |
+|   stmt_id:1, SEL$1                                                                                                                                                                         |
+| Outline Data:                                                                                                                                                                              |
+| -------------------------------------                                                                                                                                                      |
+|   /*+                                                                                                                                                                                      |
+|       BEGIN_OUTLINE_DATA                                                                                                                                                                   |
+|       LEADING(@"SEL$1" ("cccc"."t0"@"SEL$1" ("cccc"."t1"@"SEL$1" "cccc"."t2"@"SEL$1")))                                                                                                    |
+|       USE_NL(@"SEL$1" ("cccc"."t2"@"SEL$1" "cccc"."t1"@"SEL$1"))                                                                                                                           |
+|       USE_NL_MATERIALIZATION(@"SEL$1" ("cccc"."t2"@"SEL$1" "cccc"."t1"@"SEL$1"))                                                                                                           |
+|       FULL(@"SEL$1" "cccc"."t0"@"SEL$1")                                                                                                                                                   |
+|       USE_HASH(@"SEL$1" "cccc"."t2"@"SEL$1")                                                                                                                                               |
+|       FULL(@"SEL$1" "cccc"."t1"@"SEL$1")                                                                                                                                                   |
+|       FULL(@"SEL$1" "cccc"."t2"@"SEL$1")                                                                                                                                                   |
+|       OPTIMIZER_FEATURES_ENABLE('4.3.0.0')                                                                                                                                                 |
+|       END_OUTLINE_DATA                                                                                                                                                                     |
+|   */                                                                                                                                                                                       |
+| Optimization Info:                                                                                                                                                                         |
+| -------------------------------------                                                                                                                                                      |
+|   t0:                                                                                                                                                                                      |
+|       table_rows:1                                                                                                                                                                         |
+|       physical_range_rows:1                                                                                                                                                                |
+|       logical_range_rows:1                                                                                                                                                                 |
+|       index_back_rows:0                                                                                                                                                                    |
+|       output_rows:1                                                                                                                                                                        |
+|       table_dop:1                                                                                                                                                                          |
+|       dop_method:Table DOP                                                                                                                                                                 |
+|       avaiable_index_name:[t0]                                                                                                                                                             |
+|       stats version:0                                                                                                                                                                      |
+|       dynamic sampling level:1                                                                                                                                                             |
+|       estimation method:[DYNAMIC SAMPLING FULL]                                                                                                                                            |
+|   t1:                                                                                                                                                                                      |
+|       table_rows:1                                                                                                                                                                         |
+|       physical_range_rows:1                                                                                                                                                                |
+|       logical_range_rows:1                                                                                                                                                                 |
+|       index_back_rows:0                                                                                                                                                                    |
+|       output_rows:1                                                                                                                                                                        |
+|       table_dop:1                                                                                                                                                                          |
+|       dop_method:Table DOP                                                                                                                                                                 |
+|       avaiable_index_name:[t1]                                                                                                                                                             |
+|       stats version:0                                                                                                                                                                      |
+|       dynamic sampling level:1                                                                                                                                                             |
+|       estimation method:[DYNAMIC SAMPLING FULL]                                                                                                                                            |
+|   t2:                                                                                                                                                                                      |
+|       table_rows:1                                                                                                                                                                         |
+|       physical_range_rows:1                                                                                                                                                                |
+|       logical_range_rows:1                                                                                                                                                                 |
+|       index_back_rows:0                                                                                                                                                                    |
+|       output_rows:1                                                                                                                                                                        |
+|       table_dop:1                                                                                                                                                                          |
+|       dop_method:Table DOP                                                                                                                                                                 |
+|       avaiable_index_name:[t2]                                                                                                                                                             |
+|       stats version:0                                                                                                                                                                      |
+|       dynamic sampling level:1                                                                                                                                                             |
+|       estimation method:[DYNAMIC SAMPLING FULL]                                                                                                                                            |
+|   Plan Type:                                                                                                                                                                               |
+|       LOCAL                                                                                                                                                                                |
+|   Note:                                                                                                                                                                                    |
+|       Degree of Parallelisim is 1 because of table property                                                                                                                                |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+97 rows in set
+```
+
+### USE_HASH Hint
+
+`USE_HASH` 指定表作为右表，在联接的时候使用 Hash Join 算法，语法如下：
+
+```sql
+/*+ USE_HASH(table_name_list) */
+```
+
+示例如下：
+
+```sql
+obclient> CREATE TABLE t0(c1 INT, c2 INT, c3 INT);
+obclient> CREATE TABLE t1(c1 INT, c2 INT, c3 INT);
+
+obclient> EXPLAIN EXTENDED SELECT /*+LEADING(t0 t1) USE_HASH(t1)*/ *
+FROM t0, t1 WHERE t0.c1 = t1.c1;
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Query Plan                                                                                                                                                                                 |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| =================================================                                                                                                                                          |
+| |ID|OPERATOR         |NAME|EST.ROWS|EST.TIME(us)|                                                                                                                                          |
+| -------------------------------------------------                                                                                                                                          |
+| |0 |HASH JOIN        |    |1       |5           |                                                                                                                                          |
+| |1 |├─TABLE FULL SCAN|t0  |1       |3           |                                                                                                                                          |
+| |2 |└─TABLE FULL SCAN|t1  |1       |3           |                                                                                                                                          |
+| =================================================                                                                                                                                          |
+| Outputs & filters:                                                                                                                                                                         |
+| -------------------------------------                                                                                                                                                      |
+|   0 - output([t0.c1(0x7f21a8421640)], [t0.c2(0x7f21a8421f00)], [t0.c3(0x7f21a8422230)], [t1.c1(0x7f21a8421980)], [t1.c2(0x7f21a8422560)], [t1.c3(0x7f21a8422890)]), filter(nil), rowset=16 |
+|       equal_conds([t0.c1(0x7f21a8421640) = t1.c1(0x7f21a8421980)(0x7f21a8420e80)]), other_conds(nil)                                                                                       |
+|   1 - output([t0.c1(0x7f21a8421640)], [t0.c2(0x7f21a8421f00)], [t0.c3(0x7f21a8422230)]), filter(nil), rowset=16                                                                            |
+|       access([t0.c1(0x7f21a8421640)], [t0.c2(0x7f21a8421f00)], [t0.c3(0x7f21a8422230)]), partitions(p0)                                                                                    |
+|       is_index_back=false, is_global_index=false,                                                                                                                                          |
+|       range_key([t0.__pk_increment(0x7f21a84230f0)]), range(MIN ; MAX)always true                                                                                                          |
+|   2 - output([t1.c1(0x7f21a8421980)], [t1.c2(0x7f21a8422560)], [t1.c3(0x7f21a8422890)]), filter(nil), rowset=16                                                                            |
+|       access([t1.c1(0x7f21a8421980)], [t1.c2(0x7f21a8422560)], [t1.c3(0x7f21a8422890)]), partitions(p0)                                                                                    |
+|       is_index_back=false, is_global_index=false,                                                                                                                                          |
+|       range_key([t1.__pk_increment(0x7f21a8423420)]), range(MIN ; MAX)always true                                                                                                          |
+| Used Hint:                                                                                                                                                                                 |
+| -------------------------------------                                                                                                                                                      |
+|   /*+                                                                                                                                                                                      |
+|                                                                                                                                                                                            |
+|       LEADING(("t0" "t1"))                                                                                                                                                                 |
+|       USE_HASH("t1")                                                                                                                                                                       |
+|   */                                                                                                                                                                                       |
+| Qb name trace:                                                                                                                                                                             |
+| -------------------------------------                                                                                                                                                      |
+|   stmt_id:0, stmt_type:T_EXPLAIN                                                                                                                                                           |
+|   stmt_id:1, SEL$1                                                                                                                                                                         |
+| Outline Data:                                                                                                                                                                              |
+| -------------------------------------                                                                                                                                                      |
+|   /*+                                                                                                                                                                                      |
+|       BEGIN_OUTLINE_DATA                                                                                                                                                                   |
+|       LEADING(@"SEL$1" ("dddd"."t0"@"SEL$1" "dddd"."t1"@"SEL$1"))                                                                                                                          |
+|       USE_HASH(@"SEL$1" "dddd"."t1"@"SEL$1")                                                                                                                                               |
+|       FULL(@"SEL$1" "dddd"."t0"@"SEL$1")                                                                                                                                                   |
+|       FULL(@"SEL$1" "dddd"."t1"@"SEL$1")                                                                                                                                                   |
+|       OPTIMIZER_FEATURES_ENABLE('4.3.0.0')                                                                                                                                                 |
+|       END_OUTLINE_DATA                                                                                                                                                                     |
+|   */                                                                                                                                                                                       |
+| Optimization Info:                                                                                                                                                                         |
+| -------------------------------------                                                                                                                                                      |
+|   t0:                                                                                                                                                                                      |
+|       table_rows:1                                                                                                                                                                         |
+|       physical_range_rows:1                                                                                                                                                                |
+|       logical_range_rows:1                                                                                                                                                                 |
+|       index_back_rows:0                                                                                                                                                                    |
+|       output_rows:1                                                                                                                                                                        |
+|       table_dop:1                                                                                                                                                                          |
+|       dop_method:Table DOP                                                                                                                                                                 |
+|       avaiable_index_name:[t0]                                                                                                                                                             |
+|       stats version:0                                                                                                                                                                      |
+|       dynamic sampling level:1                                                                                                                                                             |
+|       estimation method:[DYNAMIC SAMPLING FULL]                                                                                                                                            |
+|   t1:                                                                                                                                                                                      |
+|       table_rows:1                                                                                                                                                                         |
+|       physical_range_rows:1                                                                                                                                                                |
+|       logical_range_rows:1                                                                                                                                                                 |
+|       index_back_rows:0                                                                                                                                                                    |
+|       output_rows:1                                                                                                                                                                        |
+|       table_dop:1                                                                                                                                                                          |
+|       dop_method:Table DOP                                                                                                                                                                 |
+|       avaiable_index_name:[t1]                                                                                                                                                             |
+|       stats version:0                                                                                                                                                                      |
+|       dynamic sampling level:1                                                                                                                                                             |
+|       estimation method:[DYNAMIC SAMPLING FULL]                                                                                                                                            |
+|   Plan Type:                                                                                                                                                                               |
+|       LOCAL                                                                                                                                                                                |
+|   Note:                                                                                                                                                                                    |
+|       Degree of Parallelisim is 1 because of table property                                                                                                                                |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+71 rows in set
+```
+
+### PARALLEL Hint
+
+`PARALLEL` 指定语句级别的并行度。语法如下：
+
+```sql
+/*+ PARALLEL(n) */
+```
+
+其中 `n` 为整数，表示并行度。
+
+OceanBase 数据库也支持表级别的 `PARALLEL` Hint，语法如下：
+
+```sql
+/*+ PARALLEL(table_name n) */
+```
+
+如果同时指定了全局并行度和表级并行度，则表级并行度不会生效。示例如下：
+
+```sql
+obclient> CREATE TABLE tbl1 (col1 INT)  PARTITION BY HASH(col1) ;
+Query OK, 0 rows affected
+
+obclient> EXPLAIN SELECT /*+ PARALLEL(3) PARALLEL(tbl1 5) */ * FROM tbl1;
++----------------------------------------------------------------------+
+| Query Plan                                                           |
++----------------------------------------------------------------------+
+| =========================================================            |
+| |ID|OPERATOR             |NAME    |EST.ROWS|EST.TIME(us)|            |
+| ---------------------------------------------------------            |
+| |0 |PX COORDINATOR       |        |1       |1           |            |
+| |1 |└─EXCHANGE OUT DISTR |:EX10000|1       |1           |            |
+| |2 |  └─PX BLOCK ITERATOR|        |1       |1           |            |
+| |3 |    └─TABLE FULL SCAN|tbl1    |1       |1           |            |
+| =========================================================            |
+| Outputs & filters:                                                   |
+| -------------------------------------                                |
+|   0 - output([INTERNAL_FUNCTION(tbl1.col1)]), filter(nil), rowset=16 |
+|   1 - output([INTERNAL_FUNCTION(tbl1.col1)]), filter(nil), rowset=16 |
+|       dop=5                                                          |
+|   2 - output([tbl1.col1]), filter(nil), rowset=16                    |
+|   3 - output([tbl1.col1]), filter(nil), rowset=16                    |
+|       access([tbl1.col1]), partitions(p0)                            |
+|       is_index_back=false, is_global_index=false,                    |
+|       range_key([tbl1.__pk_increment]), range(MIN ; MAX)always true  |
++----------------------------------------------------------------------+
+18 rows in set
+```
+
+### UNION_MERGE Hint
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>OceanBase 数据库从 V4.4.1 版本开始移除 <code>UNION_MERGE</code> Hint，不再支持 <code>UNION_MERGE</code> Hint 语句。</p>
+</main>
+
+`UNION_MERGE` Hint 用于指定查询计划中使用 Index Merge 的执行方式。当提供有效的 `UNION_MERGE` Hint 时，OceanBase 数据库会直接选用对应的 Index Merge 计划。
+
+语法如下：
+
+```sql
+/*+ UNION_MERGE(table_name index_name_list) */
+```
+
+参数解释：
+
+* `table_name`：指定表的名称。
+* `index_name_list`：指定索引名称列表，多个索引名称之间用空格分隔。
+
+**示例如下：**
+
+1. 创建一个包含全文索引的表 `tbl1`。
+
+    ```sql
+    CREATE TABLE tbl1 (
+        col1 INT PRIMARY KEY,
+        col2 INT,
+        col3 VARCHAR(100),
+        col4 VARCHAR(100),
+        FULLTEXT INDEX ftidx3(col3),
+        FULLTEXT INDEX ftidx4(col4)
+    );
+    ```
+
+2. 使用 `UNION_MERGE` Hint 查看执行计划。在查询中使用 `UNION_MERGE` Hint，指定表 `tbl1` 和索引 `ftidx3`、`ftidx4`。
+
+    ```sql
+    EXPLAIN SELECT /*+UNION_MERGE(tbl1 ftidx3 ftidx4)*/ * FROM tbl1
+        WHERE col1 = 1 
+        AND (MATCH(col3) AGAINST ("word1") OR MATCH(col4) AGAINST ("word1"));
+    ```
+
+    返回结果如下：
+
+    ```shell
+    +----------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | Query Plan                                                                                                                                                     |
+    +----------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | ===========================================================================                                                                                    |
+    | |ID|OPERATOR                    |NAME               |EST.ROWS|EST.TIME(us)|                                                                                    |
+    | ---------------------------------------------------------------------------                                                                                    |
+    | |0 |DISTRIBUTED INDEX MERGE SCAN|tbl1(ftidx3,ftidx4)|1       |45          |                                                                                    |
+    | ===========================================================================                                                                                    |
+    | Outputs & filters:                                                                                                                                             |
+    | -------------------------------------                                                                                                                          |
+    |   0 - output([tbl1.col1], [tbl1.col2], [tbl1.col3], [tbl1.col4]), filter([MATCH(tbl1.col3) AGAINST('word1') OR MATCH(tbl1.col4) AGAINST('word1')], [tbl1.col1  |
+    |       = 1]), rowset=16                                                                                                                                         |
+    |       access([tbl1.col1], [tbl1.col3], [tbl1.col4], [tbl1.col2]), partitions(p0)                                                                               |
+    |       is_index_back=true, is_global_index=false, keep_ordering=true, use_index_merge=true, filter_before_indexback[false,false],                               |
+    |       index_name: ftidx3, range_cond(nil), filter(nil)                                                                                                         |
+    |       index_name: ftidx4, range_cond(nil), filter(nil)                                                                                                         |
+    |       lookup_filter([tbl1.col1 = 1], [MATCH(tbl1.col3) AGAINST('word1') OR MATCH(tbl1.col4) AGAINST('word1')])                                                 |
+    +----------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    14 rows in set
+    ```
+
+    返回结果说明：
+
+    * `DISTRIBUTED INDEX MERGE SCAN`：表示分布式环境下使用了 Index Merge 的扫描方式。
+    * `is_index_back=true`：表示启用了回表操作。
+    * `use_index_merge=true`：表示启用了 Index Merge。
+    * `filter_before_indexback[false,false]`：表示过滤条件在回表操作之前未被应用。
+
+### PUSH_SUBQ Hint
+
+`PUSH_SUBQ` Hint 用于指示优化器尽早执行未改写成连接的子查询，通常这些子查询如果不被改写成连接的话，会被放在执行计划的所有表连接计算之后。如果子查询计算成本低且能过滤大量数据，提前执行可能提升计划性能。但是要注意，如果子查询被改写成连接（`/+unnest/`），这个提示无效。适用场景如下：
+
+* 子查询的执行开销较小，但能快速过滤大量数据。
+* 需要尽早利用子查询的结果缩小数据范围。
+
+**语法如下：**
+
+```sql
+/*+ PUSH_SUBQ[(@qb_name)] */
+```
+
+参数解释：
+
+* `@qb_name`：可选参数，指定子查询的别名（详细介绍信息，可参见上文 **QB_NAME 参数**），用于明确提示作用的对象。如果省略，则默认对 Hint 所处的子查询生效。
+
+**示例如下：**
+
+在查询中使用 `PUSH_SUBQ` Hint 提示优化器尽早执行子查询，以提前过滤 `tbl1` 表的数据。
+
+```sql
+SELECT /*+ PUSH_SUBQ(@"SEL$2") */ *
+FROM tbl1, tbl2
+WHERE tbl1.col1 = (SELECT MAX(tbl3.col1)
+                   FROM tbl3
+                   WHERE tbl3.col2 = tbl2.col2);
+```
+
+### NO_PUSH_SUBQ Hint
+
+`NO_PUSH_SUBQ` Hint 是 `PUSH_SUBQ` 的反向操作，用于优化器将未改写成连接的子查询放在最后执行。适用于子查询成本高或无法显著减少行数的情况。适用场景如下：
+
+* 子查询的执行开销较大，或其结果对数据量的影响较小。
+* 需要将子查询的执行延迟到其他过滤条件生效后再执行，以减少其输入数据量。
+
+**语法如下：**
+
+```sql
+/*+ NO_PUSH_SUBQ[(@qb_name)] */
+```
+
+参数解释：
+
+* `@qb_name`：可选参数，指定子查询的别名。
+
+**示例如下：**
+
+在查询中使用 `NO_PUSH_SUBQ` Hint 提示优化器将子查询推迟到最后执行。
+
+```sql
+SELECT /*+ NO_PUSH_SUBQ */ *
+FROM tbl1, tbl2
+WHERE tbl1.col1 = (SELECT MAX(tbl3.col1)
+                   FROM tbl3
+                   WHERE tbl3.col2 = tbl2.col2);
+```
+
+### OPT_PARAM Hint
+
+`OPT_PARAM` Hint 用于指定在查询级别更新一些优化器相关的配置项/系统变量。
+
+**语法如下：**
+
+```sql
+/*+ OPT_PARAM(parameter_name [,] parameter_value) */
+```
+
+参数解释：
+
+* `parameter_name`：指配置项或系统变量名。
+* `parameter_value`：指需要指定的变量值。
+`OPT_PARAM` Hint 对如下参数有效：
+* `rowsets_enabled`: 开启/关闭向量化，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。
+* `rowsets_max_rows`: 设置批量返回行数 `batch_size` 大小，数据类型是 `INT`，取值范围为 `[0, 65535]`，取值不能用单引号（''）包裹。
+* `enable_newsort`: 允许查询中开启/关闭 newsort 优化，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。
+* `use_part_sort_mgb`: 允许查询中开启/关闭 part sort merge group by，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。
+* `enable_in_range_optimization`: 允许查询中开启/关闭 in 优化，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。
+* `xsolapi_generate_with_clause`: 允许查询中开启/关闭 cte 抽取改写，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。
+* `preserve_order_for_pagination`: 运行为分页查询添加 `order by` 保序/禁止添加 `order by`，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。
+* `storage_card_estimation`: 是否使用存储层估行，数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。
+* `workarea_size_policy`: 用于设置手动或者自动调整 SQL 工作区大小的策略。，数据类型是 `VARCHAR`，取值范围为 `'MANUAL'` 表示手动调整和 `'AUTO'` 表示自动调整，取值需要用单引号（''）包裹。
+* `enable_rich_vector_format`: 用于开关向量化 2.0（session 级别参数），数据类型是 `VARCHAR`，取值范围为 `'TRUE'` 和 `'FALSE'`，取值需要用单引号（''）包裹。
+* `spill_compression_codec`: 用于指定需要临时物化的算子选用的压缩算法，数据类型是 `VARCHAR`，取值为`NONE`、`LZ4`、`SNAPPY`、`ZLIB`、`ZSTD` ,代表不同的压缩算法。默认为 `NONE`，表示不进行压缩。
+* `inlist_rewrite_threshold`: 允许触发 `inlist` 改写成 `values statement` 的常量个数阈值，数据类型是 `INT64`，取值范围为 `[1, 2147483647]`。
+* `orc_filter_pushdown_level`：表示控制语句级别 ORC 外表条件下压级别。`parameter_value` 取值如下：
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>OceanBase 数据库 <code>OPT_PARAM</code> Hint 中 <code>parameter_name</code> 参数从 V4.4.0 版本开始支持 <code>orc_filter_pushdown_level</code> 取值。</p>
+    </main>
+
+  * `0`：表示禁用过滤条件下压。
+  * `1`：表示下压至文件级别。
+  * `2`：表示下压至 stripe 级别。
+  * `3`：表示下压至 row index 级别。
+  * `4`：表示下压到 Encoding 级别。
+
+* `parquet_filter_pushdown_level`：表示控制语句级别 Parquet 外表条件下压级别。`parameter_value` 取值如下：
+
+    <main id="notice" type='explain'>
+      <h4>说明</h4>
+      <p>OceanBase 数据库 <code>OPT_PARAM</code> Hint 中 <code>parameter_name</code> 参数从 V4.4.0 版本开始支持 <code>parquet_filter_pushdown_level</code> 取值。</p>
+    </main>
+
+  * `0`：表示禁用过滤条件下压。
+  * `1`：表示下压至文件级别。
+  * `2`：表示下压至 RowGroup 级别。
+  * `3`：表示下压至 Page 级。
+  * `4`：表示下压至 Encoding 级别。
+
+**示例如下：**
+
+* 控制语句级别 ORC 外表条件下压级别。
+
+  * 关闭 ORC 过滤条件下压能力。
+
+    ```sql
+    SELECT /*+opt_param('orc_filter_pushdown_level', '0') */ *
+    FROM ext_orc_tbl
+    WHERE c1 = 1;
+    ```
+
+  * 设置 ORC 条件下压到文件级别。
+
+    ```sql
+    SELECT /*+opt_param('orc_filter_pushdown_level', '1') */ *
+    FROM ext_orc_tbl
+    WHERE c1 = 1;
+    ```
+
+  * 设置 ORC 条件下压到 stripe 级别。
+
+    ```sql
+    SELECT /*+opt_param('orc_filter_pushdown_level', '2') */ *
+    FROM ext_orc_tbl
+    WHERE c1 = 1;
+    ```
+
+  * 设置 ORC 条件下压到 row index 级别。
+
+    ```sql
+    SELECT /*+opt_param('orc_filter_pushdown_level', '3') */ *
+    FROM ext_orc_tbl
+    WHERE c1 = 1;
+    ```
+
+  * 设置 ORC 条件下压到 encoding 级别。
+
+    ```sql
+    SELECT /*+opt_param('orc_filter_pushdown_level', '4') */ * FROM ext_orc_tbl
+    WHERE c1 = 1;
+    ```
+
+* 控制语句级别 Parquet 外表条件下压级别。
+
+  * 关闭 Parquet 过滤条件下压能力。
+
+    ```sql
+    SELECT /*+opt_param('parquet_filter_pushdown_level', '0') */ *
+    FROM ext_parquet_tbl
+    WHERE c1 = 1;
+    ```
+
+  * 设置 Parquet 条件下压到文件级别。
+
+    ```sql
+    SELECT /*+opt_param('parquet_filter_pushdown_level', '1') */ *
+    FROM ext_parquet_tbl
+    WHERE c1 = 1;
+    ```
+
+  * 设置 Parquet 条件下压到 RowGroup 级别。
+
+    ```sql
+    SELECT /*+opt_param('parquet_filter_pushdown_level', '2') */ * FROM ext_parquet_tbl
+    WHERE c1 = 1;
+    ```
+
+  * 设置 Parquet 条件下压到 Page 级别。
+
+    ```sql
+    SELECT /*+opt_param('parquet_filter_pushdown_level', '3') */ *
+    FROM ext_parquet_tbl
+    WHERE c1 = 1;
+    ```
+
+  * 设置 Parquet 条件下压到 Encoding 级别。
+
+    ```sql
+    SELECT /*+opt_param('parquet_filter_pushdown_level', '4') */ *
+    FROM ext_parquet_tbl
+    WHERE c1 = 1;
+    ```
+
+### INDEX_MERGE Hint
+
+`INDEX_MERGE` Hint 用于控制指定的表使用 index merge 计划。指定的索引不能生成 index merge 计划时忽略 Hint，没有指定索引则尽可能尝试 index merge 计划。
+
+使用 `INDEX_MERGE` Hint 可以在 `_enable_index_merge` 配置项值为 `False` 时生成 index merge 计划。
+
+**语法如下：**
+
+```sql
+/*+ INDEX_MERGE([@query_block_name] tbl_name [index_name [,index_name]...]) */
+```
+
+参数解释：
+
+* `@query_block_name`：可选项，表示该 Hint 作用的查询块（query block） 名称。如果省略，则默认对当前查询的主查询块生效。
+* `tbl_name`：表示表名。
+* `index_name`：可选项，表示索引名称，可以指定多个索引名。
+
+  * 当指定的表后没有 `index_name` 参数的时候，表示控制指定的表使用 index merge 计划。
+  * 当指定的表后有 `index_name` 参数的时候，表示控制指定的表使用指定的索引（Index）生成 index merge 计划。
+
+**示例如下：**
+
+* `INDEX_MERGE` Hint 中指定索引名称。
+
+    ```shell
+    obclient> SELECT /*+ INDEX_MERGE(t1 idx_c2 idx_c3) */ * FROM t1
+        WHERE c2 = 1
+        AND c3 = 1
+        AND c4 = 1;
+    ```
+
+* `INDEX_MERGE` Hint 中不指定索引名称。
+
+    ```shell
+    obclient> SELECT /*+ INDEX_MERGE(t1)*/ * FROM t1
+        WHERE c2 = 1
+        AND c3 = 1
+        AND c4 = 1;
+    ```
+
+### NO_INDEX_MERGE Hint
+
+`NO_INDEX_MERGE` Hint 用于控制指定的表不使用指定的索引生成 index merge 计划。没有指定索引时禁止该表生成 index merge 计划。
+
+当 `NO_INDEX_MERGE` Hint 与 `INDEX_MERGE` Hint 发生冲突时，忽略这两个 Hint。
+
+**语法如下：**
+
+```sql
+/*+ NO_INDEX_MERGE([@query_block_name] tbl_name [index_name [,index_name]...]) */
+```
+
+参数解释：
+
+* `@query_block_name`：可选项，表示该 Hint 作用的查询块（query block） 名称。如果省略，则默认对当前查询的主查询块生效。
+* `tbl_name`：表示表名。
+* `index_name`：可选项，表示索引名称，可以指定多个索引名。
+
+  * 当指定的表后没有 `index_name` 参数的时候，表示不使用 index merge 计划。
+  * 当指定的表后有 `index_name` 参数的时候，表示不使用指定的索引（Index）来生成 index merge 计划。
+
+**示例如下：**
+
+```shell
+obclient> SELECT /*+ NO_INDEX_MERGE(t1)*/ * FROM t1
+    WHERE c2 = 1
+    AND c3 = 1
+    AND c4 = 1;
+```

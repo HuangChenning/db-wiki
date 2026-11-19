@@ -1,0 +1,53 @@
+---
+title: server_balance_disk_tolerance_percent
+book: "配置项和系统变量"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005685575.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-configuration-items-and-system-variables
+---
+
+# server_balance_disk_tolerance_percent
+
+<main id="notice" type='explain'>
+  <h4>说明</h4>
+  <p>该配置项从 V1.4 版本开始引入。</p>
+</main>
+
+## 功能描述
+
+`server_balance_disk_tolerance_percent` 用于设置在节点间资源单元（Unit）均衡策略中，对磁盘不均衡程度的容忍度。只有当某节点的磁盘水位超出同 Zone 节点平均磁盘水位且超出幅度达到该容忍值时，该节点才会参与基于磁盘的资源单元均衡。
+
+## 权限要求
+
+* 查询配置项
+
+  `sys` 租户和所有用户租户均可以使用 `SHOW PARAMETERS` 语句或视图 `GV$OB_PARAMETERS` 查询该配置项。
+
+* 修改配置项
+
+  仅 `sys` 租户可以修改该配置项，用户租户不能修改该配置项。
+
+## 属性说明
+
+|      **属性**      |  **描述**   |
+|------------------|-----------|
+| 参数类型             | Int         |
+| 默认值               | 1          |
+| 取值范围             | [1, 100] |
+| 是否可修改           | 是，支持通过 `ALTER SYSTEM SET` 语句修改。|
+| 是否重启 OBServer 节点生效 | 否，设置后立即生效。   |
+
+## 配置示例
+
+设置节点间资源单元（Unit）均衡策略中，磁盘不均衡程度的容忍度为 1。
+
+```shell
+obclient> ALTER SYSTEM SET server_balance_disk_tolerance_percent = 1;
+```
+
+## 相关文档
+
+[资源单元的均衡](../../../100.oceanbase-database-concepts/300.multi-tenant-architecture/500.tenants-and-resource-management/300.resource-unit-balancing.md)

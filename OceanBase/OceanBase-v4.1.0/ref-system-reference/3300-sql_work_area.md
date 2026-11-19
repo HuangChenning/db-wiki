@@ -1,0 +1,30 @@
+---
+title: sql_work_area
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001700976.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# sql_work_area
+
+sql_work_area 
+==================================
+
+`sql_work_area` 用于设置租户的工作区内存。
+
+  <main id="notice" type='explain'>
+    <h4>说明</h4>
+    <p>在当前版本中，该配置项已不再使用。</p>
+  </main>
+
+
+|      **属性**      |   **描述**   |
+|------------------|------------|
+| 参数类型             | 容量单位       |
+| 默认值              | 1G         |
+| 取值范围             | \[10M, +∞) |
+| 是否重启 OBServer 节点生效 | 是          |

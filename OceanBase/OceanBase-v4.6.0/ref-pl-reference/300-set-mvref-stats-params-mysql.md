@@ -1,0 +1,40 @@
+---
+title: SET_MVREF_STATS_PARAMS
+book: "PL 参考"
+version: V4.6.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005686467.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# SET_MVREF_STATS_PARAMS
+
+`SET_MVREF_STATS_PARAMS` 用于配置物化视图刷新统计信息的收集级别和数据保留期限的参数。
+
+<main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版暂不支持。</p>
+  </main>
+
+## 使用限制及注意事项
+
+对于 V5.x 版本，从 V5.0.1 版本开始 `retention_period` 参数将不再生效。
+
+## 语法
+
+```sql
+PROCEDURE set_mvref_stats_params(
+    IN     mv_name                VARCHAR(65535),
+    IN     collection_level       VARCHAR(65535)     DEFAULT NULL,
+    IN     retention_period       INT                DEFAULT NULL);
+```
+
+## 参数解释
+
+| **参数**           | **说明**                                                                                                                                          |
+|------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| mv_name         | 物化视图名称。<ul><li>若为 NULL，则表示对所有物化视图进行操作。 </ul></li>                                              |
+| collection_level | 统计信息的收集级别，系统默认级别为 TYPICAL。选项包括：<ul><li>NONE：不收集统计信息。</ul></li><ul><li>TYPICAL：收集基本刷新统计信息。</ul></li><ul><li>ADVANCED：收集详细刷新统计信息。</ul></li><ul><li>NULL： 使用系统默认值，即 TYPICAL。</ul></li> |
+| retention_period | 指定统计信息保留的天数，取值范围为 1 到 365000 天。超过设定的天数后统计记录会自动删除，系统默认为 31 天。<ul><li>若为 NULL，则采用系统默认设置。</ul></li><ul><li>若设为 -1，则统计信息将被永久保留。</ul></li>                               |

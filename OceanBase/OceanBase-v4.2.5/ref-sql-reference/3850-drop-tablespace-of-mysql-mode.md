@@ -1,0 +1,42 @@
+---
+title: DROP TABLESPACE
+book: "SQL 参考"
+version: V4.2.5
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000001503259.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-sql-reference
+---
+
+# DROP TABLESPACE
+
+## 描述
+
+该语句用来删除 TableSpace 逻辑对象，仅在 TableSpace下没有表时可以删除成功。
+
+## 权限要求
+
+执行 `DROP TABLESPACE` 语句需要当前用户具备 `CREATE TABLESPACE` 管理权限。有关 OceanBase 数据库权限的详细介绍，请参见 [MySQL 模式下的权限分类](../../../../../600.manage/500.security-and-permissions/300.access-control/200.user-and-permission/200.permission-of-mysql-mode/100.permission-classification-of-mysql.md)。
+
+## 语法
+
+```sql
+DROP TABLESPACE tablespace_name
+[ENGINE [=] engine_name];
+```
+
+## 参数解释
+
+|       参数      |          描述          |
+|-----------------|-----------------------|
+| tablespace_name | 指定要删除的 TableSpace 名称。|
+| ENGINE |指定使用表空间的存储引擎。当前版本仅支持该关键字语法，功能暂不生效。|
+
+## 示例
+
+删除 TableSpace 对象 `tablespace001`。
+
+```shell
+DROP TABLESPACE tablespace001;
+```

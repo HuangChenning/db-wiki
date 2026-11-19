@@ -1,0 +1,27 @@
+---
+title: resource_hard_limit
+book: "系统参考"
+version: V4.1.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-10000000001699349.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-system-reference
+---
+
+# resource_hard_limit
+
+resource_hard_limit 
+========================================
+
+`resource_hard_limit` 用于分配 Unit 。
+
+
+|      **属性**      |     **描述**     |
+|------------------|----------------|
+| 参数类型             | 整型             |
+| 默认值              | 100            |
+| 取值范围             | \[100, 10000\] |
+| 是否重启 OBServer 节点生效 | 否              |
+
+在分配 CPU 和内存等资源时，资源总量是实际数量乘以该百分比的值。最终 Server 资源占比不能超过 `resource_hard_limit`。

@@ -1,0 +1,67 @@
+---
+title: "重载包内程序"
+book: "PL 参考"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005285415.html"
+tags:
+  - oceanbase
+  - distributed
+  - ref-pl-reference
+---
+
+# 重载包内程序
+
+PL 允许对包内程序进行重载。所谓重载是指两个或多个程序有相同的名称，但拥有不同的参数变量、参数顺序或参数数据类型。调用时根据传入参数的类型来选择程序。
+
+  <main id="notice" >
+    <h4>功能适用性</h4>
+    <p>该内容仅适用于 OceanBase 数据库企业版。OceanBase 数据库社区版仅提供 MySQL 模式。</p>
+  </main>
+
+如下为包头的示例，通过传输参数为数字类型或者字符串类型来决定函数 `query_obdept` 的使用方法，之后可以在包主体的定义中分别实现其功能。
+
+```javascript
+CREATE OR REPLACE PACKAGE obdemo_pack1
+IS
+    DeptRec obdept%ROWTYPE;
+    v_sqlcode NUMBER;
+    v_sqlerr    VARCHAR2(2048);
+    FUNCTION query_obdept(dept_no IN NUMBER)
+        RETURN INTEGER;
+    FUNCTION query_obdept(dept_no IN VARCHAR2)
+        RETURN INTEGER;
+END obdemo_pack1;
+/
+```
+
+## 重载程序的客户端调用注意事项
+
+当通过 JDBC 等客户端驱动调用包内重载的存储过程或函数时，如果驱动在 Execute 阶段未将 OUT 参数或 NULL 参数的数据类型发送给 OBServer，或者 OBServer 版本不支持带参数类型的 Prepare，系统可能无法根据参数类型正确匹配重载版本。
+
+在 V4.4.2 BP2 之前，该场景下系统会默认选择第一个同名程序执行，可能导致执行结果不符合预期且不易察觉。从 V4.4.2 BP2 开始，该场景下系统会直接报错，提示无法确定要调用的重载版本。
+
+为避免该问题，建议您：
+
+* 使用 OceanBase Connector/J V2.4.16 或更高版本。
+* 在 JDBC URL 中开启 `obIncludeOutOrNullParamTypeInfo=true` 参数。
+* 对 OUT 参数显式调用 `registerOutParameter()`，对 NULL 参数显式调用 `setNull()` 并指定 SQL 类型。
+
+示例如下：
+
+```java
+// JDBC URL 中开启 obIncludeOutOrNullParamTypeInfo
+String url = "jdbc:oceanbase://localhost:2881/test?obIncludeOutOrNullParamTypeInfo=true";
+try (Connection conn = DriverManager.getConnection(url, user, password);
+     CallableStatement cs = conn.prepareCall("{call obdemo_pack1.get_dept_info(?, ?)}")) {
+    // 传入 NUMBER 类型，并为 OUT 参数注册类型
+    cs.setInt(1, 100);
+    cs.registerOutParameter(2, Types.VARCHAR);
+    cs.execute();
+    String deptName = cs.getString(2);
+
+    // 传入 NULL 参数时，显式指定 SQL 类型
+    cs.setNull(1, Types.NUMERIC);
+    cs.registerOutParameter(2, Types.VARCHAR);
+    cs.execute();
+}
+```

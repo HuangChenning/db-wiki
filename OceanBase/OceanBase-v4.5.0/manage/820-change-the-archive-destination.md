@@ -1,0 +1,46 @@
+---
+title: "更改归档目的端"
+book: "管理数据库"
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004475996.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 更改归档目的端
+
+开启日志归档模式后，您可以根据业务需要更改归档目的端。
+
+## 使用限制及注意事项
+
+* 使用 AWS S3 或兼容 S3 协议的其他对象存储作为归档介质时，要求归档延迟时间（由配置项 `archive_lag_target` 控制）大于或等于 60s。如果在将归档介质从 OSS/NFS 更改为 S3 或兼容 S3 协议的其他对象存储时，配置项 `archive_lag_target` 的值小于 60s，则执行更改归档目的端的命令会报错。
+
+* 由于自动清理仅支持清理 `DATA_BACKUP_DEST` 和 `LOG_ARCHIVE_DEST` 中当前指定的路径下的备份和归档数据，更改归档目的端后，原归档路径下的数据只能通过手动方式进行清理。手动清理备份的详细操作，参见 [手动清理指定的备份或归档数据](../500.clear-backup-data/100.manual-backup-cleanup/200.cleaning-up-specified-backup-data.md) 和 [手动清空备份路径或归档路径](../500.clear-backup-data/100.manual-backup-cleanup/300.clear-the-backup_dest_or_archivelog_dest.md)。
+
+## 操作步骤
+
+1. 租户管理员登录集群的 `sys` 租户或用户租户。
+
+2. 关闭归档模式，详细操作请参见 [关闭归档模式](400.close-the-log-archive-mode.md)。
+
+3. 重新配置归档目的端。
+
+   重新配置归档目的端时，如果待更换的目录是该租户之前使用过的归档目录，则要求该目录下的 `format` 文件必须存在。否则，要求待更换的目录为空。
+   
+   有关配置归档目的端的详细操作，请参见 [日志归档前准备](200.preparation-before-log-archive.md) 中 **配置归档目的端** 的内容。
+
+4. 完成后，查询视图 `CDB_OB_ARCHIVE_DEST`（`sys` 租户）或者 `DBA_OB_ARCHIVE_DEST`（用户租户），确认新的归档目的端是否配置成功，详细操作请参见 [查看归档参数](800.view-parameters-of-log-archive.md)。
+
+## 后续操作
+
+归档目的端变更成功后，需要重新开启归档模式，开启归档模式的详细操作，请参见 [开启归档模式](300.open-the-log-archive-mode.md)。
+
+## 相关文档
+
+* [关闭归档模式](400.close-the-log-archive-mode.md)
+
+* [日志归档前准备](200.preparation-before-log-archive.md)
+
+* [开启归档模式](300.open-the-log-archive-mode.md)

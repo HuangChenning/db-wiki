@@ -1,0 +1,47 @@
+---
+title: "向量索引内存管理"
+book: OceanBase AI
+version: V4.5.0
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000004827711.html"
+tags:
+  - oceanbase
+  - distributed
+  - ob-vector-search
+---
+
+# 向量索引内存管理
+
+本文档介绍如何估算和管理 OceanBase 数据库中**所有类型向量索引**的内存占用。
+
+## 配置向量索引内存
+
+OceanBase 向量搜索通过设置 [ob_vector_memory_limit_percentage](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/6150.ob_vector_memory_limit_percentage.md) 配置向量索引内存：
+
+该参数默认值为 `0` ，表示自适应模式，即系统自动调整租户中的向量索引数据的内存占用比例，无需手动调整：
+  * 租户实际内存为 8GB 及以下时，该值自适应为 `40`。
+  * 租户实际内存为 8GB 以上时，该值自适应为 `50`。
+
+## 索引内存估算与实际占用查询
+
+支持通过 `DBMS_VECTOR` 系统包进行索引内存估算：
+
+* 未建表时，通过 [INDEX_VECTOR_MEMORY_ADVISOR](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/17850.dbms-vector-mysql/500.index-vector-memory-advisor-mysql.md) 过程估算索引内存。
+* 已建表且插入数据时，通过 [INDEX_VECTOR_MEMORY_ESTIMATE](../../700.reference/600.pl-reference/200.pl-mysql/1000.pl-system-package-mysql/17850.dbms-vector-mysql/400.index-vector-memory-estimate-mysql.md) 过程分析索引内存。
+
+向量索引内存估算会返回两项信息：创建向量索引所需的最少内存配置，以及 HNSW_SQ 和 IVF 索引创建完成后的实际内存占用情况。
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>对于内存稀疏索引，<code>IDX_TYPE</code> 参数必须指定为 <code>SINDI</code>（不区分大小写），否则内存估算将无法进行。</p>
+</main>
+
+实际占用内存的详细信息可以通过视图 [GV$OB_VECTOR_MEMORY](../../700.reference/700.system-views/400.system-view-of-mysql-mode/300.performance-view-of-mysql-mode/4650.gv-ob_vector_memory-of-mysql-mode.md) 或 [V$OB_VECTOR_MEMORY](../../700.reference/700.system-views/400.system-view-of-mysql-mode/300.performance-view-of-mysql-mode/35350.v-ob_vector_memory-of-mysql-mode.md) 获取。
+
+## 索引重建内存优化
+
+对于分区表的向量索引重建操作，我们还提供了 `vector_index_memory_saving_mode` 配置项来控制索引重建的内存占用。开启此模式可以降低分区表向量索引重建（rebuild）过程中的内存消耗。通常，向量索引重建需要消耗相当于索引两倍的内存。开启省内存模式后，系统会在分区表单个分区构建完成后，通过暂时删除该分区的内存索引来释放内存，从而有效降低重建操作所需的总内存。语法和示例请参见[vector_index_memory_saving_mode](../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/8240.vector_index_memory_saving_mode.md)。
+
+## 相关文档
+
+* [向量索引概述](100.ob-vector-index-overview.md)
+* 索引分区自动重建功能请参见[索引监控与维护](600.vector-index-monitor-and-maintain.md)

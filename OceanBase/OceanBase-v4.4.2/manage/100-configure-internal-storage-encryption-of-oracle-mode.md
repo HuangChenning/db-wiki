@@ -1,0 +1,205 @@
+---
+title: "为新创建的表设置透明加密"
+book: "管理数据库"
+version: V4.4.2
+source: "https://www.oceanbase.com/docs/common-oceanbase-database-cn-1000000005283323.html"
+tags:
+  - oceanbase
+  - distributed
+  - manage
+---
+
+# 为新创建的表设置透明加密
+
+本节主要介绍如何创建加密表空间来对新创建的表实现数据透明加密。
+
+OceanBase 数据库的加密在形式上尽量兼容 Oracle 数据库，数据的加密单位为表空间（Tablespace）。OceanBase 数据库并非一个多数据文件的数据库系统，表空间是为了兼容而设计的概念，可以简单理解为表空间是一组表的集合。
+
+本节以在加密表空间 `sectest_ts1` 上创建表 `t1` 为例，提供透明加密的操作指导。
+
+## 配置加密
+
+本节给出 `internal` 方式和 `obcloud` 方式的配置示例。
+
+### 配置 internal 方式的透明加密
+
+internal 方式的租户主密钥，其加密信息主要在内部表中管理。为了避免日志回放时的循环依赖，该模式中的 clog 不做加密。
+
+1. 管理员用户登录到集群的 Oracle 租户。
+
+<main id="notice" type='explain'>
+   <h4>说明</h4>
+   <p>步骤 2～6 用于设置 <code>tde_method</code> 并建立租户主密钥（含 Keystore 与 <code>SET KEY</code>）。<strong>若本租户已完成相同配置，可跳过这些步骤</strong>，直接创建加密表空间。操作示例参见 <a href="../../300.tenant-master-key/300.configure-tenant-master-key-oracle.md">生成租户主密钥（Oracle 模式）</a>。</p>
+</main>
+
+2. 执行以下语句，开启 internal 方式的透明加密。
+
+   配置项 `tde_method` 用于设置透明表空间加密的方式，默认为 `none`，表示关闭透明表空间加密。
+
+   更多配置项 `tde_method` 的说明信息，参见 [tde_method](../../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7800.tde_method.md)。
+
+   <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>配置项 <code>tde_method</code> 一旦设置，就不能再修改。</p>
+   </main>
+
+   ```shell
+   obclient> ALTER SYSTEM SET tde_method='internal';
+   ```
+
+3. 执行以下语句，确认该租户上所有 OBServer 节点上的配置项 `tde_method` 的值均为 `internal`。
+
+   ```shell
+   obclient> SHOW PARAMETERS LIKE 'tde_method';
+   ```
+
+4. 创建 Keystore。
+
+   SQL 语句如下：
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT CREATE KEYSTORE keystore_name IDENTIFIED BY password;
+   ```
+
+   示例：
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT CREATE KEYSTORE sectest1 IDENTIFIED BY **3**;
+   ```
+
+5. 开启 Keystore。
+
+   SQL 语句如下：
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN IDENTIFIED BY password;
+   ```
+
+   其中，`password` 为上一步设置的 Keystore 的密钥。
+
+   示例：
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN IDENTIFIED BY **3**;
+   ```
+
+6. 执行以下语句，生成主密钥。
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT SET KEY IDENTIFIED BY password;
+   ```
+
+   语句中的 `password` 即为之前设置的 Keystore 的密钥。
+
+   示例：
+
+   ```shell
+   obclient> ADMINISTER KEY MANAGEMENT SET KEY IDENTIFIED BY **3**;
+   ```
+
+7. 创建表空间并指定加密算法。
+
+   可以指定加密算法 `aes-256`、`aes-128`、`aes-192`、`sm4-cbc`、`aes-128-gcm`、`aes-192-gcm`、`aes-256-gcm`、`sm4-gcm`。
+
+   示例如下：
+
+   ```shell
+   obclient> CREATE TABLESPACE sectest_ts1 ENCRYPTION USING 'aes-256';
+   ```
+
+### 配置 obcloud 方式的透明加密
+
+`obcloud` 方式适用于通过统一 KMS 代理服务管理主密钥的场景。
+
+1. 管理员用户登录到集群的 Oracle 租户。
+
+<main id="notice" type='explain'>
+   <h4>说明</h4>
+   <p>步骤 2～5 用于 <code>obcloud</code> 方式下的加密方式、KMS 配置及租户主密钥就绪。<strong>若本租户已参考<a href="../../300.tenant-master-key/300.configure-tenant-master-key-oracle.md">生成租户主密钥（Oracle 模式）</a>完成相同配置，可跳过这些步骤</strong>。为方便阅读及操作，以下内容再次详细列出全部流程。</p>
+</main>
+
+2. 执行以下语句，开启 `obcloud` 方式的透明加密。
+
+   配置项 `tde_method` 用于设置透明表空间加密的方式，默认为 `none`，表示关闭透明表空间加密。
+
+   更多配置项 `tde_method` 的说明信息，参见 [tde_method](../../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7800.tde_method.md)。
+
+   <main id="notice" type='notice'>
+    <h4>注意</h4>
+    <p>配置项 <code>tde_method</code> 一旦设置，就不能再修改。</p>
+   </main>
+
+   ```shell
+   obclient> ALTER SYSTEM SET tde_method = 'obcloud';
+   ```
+
+3. 执行以下语句，确认该租户上所有 OBServer 节点上的配置项 `tde_method` 的值均为 `obcloud`。
+
+   ```shell
+   obclient> SHOW PARAMETERS LIKE 'tde_method';
+   ```
+
+4. 执行以下语句，配置 KMS 代理服务参数。
+
+   ```shell
+   obclient> ALTER SYSTEM SET external_kms_info = '{
+     "kms_host": "https://kms.example.oceanbase.com",
+     "access_key_id": "LTAI****************",
+     "access_key_secret": "your_access_key_secret",
+     "cmk_id": "your_customer_master_key_id"
+   }';
+   ```
+
+5. 配置完成后，租户将从 KMS 获取主密钥。在 `obcloud` 方式下，主密钥由 OCP 或 OceanBase Cloud KMS 生成和托管，无需像 `internal` 方式那样执行 `ADMINISTER KEY MANAGEMENT CREATE KEYSTORE`、`SET KEYSTORE OPEN` 或 `SET KEY`。更多说明请参见 [生成租户主密钥（Oracle 模式）](../../300.tenant-master-key/300.configure-tenant-master-key-oracle.md)。
+
+6. 创建表空间并指定加密算法。
+
+   可以指定加密算法 `aes-256`、`aes-128`、`aes-192`、`sm4-cbc`、`aes-128-gcm`、`aes-192-gcm`、`aes-256-gcm`、`sm4-gcm`。
+
+   示例如下：
+
+   ```shell
+   obclient> CREATE TABLESPACE sectest_ts1 ENCRYPTION USING 'aes-256';
+   ```
+
+<main id="notice" type='notice'>
+  <h4>注意</h4>
+  <p>以上为 <code>external_kms_info</code> 的示例值，请根据实际 KMS endpoint 与密钥信息替换。若使用其他 KMS 对接形态，字段格式可能不同，请参见 <a href="../../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/7800.tde_method.md">tde_method</a>、<a href="../../../../../700.reference/800.configuration-items-and-system-variables/100.system-configuration-items/400.tenant-level-configuration-items/3200.external_kms_info.md">external_kms_info</a> 与 <a href="../../300.tenant-master-key/300.configure-tenant-master-key-oracle.md">生成租户主密钥（Oracle 模式）</a>。</p>
+</main>
+
+## 在加密的表空间中创建新表
+
+配置完加密方式后，即可在加密的表空间中创建新表，具体步骤如下：
+
+1. 普通用户登录到 Oracle 租户。
+
+2. 创建表并指定表空间。
+
+   ```shell
+   obclient> CREATE TABLE t1 (id1 int, id2 int) TABLESPACE sectest_ts1;
+   ```
+
+   创建后，该表对应的任何事务都需要加密。
+
+3. 确认表空间内的表是否标记为加密。
+
+   执行以下语句，查看 `encryptionalg` 是否为之前设置的 `aes-256`。
+
+   ```shell
+   obclient> SELECT table_name,encryptionalg,encrypted FROM V$OB_ENCRYPTED_TABLES;
+   +------------+---------------+-----------+
+   | TABLE_NAME | ENCRYPTIONALG | ENCRYPTED |
+   +------------+---------------+-----------+
+   | T1         | aes-256       | YES       |
+   +------------+---------------+-----------+
+   1 row in set
+   ```
+
+   `encryptionalg` 为 `aes-256`，且 `encrypted` 为 `YES` 则表示表加密配置成功。
+
+    更多视图 `V$OB_ENCRYPTED_TABLES` 的字段及说明信息，参见 [V$OB_ENCRYPTED_TABLES](../../../../../700.reference/700.system-views/500.system-view-of-oracle-mode/300.performance-view-of-oracle-mode/30300.v-ob_encrypted_tables-of-oracle-mode.md)。
+
+## 相关文档
+
+* [为已有表设置透明加密](../300.data-storage-encryption-of-oracle-mode/200.set-storage-encryption-for-existing-tables-of-oracle-mode.md)
+* [解除加密](../300.data-storage-encryption-of-oracle-mode/300.unencrypt-of-oracle-mode.md)
