@@ -1,0 +1,321 @@
+{
+  "product": "OceanBase 最佳实践",
+  "version": "master",
+  "tags": [
+    "oceanbase",
+    "best-practices"
+  ],
+  "out": "/Users/huangcn/github/db-wiki/OceanBase/best-practices",
+  "books": [
+    {
+      "slug": "deploy",
+      "title": "安装部署",
+      "summary": "单节点、分布式集群、容器化及容灾架构安装部署指南",
+      "group": "部署与生命周期",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "OceanBase AP 场景下读写分离配置指南",
+          "href": "common-best-practices-1000000003048509.html",
+          "stem": "400-ap-read-write-separation-best-practices"
+        },
+        {
+          "title": "OceanBase 读写分离最佳实践",
+          "href": "common-best-practices-1000000001489641.html",
+          "stem": "500-read-write-separation-best-practices"
+        }
+      ]
+    },
+    {
+      "slug": "high-availability",
+      "title": "高可用",
+      "summary": "跨机房容灾、多中心多活与高可用架构方案",
+      "group": "高可用与容灾",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "高可用最佳实践",
+          "href": "common-best-practices-1000000001886772.html",
+          "stem": "300-best-practices-for-high-availability"
+        }
+      ]
+    },
+    {
+      "slug": "migrations",
+      "title": "数据迁移和导入",
+      "summary": "异构数据库评估、全量数据迁移与实时增量同步",
+      "group": "数据迁移与导入",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "OceanBase 数据流转方案",
+          "href": "common-best-practices-1000000001489661.html",
+          "stem": "100-data-flow"
+        },
+        {
+          "title": "数据迁移概览",
+          "href": "common-best-practices-1000000001489660.html",
+          "stem": "200-migration-intro"
+        },
+        {
+          "title": "数据文件导入 OceanBase 最佳实践",
+          "href": "common-best-practices-1000000001489662.html",
+          "stem": "300-load-data"
+        },
+        {
+          "title": "其他数据库迁移至 OceanBase 数据库最佳实践",
+          "href": "common-best-practices-1000000001489663.html",
+          "stem": "400-migrate-data"
+        },
+        {
+          "title": "OMS 海量数据迁移策略",
+          "href": "common-best-practices-1000000001489659.html",
+          "stem": "500-prepare-migration"
+        },
+        {
+          "title": "MyCat 迁移至 OceanBase 最佳实践",
+          "href": "common-best-practices-1000000003015186.html",
+          "stem": "600-mycat"
+        },
+        {
+          "title": "PostgreSQL 迁移至 OceanBase MySQL 兼容模式的最佳实践",
+          "href": "common-best-practices-1000000004896482.html",
+          "stem": "700-pg-obmysql"
+        }
+      ]
+    },
+    {
+      "slug": "route",
+      "title": "路由",
+      "summary": "ODP 代理配置、租户路由规则与连接管理实践",
+      "group": "网络与路由代理",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "ODP 路由最佳实践",
+          "href": "common-best-practices-1000000001591716.html",
+          "stem": "7800-odp_routing_best_practices"
+        }
+      ]
+    },
+    {
+      "slug": "database-design",
+      "title": "数据表设计",
+      "summary": "库表模式设计、主键规划、分区策略与数据建模实践",
+      "group": "数据表设计",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "OceanBase 数据表设计与索引优化最佳实践指南",
+          "href": "common-best-practices-1000000002910319.html",
+          "stem": "100-ap-database-design-best-practice"
+        },
+        {
+          "title": "大表创建索引的最佳实践",
+          "href": "common-best-practices-1000000001489650.html",
+          "stem": "300-create-index-best-practice"
+        },
+        {
+          "title": "数据库开发规范最佳实践",
+          "href": "common-best-practices-1000000001598457.html",
+          "stem": "400-database-table-specification"
+        }
+      ]
+    },
+    {
+      "slug": "develop",
+      "title": "开发",
+      "summary": "Java、Python、C/C++、Go 等多语言开发实践与规范",
+      "group": "应用开发与生态",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "Java 应用与 OceanBase 数据库连接配置最佳实践",
+          "href": "common-best-practices-1000000001489649.html",
+          "stem": "100-app-development-best-practice"
+        },
+        {
+          "title": "Spark Catalog 与 OceanBase 集成最佳实践",
+          "href": "common-best-practices-1000000002808478.html",
+          "stem": "200-ap-spark-catalog-best-practice"
+        },
+        {
+          "title": "配置 JDBC 和 OBServer 实现 Batch DML 最佳性能的最佳实践",
+          "href": "common-best-practices-1000000001489651.html",
+          "stem": "700-config-jdbc-observer-batch-dml-best-practice"
+        },
+        {
+          "title": "OceanBase 数据库批量数据清理策略最佳实践",
+          "href": "common-best-practices-1000000003039638.html",
+          "stem": "800-truncate-delete"
+        },
+        {
+          "title": "OceanBase 数据库 PDML 处理最佳实践",
+          "href": "common-best-practices-1000000003039639.html",
+          "stem": "900-dml"
+        },
+        {
+          "title": "OceanBase 热点表最佳实践",
+          "href": "common-best-practices-1000000003564513.html",
+          "stem": "1000-hot-table"
+        },
+        {
+          "title": "OceanBase 自增列与序列最佳实践",
+          "href": "common-best-practices-1000000003629554.html",
+          "stem": "1100-auto-increase-row"
+        },
+        {
+          "title": "PL/SQL 性能问题定位最佳实践",
+          "href": "common-best-practices-1000000003967582.html",
+          "stem": "1200-pl-sql-perf-analysis"
+        },
+        {
+          "title": "PL/SQL 对象批量编译最佳实践",
+          "href": "common-best-practices-1000000003969213.html",
+          "stem": "1300-pl-batch-compile"
+        },
+        {
+          "title": "PL/SQL 代码覆盖率测试最佳实践",
+          "href": "common-best-practices-1000000004293483.html",
+          "stem": "1400-pl-code-coverage"
+        }
+      ]
+    },
+    {
+      "slug": "management",
+      "title": "运维管理",
+      "summary": "集群运维、参数变更、备份恢复与容量规划",
+      "group": "运维管理实践",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "资源限流最佳实践",
+          "href": "common-best-practices-1000000001489654.html",
+          "stem": "100-bset-practices-for-resource-flow-limiting"
+        },
+        {
+          "title": "数据负载均衡最佳实践",
+          "href": "common-best-practices-1000000001489656.html",
+          "stem": "300-best-practice-for-data-load-balancing"
+        },
+        {
+          "title": "安全认证最佳实践",
+          "href": "common-best-practices-1000000001489653.html",
+          "stem": "500-best-practices-for-security-certification"
+        },
+        {
+          "title": "访问控制最佳实践",
+          "href": "common-best-practices-1000000001489655.html",
+          "stem": "600-best-practices-for-access-control"
+        },
+        {
+          "title": "数据加密最佳实践",
+          "href": "common-best-practices-1000000001489652.html",
+          "stem": "700-best-practices-for-data-encryption"
+        }
+      ]
+    },
+    {
+      "slug": "diagnostic",
+      "title": "诊断",
+      "summary": "慢查询分析、锁冲突、内存异常及核心问题定位排障",
+      "group": "诊断与排障",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "常见问题场景日志解读最佳实践",
+          "href": "common-best-practices-1000000002006377.html",
+          "stem": "1000-examples-of-common-log-interpretation"
+        },
+        {
+          "title": "全链路追踪最佳实践",
+          "href": "common-best-practices-1000000002081522.html",
+          "stem": "1100-best-practices-for-full-link-diagnosis"
+        },
+        {
+          "title": "使用 obdiag 收集火焰图和扁鹊图最佳实践",
+          "href": "common-best-practices-1000000001489657.html",
+          "stem": "7600-use_obdiag_to_collect_flame_and_bianque_graph"
+        },
+        {
+          "title": "使用 obdiag 一键收集并行 SQL/慢 SQL 诊断信息最佳实践",
+          "href": "common-best-practices-1000000001489658.html",
+          "stem": "7700-use_obdiag_to_diagnose_parallel_and_slow_sql_issues"
+        },
+        {
+          "title": "OceanBase 系统性能问题排查最佳实践",
+          "href": "common-best-practices-1000000002003041.html",
+          "stem": "8000-best-practices-for-diagnosing-performance-issues"
+        }
+      ]
+    },
+    {
+      "slug": "performance-tuning",
+      "title": "性能调优",
+      "summary": "SQL 执行计划优化、参数调优、高并发及压测调优",
+      "group": "性能调优实践",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "解决慢查询的最佳实践",
+          "href": "common-best-practices-1000000001489642.html",
+          "stem": "200-slow-query-best-practice"
+        },
+        {
+          "title": "收集统计信息生成高效执行计划的最佳实践",
+          "href": "common-best-practices-1000000001489643.html",
+          "stem": "400-statistics-best-practices"
+        },
+        {
+          "title": "热点行更新的最佳实践",
+          "href": "common-best-practices-1000000001598458.html",
+          "stem": "500-design-of-hot-rows-in-database-tables"
+        },
+        {
+          "title": "大对象存储性能最佳实践",
+          "href": "common-best-practices-1000000002081521.html",
+          "stem": "600-large-object-storage-performance-best-practice"
+        },
+        {
+          "title": "半结构化存储性能最佳实践",
+          "href": "common-best-practices-1000000003029301.html",
+          "stem": "700-semi-structured-encoding-best-practice"
+        },
+        {
+          "title": "OceanBase 物化视图最佳实践",
+          "href": "common-best-practices-1000000003404977.html",
+          "stem": "800-materialized-view-query-acceleration-best-practice"
+        }
+      ]
+    },
+    {
+      "slug": "cloud",
+      "title": "云",
+      "summary": "云上 OceanBase 架构选型、部署演练与降本增效实践",
+      "group": "云上实践",
+      "base_url": "https://www.oceanbase.com/docs/",
+      "chapters": [
+        {
+          "title": "跨云双活实现高可用最佳实践",
+          "href": "common-best-practices-1000000003471276.html",
+          "stem": "100-cross-cloud-high-vailability"
+        },
+        {
+          "title": "通过跨云主备库实现的高可用",
+          "href": "common-best-practices-1000000003531523.html",
+          "stem": "150-cross-cloud-standby"
+        },
+        {
+          "title": "主机 CPU 使用率过高",
+          "href": "common-best-practices-1000000003471277.html",
+          "stem": "200-host-cpu-too-high"
+        },
+        {
+          "title": "OB Cloud 云数据库读写分离最佳实践",
+          "href": "common-best-practices-1000000003471278.html",
+          "stem": "400-read-write-separation-cloud"
+        }
+      ]
+    }
+  ]
+}

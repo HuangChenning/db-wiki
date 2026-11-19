@@ -39,6 +39,7 @@ For database administrators and developers, this collection covers database conc
 | OceanBase V4.4.2 LTS (Standalone) | 17 | [Version catalog](OceanBase/OceanBase-standalone-v4.4.2/catalog.md) · [Introduction](OceanBase/OceanBase-standalone-v4.4.2/learn-more-about-oceanbase/contents.md) |
 | OceanBase V4.3.5 LTS (Standalone) | 18 | [Version catalog](OceanBase/OceanBase-standalone-v4.3.5/catalog.md) · [Introduction](OceanBase/OceanBase-standalone-v4.3.5/learn-more-about-oceanbase/contents.md) |
 | OceanBase V4.2.5 LTS (Standalone) | 17 | [Version catalog](OceanBase/OceanBase-standalone-v4.2.5/catalog.md) · [Introduction](OceanBase/OceanBase-standalone-v4.2.5/learn-more-about-oceanbase/contents.md) |
+| OceanBase Best Practices | 10 | [Version catalog](OceanBase/best-practices/catalog.md) · [Deployment](OceanBase/best-practices/deploy/contents.md) |
 
 For example, open the [Oracle 19c Database Concepts contents](Oracle/Oracle19c/concepts/contents.md), then [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md) to read a full chapter. Its opening `source` field records the official page URL.
 

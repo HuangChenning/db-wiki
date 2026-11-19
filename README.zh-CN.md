@@ -39,6 +39,7 @@ Oracle、MySQL、达梦、瀚高与 OceanBase 数据库文档的 Markdown 阅读
 | OceanBase V4.4.2 LTS（集中式） | 17 | [版本总目录](OceanBase/OceanBase-standalone-v4.4.2/catalog.md) · [集中式版简介](OceanBase/OceanBase-standalone-v4.4.2/learn-more-about-oceanbase/contents.md) |
 | OceanBase V4.3.5 LTS（集中式） | 18 | [版本总目录](OceanBase/OceanBase-standalone-v4.3.5/catalog.md) · [集中式版简介](OceanBase/OceanBase-standalone-v4.3.5/learn-more-about-oceanbase/contents.md) |
 | OceanBase V4.2.5 LTS（集中式） | 17 | [版本总目录](OceanBase/OceanBase-standalone-v4.2.5/catalog.md) · [集中式版简介](OceanBase/OceanBase-standalone-v4.2.5/learn-more-about-oceanbase/contents.md) |
+| OceanBase 最佳实践 | 10 | [版本总目录](OceanBase/best-practices/catalog.md) · [安装部署](OceanBase/best-practices/deploy/contents.md) |
 
 例如，阅读 [Oracle 19c 数据库概念目录](Oracle/Oracle19c/concepts/contents.md)，再进入 [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md)，即可查看完整章节；章节开头的 `source` 字段记录官方原文地址。
 
