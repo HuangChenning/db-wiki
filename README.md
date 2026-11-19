@@ -2,13 +2,13 @@
 
 [中文](README.zh-CN.md) · **English**
 
-A Markdown reading library for Oracle, MySQL, Dameng, and HighGo database documentation, organized by version and manual for browsing, full-text search, and offline reading.
+A Markdown reading library for Oracle, MySQL, Dameng, HighGo, and OceanBase database documentation, organized by version and manual for browsing, full-text search, and offline reading.
 
-Start with [Oracle 19c](Oracle/Oracle19c/catalog.md), [MySQL 8.4](MySQL/MySQL8.4/catalog.md), [Dameng DM8](dameng/dm8/catalog.md), or [HighGo V9](highgo/highgov9/catalog.md), or choose a manual by task below.
+Start with [Oracle 19c](Oracle/Oracle19c/catalog.md), [MySQL 8.4](MySQL/MySQL8.4/catalog.md), [Dameng DM8](dameng/dm8/catalog.md), [HighGo V9](highgo/highgov9/catalog.md), or [OceanBase V5.0.1](OceanBase/OceanBase-v5.0.1/catalog.md), or choose a manual by task below.
 
 ## Overview
 
-For database administrators and developers, this collection covers database concepts, SQL, administration, performance tuning, backup and recovery, and high availability. Chapters retain source metadata for checking the original documentation. Oracle and MySQL chapters are mainly in English; Dameng and HighGo chapters are mainly in Chinese.
+For database administrators and developers, this collection covers database concepts, SQL, administration, performance tuning, backup and recovery, and high availability. Chapters retain source metadata for checking the original documentation. Oracle and MySQL chapters are mainly in English; Dameng, HighGo, and OceanBase chapters are mainly in Chinese.
 
 ## Examples and version entry points
 
@@ -29,6 +29,7 @@ For database administrators and developers, this collection covers database conc
 | Dameng DM8 | 56 | [Version catalog](dameng/dm8/catalog.md) · [System Administration](dameng/dm8/administrator/contents.md) |
 | HighGo V4.5 | 23 | [Version catalog](highgo/highgov45/catalog.md) · [Installation Manual](highgo/highgov45/develop-installation-manual/contents.md) |
 | HighGo V9 | 24 | [Version catalog](highgo/highgov9/catalog.md) · [Administrator's Guide](highgo/highgov9/safety-administrator-guide/contents.md) |
+| OceanBase V5.0.1 | 28 | [Version catalog](OceanBase/OceanBase-v5.0.1/catalog.md) · [Introduction](OceanBase/OceanBase-v5.0.1/learn-more-about-oceanbase/contents.md) |
 
 For example, open the [Oracle 19c Database Concepts contents](Oracle/Oracle19c/concepts/contents.md), then [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md) to read a full chapter. Its opening `source` field records the official page URL.
 
