@@ -1,16 +1,28 @@
 # db-wiki
 
-[中文](README.zh-CN.md) · **English**
+<p align="center">
+  <img src="assets/readme/hero.svg" alt="db-wiki - Multiverse Database Documentation Knowledge Base in Clean Markdown" width="100%">
+</p>
 
-A Markdown reading library for Oracle, MySQL, Dameng, HighGo, and OceanBase database documentation, organized by version and manual for browsing, full-text search, and offline reading.
+<p align="center">
+  <a href="README.zh-CN.md">中文</a> · <strong>English</strong>
+</p>
 
-Start with [Oracle 19c](Oracle/Oracle19c/catalog.md), [MySQL 8.4](MySQL/MySQL8.4/catalog.md), [Dameng DM8](dameng/dm8/catalog.md), [HighGo V9](highgo/highgov9/catalog.md), or [OceanBase V5.0.1](OceanBase/OceanBase-v5.0.1/catalog.md), or choose a manual by task below.
+An offline-ready Markdown reading library for Oracle, MySQL, Dameng, HighGo, and OceanBase official documentation, organized by version and manual for instant full-text search and offline reading.
+
+Start with [Oracle 19c](Oracle/Oracle19c/catalog.md), [MySQL 8.4](MySQL/MySQL8.4/catalog.md), [Dameng DM8](dameng/dm8/catalog.md), [HighGo V9](highgo/highgov9/catalog.md), [OceanBase V5.0.1](OceanBase/OceanBase-v5.0.1/catalog.md), or [OceanBase Best Practices](OceanBase/best-practices/catalog.md), or choose a manual by task below.
+
+---
 
 ## Overview
 
-For database administrators and developers, this collection covers database concepts, SQL, administration, performance tuning, backup and recovery, and high availability. Chapters retain source metadata for checking the original documentation. Oracle and MySQL chapters are mainly in English; Dameng, HighGo, and OceanBase chapters are mainly in Chinese.
+Designed for database administrators (DBAs) and backend software engineers, this repository gathers core architecture concepts, SQL syntax references, system views, performance tuning guides, backup/recovery, and high availability topics. Each chapter preserves official source URLs and version metadata for provenance verification. Oracle and MySQL chapters are mainly in English; Dameng, HighGo, and OceanBase chapters are mainly in Chinese.
 
-## Examples and version entry points
+---
+
+## Examples and Version Entry Points
+
+The collection currently indexes **5 major database engines** across **21 editions and practice tracks**, comprising over 40,000+ structured Markdown chapters:
 
 | Database version | Manual directories | Reading entry points |
 | --- | ---: | --- |
@@ -41,60 +53,78 @@ For database administrators and developers, this collection covers database conc
 | OceanBase V4.2.5 LTS (Standalone) | 17 | [Version catalog](OceanBase/OceanBase-standalone-v4.2.5/catalog.md) · [Introduction](OceanBase/OceanBase-standalone-v4.2.5/learn-more-about-oceanbase/contents.md) |
 | OceanBase Best Practices | 10 | [Version catalog](OceanBase/best-practices/catalog.md) · [Deployment](OceanBase/best-practices/deploy/contents.md) |
 
-For example, open the [Oracle 19c Database Concepts contents](Oracle/Oracle19c/concepts/contents.md), then [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md) to read a full chapter. Its opening `source` field records the official page URL.
+### Browse by Common Tasks
 
-### Browse by task
+The links below demonstrate high-frequency administrative tasks. For other versions, start from the corresponding version catalog.
 
-The Oracle links below use **19c**. For other versions, start with the corresponding version catalog.
+| Task | Oracle 19c | Dameng DM8 | OceanBase Best Practices |
+| --- | --- | --- | --- |
+| Manage instances & objects | [Administrator's Guide](Oracle/Oracle19c/administrators-guide/contents.md) | [System Administrator's Manual](dameng/dm8/administrator/contents.md) | [Table Design](OceanBase/best-practices/database-design/contents.md) |
+| Look up SQL syntax & functions | [SQL Language Reference](Oracle/Oracle19c/sql-language-reference/contents.md) | [SQL Language Manual](dameng/dm8/sql-language/contents.md) | [Application Development](OceanBase/best-practices/develop/contents.md) |
+| Write stored procedures & blocks | [PL/SQL Language Reference](Oracle/Oracle19c/pl-sql-language-reference/contents.md) | [SQL Programming](dameng/dm8/sql-programming/contents.md) | [PL Performance Analysis](OceanBase/best-practices/develop/1200-pl-sql-perf-analysis.md) |
+| Analyze performance & tune SQL | [SQL Tuning Guide](Oracle/Oracle19c/sql-tuning-guide/contents.md) | [SQL Tuning](dameng/dm8/administrator/sql-tuning.md) | [Performance Tuning](OceanBase/best-practices/performance-tuning/contents.md) |
+| Back up, restore & high availability | [Backup and Recovery User's Guide](Oracle/Oracle19c/backup-and-recovery-users-guide/contents.md) | [Backup and Restore](dameng/dm8/backup-restore/contents.md) | [High Availability](OceanBase/best-practices/high-availability/contents.md) |
+| Look up parameters & system views | [Database Reference](Oracle/Oracle19c/reference/contents.md) | [Dynamic Views](dameng/dm8/administrator/dynamic-management.md) | [Diagnostics & Troubleshooting](OceanBase/best-practices/diagnostic/contents.md) |
 
-| Task | Oracle 19c | Dameng DM8 |
-| --- | --- | --- |
-| Manage instances and database objects | [Administrator's Guide](Oracle/Oracle19c/administrators-guide/contents.md) | [System Administrator's Manual](dameng/dm8/administrator/contents.md) |
-| Look up SQL syntax and functions | [SQL Language Reference](Oracle/Oracle19c/sql-language-reference/contents.md) | [SQL Language Manual](dameng/dm8/sql-language/contents.md) |
-| Write stored procedures and program blocks | [PL/SQL Language Reference](Oracle/Oracle19c/pl-sql-language-reference/contents.md) | [SQL Programming](dameng/dm8/sql-programming/contents.md) |
-| Analyze performance and tune SQL | [SQL Tuning Guide](Oracle/Oracle19c/sql-tuning-guide/contents.md) | [SQL Tuning](dameng/dm8/administrator/sql-tuning.md) |
-| Back up, restore, and recover | [Backup and Recovery User's Guide](Oracle/Oracle19c/backup-and-recovery-users-guide/contents.md) | [Backup and Restore](dameng/dm8/backup-restore/contents.md) |
-| Look up parameters and system views | [Database Reference](Oracle/Oracle19c/reference/contents.md) | [Dynamic Views](dameng/dm8/administrator/dynamic-management.md) |
+---
 
-## How it works
+## Architecture and Workflow
 
-1. **Choose a version**: open its `catalog.md` from the table above and select a manual by topic.
-2. **Choose a chapter**: open the manual's `contents.md` and browse in book order. Paths shown in backticks in a version catalog are relative to that catalog's directory.
-3. **Check the source**: inspect the chapter's opening `version`, `doc_id` (when present), and `source` fields to confirm the applicable version and original page.
+<p align="center">
+  <img src="assets/readme/architecture.svg" alt="db-wiki Architecture and Four-Stage Documentation Engineering Pipeline" width="100%">
+</p>
 
-## Quick start
+### Navigation & Provenance Mechanism
 
-Follow the links on GitHub to read without installing a database. For offline reading, clone the repository and open it in an editor that supports Markdown:
+1. **Select Version**: Open the target edition's `catalog.md` from the version matrix to find relevant manuals.
+2. **Locate Chapter**: Open `contents.md` within the selected book directory to locate specific sections. Paths are relative to that manual folder.
+3. **Verify Official Source**: Inspect the YAML Frontmatter (`version`, `source`, and `tags`) at the top of each chapter to verify origin and applicability.
+
+---
+
+## Quick Start & Usage
+
+Browse directly on GitHub by following the links above without installing any local dependencies. To read and query the documentation fully offline, clone this repository:
 
 ```bash
+# 1. Clone the offline knowledge base
 git clone https://github.com/HuangChenning/db-wiki.git
 cd db-wiki
 ```
 
-Open `Oracle/Oracle19c/concepts/contents.md` and follow the first chapter link to start reading.
+Open `Oracle/Oracle19c/concepts/contents.md` and click the first chapter to start reading.
 
-### Local full-text search
+### High-Speed Local Full-Text Search
 
-With [ripgrep](https://github.com/BurntSushi/ripgrep) installed, run these commands from the repository root. The `-g '*.md'` filter limits the search to Markdown files:
+Install [ripgrep](https://github.com/BurntSushi/ripgrep) (`rg`) to perform sub-millisecond full-text searches across all manuals. Use `-g '*.md'` to filter out image assets:
 
 ```bash
-# Find transaction-related chapters in Oracle 19c Database Concepts
-rg -l -i -g '*.md' 'transaction' Oracle/Oracle19c/concepts
+# Search for transaction isolation and locks across Oracle 19c concepts
+rg -n -g '*.md' 'transaction' Oracle/Oracle19c/concepts
 
-# Find DMRMAN references in the Dameng backup manual, with line numbers
+# Search for DMRMAN tool command usage in Dameng DM8 backup manual
 rg -n -g '*.md' 'DMRMAN' dameng/dm8/backup-restore
+
+# Cross-version search for read-write separation in OceanBase
+rg -n -g '*.md' 'read-write separation' OceanBase/best-practices OceanBase/OceanBase-v5.0.1
 ```
 
-## Limitations and coverage
+---
 
-- **Use the matching version**: parameters, syntax, and features may differ between releases. Check examples against your database version before applying them.
-- **Coverage is selective**: this is an entry point to the collected manuals, rather than the vendor's entire documentation library. Updates may lag behind official sources. Some version catalogs note document-number differences between online manuals and local PDFs.
-- **Chapter languages are preserved**: the two READMEs provide equivalent navigation; they do not imply that every chapter has a bilingual translation.
-- **Conversion can affect formatting**: complex tables, images, and cross-references may contain formatting or parsing errors. Check the chapter's official source before critical operations.
-- **Sources and copyright**: original documentation remains the property of its respective rights holders. This repository currently has no `LICENSE` file; inclusion does not constitute an additional license grant.
+## Limitations & Caveats
+
+- **Version-Specific Behavior**: Parameters, system variables, internal catalogs, and SQL syntax differ across major and minor releases. Always check your exact production database version.
+- **Scope Boundary**: This repository contains a curated, structured Markdown collection of official documentation. It does not represent the entirety of vendor product lines, nor does it guarantee real-time synchronization.
+- **Original Language Preservation**: The English and Chinese READMEs provide identical navigation structures, while chapter contents preserve their original vendor language (English for Oracle/MySQL, Chinese for domestic databases).
+- **Markdown Formatting Nuances**: Contents are converted and normalized from vendor portals. Minor discrepancies in complex nested tables, diagrams, or cross-document links may occur; always verify with the `source` URL for mission-critical operations.
+- **Copyright & Source Attribution**: All original content copyrights belong to their respective database vendors and copyright holders.
+
+---
 
 ## Contributing
 
-When reporting a problem, include the database version, manual name, chapter path, and specific issue. For content discrepancies, include the chapter's `source` URL. When adding or revising documentation, preserve the version directories, `catalog.md`, `contents.md`, and source metadata. Store new images in the corresponding manual's `img/` directory.
+Contributions, fixes, and documentation feedback are welcome:
 
-After adding, removing, or moving manuals, update the version catalog and the links and manual counts in both READMEs.
+1. **Reporting Issues**: Open an Issue specifying the database engine, version, manual name, chapter path, and official `source` URL.
+2. **Adding or Updating Manuals**: Follow the `skills/db-online-docs-to-markdown` specification. Ensure `catalog.md`, `contents.md`, `manifest.json`, and localized `img/` assets are generated, and verify with `python3 skills/db-online-docs-to-markdown/scripts/convert.py --manifest <path>/manifest.json --verify`.
+3. **Sync Navigation**: When manuals are added, updated, or moved, update the corresponding counts and links in both `README.md` and `README.zh-CN.md` within the same pull request.

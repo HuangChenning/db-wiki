@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="100%" height="auto">
+  <title>db-wiki Architecture and Retrieval Pipeline</title>
+  <desc>Four-stage documentation engineering pipeline from official vendors to local Markdown and instant full-text search.</desc>
+  <defs>
+    <linearGradient id="archBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117" />
+      <stop offset="100%" stop-color="#161b22" />
+    </linearGradient>
+    <pattern id="archGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#21262d" stroke-width="0.8" opacity="0.6" />
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#58a6ff" />
+    </marker>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1200" height="480" rx="16" fill="url(#archBg)" stroke="#30363d" stroke-width="1.5" />
+  <rect width="1200" height="480" rx="16" fill="url(#archGrid)" />
+
+  <!-- Section Title -->
+  <g transform="translate(64, 52)">
+    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#f0f6fc">db-wiki 文档工程与检索链路</text>
+    <text y="30" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="400" fill="#8b949e">从厂商官方源到规范化本地 Markdown，支持全生命周期溯源与毫秒级离线全文检索</text>
+  </g>
+
+  <!-- Connecting Arrows across the 4 stages -->
+  <path d="M 320 240 L 348 240" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)" />
+  <path d="M 590 240 L 618 240" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)" />
+  <path d="M 860 240 L 888 240" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Stage 1: Official Sources -->
+  <g transform="translate(64, 128)">
+    <rect width="250" height="270" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <!-- Header -->
+    <rect width="250" height="44" rx="10" fill="#1f242c" />
+    <rect y="34" width="250" height="10" fill="#1f242c" />
+    <circle cx="24" cy="22" r="5" fill="#f0883e" />
+    <text x="38" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#f0f6fc">1. 官方文档源</text>
+
+    <!-- Content Items -->
+    <g transform="translate(18, 64)">
+      <rect width="214" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e6edf3">Oracle &amp; MySQL 官方在线库</text>
+
+      <rect y="44" width="214" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e6edf3">达梦与瀚高数据库技术中心</text>
+
+      <rect y="88" width="214" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e6edf3">OceanBase 官网与开放 API</text>
+
+      <g transform="translate(0, 140)">
+        <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#8b949e">
+          <tspan x="0" y="0">包含 HTML / RESTful API /</tspan>
+          <tspan x="0" y="20">DocStructure 原始拓扑节点</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Stage 2: Standardization & Localizer -->
+  <g transform="translate(350, 128)">
+    <rect width="234" height="270" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <!-- Header -->
+    <rect width="234" height="44" rx="10" fill="#1f242c" />
+    <rect y="34" width="234" height="10" fill="#1f242c" />
+    <circle cx="24" cy="22" r="5" fill="#388bfd" />
+    <text x="38" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#f0f6fc">2. 规范转换器</text>
+
+    <!-- Content Items -->
+    <g transform="translate(18, 64)">
+      <rect width="198" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#79c0ff">HTML → GFM Markdown</text>
+
+      <rect y="44" width="198" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#79c0ff">YAML Frontmatter 注入</text>
+
+      <rect y="88" width="198" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#79c0ff">静态资产本地化 (img/)</text>
+
+      <g transform="translate(0, 140)">
+        <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#8b949e">
+          <tspan x="0" y="0">记录 version / source / book</tspan>
+          <tspan x="0" y="20">保证离线环境下图片与公式不丢失</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Stage 3: Structured Catalog -->
+  <g transform="translate(620, 128)">
+    <rect width="234" height="270" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <!-- Header -->
+    <rect width="234" height="44" rx="10" fill="#1f242c" />
+    <rect y="34" width="234" height="10" fill="#1f242c" />
+    <circle cx="24" cy="22" r="5" fill="#a371f7" />
+    <text x="38" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#f0f6fc">3. 知识库目录结构</text>
+
+    <!-- Content Items -->
+    <g transform="translate(18, 64)">
+      <rect width="198" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#d2a8ff">catalog.md (版本总目录)</text>
+
+      <rect y="44" width="198" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#d2a8ff">contents.md (分册目录)</text>
+
+      <rect y="88" width="198" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#d2a8ff">manifest.json (机器清单)</text>
+
+      <g transform="translate(0, 140)">
+        <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#8b949e">
+          <tspan x="0" y="0">严格通过 convert.py --verify</tspan>
+          <tspan x="0" y="20">全库 100% 格式无缝统一</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Stage 4: Local High-Performance Search -->
+  <g transform="translate(890, 128)">
+    <rect width="246" height="270" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2" />
+    <!-- Header -->
+    <rect width="246" height="44" rx="10" fill="#1f242c" />
+    <rect y="34" width="246" height="10" fill="#1f242c" />
+    <circle cx="24" cy="22" r="5" fill="#3fb950" />
+    <text x="38" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#f0f6fc">4. 极速离线检索</text>
+
+    <!-- Content Items -->
+    <g transform="translate(18, 64)">
+      <rect width="210" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#7ee787">ripgrep (rg) 瞬间全文检索</text>
+
+      <rect y="44" width="210" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#7ee787">GitHub 网页端原生点击直达</text>
+
+      <rect y="88" width="210" height="34" rx="6" fill="#0d1117" stroke="#21262d" stroke-width="1" />
+      <text x="12" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#7ee787">Obsidian / VS Code 双向关联</text>
+
+      <g transform="translate(0, 140)">
+        <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#8b949e">
+          <tspan x="0" y="0">零网络依赖 · 纯纯文本秒搜</tspan>
+          <tspan x="0" y="20">AI Agent / RAG 现成知识切片源</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+</svg>

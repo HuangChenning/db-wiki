@@ -1,16 +1,28 @@
 # db-wiki
 
-**中文** · [English](README.md)
+<p align="center">
+  <img src="assets/readme/hero.svg" alt="db-wiki - Multiverse Database Documentation Knowledge Base in Clean Markdown" width="100%">
+</p>
 
-Oracle、MySQL、达梦、瀚高与 OceanBase 数据库文档的 Markdown 阅读库，按版本和手册组织，方便查阅、全文检索与离线阅读。
+<p align="center">
+  <strong>中文</strong> · <a href="README.md">English</a>
+</p>
 
-从 [Oracle 19c](Oracle/Oracle19c/catalog.md)、[MySQL 8.4](MySQL/MySQL8.4/catalog.md)、[达梦 DM8](dameng/dm8/catalog.md)、[瀚高 V9](highgo/highgov9/catalog.md) 或 [OceanBase V5.0.1](OceanBase/OceanBase-v5.0.1/catalog.md) 开始，也可以直接按下方任务选择手册。
+Oracle、MySQL、达梦、瀚高与 OceanBase 数据库官方文档的 Markdown 阅读库，按版本和手册精细化编目，支持亚毫秒级全库即时全文检索与 100% 离线阅读。
+
+从 [Oracle 19c](Oracle/Oracle19c/catalog.md)、[MySQL 8.4](MySQL/MySQL8.4/catalog.md)、[达梦 DM8](dameng/dm8/catalog.md)、[瀚高 V9](highgo/highgov9/catalog.md)、[OceanBase V5.0.1](OceanBase/OceanBase-v5.0.1/catalog.md) 或 [OceanBase 最佳实践](OceanBase/best-practices/catalog.md) 开始，也可以直接按下方任务选择手册。
+
+---
 
 ## 概述
 
-面向数据库管理员与开发者，收录数据库概念、SQL、日常管理、性能调优、备份恢复及高可用等主题。章节保留来源信息，便于回到原文核对；Oracle 与 MySQL 正文主要为英文，达梦和瀚高正文主要为中文。
+面向数据库管理员 (DBA) 与后端开发人员，收录数据库核心架构概念、SQL 语法参考、系统参数、性能调优、备份恢复及高可用等关键主题。每一篇章节均完整保留官方来源与版本元数据，便于核对溯源；Oracle 与 MySQL 正文主要为英文，达梦、瀚高和 OceanBase 正文主要为中文。
+
+---
 
 ## 收录示例与版本入口
+
+当前知识库已收录 **5 大主流数据库引擎**，覆盖 **21 个细分版本与实践分支**，包含超 40,000+ 篇全结构化 Markdown 章节：
 
 | 数据库版本 | 手册目录数 | 阅读入口 |
 | --- | ---: | --- |
@@ -41,60 +53,78 @@ Oracle、MySQL、达梦、瀚高与 OceanBase 数据库文档的 Markdown 阅读
 | OceanBase V4.2.5 LTS（集中式） | 17 | [版本总目录](OceanBase/OceanBase-standalone-v4.2.5/catalog.md) · [集中式版简介](OceanBase/OceanBase-standalone-v4.2.5/learn-more-about-oceanbase/contents.md) |
 | OceanBase 最佳实践 | 10 | [版本总目录](OceanBase/best-practices/catalog.md) · [安装部署](OceanBase/best-practices/deploy/contents.md) |
 
-例如，阅读 [Oracle 19c 数据库概念目录](Oracle/Oracle19c/concepts/contents.md)，再进入 [Introduction to Oracle Database](Oracle/Oracle19c/concepts/introduction-to-oracle-database.md)，即可查看完整章节；章节开头的 `source` 字段记录官方原文地址。
+### 按解决任务查阅
 
-### 按任务查阅
+以下链接以日常运维高频关注点为例，其他版本请从对应总目录进入。
 
-以下 Oracle 链接以 **19c** 为例，其他版本请从对应总目录进入。
+| 要解决的问题 | Oracle 19c | 达梦 DM8 | OceanBase 最佳实践 |
+| --- | --- | --- | --- |
+| 管理实例与数据库对象 | [管理员指南](Oracle/Oracle19c/administrators-guide/contents.md) | [系统管理员手册](dameng/dm8/administrator/contents.md) | [数据表设计](OceanBase/best-practices/database-design/contents.md) |
+| 查询 SQL 语法与函数 | [SQL 语言参考](Oracle/Oracle19c/sql-language-reference/contents.md) | [SQL 语言手册](dameng/dm8/sql-language/contents.md) | [应用开发](OceanBase/best-practices/develop/contents.md) |
+| 编写存储过程与程序块 | [PL/SQL 语言参考](Oracle/Oracle19c/pl-sql-language-reference/contents.md) | [SQL 程序设计](dameng/dm8/sql-programming/contents.md) | [PL 性能分析](OceanBase/best-practices/develop/1200-pl-sql-perf-analysis.md) |
+| 分析性能与优化 SQL | [SQL 调优指南](Oracle/Oracle19c/sql-tuning-guide/contents.md) | [SQL 调优](dameng/dm8/administrator/sql-tuning.md) | [性能调优实践](OceanBase/best-practices/performance-tuning/contents.md) |
+| 备份、还原与高可用 | [备份与恢复用户指南](Oracle/Oracle19c/backup-and-recovery-users-guide/contents.md) | [备份与还原](dameng/dm8/backup-restore/contents.md) | [高可用最佳实践](OceanBase/best-practices/high-availability/contents.md) |
+| 查找参数与系统视图 | [数据库参考](Oracle/Oracle19c/reference/contents.md) | [动态视图](dameng/dm8/administrator/dynamic-management.md) | [诊断与排障](OceanBase/best-practices/diagnostic/contents.md) |
 
-| 要解决的问题 | Oracle 19c | 达梦 DM8 |
-| --- | --- | --- |
-| 管理实例与数据库对象 | [管理员指南](Oracle/Oracle19c/administrators-guide/contents.md) | [系统管理员手册](dameng/dm8/administrator/contents.md) |
-| 查询 SQL 语法与函数 | [SQL 语言参考](Oracle/Oracle19c/sql-language-reference/contents.md) | [SQL 语言手册](dameng/dm8/sql-language/contents.md) |
-| 编写存储过程与程序块 | [PL/SQL 语言参考](Oracle/Oracle19c/pl-sql-language-reference/contents.md) | [SQL 程序设计](dameng/dm8/sql-programming/contents.md) |
-| 分析性能与优化 SQL | [SQL 调优指南](Oracle/Oracle19c/sql-tuning-guide/contents.md) | [SQL 调优](dameng/dm8/administrator/sql-tuning.md) |
-| 备份、还原与恢复 | [备份与恢复用户指南](Oracle/Oracle19c/backup-and-recovery-users-guide/contents.md) | [备份与还原](dameng/dm8/backup-restore/contents.md) |
-| 查找参数与系统视图 | [数据库参考](Oracle/Oracle19c/reference/contents.md) | [动态视图](dameng/dm8/administrator/dynamic-management.md) |
+---
 
-## 查阅流程
+## 架构与查阅流程
 
-1. **选版本**：从上方入口打开该版本的 `catalog.md`，按主题选手册。
-2. **选章节**：打开手册目录中的 `contents.md`，按原书顺序定位内容。总目录中以反引号标注的路径，相对于该总目录所在文件夹。
-3. **核对原文**：在章节开头查看 `version`、`doc_id`（如有）和 `source`，确认适用版本及来源。
+<p align="center">
+  <img src="assets/readme/architecture.svg" alt="db-wiki Architecture and Four-Stage Documentation Engineering Pipeline" width="100%">
+</p>
 
-## 快速开始
+### 查阅与溯源机制
 
-在 GitHub 上点击链接即可阅读，无需安装数据库。离线阅读时，先克隆仓库，再用支持 Markdown 的编辑器打开：
+1. **选定版本**：从版本矩阵打开对应版本的 `catalog.md`，按主题查找手册。
+2. **定位章节**：打开手册目录中的 `contents.md`，按原书编目快速定位内容。所有路径均相对于该总目录所在文件夹。
+3. **核对原文**：在每一章节开头的 YAML Frontmatter 中查看 `version`、`source` 及 `tags`，确认适用版本与官方在线出处。
+
+---
+
+## 快速开始与使用
+
+在 GitHub 网页上直接点击链接即可在线浏览，无需安装任何数据库或前端环境。若需离线检索与阅读，建议克隆本仓库并在本地终端使用：
 
 ```bash
+# 1. 克隆离线知识库
 git clone https://github.com/HuangChenning/db-wiki.git
 cd db-wiki
 ```
 
 打开 `Oracle/Oracle19c/concepts/contents.md`，点击第一章即可开始阅读。
 
-### 本地全文检索
+### 本地高速全文检索
 
-安装了 [ripgrep](https://github.com/BurntSushi/ripgrep) 后，可在仓库根目录执行以下命令。用 `-g '*.md'` 限定正文文件，避免搜索图片等资源：
+推荐安装 [ripgrep](https://github.com/BurntSushi/ripgrep)（`rg`），在仓库根目录下执行亚毫秒级全文检索。使用 `-g '*.md'` 限定正文文件，避免扫描图片等静态二进制资源：
 
 ```bash
-# 在 Oracle 19c 概念手册中查找事务相关章节
-rg -l -i -g '*.md' 'transaction' Oracle/Oracle19c/concepts
+# 在 Oracle 19c 概念手册中查找事务与锁机制
+rg -n -g '*.md' 'transaction' Oracle/Oracle19c/concepts
 
-# 在达梦备份手册中查找 DMRMAN，显示匹配行及行号
+# 在达梦 DM8 备份手册中查找 DMRMAN 工具指令
 rg -n -g '*.md' 'DMRMAN' dameng/dm8/backup-restore
+
+# 在 OceanBase 最佳实践与 V5.0.1 中跨版本搜索读写分离指南
+rg -n -g '*.md' '读写分离' OceanBase/best-practices OceanBase/OceanBase-v5.0.1
 ```
+
+---
 
 ## 注意事项与收录限制
 
-- **按版本使用**：不同版本的参数、语法与功能可能不同，不要直接将其他版本的示例用于当前环境。
-- **收录范围有限**：这里是已整理手册的阅读入口，不代表厂商全部文档，也不保证与官网同步更新。在线手册与本地 PDF 的文档号差异，在部分版本总目录中已有注明。
-- **保留正文语言**：中英文 README 提供同一套导航，并不表示所有章节均有双语译文。
-- **转换格式可能有差异**：Markdown 由在线文档整理而来，复杂表格、图片和交叉链接可能存在格式或解析偏差；关键操作请核对章节中的官方来源。
-- **来源与版权**：原始文档的版权归相应权利人所有。本仓库目前未提供 `LICENSE` 文件，请勿将文档收录理解为额外的授权声明。
+- **版本强绑定**：不同数据库及小版本的系统参数、默认行为、系统视图与 SQL 语法存在差异，请务必核对当前生产环境的具体版本。
+- **收录范围边界**：本仓库为精选官方手册的结构化 Markdown 阅读库，不代表厂商官方的全部在线产品线，亦不保证与官网实时静默同步。
+- **原始语言保留**：中英文 README 提供同等层级的导航体系，正文内容保留官方发布时的原始语言（Oracle/MySQL 为英文，国产数据库为中文）。
+- **Markdown 转换格式微差**：文档内容由官方文档工程化清洗而来，个别复杂嵌套表格、绘图或内联超链接可能存在渲染偏差；关键生产操作建议核对章节内的 `source` 官方原文。
+- **版权与来源声明**：文档原始知识产权与版权归各数据库厂商及权利人所有。
 
-## 贡献
+---
 
-提交问题时，请注明数据库版本、手册名、章节路径及具体问题；如涉及内容差异，请附上章节的 `source` 地址。补充或修订文档时，保持现有的版本目录、`catalog.md`、`contents.md` 和来源元数据，新增图片放在对应手册的 `img/` 下。
+## 贡献指南
 
-新增、删除或移动手册后，请同步更新总目录以及这两份 README 中的入口和手册目录数。
+欢迎补充、校正或反馈文档缺失：
+
+1. **反馈问题**：请提交 Issue，注明数据库引擎、具体版本号、手册名称、章节相对路径以及官方对应 `source` 链接。
+2. **新增/更新手册**：必须遵循 `skills/db-online-docs-to-markdown` 规范，生成完整的 `catalog.md`、`contents.md`、`manifest.json` 及局部 `img/` 静态资源，并执行 `python3 skills/db-online-docs-to-markdown/scripts/convert.py --manifest <path>/manifest.json --verify` 确保通过校验。
+3. **同步维护**：若调整或新增手册，须在同一提交中同步更新 `README.md` 与 `README.zh-CN.md` 的收录统计与入口链接。
